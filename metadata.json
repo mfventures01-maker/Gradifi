@@ -1,0 +1,6 @@
+{
+  "name": "Gradifi",
+  "description": "AI-assisted grading with teacher rubrics, CBT examinations, and deterministic multi-institution school onboarding for African education.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
