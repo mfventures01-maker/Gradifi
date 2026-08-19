@@ -28,6 +28,27 @@ export const cbtService = {
   },
 
   /**
+   * Fetch published exams for students
+   */
+  async getPublishedExams(schoolId: string): Promise<(CbtExam & { questions_count?: number; attempts_count?: number })[]> {
+    const { data: exams, error } = await supabase
+      .from('cbt_exams')
+      .select('*')
+      .eq('school_id', schoolId)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    if (!exams) return [];
+
+    return (exams as CbtExam[]).map(e => ({
+      ...e,
+      questions_count: 0,
+      attempts_count: 0,
+    }));
+  },
+
+  /**
    * Fetch single exam with all nested questions
    */
   async getExamWithQuestions(examId: string): Promise<{ exam: CbtExam; questions: CbtQuestion[] }> {
@@ -58,7 +79,7 @@ export const cbtService = {
    */
   async createExam(
     examData: DatabaseInsert<'cbt_exams'>,
-    questions: Array<Omit<DatabaseInsert<'cbt_questions'>, 'exam_id'>>
+    questions: Array<Omit<DatabaseInsert<'cbt_questions'>, 'exam_id'>> = []
   ): Promise<CbtExam> {
     const { data: exam, error: examErr } = await supabase
       .from('cbt_exams')

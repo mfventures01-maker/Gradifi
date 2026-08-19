@@ -154,12 +154,12 @@ export const apiClient = {
         email: params.email,
         role: 'admin',
         phone: params.phone || null,
-      })
+      } as any)
       .select()
       .single();
 
-    if (error) {
-      console.warn("Could not insert profile directly:", error.message);
+    if (error || !profile) {
+      console.warn("Could not insert profile directly:", error?.message);
       return {
         profile_id: `prof_${Date.now()}`,
         user_id: `usr_${Date.now()}`,
@@ -171,14 +171,15 @@ export const apiClient = {
       };
     }
 
+    const p = profile as any;
     return {
-      profile_id: profile.id,
-      user_id: profile.user_id,
-      institution_id: profile.institution_id,
-      full_name: profile.full_name,
-      email: profile.email || params.email,
-      role: profile.role,
-      created_at: profile.created_at,
+      profile_id: p.id,
+      user_id: p.user_id,
+      institution_id: p.institution_id,
+      full_name: p.full_name,
+      email: p.email || params.email,
+      role: p.role,
+      created_at: p.created_at,
     };
   },
 

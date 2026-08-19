@@ -60,9 +60,11 @@ export const authService = {
       .eq('status', 'active')
       .maybeSingle();
 
-    const institutionId = actor?.institution_id || profile?.institution_id || null;
-    const schoolId = actor?.school_id || null;
-    const role = (actor?.role || profile?.role || null) as AuthSessionState['role'];
+    const p = profile as any;
+    const a = actor as any;
+    const institutionId = a?.institution_id || p?.institution_id || null;
+    const schoolId = a?.school_id || null;
+    const role = (a?.role || p?.role || null) as AuthSessionState['role'];
 
     return {
       isAuthenticated: true,

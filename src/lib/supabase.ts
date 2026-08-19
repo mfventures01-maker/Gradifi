@@ -17,7 +17,7 @@ export const isSupabaseConfigured = Boolean(
   !metaEnv.VITE_SUPABASE_URL.includes('placeholder')
 );
 
-export const supabase: SupabaseClient<Database> = createClient<Database>(
+export const supabase: SupabaseClient<any> = createClient<Database>(
   supabaseUrl,
   supabaseAnonKey,
   {

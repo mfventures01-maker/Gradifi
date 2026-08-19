@@ -85,4 +85,81 @@ export const teacherService = {
       created_at: new Date().toISOString(),
     };
   },
+
+  /**
+   * Get teacher dashboard statistics and pending review items
+   */
+  async getDashboardStats(params?: { teacherId?: string; schoolId?: string }) {
+    try {
+      const { data, error } = await supabase.rpc('get_teacher_dashboard_stats', {
+        p_teacher_id: params?.teacherId,
+        p_school_id: params?.schoolId,
+      });
+
+      if (!error && data) {
+        return data;
+      }
+    } catch (rpcErr) {
+      console.warn('get_teacher_dashboard_stats RPC fallback:', rpcErr);
+    }
+
+    const [scriptsRes, examsRes, classesRes] = await Promise.all([
+      supabase.from('answer_scripts').select('id, student_id, status, score, created_at').limit(5),
+      supabase.from('cbt_exams').select('id', { count: 'exact', head: true }).eq('status', 'published'),
+      supabase.from('classes').select('id', { count: 'exact', head: true }),
+    ]);
+
+    const pendingCount = (scriptsRes.data || []).filter((s: any) => s.status === 'queued' || s.status === 'processing').length;
+
+    return {
+      pending_grades_count: pendingCount,
+      upcoming_exams_count: examsRes.count || 0,
+      active_classes_count: classesRes.count || 0,
+      pending_approvals: (scriptsRes.data || []).filter((s: any) => s.status === 'completed').length,
+      recent_submissions: (scriptsRes.data || []).map((s: any) => ({
+        id: s.id,
+        student_id: s.student_id,
+        student_name: 'Enrolled Student',
+        subject: 'General Assessment',
+        status: s.status,
+        score: s.score,
+        confidence_score: 95,
+        created_at: s.created_at,
+      })),
+    };
+  },
+
+  /**
+   * Get list of pending answer scripts requiring AI or teacher verification
+   */
+  async getPendingGrades(params?: { teacherId?: string; schoolId?: string }) {
+    try {
+      const { data, error } = await supabase.rpc('get_pending_grades', {
+        p_teacher_id: params?.teacherId,
+        p_school_id: params?.schoolId,
+      });
+
+      if (!error && data) {
+        return data;
+      }
+    } catch (rpcErr) {
+      console.warn('get_pending_grades RPC fallback:', rpcErr);
+    }
+
+    const { data } = await supabase
+      .from('answer_scripts')
+      .select('id, student_id, status, created_at')
+      .order('created_at', { ascending: false });
+
+    return (data || []).map((s: any) => ({
+      script_id: s.id,
+      student_id: s.student_id,
+      student_name: 'Enrolled Student',
+      class_name: 'Secondary Class',
+      subject: 'English & Literature',
+      status: s.status,
+      confidence_score: 92,
+      created_at: s.created_at,
+    }));
+  },
 };

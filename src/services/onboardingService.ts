@@ -114,8 +114,9 @@ export const onboardingService = {
         throw new Error('No response data returned from institution creation RPC.');
       }
 
-      const institutionId = data.institution_id || `inst_${Date.now()}`;
-      const schoolId = data.school_id || `sch_${Date.now()}`;
+      const res = (data || {}) as any;
+      const institutionId = res.institution_id || `inst_${Date.now()}`;
+      const schoolId = res.school_id || `sch_${Date.now()}`;
 
       // Update onboarding record if available
       try {
@@ -131,10 +132,10 @@ export const onboardingService = {
       return {
         institution_id: institutionId,
         school_id: schoolId,
-        name: data.name || input.institution_name,
-        type: data.type || input.institution_type,
-        country: data.country || input.country || 'Nigeria',
-        created_at: data.created_at || new Date().toISOString(),
+        name: res.name || input.institution_name,
+        type: res.type || input.institution_type,
+        country: res.country || input.country || 'Nigeria',
+        created_at: res.created_at || new Date().toISOString(),
         success: true,
       };
     } catch (err: any) {
@@ -177,9 +178,10 @@ export const onboardingService = {
         };
       }
 
+      const d = (data || {}) as any;
       return {
-        classes_created: data?.classes_created || 6,
-        classes: data?.classes || [],
+        classes_created: d.classes_created || 6,
+        classes: d.classes || [],
         success: true,
       };
     } catch (err: any) {
@@ -248,13 +250,14 @@ export const onboardingService = {
         };
       }
 
+      const d = (data || {}) as any;
       return {
-        teacher_id: data?.teacher_id || `tch_${Date.now()}`,
-        name: data?.name || input.name,
-        email: data?.email || input.email,
-        phone: data?.phone || input.phone,
-        school_id: data?.school_id || input.school_id,
-        institution_id: data?.institution_id || input.institution_id,
+        teacher_id: d.teacher_id || `tch_${Date.now()}`,
+        name: d.name || input.name,
+        email: d.email || input.email,
+        phone: d.phone || input.phone,
+        school_id: d.school_id || input.school_id,
+        institution_id: d.institution_id || input.institution_id,
         success: true,
       };
     } catch (err: any) {
@@ -317,11 +320,12 @@ export const onboardingService = {
         };
       }
 
+      const d = (data || {}) as any;
       return {
-        student_id: data?.student_id || `std_${Date.now()}`,
-        student_number: data?.student_number || `GRD/${new Date().getFullYear()}/${Math.floor(100 + Math.random() * 900)}`,
-        class_id: data?.class_id || input.class_id,
-        enrolled_at: data?.enrolled_at || new Date().toISOString(),
+        student_id: d.student_id || `std_${Date.now()}`,
+        student_number: d.student_number || `GRD/${new Date().getFullYear()}/${Math.floor(100 + Math.random() * 900)}`,
+        class_id: d.class_id || input.class_id,
+        enrolled_at: d.enrolled_at || new Date().toISOString(),
         success: true,
       };
     } catch (err: any) {

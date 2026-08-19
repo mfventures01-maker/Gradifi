@@ -55,17 +55,17 @@ export const aiGradingService = {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error || !data) throw error || new Error('Submission failed');
 
     // Track in AI Queue Status table
     await supabase.from('ai_queue_status').insert({
-      script_id: data.id,
+      script_id: (data as any).id,
       status: payload.ai_score !== undefined ? 'completed' : 'queued',
       queued_at: new Date().toISOString(),
       processed_at: payload.ai_score !== undefined ? new Date().toISOString() : null,
-    });
+    } as any);
 
-    return data;
+    return data as AnswerScript;
   },
 
   /**

@@ -11,6 +11,12 @@ export type AppView =
   | 'home' 
   | 'onboarding' 
   | 'dashboard' 
+  | 'teacher'
+  | 'principal'
+  | 'student'
+  | 'parent'
+  | 'bursar'
+  | 'vp'
   | 'create-institution' 
   | 'create-teacher' 
   | 'create-student'
@@ -21,12 +27,14 @@ export default function App() {
   const [onboardingStep, setOnboardingStep] = useState<number>(1);
   const [activeInstitutionId, setActiveInstitutionId] = useState<string>('inst_demo_01');
   const [activeSchoolId, setActiveSchoolId] = useState<string>('sch_demo_01');
+  const [activeDashboardTab, setActiveDashboardTab] = useState<string>('overview');
 
-  // Check URL params on initial load (e.g. ?view=onboarding&step=1, ?page=create-institution)
+  // Check URL params on initial load (e.g. ?view=onboarding&step=1, ?page=create-institution, ?role=teacher)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const viewParam = params.get('view') as AppView;
     const pageParam = params.get('page');
+    const roleParam = params.get('role');
     const stepParam = parseInt(params.get('step') || '1', 10);
     const instParam = params.get('inst_id');
     const schParam = params.get('school_id');
@@ -37,9 +45,15 @@ export default function App() {
       setCurrentView('create-teacher');
     } else if (pageParam === 'create-student' || pageParam === 'students') {
       setCurrentView('create-student');
+    } else if (roleParam) {
+      setCurrentView('dashboard');
+      setActiveDashboardTab(roleParam);
     } else if (viewParam === 'onboarding') {
       setCurrentView('onboarding');
       setOnboardingStep(stepParam || 1);
+    } else if (viewParam === 'teacher' || viewParam === 'principal' || viewParam === 'student' || viewParam === 'parent' || viewParam === 'bursar' || viewParam === 'vp') {
+      setCurrentView('dashboard');
+      setActiveDashboardTab(viewParam);
     } else if (viewParam === 'dashboard') {
       setCurrentView('dashboard');
     } else if (viewParam === 'create-institution' || viewParam === 'create-teacher' || viewParam === 'create-student' || viewParam === 'auth') {
@@ -50,9 +64,10 @@ export default function App() {
     if (schParam) setActiveSchoolId(schParam);
   }, []);
 
-  const navigateTo = (view: AppView, step: number = 1, instId?: string, schId?: string) => {
+  const navigateTo = (view: AppView, step: number = 1, instId?: string, schId?: string, roleTab?: string) => {
     setCurrentView(view);
     setOnboardingStep(step);
+    if (roleTab) setActiveDashboardTab(roleTab);
     if (instId) setActiveInstitutionId(instId);
     if (schId) setActiveSchoolId(schId);
 
@@ -62,6 +77,11 @@ export default function App() {
       url.searchParams.set('step', step.toString());
     } else {
       url.searchParams.delete('step');
+    }
+    if (roleTab) {
+      url.searchParams.set('role', roleTab);
+    } else {
+      url.searchParams.delete('role');
     }
     if (instId) {
       url.searchParams.set('inst_id', instId);
@@ -147,7 +167,7 @@ export default function App() {
       {currentView === 'home' && (
         <HomePage
           onStartOnboarding={() => navigateTo('create-institution')}
-          onOpenDashboard={(instId) => navigateTo('dashboard', 1, instId || 'inst_demo_01')}
+          onGoToDashboard={(instId, role) => navigateTo('dashboard', 1, instId || 'inst_demo_01', undefined, role)}
         />
       )}
 
@@ -178,10 +198,25 @@ export default function App() {
                 onSessionResolved={(identity) => {
                   if (identity.institutionId) setActiveInstitutionId(identity.institutionId);
                   if (identity.schoolId) setActiveSchoolId(identity.schoolId);
+                  if (identity.actorType) {
+                    const roleMap: Record<string, string> = {
+                      teacher: 'teacher',
+                      principal: 'principal',
+                      school_admin: 'principal',
+                      student: 'student',
+                      parent: 'parent',
+                      bursar: 'bursar',
+                      vice_principal: 'vp',
+                    };
+                    if (roleMap[identity.actorType]) {
+                      setActiveDashboardTab(roleMap[identity.actorType]);
+                    }
+                  }
                 }}
               >
                 <DashboardLayout
                   institutionId={activeInstitutionId}
+                  initialTab={activeDashboardTab}
                   onLogout={() => navigateTo('home')}
                 />
               </AuthGuard>
@@ -190,6 +225,7 @@ export default function App() {
         }>
           <DashboardLayout
             institutionId={activeInstitutionId}
+            initialTab={activeDashboardTab}
             onLogout={() => navigateTo('home')}
           />
         </AuthGuard>
