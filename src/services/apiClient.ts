@@ -15,6 +15,10 @@ import { studentService } from './studentService';
 import { onboardingService } from './onboardingService';
 import { cbtService } from './cbtService';
 import { aiGradingService } from './aiGradingService';
+import { principalService } from './principalService';
+import { parentService } from './parentService';
+import { bursarService } from './bursarService';
+import { studentDashboardService } from './studentDashboardService';
 
 import {
   Institution,
@@ -287,7 +291,18 @@ export const apiClient = {
     return aiGradingService.submitAnswerScript(payload);
   },
 
-  async reviewGradingSubmission(id: string, status: 'approved' | 'pending_review' | 'failed', teacherNotes?: string) {
-    return aiGradingService.reviewSubmission(id, status, teacherNotes);
+  // Phase 3 Multi-Role Dashboard Services
+  async getPrincipalStats(schoolId?: string) {
+    return principalService.getDashboardStats(schoolId);
+  },
+  async getParentStats(parentId?: string) {
+    return parentService.getDashboardStats(parentId);
+  },
+  async getBursarStats(schoolId?: string) {
+    return bursarService.getDashboardStats(schoolId);
+  },
+  async getStudentStats(studentId?: string) {
+    return studentDashboardService.getDashboardStats(studentId);
   },
 };
+

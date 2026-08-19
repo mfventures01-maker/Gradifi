@@ -13,7 +13,7 @@ import {
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  allowedRoles?: Array<'admin' | 'principal' | 'teacher' | 'student' | 'parent'>;
+  allowedRoles?: Array<'admin' | 'principal' | 'teacher' | 'student' | 'parent' | 'bursar' | 'vp'>;
   fallback?: React.ReactNode;
   onSessionResolved?: (session: AuthSessionState) => void;
 }
