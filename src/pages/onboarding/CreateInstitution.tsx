@@ -1,704 +1,457 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { onboardingService, InstitutionPayload, SchoolFormPayload, TeacherFormPayload, StudentFormPayload } from '../../services/onboardingService';
-import { useInstitutionStore } from '../../store/useInstitutionStore';
-import {
-    Building,
-    School as SchoolIcon,
-    Layout,
-    Users,
-    UserPlus,
-    CheckCircle,
-    ChevronRight,
-    AlertCircle,
-    Loader2,
-    MapPin,
-    Mail,
-    Phone,
-    BookOpen,
-    GraduationCap,
-    ArrowRight,
-    Trophy,
-    Calendar,
-    Hash
+import React, { useState } from 'react';
+import { onboardingService, CreateInstitutionFormInput } from '../../services/onboardingService';
+import { 
+  Building2, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Globe, 
+  UserCheck, 
+  CheckCircle2, 
+  AlertCircle, 
+  ArrowRight, 
+  Sparkles,
+  Layers,
+  BookOpen
 } from 'lucide-react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
-function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
+interface CreateInstitutionProps {
+  onSuccess?: (institutionId: string, schoolId: string) => void;
+  onNavigateToTeachers?: () => void;
+  initialValues?: Partial<CreateInstitutionFormInput>;
 }
 
-type OnboardingState =
-    | 'INIT'
-    | 'INSTITUTION_CREATED'
-    | 'SCHOOL_CREATED'
-    | 'CLASSES_INITIALIZED'
-    | 'SUBJECTS_ASSIGNED'
-    | 'TEACHERS_CREATED'
-    | 'STUDENTS_ENROLLED'
-    | 'ONBOARDING_COMPLETE';
+export const CreateInstitution: React.FC<CreateInstitutionProps> = ({
+  onSuccess,
+  onNavigateToTeachers,
+  initialValues,
+}) => {
+  const [formData, setFormData] = useState<CreateInstitutionFormInput>({
+    institution_name: initialValues?.institution_name || '',
+    institution_type: initialValues?.institution_type || 'secondary',
+    registration_number: initialValues?.registration_number || '',
+    address: initialValues?.address || '',
+    state: initialValues?.state || 'Lagos',
+    lga: initialValues?.lga || 'Ikeja',
+    phone: initialValues?.phone || '',
+    email: initialValues?.email || '',
+    website: initialValues?.website || '',
+    principal_name: initialValues?.principal_name || '',
+    principal_phone: initialValues?.principal_phone || '',
+    principal_email: initialValues?.principal_email || '',
+    country: initialValues?.country || 'Nigeria',
+    curriculum_type: initialValues?.curriculum_type || 'WAEC / NECO / National',
+  });
 
-export const CreateInstitution: React.FC = () => {
-    const navigate = useNavigate();
-    const { setInstitutionId, setInstitutionType, setSchoolId } = useInstitutionStore();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successInfo, setSuccessInfo] = useState<{
+    institutionId: string;
+    schoolId: string;
+    classesCount: number;
+  } | null>(null);
 
-    const [state, setState] = useState<OnboardingState>('INIT');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const nigerianStates = [
+    'Abia', 'Abuja FCT', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
+    'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa',
+    'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger',
+    'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara'
+  ];
 
-    // Sync state with backend on mount
-    useEffect(() => {
-        const syncState = async () => {
-            const storedInstitutionId = localStorage.getItem('institutionId');
-            if (!storedInstitutionId) {
-                setLoading(false);
-                return;
-            }
+  const handleInputChange = (field: keyof CreateInstitutionFormInput, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (error) setError(null);
+  };
 
-            try {
-                const status = await onboardingService.getOnboardingStatus(storedInstitutionId);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-                if (status.hasStudents) setState('ONBOARDING_COMPLETE');
-                else if (status.hasTeachers) setState('TEACHERS_CREATED');
-                else if (status.hasClasses) {
-                    // Check if subjects are initialized
-                    const subjects = await onboardingService.getClassSubjects(status.schoolId || storedInstitutionId);
-                    if (subjects.length > 0) {
-                        setClassSubjects(subjects);
-                        setState('SUBJECTS_ASSIGNED');
-                    } else {
-                        setState('CLASSES_INITIALIZED');
-                    }
-                    const classList = await onboardingService.getClasses(status.schoolId || storedInstitutionId);
-                    setClasses(classList);
-                }
-                else if (status.hasSchool) setState('SCHOOL_CREATED');
-                else setState('INSTITUTION_CREATED');
+    try {
+      // 1. Validate mandatory fields
+      if (!formData.institution_name.trim()) throw new Error('Institution Name is required');
+      if (!formData.registration_number.trim()) throw new Error('Registration Number is required');
+      if (!formData.address.trim()) throw new Error('Physical Address is required');
+      if (!formData.email.trim()) throw new Error('Institution Contact Email is required');
+      if (!formData.principal_name.trim()) throw new Error('Principal / Head of Institution Name is required');
 
-                if (status.schoolId) {
-                    setLocalSchoolId(status.schoolId);
-                    setSchoolId(status.schoolId);
-                }
-            } catch (err) {
-                console.error("ONBOARDING_SYNC_FAILURE:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
+      // 2. Call certified create_institution_account RPC
+      const instResult = await onboardingService.createInstitutionAccount(formData);
 
-        syncState();
-    }, []);
+      if (!instResult.success || !instResult.school_id) {
+        throw new Error('Institution registration completed but school campus reference was not created.');
+      }
 
-    // Form Data
-    const [institutionData, setInstitutionData] = useState<InstitutionPayload>({
-        institution_name: '',
-        institution_type: 'secondary_school',
-        country: 'Nigeria',
-        state: '',
-        admin_email: '',
-        password: ''
-    });
+      // 3. Immediately call initialize_secondary_classes RPC
+      const classResult = await onboardingService.initializeSecondaryClasses(instResult.school_id);
 
-    const [schoolId, setLocalSchoolId] = useState<string | null>(null);
-    const [schoolData, setSchoolData] = useState<SchoolFormPayload>({
-        institution_id: '',
-        school_name: '',
-        school_type: 'Secondary',
-        address: ''
-    });
+      setSuccessInfo({
+        institutionId: instResult.institution_id,
+        schoolId: instResult.school_id,
+        classesCount: classResult.classes_created || 6,
+      });
 
-    const [teacherData, setTeacherData] = useState<TeacherFormPayload>({
-        school_id: '',
-        name: '',
-        email: '',
-        phone: ''
-    });
-
-    const [studentData, setStudentData] = useState<StudentFormPayload>({
-        class_id: '',
-        first_name: '',
-        last_name: '',
-        gender: 'Male',
-        student_number: '',
-        date_of_birth: ''
-    });
-
-    const [classes, setClasses] = useState<any[]>([]);
-    const [classSubjects, setClassSubjects] = useState<any[]>([]);
-    const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
-
-    // Step Progress
-    const steps = [
-        { id: 'INIT', label: 'Institution', icon: Building },
-        { id: 'INSTITUTION_CREATED', label: 'School', icon: SchoolIcon },
-        { id: 'SCHOOL_CREATED', label: 'Classes', icon: Layout },
-        { id: 'CLASSES_INITIALIZED', label: 'Subjects', icon: BookOpen },
-        { id: 'SUBJECTS_ASSIGNED', label: 'Teachers', icon: Users },
-        { id: 'TEACHERS_CREATED', label: 'Students', icon: UserPlus },
-    ];
-
-    const currentStepIndex = steps.findIndex(s => s.id === state);
-
-    // Actions
-    const handleCreateInstitution = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Prevent double execution if already submitting
-        if (isSubmitting) return;
-
-        // Lock the UI immediately
-        setIsSubmitting(true);
-        setError(null);
-        try {
-            const result = await onboardingService.createInstitutionAccount(institutionData);
-            setInstitutionId(result.institution_id);
-            setInstitutionType(institutionData.institution_type as any);
-            setSchoolData(prev => ({ ...prev, institution_id: result.institution_id }));
-            setState('INSTITUTION_CREATED');
-        } catch (err: any) {
-            setError(err.message || 'Failed to create institution');
-        } finally {
-            // IMPORTANT: Unlock the UI once the request finishes (success or failure)
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleCreateSchool = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setError(null);
-        try {
-            const school = await onboardingService.createSchool(schoolData);
-            setLocalSchoolId(school.id);
-            setSchoolId(school.id);
-            setState('SCHOOL_CREATED');
-        } catch (err: any) {
-            setError(err.message || 'Failed to create school');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleInitializeClasses = async () => {
-        if (!schoolId) return;
-        setIsSubmitting(true);
-        setError(null);
-        try {
-            await onboardingService.initializeSecondaryClasses(schoolId);
-            const classList = await onboardingService.getClasses(schoolId);
-            setClasses(classList);
-            setState('CLASSES_INITIALIZED');
-        } catch (err: any) {
-            setError(err.message || 'Failed to initialize classes');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleInitializeSubjects = async () => {
-        if (!schoolId) return;
-        setIsSubmitting(true);
-        setError(null);
-        try {
-            await onboardingService.initializeClassSubjects(schoolId);
-            const subjects = await onboardingService.getClassSubjects(schoolId);
-            setClassSubjects(subjects);
-            setState('SUBJECTS_ASSIGNED');
-        } catch (err: any) {
-            if (err.message?.includes('duplicate')) {
-                const subjects = await onboardingService.getClassSubjects(schoolId);
-                setClassSubjects(subjects);
-                setState('SUBJECTS_ASSIGNED');
-            } else {
-                setError(err.message || 'Failed to initialize subjects');
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleCreateTeacher = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!schoolId || !selectedSubjectId) return;
-        setIsSubmitting(true);
-        setError(null);
-        try {
-            await onboardingService.createTeacher({
-                name: teacherData.name,
-                email: teacherData.email,
-                phone: teacherData.phone,
-                school_id: schoolId,
-                class_subject_id: selectedSubjectId || undefined
-            });
-            setState('TEACHERS_CREATED');
-        } catch (err: any) {
-            setError(err.message || 'Failed to create teacher');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleEnrollStudent = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setError(null);
-        try {
-            const student = await onboardingService.enrollStudent(studentData);
-            await onboardingService.enrollStudentSubjects(student.student_id);
-            setState('ONBOARDING_COMPLETE');
-        } catch (err: any) {
-            setError(err.message || 'Failed to enroll student');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const renderStepIndicator = () => (
-        <div className="flex items-center justify-between mb-12 px-2 max-w-4xl mx-auto overflow-x-auto pb-4">
-            {(steps ?? []).map((step, idx) => {
-                const isCompleted = steps.findIndex(s => s.id === state) > idx || (state === 'ONBOARDING_COMPLETE');
-                const isActive = step.id === state;
-                const Icon = step.icon;
-
-                return (
-                    <div key={step.id} className="flex flex-col items-center relative group min-w-[100px]">
-                        <div className={cn(
-                            "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg",
-                            isActive ? "bg-blue-600 text-white scale-110 -rotate-3" :
-                                isCompleted ? "bg-green-500 text-white" : "bg-white text-slate-400 border border-slate-200"
-                        )}>
-                            {isCompleted ? <CheckCircle className="w-6 h-6" /> : <Icon className="w-6 h-6" />}
-                        </div>
-                        <span className={cn(
-                            "mt-3 text-[10px] font-bold uppercase tracking-wider transition-colors duration-300",
-                            isActive ? "text-blue-600" : "text-slate-400"
-                        )}>
-                            {step.label}
-                        </span>
-                        {idx < steps.length - 1 && (
-                            <div className={cn(
-                                "hidden md:block absolute top-6 left-full w-full h-[2px] -z-10",
-                                isCompleted ? "bg-green-500" : "bg-slate-200"
-                            )} style={{ width: 'calc(100% - 3rem)' }} />
-                        )}
-                    </div>
-                );
-            })}
-        </div>
-    );
-
-    if (state === 'ONBOARDING_COMPLETE') {
-        return (
-            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100 via-slate-50 to-white">
-                <div className="max-w-md w-full bg-white/70 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-2xl border border-white text-center">
-                    <div className="w-24 h-24 bg-green-500 rounded-3xl flex items-center justify-center text-white mx-auto mb-8 shadow-xl shadow-green-500/20 rotate-6">
-                        <Trophy className="w-12 h-12" />
-                    </div>
-                    <h1 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">Onboarding Complete!</h1>
-                    <p className="text-slate-600 mb-8 leading-relaxed">
-                        Your institution and school environment are now synchronized with the SEFAES core.
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-4 mb-10">
-                        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                            <p className="text-2xl font-bold text-slate-900">1</p>
-                            <p className="text-xs text-slate-500 font-medium">Students</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                            <p className="text-2xl font-bold text-slate-900">1</p>
-                            <p className="text-xs text-slate-500 font-medium">Teachers</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                            <p className="text-2xl font-bold text-slate-900">{classes.length || '6'}</p>
-                            <p className="text-xs text-slate-500 font-medium">Classes</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                            <p className="text-2xl font-bold text-slate-900">{classSubjects.length || '96'}</p>
-                            <p className="text-xs text-slate-500 font-medium">Subjects</p>
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={() => navigate(`/portal/${institutionData.institution_type}/dashboard`)}
-                        className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 group"
-                    >
-                        Go to Dashboard
-                        <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                </div>
-            </div>
-        );
+      if (onSuccess) {
+        onSuccess(instResult.institution_id, instResult.school_id);
+      }
+    } catch (err: any) {
+      console.error('Institution Onboarding Submission Error:', err);
+      setError(err.message || 'Institution creation failed. Please check your network and try again.');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
-        <div className="min-h-screen bg-slate-50 py-12 px-6 lg:px-8 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-blue-50/50 via-slate-50 to-white">
-            <div className="max-w-4xl mx-auto">
-                {renderStepIndicator()}
+  const proceedToTeachers = () => {
+    if (onNavigateToTeachers) {
+      onNavigateToTeachers();
+    } else {
+      // Standard URL search param fallback
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', 'onboarding');
+      url.searchParams.set('step', '10');
+      if (successInfo?.institutionId) {
+        url.searchParams.set('inst_id', successInfo.institutionId);
+      }
+      window.location.href = url.toString();
+    }
+  };
 
-                <div className="bg-white/80 backdrop-blur-xl shadow-2xl shadow-slate-200/50 rounded-[3rem] border border-white p-8 md:p-12 transition-all duration-500">
-                    {error && (
-                        <div className="mb-8 flex items-start bg-red-50 p-4 rounded-2xl border border-red-100 text-red-800 text-sm font-medium animate-in fade-in slide-in-from-top-4">
-                            <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 text-red-500" />
-                            <span>{error}</span>
-                        </div>
-                    )}
-
-                    {state === 'INIT' && (
-                        <form onSubmit={handleCreateInstitution} className="space-y-6 animate-in fade-in duration-500">
-                            <div>
-                                <h2 className="text-3xl font-black text-slate-900 mb-2">Institution Details</h2>
-                                <p className="text-slate-500 mb-8">Let's start by creating your educational institution account.</p>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Institution Name</label>
-                                    <div className="relative group">
-                                        <Building className="absolute left-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                                        <input
-                                            required
-                                            className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                            value={institutionData.institution_name}
-                                            onChange={e => setInstitutionData({ ...institutionData, institution_name: e.target.value })}
-                                            placeholder="e.g. Lagos City Academy"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Institution Type</label>
-                                    <select
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={institutionData.institution_type}
-                                        onChange={e => setInstitutionData({ ...institutionData, institution_type: e.target.value })}
-                                    >
-                                        <option value="secondary_school">Secondary School</option>
-                                        <option value="university">University</option>
-                                        <option value="corporate">Corporate</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">State</label>
-                                    <div className="relative group">
-                                        <MapPin className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
-                                        <input
-                                            required
-                                            className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                            value={institutionData.state}
-                                            onChange={e => setInstitutionData({ ...institutionData, state: e.target.value })}
-                                            placeholder="e.g. Lagos"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Admin Email</label>
-                                    <div className="relative group">
-                                        <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
-                                        <input
-                                            required
-                                            type="email"
-                                            className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                            value={institutionData.admin_email}
-                                            onChange={e => setInstitutionData({ ...institutionData, admin_email: e.target.value })}
-                                            placeholder="admin@school.com"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Admin Password</label>
-                                    <input
-                                        required
-                                        type="password"
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={institutionData.password}
-                                        onChange={e => setInstitutionData({ ...institutionData, password: e.target.value })}
-                                        placeholder="••••••••"
-                                    />
-                                </div>
-                            </div>
-                            <div className="pt-6">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="w-full md:w-auto px-12 bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed group"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                                            Creating Institution...
-                                        </>
-                                    ) : (
-                                        <>
-                                            Create Account
-                                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    )}
-
-                    {state === 'INSTITUTION_CREATED' && (
-                        <form onSubmit={handleCreateSchool} className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div>
-                                <h2 className="text-3xl font-black text-slate-900 mb-2">School Setup</h2>
-                                <p className="text-slate-500 mb-8">Setup your first school within this institution.</p>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">School Name</label>
-                                    <input
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={schoolData.school_name}
-                                        onChange={e => setSchoolData({ ...schoolData, school_name: e.target.value })}
-                                        placeholder="e.g. South Campus"
-                                    />
-                                </div>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700 ml-1">School Type</label>
-                                        <select
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                            value={schoolData.school_type}
-                                            onChange={e => setSchoolData({ ...schoolData, school_type: e.target.value as any })}
-                                        >
-                                            <option value="Secondary">Secondary</option>
-                                            <option value="Primary">Primary</option>
-                                        </select>
-                                </div>
-                                <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700 ml-1">Address</label>
-                                        <input
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                            value={schoolData.address}
-                                            onChange={e => setSchoolData({ ...schoolData, address: e.target.value })}
-                                            placeholder="123 Education Way"
-                                        />
-                                    </div>
-                                </div>
-                                </div>
-                            <div className="pt-6">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting || loading}
-                                    className="w-full md:w-auto px-12 bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-70 group"
-                                >
-                                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : 'Continue'}
-                                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </div>
-                        </form>
-                    )}
-
-                    {state === 'SCHOOL_CREATED' && (
-                        <div className="text-center py-12 animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div className="w-20 h-20 bg-blue-100 rounded-[2rem] flex items-center justify-center text-blue-600 mx-auto mb-8">
-                                <Layout className="w-10 h-10" />
-                </div>
-                            <h2 className="text-3xl font-black text-slate-900 mb-4">Initialize Academic Ladder</h2>
-                            <p className="text-slate-600 mb-10 max-w-md mx-auto">
-                                The system will automatically generate the Nigerian secondary class ladder (JSS1 - SS3) for your school.
-                            </p>
-                            <button
-                                onClick={handleInitializeClasses}
-                                disabled={isSubmitting || loading}
-                                className="px-12 bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-70 mx-auto group"
-                            >
-                                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : 'Initialize Classes'}
-                                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </button>
-            </div>
-                    )}
-
-                    {state === 'CLASSES_INITIALIZED' && (
-                        <div className="text-center py-12 animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div className="w-20 h-20 bg-indigo-100 rounded-[2rem] flex items-center justify-center text-indigo-600 mx-auto mb-8">
-                                <BookOpen className="w-10 h-10" />
+  return (
+    <div className="max-w-4xl mx-auto p-6 md:p-8 bg-white rounded-2xl shadow-xl border border-slate-200">
+      {/* Header */}
+      <div className="flex items-start justify-between border-b border-slate-100 pb-6 mb-8">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-600 mb-1">
+            <Sparkles className="w-4 h-4" /> SEFAES Canonical Onboarding • Step 1
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+            Institution & Campus Registration
+          </h1>
+          <p className="text-slate-500 text-sm mt-1">
+            Register your institution details across the 14 certified schema fields to provision your root academic database.
+          </p>
         </div>
-                            <h2 className="text-3xl font-black text-slate-900 mb-4">Populate Subject System</h2>
-                            <p className="text-slate-600 mb-10 max-w-md mx-auto">
-                                We will map over 150+ subjects from the national catalog to your new classes automatically.
-                            </p>
-                            <button
-                                onClick={handleInitializeSubjects}
-                                disabled={isSubmitting || loading}
-                                className="px-12 bg-indigo-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 disabled:opacity-70 mx-auto group"
-                            >
-                                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : 'Initialize Subjects'}
-                                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </div>
-                    )}
-
-                    {state === 'SUBJECTS_ASSIGNED' && (
-                        <form onSubmit={handleCreateTeacher} className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div>
-                                <h2 className="text-3xl font-black text-slate-900 mb-2">Create Lead Teacher</h2>
-                                <p className="text-slate-500 mb-8">Register the first teacher and assign their specialization.</p>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
-                                    <input
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={teacherData.name}
-                                        onChange={e => setTeacherData({ ...teacherData, name: e.target.value })}
-                                        placeholder="Dr. Sarah Johnson"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Email</label>
-                                    <input
-                                        required
-                                        type="email"
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={teacherData.email}
-                                        onChange={e => setTeacherData({ ...teacherData, email: e.target.value })}
-                                        placeholder="sarah@example.com"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Class Assignment</label>
-                                    <select
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={selectedSubjectId}
-                                        onChange={e => setSelectedSubjectId(e.target.value)}
-                                    >
-                                        <option value="">Select a Subject Mapping</option>
-                                        {(classSubjects ?? []).map((cs: any) => (
-                                            <option key={cs.id} value={cs.id}>
-                                                {cs.subject_catalog?.name || 'Subject'} ({cs.classes?.name || 'Class'})
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Phone</label>
-                                    <input
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={teacherData.phone}
-                                        onChange={e => setTeacherData({ ...teacherData, phone: e.target.value })}
-                                        placeholder="+234..."
-                                    />
-                                </div>
-                            </div>
-                            <div className="pt-6">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting || loading}
-                                    className="w-full md:w-auto px-12 bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-70 group"
-                                >
-                                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : 'Create Teacher'}
-                                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </div>
-                        </form>
-                    )}
-
-                    {state === 'TEACHERS_CREATED' && (
-                        <form onSubmit={handleEnrollStudent} className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div>
-                                <h2 className="text-3xl font-black text-slate-900 mb-2">Enroll First Student</h2>
-                                <p className="text-slate-500 mb-8">Add the first student to finalize the system synchronization.</p>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">First Name</label>
-                                    <input
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={studentData.first_name}
-                                        onChange={e => setStudentData({ ...studentData, first_name: e.target.value })}
-                                        placeholder="John"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Last Name</label>
-                                    <input
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={studentData.last_name}
-                                        onChange={e => setStudentData({ ...studentData, last_name: e.target.value })}
-                                        placeholder="Doe"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Class</label>
-                                    <select
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={studentData.class_id}
-                                        onChange={e => setStudentData({ ...studentData, class_id: e.target.value })}
-                                    >
-                                        <option value="">Select a Class</option>
-                                        {(classes ?? []).map((c: any) => (
-                                            <option key={c.id} value={c.id}>{c.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Gender</label>
-                                    <select
-                                        required
-                                        className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 px-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                        value={studentData.gender}
-                                        onChange={e => setStudentData({ ...studentData, gender: e.target.value as any })}
-                                    >
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Student Number</label>
-                                    <div className="relative group">
-                                        <Hash className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
-                                        <input
-                                            required
-                                            className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                            value={studentData.student_number}
-                                            onChange={e => setStudentData({ ...studentData, student_number: e.target.value })}
-                                            placeholder="STU-2024-001"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Date of Birth</label>
-                                    <div className="relative group">
-                                        <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
-                                        <input
-                                            required
-                                            type="date"
-                                            className="w-full bg-slate-50 border-0 rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                            value={studentData.date_of_birth}
-                                            onChange={e => setStudentData({ ...studentData, date_of_birth: e.target.value })}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="pt-6">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting || loading}
-                                    className="w-full md:w-auto px-12 bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-70 group"
-                                >
-                                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : 'Complete Enrollment'}
-                                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </div>
-                        </form>
-                    )}
-                </div>
-            </div>
+        <div className="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+          <Building2 className="w-6 h-6" />
         </div>
-    );
+      </div>
+
+      {/* Error Alert */}
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-start gap-3 text-sm animate-fadeIn">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600" />
+          <div>
+            <p className="font-semibold">Registration Failed</p>
+            <p className="text-rose-700 mt-0.5">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal / Flashcard Confirmation */}
+      {successInfo ? (
+        <div className="p-8 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-center animate-fadeIn">
+          <div className="w-16 h-16 bg-emerald-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-600/20">
+            <CheckCircle2 className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-bold text-emerald-950">
+            Institution Provisioned Authoritatively!
+          </h2>
+          <p className="text-emerald-800 max-w-lg mx-auto text-sm mt-2">
+            The canonical institution record and secondary class hierarchy (JSS 1 - SS 3) have been initialized in the Supabase database.
+          </p>
+
+          <div className="mt-6 max-w-md mx-auto grid grid-cols-2 gap-3 p-4 bg-white/80 rounded-xl border border-emerald-100 text-left text-xs">
+            <div>
+              <span className="text-slate-500">Institution ID:</span>
+              <p className="font-mono font-semibold text-slate-800 truncate">{successInfo.institutionId}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">School Campus ID:</span>
+              <p className="font-mono font-semibold text-slate-800 truncate">{successInfo.schoolId}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Class Levels:</span>
+              <p className="font-semibold text-slate-800">{successInfo.classesCount} Classes Provisioned</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Status:</span>
+              <p className="font-semibold text-emerald-700">Active & SSoT Verified</p>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              id="btn-proceed-to-teachers"
+              onClick={proceedToTeachers}
+              className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 transition-all cursor-pointer"
+            >
+              <span>Proceed to Teacher Onboarding</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Section 1: Institution Profile */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+              <Building2 className="w-4 h-4 text-blue-600" />
+              1. Institutional Identity
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Field 1: Institution Name */}
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Institution Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="input-institution-name"
+                  type="text"
+                  required
+                  placeholder="e.g. St. Gregory's Premier College"
+                  value={formData.institution_name}
+                  onChange={(e) => handleInputChange('institution_name', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Field 2: Institution Type */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Institution Type <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  id="select-institution-type"
+                  value={formData.institution_type}
+                  onChange={(e) => handleInputChange('institution_type', e.target.value as any)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                >
+                  <option value="secondary">Secondary School (JSS 1 - SS 3)</option>
+                  <option value="primary">Primary School</option>
+                  <option value="k12">Comprehensive K-12 Group</option>
+                  <option value="tertiary">Tertiary / Vocational</option>
+                  <option value="group_of_schools">Group of Schools</option>
+                </select>
+              </div>
+
+              {/* Field 3: Registration Number */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Official Registration # / RC <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="input-reg-number"
+                  type="text"
+                  required
+                  placeholder="e.g. MOE/REG/2026/8942"
+                  value={formData.registration_number}
+                  onChange={(e) => handleInputChange('registration_number', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Field 13: Country & Field 14: Curriculum */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Country</label>
+                <input
+                  id="input-country"
+                  type="text"
+                  value={formData.country}
+                  onChange={(e) => handleInputChange('country', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Curriculum Framework</label>
+                <select
+                  id="select-curriculum"
+                  value={formData.curriculum_type}
+                  onChange={(e) => handleInputChange('curriculum_type', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                >
+                  <option value="WAEC / NECO / National">WAEC / NECO / NERDC National</option>
+                  <option value="British / Cambridge + WAEC">British / Cambridge + WAEC Dual</option>
+                  <option value="IB + National">International Baccalaureate + National</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Location & Contact */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+              <MapPin className="w-4 h-4 text-blue-600" />
+              2. Physical Address & Location
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Field 4: Address */}
+              <div className="md:col-span-3">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Physical Campus Address <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="input-address"
+                  type="text"
+                  required
+                  placeholder="e.g. 14 Admiralty Way, Lekki Phase 1"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Field 5: State */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">State</label>
+                <select
+                  id="select-state"
+                  value={formData.state}
+                  onChange={(e) => handleInputChange('state', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                >
+                  {nigerianStates.map(st => (
+                    <option key={st} value={st}>{st}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Field 6: LGA */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">LGA</label>
+                <input
+                  id="input-lga"
+                  type="text"
+                  placeholder="e.g. Eti-Osa"
+                  value={formData.lga}
+                  onChange={(e) => handleInputChange('lga', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Field 9: Website */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Website (Optional)</label>
+                <input
+                  id="input-website"
+                  type="url"
+                  placeholder="https://myschool.edu.ng"
+                  value={formData.website}
+                  onChange={(e) => handleInputChange('website', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Field 7: Institution Phone */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Institution Phone</label>
+                <input
+                  id="input-phone"
+                  type="tel"
+                  placeholder="+234 802 000 0000"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Field 8: Institution Email */}
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Official Contact Email <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="input-email"
+                  type="email"
+                  required
+                  placeholder="info@stgregory.edu.ng"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Principal & Governance */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+              <UserCheck className="w-4 h-4 text-blue-600" />
+              3. Principal & Academic Leadership
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Field 10: Principal Name */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Principal Full Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="input-principal-name"
+                  type="text"
+                  required
+                  placeholder="e.g. Dr. Funke Adeyemi"
+                  value={formData.principal_name}
+                  onChange={(e) => handleInputChange('principal_name', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Field 11: Principal Phone */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Principal Phone</label>
+                <input
+                  id="input-principal-phone"
+                  type="tel"
+                  placeholder="+234 803 123 4567"
+                  value={formData.principal_phone}
+                  onChange={(e) => handleInputChange('principal_phone', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              {/* Field 12: Principal Email */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Principal Email</label>
+                <input
+                  id="input-principal-email"
+                  type="email"
+                  placeholder="principal@stgregory.edu.ng"
+                  value={formData.principal_email}
+                  onChange={(e) => handleInputChange('principal_email', e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Action Bar */}
+          <div className="pt-6 border-t border-slate-200 flex items-center justify-end gap-4">
+            <button
+              id="btn-create-institution"
+              type="submit"
+              disabled={loading}
+              className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 disabled:opacity-50 transition-all cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Provisioning Database Schema...</span>
+                </>
+              ) : (
+                <>
+                  <span>Create Institution & Provision Classes</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
 };
-
-export default CreateInstitution;
-
-
