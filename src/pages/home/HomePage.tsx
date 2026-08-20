@@ -18,24 +18,14 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleSignIn = () => {
-    navigate('/login');
-  };
-
+  const handleSignIn = () => navigate('/login');
   const handleRegister = () => {
-    if (onStartOnboarding) {
-      onStartOnboarding();
-    } else {
-      navigate('/onboarding');
-    }
+    if (onStartOnboarding) onStartOnboarding();
+    else navigate('/onboarding');
   };
-
   const handleDashboard = () => {
-    if (onOpenDashboard) {
-      onOpenDashboard();
-    } else {
-      navigate('/portal/principal');
-    }
+    if (onOpenDashboard) onOpenDashboard();
+    else navigate('/portal/principal');
   };
 
   return (
@@ -48,14 +38,12 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
         <div className="flex items-center gap-4">
           <button 
-            id="btn-nav-sign-in"
             onClick={handleSignIn}
             className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
           >
             Sign In
           </button>
           <button 
-            id="btn-nav-get-started"
             onClick={handleRegister}
             className="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors cursor-pointer"
           >
@@ -91,7 +79,6 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             <div className="flex flex-wrap gap-4">
               <button 
-                id="btn-hero-start-free-trial"
                 onClick={handleRegister}
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-colors cursor-pointer"
               >
@@ -99,7 +86,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <ArrowRight className="w-4 h-4" />
               </button>
               <button 
-                id="btn-hero-view-demo"
                 onClick={handleDashboard}
                 className="px-6 py-3 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 font-medium rounded-xl transition-colors cursor-pointer"
               >
@@ -121,30 +107,15 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
 
           <div className="relative">
-            <div className="bg-slate-100 rounded-2xl border border-slate-200 shadow-xl overflow-hidden p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold">
-                  GD
-                </div>
-                <div>
-                  <p className="font-bold text-slate-900 text-sm">SEFAES Academic Portal</p>
-                  <p className="text-xs text-slate-500">Nigeria Secondary Education Standard</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700">AI Script Evaluation</span>
-                  <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">99.4% Accuracy</span>
-                </div>
-                <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700">WAEC / NECO Alignment</span>
-                  <span className="text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-md">Verified</span>
-                </div>
-                <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700">Offline CBT Exam Mode</span>
-                  <span className="text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md">Active</span>
-                </div>
-              </div>
+            <img 
+              src="/images/hero_students.png" 
+              alt="Nigerian students learning" 
+              className="rounded-2xl shadow-xl w-full"
+              onError={(e) => { e.currentTarget.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="%23f1f5f9"/><text x="50" y="150" font-family="sans-serif" font-size="20" fill="%236b7280">Nigerian Students</text></svg>'; }}
+            />
+            <div className="absolute -bottom-4 -right-4 bg-white rounded-xl shadow-lg px-4 py-3 border border-slate-200">
+              <p className="text-xs font-semibold text-slate-500">WAEC & NECO Aligned</p>
+              <p className="text-sm font-bold text-slate-900">99.4% Accuracy</p>
             </div>
           </div>
         </div>
@@ -171,12 +142,15 @@ export const HomePage: React.FC<HomePageProps> = ({
               adjust, and approve every single score.
             </p>
             <div className="flex items-center gap-4 text-sm text-slate-500 bg-slate-50 rounded-xl p-4 border border-slate-200">
-              <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg flex-shrink-0">
-                FG
-              </div>
+              <img 
+                src="/images/teacher_classroom.png" 
+                alt="Teacher" 
+                className="w-12 h-12 rounded-full object-cover"
+                onError={(e) => { e.currentTarget.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><circle cx="24" cy="24" r="24" fill="%23e2e8f0"/><text x="24" y="28" font-family="sans-serif" font-size="20" text-anchor="middle" fill="%236b7280">👩‍🏫</text></svg>'; }}
+              />
               <div>
                 <p className="font-medium text-slate-700">— Senior Literature Teacher</p>
-                <p className="text-xs">Federal Government College, Lagos</p>
+                <p className="text-xs text-slate-400">Federal Government College, Lagos</p>
               </div>
             </div>
           </div>
@@ -188,19 +162,12 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-100">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="order-2 lg:order-1">
-            <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-xl space-y-4">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-emerald-400 font-mono font-bold flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  OFFLINE CBT ENGINE
-                </span>
-                <span className="text-slate-400">SEFAES v4.2</span>
-              </div>
-              <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700">
-                <p className="text-xs text-slate-300 font-semibold mb-1">Active Exam: Mathematics Mock II</p>
-                <p className="text-xs text-slate-400">Sync Status: Queue Ready (Offline Mode)</p>
-              </div>
-            </div>
+            <img 
+              src="/images/cbt_lab.png" 
+              alt="CBT Lab" 
+              className="rounded-2xl shadow-xl w-full"
+              onError={(e) => { e.currentTarget.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="%23f1f5f9"/><text x="50" y="150" font-family="sans-serif" font-size="20" fill="%236b7280">CBT Lab</text></svg>'; }}
+            />
           </div>
           <div className="order-1 lg:order-2">
             <h2 className="text-2xl font-bold text-slate-900 mb-4">

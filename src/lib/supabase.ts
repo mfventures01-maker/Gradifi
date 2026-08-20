@@ -1,24 +1,17 @@
-/**
- * GRADIFI x SEFAES - CANONICAL SUPABASE CLIENT INITIALIZER
- * SSoT: Pure client-side Supabase connection using anon credentials.
- * Zero service-role keys in the browser. Zero Express / Node /api/* proxy.
- */
+import { createClient } from '@supabase/supabase-js';
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '../types/database.types';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-const metaEnv = (import.meta as any).env || {};
-const supabaseUrl = metaEnv.VITE_SUPABASE_URL || 'https://mfventures-gradifi-ssot.supabase.co';
-const supabaseAnonKey = metaEnv.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mdmVudHVyZXMtZ3JhZGlmaS1zc290Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxOTEyMDAsImV4cCI6MjA1NTc2NzIwMH0.sefaes_anon_token';
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('⚠️ Supabase credentials not found. Using fallback mode.');
+}
 
-export const isSupabaseConfigured = Boolean(
-  metaEnv.VITE_SUPABASE_URL && 
-  metaEnv.VITE_SUPABASE_ANON_KEY
-);
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
-export const supabase: SupabaseClient<Database> = createClient<Database>(
-  supabaseUrl,
-  supabaseAnonKey,
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key',
   {
     auth: {
       persistSession: true,
@@ -28,3 +21,16 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
     },
   }
 );
+
+// Helper to check connection
+export async function checkSupabaseConnection() {
+  try {
+    const { data, error } = await supabase.from('institutions').select('count', { count: 'exact', head: true });
+    if (error) throw error;
+    console.log('✅ Supabase connected successfully');
+    return true;
+  } catch (error) {
+    console.warn('⚠️ Supabase connection warning:', error);
+    return false;
+  }
+}
