@@ -24,6 +24,12 @@ import { gradingReviewService } from './gradingReviewService';
 import { offlineSyncService } from './offlineSyncService';
 import { rubricService } from './rubricService';
 import { examAnalyticsService } from './examAnalyticsService';
+import { publicCounterService } from './publicCounterService';
+import { wordCounterService } from './wordCounterService';
+import { paraphraserService } from './paraphraserService';
+import { textAnalyzerService } from './textAnalyzerService';
+import { citationGeneratorService } from './citationGeneratorService';
+import { summarizerService } from './summarizerService';
 
 import {
   Institution,
@@ -312,5 +318,13 @@ export const apiClient = {
   offlineSyncService,
   rubricService,
   examAnalyticsService,
+
+  // Phase 5 Public Writing Tools Services
+  publicCounterService,
+  wordCounterService,
+  paraphraserService,
+  textAnalyzerService,
+  citationGeneratorService,
+  summarizerService,
 };
 

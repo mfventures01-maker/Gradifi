@@ -21,6 +21,13 @@ import { CBTExamRunner } from './pages/cbt/CBTExamRunner';
 import { CBTExamManager } from './pages/cbt/CBTExamManager';
 import { CBTResultsViewer } from './pages/cbt/CBTResultsViewer';
 
+import { WordCounterPage } from './pages/writing/WordCounterPage';
+import { ParaphraserPage } from './pages/writing/ParaphraserPage';
+import { ReadabilityCheckerPage } from './pages/writing/ReadabilityCheckerPage';
+import { CitationGeneratorPage } from './pages/writing/CitationGeneratorPage';
+import { SummarizerPage } from './pages/writing/SummarizerPage';
+import { WritingToolsHubPage } from './pages/writing/WritingToolsHubPage';
+
 export type AppView = 
   | 'home' 
   | 'onboarding' 
@@ -36,7 +43,8 @@ export type AppView =
   | 'portal-bursar'
   | 'portal-vp'
   | 'grading-queue'
-  | 'cbt-manager';
+  | 'cbt-manager'
+  | 'writing-tools';
 
 function AppContent() {
   const navigate = useNavigate();
@@ -64,6 +72,7 @@ function AppContent() {
     else if (location.pathname === '/dashboard') setCurrentView('dashboard');
     else if (location.pathname.startsWith('/grading')) setCurrentView('grading-queue');
     else if (location.pathname.startsWith('/cbt')) setCurrentView('cbt-manager');
+    else if (location.pathname.startsWith('/tools')) setCurrentView('writing-tools');
     else if (pageParam === 'create-institution' || pageParam === 'institution') setCurrentView('create-institution');
     else if (pageParam === 'create-teacher' || pageParam === 'teachers') setCurrentView('create-teacher');
     else if (pageParam === 'create-student' || pageParam === 'students') setCurrentView('create-student');
@@ -93,6 +102,7 @@ function AppContent() {
     else if (view === 'dashboard') navigate('/portal/principal');
     else if (view === 'grading-queue') navigate('/grading/queue');
     else if (view === 'cbt-manager') navigate('/cbt/manager');
+    else if (view === 'writing-tools') navigate('/tools');
     else {
       const url = new URL(window.location.href);
       url.searchParams.set('view', view);
@@ -127,6 +137,14 @@ function AppContent() {
         <Route path="/cbt/results/:examId" element={<CBTResultsViewer />} />
         <Route path="/cbt/manager" element={<CBTExamManager />} />
         <Route path="/cbt" element={<CBTExamManager />} />
+
+        {/* Phase 5 Public Academic Writing Suite Routes */}
+        <Route path="/tools/word-counter" element={<WordCounterPage />} />
+        <Route path="/tools/paraphraser" element={<ParaphraserPage />} />
+        <Route path="/tools/readability-checker" element={<ReadabilityCheckerPage />} />
+        <Route path="/tools/citation-generator" element={<CitationGeneratorPage />} />
+        <Route path="/tools/summarizer" element={<SummarizerPage />} />
+        <Route path="/tools" element={<WritingToolsHubPage />} />
 
         {/* Fallback View Router for query params & stateful wizard */}
         <Route
