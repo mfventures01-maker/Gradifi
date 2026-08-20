@@ -14,6 +14,13 @@ import { ParentDashboard } from './pages/parent/ParentDashboard';
 import { BursarDashboard } from './pages/bursar/BursarDashboard';
 import { VPDashboard } from './pages/vp/VPDashboard';
 
+import { GradingQueue } from './pages/grading/GradingQueue';
+import { GradingReview } from './pages/grading/GradingReview';
+import { CBTExamBuilder } from './pages/cbt/CBTExamBuilder';
+import { CBTExamRunner } from './pages/cbt/CBTExamRunner';
+import { CBTExamManager } from './pages/cbt/CBTExamManager';
+import { CBTResultsViewer } from './pages/cbt/CBTResultsViewer';
+
 export type AppView = 
   | 'home' 
   | 'onboarding' 
@@ -27,7 +34,9 @@ export type AppView =
   | 'portal-student'
   | 'portal-parent'
   | 'portal-bursar'
-  | 'portal-vp';
+  | 'portal-vp'
+  | 'grading-queue'
+  | 'cbt-manager';
 
 function AppContent() {
   const navigate = useNavigate();
@@ -53,6 +62,8 @@ function AppContent() {
     else if (location.pathname === '/portal/bursar') setCurrentView('portal-bursar');
     else if (location.pathname === '/portal/vp') setCurrentView('portal-vp');
     else if (location.pathname === '/dashboard') setCurrentView('dashboard');
+    else if (location.pathname.startsWith('/grading')) setCurrentView('grading-queue');
+    else if (location.pathname.startsWith('/cbt')) setCurrentView('cbt-manager');
     else if (pageParam === 'create-institution' || pageParam === 'institution') setCurrentView('create-institution');
     else if (pageParam === 'create-teacher' || pageParam === 'teachers') setCurrentView('create-teacher');
     else if (pageParam === 'create-student' || pageParam === 'students') setCurrentView('create-student');
@@ -80,6 +91,8 @@ function AppContent() {
     else if (view === 'portal-bursar') navigate('/portal/bursar');
     else if (view === 'portal-vp') navigate('/portal/vp');
     else if (view === 'dashboard') navigate('/portal/principal');
+    else if (view === 'grading-queue') navigate('/grading/queue');
+    else if (view === 'cbt-manager') navigate('/cbt/manager');
     else {
       const url = new URL(window.location.href);
       url.searchParams.set('view', view);
@@ -101,6 +114,19 @@ function AppContent() {
         <Route path="/portal/bursar" element={<BursarDashboard />} />
         <Route path="/portal/vp" element={<VPDashboard />} />
         <Route path="/dashboard" element={<PrincipalDashboard />} />
+
+        {/* Phase 4 AI Grading Routes */}
+        <Route path="/grading/queue" element={<GradingQueue />} />
+        <Route path="/grading/review/:scriptId" element={<GradingReview />} />
+        <Route path="/grading" element={<GradingQueue />} />
+
+        {/* Phase 4 CBT Exam Routes */}
+        <Route path="/cbt/builder" element={<CBTExamBuilder />} />
+        <Route path="/cbt/builder/:examId" element={<CBTExamBuilder />} />
+        <Route path="/cbt/runner/:examId" element={<CBTExamRunner />} />
+        <Route path="/cbt/results/:examId" element={<CBTResultsViewer />} />
+        <Route path="/cbt/manager" element={<CBTExamManager />} />
+        <Route path="/cbt" element={<CBTExamManager />} />
 
         {/* Fallback View Router for query params & stateful wizard */}
         <Route

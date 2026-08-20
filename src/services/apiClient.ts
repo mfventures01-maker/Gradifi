@@ -19,6 +19,11 @@ import { principalService } from './principalService';
 import { parentService } from './parentService';
 import { bursarService } from './bursarService';
 import { studentDashboardService } from './studentDashboardService';
+import { gradingQueueService } from './gradingQueueService';
+import { gradingReviewService } from './gradingReviewService';
+import { offlineSyncService } from './offlineSyncService';
+import { rubricService } from './rubricService';
+import { examAnalyticsService } from './examAnalyticsService';
 
 import {
   Institution,
@@ -301,8 +306,11 @@ export const apiClient = {
   async getBursarStats(schoolId?: string) {
     return bursarService.getDashboardStats(schoolId);
   },
-  async getStudentStats(studentId?: string) {
-    return studentDashboardService.getDashboardStats(studentId);
-  },
+  // Phase 4 AI Grading & CBT Services
+  gradingQueueService,
+  gradingReviewService,
+  offlineSyncService,
+  rubricService,
+  examAnalyticsService,
 };
 
