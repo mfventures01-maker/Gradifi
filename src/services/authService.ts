@@ -22,9 +22,50 @@ export const authService = {
    * Get current Supabase session
    */
   async getSession() {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getSession();
     if (error) throw error;
-    return session;
+    return data.session;
+  },
+
+  /**
+   * Alias for signInWithPassword
+   */
+  async signIn(email: string, password: string) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Standard Email/Password login
+   */
+  async signInWithPassword(email: string, password: string) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Sign out current user session
+   */
+  async signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  },
+
+  /**
+   * Get current user
+   */
+  async getCurrentUser() {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) throw error;
+    return data.user;
   },
 
   /**
@@ -76,18 +117,6 @@ export const authService = {
   },
 
   /**
-   * Standard Email/Password login
-   */
-  async signInWithPassword(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
-    return data;
-  },
-
-  /**
    * PIN-based quick authentication via verified SEFAES RPC auth_pin_login
    */
   async signInWithPin(pin: string, institutionSlug?: string) {
@@ -133,14 +162,6 @@ export const authService = {
       profile_id: rpcData?.profile_id,
       user_id: rpcData?.user_id,
     };
-  },
-
-  /**
-   * Sign out current user session
-   */
-  async signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
   },
 
   /**
