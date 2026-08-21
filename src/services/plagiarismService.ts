@@ -167,7 +167,8 @@ export const plagiarismService = {
    */
   async searchCORE(text: string): Promise<SourceMatch[]> {
     try {
-      const apiKey = process.env.CORE_API_KEY;
+      const apiKey = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_CORE_API_KEY)
+        || (typeof process !== 'undefined' ? process.env?.CORE_API_KEY : undefined);
       if (!apiKey) {
         console.warn('⚠️ CORE API key not found, skipping');
         return [];
