@@ -170,24 +170,37 @@ export const plagiarismService = {
       const apiKey = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_CORE_API_KEY)
         || (typeof process !== 'undefined' ? process.env?.CORE_API_KEY : undefined);
       if (!apiKey) {
-        console.warn('⚠️ CORE API key not found, skipping');
+        console.warn('⚠️ CORE API key not found, skipping CORE');
         return [];
       }
 
-      const query = encodeURIComponent(text.slice(0, 200));
-      const response = await fetch(
-        `https://api.core.ac.uk/v3/search/works?q=${query}&limit=5`,
-        {
-          headers: { 'Authorization': `Bearer ${apiKey}` }
-        }
-      );
+      console.log('📚 Searching CORE for:', text.slice(0, 100));
+
+      const isBrowser = typeof window !== 'undefined';
+      const fetchUrl = isBrowser
+        ? `/api/core/search/works?q=${encodeURIComponent(text.slice(0, 200))}&limit=5`
+        : `https://api.core.ac.uk/v3/search/works?q=${encodeURIComponent(text.slice(0, 200))}&limit=5`;
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (!isBrowser) {
+        headers['Authorization'] = `Bearer ${apiKey}`;
+      }
+
+      const response = await fetch(fetchUrl, { headers });
+
+      if (!response.ok) {
+        console.warn('CORE API error:', response.status, response.statusText);
+        return [];
+      }
+
       const data = await response.json();
+      const results = data.results || [];
       
-      return (data.results || []).map((item: any) => ({
+      return results.map((item: any) => ({
         sourceId: item.id || `core_${Date.now()}`,
         title: item.title || 'Unknown Source',
         authors: item.authors?.map((a: any) => a.name) || ['Unknown'],
-        url: item.downloadUrl || item.doi || '#',
+        url: item.downloadUrl || item.doi || item.links?.[0]?.url || '#',
         matchPercentage: 55 + Math.random() * 30,
         matchedText: text.slice(0, 100),
         originalText: item.abstract || 'Full text',
