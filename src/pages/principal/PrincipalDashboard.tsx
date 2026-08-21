@@ -32,12 +32,12 @@ export const PrincipalDashboard: React.FC = () => {
     const loadData = async () => {
       try {
         setLoading(true);
-        const result = await principalService.getDashboardStats();
+        const result = await principalService.getDashboardStats();`n        console.log("? Dashboard data:", result);
         setData(result);
       } catch (err) {
         console.error('Failed to load dashboard:', err);
         setError('Failed to load dashboard data');
-        setData(principalService.getFallbackStats());
+
       } finally {
         setLoading(false);
       }
