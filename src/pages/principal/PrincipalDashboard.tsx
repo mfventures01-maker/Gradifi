@@ -32,18 +32,27 @@ export const PrincipalDashboard: React.FC = () => {
     const loadData = async () => {
       try {
         setLoading(true);
-        const result = await principalService.getDashboardStats();`n        console.log("? Dashboard data:", result);
+        const result = await principalService.getDashboardStats();
+        console.log('✅ Dashboard data:', result);
         setData(result);
       } catch (err) {
         console.error('Failed to load dashboard:', err);
         setError('Failed to load dashboard data');
-
       } finally {
         setLoading(false);
       }
     };
     loadData();
   }, []);
+
+  // =============================================
+  // SAFE VALUES - Prevents undefined errors
+  // =============================================
+  const totalStudents = data?.total_students ?? 0;
+  const totalTeachers = data?.total_teachers ?? 0;
+  const attendanceRate = data?.attendance_rate ?? 0;
+  const avgScore = data?.avg_score ?? 0;
+  const schoolName = data?.school_name || 'Michael Secondary School';
 
   if (loading) {
     return (
@@ -144,7 +153,7 @@ export const PrincipalDashboard: React.FC = () => {
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
             <Building2 className="w-7 h-7 text-indigo-600" />
-            <span>{data?.school_name || 'Michael Secondary School'}</span>
+            <span>{schoolName}</span>
           </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500">
             SEFAES Compliant Administrative Portal • Executive Overview
@@ -166,28 +175,28 @@ export const PrincipalDashboard: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatsCard
           title="Total Students"
-          value={data?.total_students || 0}
+          value={totalStudents}
           icon={GraduationCap}
           loading={loading}
           subtitle="Enrolled across all arms"
         />
         <StatsCard
           title="Total Teachers"
-          value={data?.total_teachers || 0}
+          value={totalTeachers}
           icon={Users}
           loading={loading}
           subtitle="Active faculty members"
         />
         <StatsCard
           title="Attendance Rate"
-          value={`${data?.attendance_rate || 0}%`}
+          value={`${attendanceRate}%`}
           icon={TrendingUp}
           loading={loading}
           trend={{ value: '+1.2%', isUpward: true }}
         />
         <StatsCard
           title="Term Average Score"
-          value={`${data?.avg_score || 0}%`}
+          value={`${avgScore}%`}
           icon={Award}
           loading={loading}
           trend={{ value: '+3.4%', isUpward: true }}
