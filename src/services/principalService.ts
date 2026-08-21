@@ -16,11 +16,11 @@ export const principalService = {
       console.error('RPC failed:', error);
       return {
         school_name: 'Michael Secondary School',
-        total_students: 12,
-        total_teachers: 1,
-        total_classes: 6,
-        attendance_rate: 98,
-        avg_score: 84,
+        total_students: 0,
+        total_teachers: 0,
+        total_classes: 0,
+        attendance_rate: 0,
+        avg_score: 0,
         anomalies_count: 0,
         anomalies: [],
         exam_schedule: [],

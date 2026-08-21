@@ -144,7 +144,7 @@ export const PrincipalDashboard: React.FC = () => {
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
             <Building2 className="w-7 h-7 text-indigo-600" />
-            <span>{data?.school_name || 'School Portal'}</span>
+            <span>{data?.school_name || 'Michael Secondary School'}</span>
           </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500">
             SEFAES Compliant Administrative Portal • Executive Overview
