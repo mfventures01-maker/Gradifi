@@ -2,13 +2,22 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PublicTrustCounter } from '../../components/writing/PublicTrustCounter';
 import { 
-  FileText, RefreshCw, BookOpen, Bookmark, Sparkles, ArrowRight, ShieldCheck, Users, School 
+  FileText, RefreshCw, BookOpen, Bookmark, Sparkles, ArrowRight, ShieldCheck, Users, School, Search 
 } from 'lucide-react';
 
 export const WritingToolsHubPage: React.FC = () => {
   const navigate = useNavigate();
 
   const tools = [
+    {
+      id: 'plagiarism-checker',
+      title: 'Plagiarism Checker & Academic Search',
+      description: 'Check text for plagiarism using CORE API, OpenAlex, Crossref, and academic databases.',
+      path: '/tools/plagiarism',
+      icon: Search,
+      color: 'rose',
+      badge: 'CORE API Proxy',
+    },
     {
       id: 'word-counter',
       title: 'Free Word & Character Counter',

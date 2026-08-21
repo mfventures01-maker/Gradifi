@@ -33,6 +33,10 @@ export interface PlagiarismResult {
 }
 
 export const plagiarismService = {
+  async checkPlagiarism(text: string): Promise<PlagiarismResult> {
+    return this.checkDocument(text);
+  },
+
   /**
    * Check document against multiple academic databases
    * TEST: Should return results with >50% confidence

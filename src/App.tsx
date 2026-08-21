@@ -30,6 +30,8 @@ import { SummarizerPage } from './pages/writing/SummarizerPage';
 
 import { OfflineStatus } from './components/OfflineStatus';
 
+import { PlagiarismPage } from './pages/writing/PlagiarismPage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -74,6 +76,7 @@ function App() {
         
         {/* Phase 5: Writing Tools (Public - No Auth Required) */}
         <Route path="/tools" element={<WritingToolsHubPage />} />
+        <Route path="/tools/plagiarism" element={<PlagiarismPage />} />
         <Route path="/tools/word-counter" element={<WordCounterPage />} />
         <Route path="/tools/paraphraser" element={<ParaphraserPage />} />
         <Route path="/tools/readability" element={<ReadabilityCheckerPage />} />
