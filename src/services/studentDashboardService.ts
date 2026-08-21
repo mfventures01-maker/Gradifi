@@ -20,20 +20,13 @@ export const studentDashboardService = {
 
   getFallbackStats(): StudentDashboardStats {
     return {
-      student_name: 'Emeka Adebayo',
-      class_name: 'JSS 3 Gold',
-      class_rank: 4,
-      total_students_in_class: 34,
-      practice_streak_days: 7,
-      subject_results: [
-        { subject_name: 'Mathematics', score: 88, grade: 'A1' },
-        { subject_name: 'English Language', score: 82, grade: 'B2' },
-        { subject_name: 'Basic Science', score: 91, grade: 'A1' },
-        { subject_name: 'Civic Education', score: 79, grade: 'B3' },
-      ],
-      active_exams: [
-        { id: 'ex_cbt_1', title: 'WAEC CBT Practice Test 2026', subject_name: 'Mathematics', time_remaining_minutes: 45 },
-      ],
+      student_name: 'Student',
+      class_name: 'No Class',
+      class_rank: 0,
+      total_students_in_class: 0,
+      practice_streak_days: 0,
+      subject_results: [],
+      active_exams: [],
     };
   },
 };

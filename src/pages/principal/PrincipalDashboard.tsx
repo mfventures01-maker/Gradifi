@@ -17,7 +17,9 @@ import {
   TrendingUp,
   ArrowLeft,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  Shield,
+  Wallet
 } from 'lucide-react';
 
 export const PrincipalDashboard: React.FC = () => {
@@ -75,7 +77,27 @@ export const PrincipalDashboard: React.FC = () => {
     {
       label: 'Add New Teacher',
       icon: Users,
-      onClick: () => navigate('/onboarding'),
+      onClick: () => navigate('/onboarding?view=create-teacher'),
+    },
+    {
+      label: 'Bulk Import Students',
+      icon: Users,
+      onClick: () => navigate('/onboarding?view=bulk-import'),
+    },
+    {
+      label: 'Invite Parent',
+      icon: Users,
+      onClick: () => navigate('/onboarding?view=create-parent'),
+    },
+    {
+      label: 'Add VP',
+      icon: Shield,
+      onClick: () => navigate('/onboarding?view=create-vp'),
+    },
+    {
+      label: 'Add Bursar',
+      icon: Wallet,
+      onClick: () => navigate('/onboarding?view=create-bursar'),
     },
     {
       label: 'Exam Schedule',
@@ -122,7 +144,7 @@ export const PrincipalDashboard: React.FC = () => {
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
             <Building2 className="w-7 h-7 text-indigo-600" />
-            <span>{data?.school_name || 'St. Gregory College'}</span>
+            <span>{data?.school_name || 'School Portal'}</span>
           </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500">
             SEFAES Compliant Administrative Portal • Executive Overview
@@ -158,14 +180,14 @@ export const PrincipalDashboard: React.FC = () => {
         />
         <StatsCard
           title="Attendance Rate"
-          value={`${data?.attendance_rate || 96.4}%`}
+          value={`${data?.attendance_rate || 0}%`}
           icon={TrendingUp}
           loading={loading}
           trend={{ value: '+1.2%', isUpward: true }}
         />
         <StatsCard
           title="Term Average Score"
-          value={`${data?.avg_score || 78.2}%`}
+          value={`${data?.avg_score || 0}%`}
           icon={Award}
           loading={loading}
           trend={{ value: '+3.4%', isUpward: true }}

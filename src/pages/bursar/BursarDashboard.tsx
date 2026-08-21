@@ -90,7 +90,7 @@ export const BursarDashboard: React.FC = () => {
             <span>Financial Accounts & Fee Collection</span>
           </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500">
-            {stats?.school_name || 'St. Gregory College'} • Revenue Tracking & Payment Reminders
+            {stats?.school_name || 'School Bursary'} • Revenue Tracking & Payment Reminders
           </p>
         </div>
       </div>
@@ -99,7 +99,7 @@ export const BursarDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatsCard
           title="Fee Collection Today"
-          value={`₦${(stats?.revenue_today || 450000).toLocaleString()}`}
+          value={`₦${(stats?.revenue_today || 0).toLocaleString()}`}
           icon={DollarSign}
           loading={loading}
           trend={{ value: '+12.4%', isUpward: true }}
@@ -107,14 +107,14 @@ export const BursarDashboard: React.FC = () => {
         />
         <StatsCard
           title="Total Outstanding Balance"
-          value={`₦${(stats?.total_outstanding_balance || 1850000).toLocaleString()}`}
+          value={`₦${(stats?.total_outstanding_balance || 0).toLocaleString()}`}
           icon={CreditCard}
           loading={loading}
-          subtitle="Across 42 student accounts"
+          subtitle={`Across ${stats?.outstanding_debtors?.length || 0} student accounts`}
         />
         <StatsCard
           title="Fee Collection Rate"
-          value={`${stats?.collection_rate || 89.2}%`}
+          value={`${stats?.collection_rate || 0}%`}
           icon={CheckCircle2}
           loading={loading}
           trend={{ value: '+4.1%', isUpward: true }}

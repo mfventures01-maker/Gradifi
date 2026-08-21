@@ -85,4 +85,12 @@ export const teacherService = {
       created_at: new Date().toISOString(),
     };
   },
+
+  async getDashboardStats(teacherId?: string) {
+    const { data, error } = await supabase.rpc('get_teacher_dashboard_stats' as any, {
+      p_teacher_id: teacherId || null,
+    });
+    if (error) throw error;
+    return data;
+  },
 };

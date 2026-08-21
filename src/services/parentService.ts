@@ -41,28 +41,21 @@ export const parentService = {
 
   getFallbackStats(): ParentDashboardStats {
     return {
-      parent_name: 'Mrs. Funke Adebayo',
-      ward_name: 'Emeka Adebayo',
-      ward_class: 'JSS 3 Gold',
-      ward_rank: 4,
-      attendance_rate: 98.2,
-      term_avg_score: 85.0,
+      parent_name: 'Parent',
+      ward_name: 'Student',
+      ward_class: 'No Class',
+      ward_rank: 0,
+      attendance_rate: 0,
+      term_avg_score: 0,
       fee_status: {
-        total_due: 150000,
-        amount_paid: 150000,
+        total_due: 0,
+        amount_paid: 0,
         outstanding_balance: 0,
         status: 'paid',
-        due_date: '2026-09-30',
+        due_date: '',
       },
-      recent_results: [
-        { subject_name: 'Mathematics Mid-Term', score: 88, grade: 'A1' },
-        { subject_name: 'English Essay #3', score: 82, grade: 'B2' },
-        { subject_name: 'Basic Science Quiz #4', score: 91, grade: 'A1' },
-      ],
-      upcoming_events: [
-        { id: 'ev_1', title: 'PTA General Assembly & Broadsheet Review', date: 'Next Friday 4:00 PM' },
-        { id: 'ev_2', title: 'WAEC CBT Practice Simulation', date: 'Next Monday 9:00 AM' },
-      ],
+      recent_results: [],
+      upcoming_events: [],
     };
   },
 };

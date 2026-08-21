@@ -45,19 +45,13 @@ export const bursarService = {
 
   getFallbackStats(): BursarDashboardStats {
     return {
-      school_name: 'St. Gregory College, Lagos',
-      revenue_today: 450000,
-      total_outstanding_balance: 1850000,
-      collection_rate: 89.2,
-      reminders_sent_count: 42,
-      recent_transactions: [
-        { id: 'tx_101', student_name: 'Chidi Okeke', class_name: 'SS 2 Gold', amount: 75000, date: 'Today 10:14 AM', status: 'completed' },
-        { id: 'tx_102', student_name: 'Zainab Bello', class_name: 'JSS 1 Ruby', amount: 120000, date: 'Today 09:30 AM', status: 'completed' },
-      ],
-      outstanding_debtors: [
-        { student_id: 'std_d1', student_name: 'Tunde Folorunsho', parent_name: 'Chief Folorunsho', parent_phone: '+2348031234567', class_name: 'SS 3 Emerald', balance: 85000 },
-        { student_id: 'std_d2', student_name: 'Grace Nwosu', parent_name: 'Dr. Nwosu', parent_phone: '+2348029876543', class_name: 'JSS 2 Diamond', balance: 45000 },
-      ],
+      school_name: 'School Bursary',
+      revenue_today: 0,
+      total_outstanding_balance: 0,
+      collection_rate: 0,
+      reminders_sent_count: 0,
+      recent_transactions: [],
+      outstanding_debtors: [],
     };
   },
 };

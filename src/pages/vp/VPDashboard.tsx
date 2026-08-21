@@ -4,6 +4,7 @@ import { StatsCard } from '../../components/dashboard/StatsCard';
 import { ActivityFeed } from '../../components/dashboard/ActivityFeed';
 import { DataTable, Column } from '../../components/dashboard/DataTable';
 import { PrincipalDashboardStats, ExamSchedule } from '../../types/phase3.types';
+import { vpService } from '../../services/vpService';
 import { principalService } from '../../services/principalService';
 import { 
   GraduationCap, 
@@ -27,8 +28,8 @@ export const VPDashboard: React.FC = () => {
   async function loadVPData() {
     setLoading(true);
     try {
-      const data = await principalService.getDashboardStats();
-      setStats(data);
+      const data = await vpService.getDashboardStats();
+      setStats(data as unknown as PrincipalDashboardStats);
     } catch {
       setStats(principalService.getFallbackStats());
     } finally {
@@ -64,7 +65,7 @@ export const VPDashboard: React.FC = () => {
             <span>Academic Supervision & Curriculum</span>
           </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500">
-            {stats?.school_name || 'St. Gregory College'} • Teacher Evaluation & Exam Schedules
+            {stats?.school_name || 'Academic Portal'} • Teacher Evaluation & Exam Schedules
           </p>
         </div>
       </div>
@@ -73,26 +74,26 @@ export const VPDashboard: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatsCard
           title="Total Classes"
-          value={stats?.total_classes || 14}
+          value={stats?.total_classes || 0}
           icon={GraduationCap}
           loading={loading}
         />
         <StatsCard
           title="Curriculum Progress"
-          value="94.2%"
+          value="0%"
           icon={Award}
           loading={loading}
-          trend={{ value: '+2.1%', isUpward: true }}
+          trend={{ value: '+0.0%', isUpward: true }}
         />
         <StatsCard
           title="Attendance Rate"
-          value={`${stats?.attendance_rate || 96.4}%`}
+          value={`${stats?.attendance_rate || 0}%`}
           icon={Users}
           loading={loading}
         />
         <StatsCard
           title="Anomalies Flagged"
-          value={stats?.anomalies_count || 2}
+          value={stats?.anomalies_count || 0}
           icon={AlertTriangle}
           loading={loading}
         />

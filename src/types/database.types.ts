@@ -12,6 +12,41 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+export type GradingStatus = 
+  | 'pending' 
+  | 'processing' 
+  | 'pending_review' 
+  | 'approved' 
+  | 'overridden' 
+  | 'released' 
+  | 'failed';
+
+export interface AnswerScript {
+  id: string;
+  student_id: string;
+  exam_id: string;
+  teacher_id: string;
+  school_id: string;
+  ocr_text: string;
+  file_url?: string;
+  grading_status: string;
+  status: GradingStatus;
+  score: number;
+  ai_score?: number;
+  final_score?: number;
+  ai_feedback?: string;
+  confidence?: number;
+  rubric_scores?: Record<string, number>;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  override_justification?: string;
+  teacher_feedback?: string;
+  released_at?: string;
+  assignment_title?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -76,6 +111,7 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
+          auth_user_id?: string;
           profile_id: string;
           institution_id: string;
           school_id: string | null;
@@ -86,6 +122,7 @@ export type Database = {
         Insert: {
           id?: string;
           user_id: string;
+          auth_user_id?: string;
           profile_id: string;
           institution_id: string;
           school_id?: string | null;
@@ -96,6 +133,7 @@ export type Database = {
         Update: {
           id?: string;
           user_id?: string;
+          auth_user_id?: string;
           profile_id?: string;
           institution_id?: string;
           school_id?: string | null;

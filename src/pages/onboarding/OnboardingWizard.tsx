@@ -1,10 +1,60 @@
-﻿import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { onboardingService } from '../../services/onboardingService';
+import { authService } from '../../services/authService';
 import { ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
+import { CreateVP } from './CreateVP';
+import { CreateBursar } from './CreateBursar';
+import { CreateTeacher } from './CreateTeacher';
+import { CreateStudent } from './CreateStudent';
+import { BulkStudentImport } from './BulkStudentImport';
+import { CreateParent } from './CreateParent';
 
 export const OnboardingWizard: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const view = searchParams.get('view');
+
+  const [schoolId, setSchoolId] = useState<string>('');
+  const [institutionId, setInstitutionId] = useState<string>('');
+
+  useEffect(() => {
+    authService.resolveCurrentIdentity().then((identity) => {
+      if (identity.schoolId) setSchoolId(identity.schoolId);
+      if (identity.institutionId) setInstitutionId(identity.institutionId);
+    });
+  }, []);
+
+  // Check for VP view
+  if (view === 'create-vp') {
+    return <CreateVP schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+  }
+
+  // Check for Bursar view
+  if (view === 'create-bursar') {
+    return <CreateBursar schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+  }
+
+  // Check for Teacher view
+  if (view === 'create-teacher') {
+    return <CreateTeacher schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+  }
+
+  // Check for Student view
+  if (view === 'create-student') {
+    return <CreateStudent schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+  }
+
+  // Check for Bulk Import view
+  if (view === 'bulk-import') {
+    return <BulkStudentImport schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+  }
+
+  // Check for Parent view
+  if (view === 'create-parent') {
+    return <CreateParent schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+  }
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({

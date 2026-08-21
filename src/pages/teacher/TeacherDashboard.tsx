@@ -58,27 +58,13 @@ export const TeacherDashboard: React.FC = () => {
 
   function getFallbackStats(): TeacherDashboardStats {
     return {
-      teacher_name: 'Mrs. Davis',
-      primary_class: 'JSS 3 Gold',
-      total_students: 34,
-      pending_grades_count: 7,
-      absent_today_count: 2,
-      next_exam: {
-        id: 'ex_01',
-        title: 'Mid-Term Mathematics CBT',
-        subject_name: 'Mathematics',
-        class_name: 'JSS 3 Gold',
-        date: 'Tomorrow',
-        time: '09:00 AM',
-        duration_minutes: 45,
-        total_students: 34,
-        status: 'upcoming',
-      },
-      recent_activities: [
-        { id: '1', type: 'grading', title: 'English Essay #3', description: '12 scripts auto-graded by AI draft', timestamp: '10 min ago', status: 'pending' },
-        { id: '2', type: 'attendance', title: 'JSS 3 Gold Attendance', description: 'Marked 32 present, 2 absent', timestamp: '1 hour ago', status: 'completed' },
-        { id: '3', type: 'message', title: 'Parent Inquiry', description: 'Mrs. Adebayo asked about broadsheet score', timestamp: '3 hours ago', status: 'info' },
-      ],
+      teacher_name: 'Teacher',
+      primary_class: 'No Class',
+      total_students: 0,
+      pending_grades_count: 0,
+      absent_today_count: 0,
+      next_exam: undefined,
+      recent_activities: [],
     };
   }
 
@@ -121,7 +107,7 @@ export const TeacherDashboard: React.FC = () => {
             👋 Good Morning, {stats?.teacher_name || 'Teacher'}
           </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500">
-            {stats?.primary_class || 'Class'} • {stats?.total_students || 0} Assigned Students
+            {stats?.primary_class || 'No Class'} • {stats?.total_students || 0} Assigned Students
           </p>
         </div>
 
@@ -164,14 +150,14 @@ export const TeacherDashboard: React.FC = () => {
           value={stats?.absent_today_count || 0}
           icon={Users}
           loading={loading}
-          subtitle="Out of 34 total students"
+          subtitle={`Out of ${stats?.total_students || 0} total students`}
         />
         <StatsCard
           title="Next Scheduled Exam"
-          value={stats?.next_exam?.subject_name || 'Math CBT'}
+          value={stats?.next_exam?.subject_name || 'None'}
           icon={Calendar}
           loading={loading}
-          subtitle={`${stats?.next_exam?.date || 'Tomorrow'}, ${stats?.next_exam?.time || '9:00 AM'}`}
+          subtitle={stats?.next_exam ? `${stats.next_exam.date}, ${stats.next_exam.time}` : 'No upcoming exam'}
         />
       </div>
 

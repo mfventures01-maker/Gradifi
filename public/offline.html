@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Gradifi</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f8fafc;
+      color: #1e293b;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+    }
+    .icon {
+      font-size: 72px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+    p {
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 32px;
+      background: #2563eb;
+      color: white;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #1d4ed8;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📶</div>
+    <h1>You're Offline</h1>
+    <p>
+      It looks like you're not connected to the internet.
+      Don't worry! You can still use these features:
+    </p>
+    <ul style="text-align: left; color: #64748b; line-height: 2;">
+      <li>✅ View cached student results</li>
+      <li>✅ Take CBT exams (will sync later)</li>
+      <li>✅ Mark attendance</li>
+      <li>✅ Enter grades (will sync later)</li>
+    </ul>
+    <button class="btn" onclick="location.reload()">Retry Connection</button>
+    <div class="status">
+      <span id="lastSync">Last synced: Never</span>
+    </div>
+  </div>
+  <script>
+    // Show last sync time
+    const lastSync = localStorage.getItem('lastSyncTime');
+    if (lastSync) {
+      document.getElementById('lastSync').textContent = `Last synced: ${new Date(parseInt(lastSync)).toLocaleString()}`;
+    }
+  </script>
+</body>
+</html>

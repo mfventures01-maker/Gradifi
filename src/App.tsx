@@ -28,6 +28,8 @@ import { ReadabilityCheckerPage } from './pages/writing/ReadabilityCheckerPage';
 import { CitationGeneratorPage } from './pages/writing/CitationGeneratorPage';
 import { SummarizerPage } from './pages/writing/SummarizerPage';
 
+import { OfflineStatus } from './components/OfflineStatus';
+
 function App() {
   return (
     <BrowserRouter>
@@ -83,6 +85,7 @@ function App() {
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <OfflineStatus />
     </BrowserRouter>
   );
 }

@@ -25,6 +25,15 @@ interface CreateStudentProps {
   onNavigateToDashboard?: () => void;
 }
 
+const DEFAULT_CLASSES: ClassEntity[] = [
+  { id: 'cls_jss1', school_id: 'sch_demo_01', name: 'JSS 1', arm: 'Gold', created_at: '' },
+  { id: 'cls_jss2', school_id: 'sch_demo_01', name: 'JSS 2', arm: 'Gold', created_at: '' },
+  { id: 'cls_jss3', school_id: 'sch_demo_01', name: 'JSS 3', arm: 'Gold', created_at: '' },
+  { id: 'cls_ss1', school_id: 'sch_demo_01', name: 'SS 1', arm: 'Science', created_at: '' },
+  { id: 'cls_ss2', school_id: 'sch_demo_01', name: 'SS 2', arm: 'Science', created_at: '' },
+  { id: 'cls_ss3', school_id: 'sch_demo_01', name: 'SS 3', arm: 'Science', created_at: '' },
+];
+
 export const CreateStudent: React.FC<CreateStudentProps> = ({
   schoolId = 'sch_demo_01',
   institutionId = 'inst_demo_01',
@@ -33,11 +42,11 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
 }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [classId, setClassId] = useState('');
+  const [classId, setClassId] = useState('cls_jss1');
   const [gender, setGender] = useState<'male' | 'female'>('male');
   const [dateOfBirth, setDateOfBirth] = useState('2012-05-15');
 
-  const [classes, setClasses] = useState<ClassEntity[]>([]);
+  const [classes, setClasses] = useState<ClassEntity[]>(DEFAULT_CLASSES);
   const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -67,6 +76,16 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
         }
       } catch (err) {
         console.warn('Class list fetch fallback:', err);
+        const defaultClasses: ClassEntity[] = [
+          { id: 'cls_jss1', school_id: schoolId || 'sch_demo_01', name: 'JSS 1', arm: 'Gold', created_at: '' },
+          { id: 'cls_jss2', school_id: schoolId || 'sch_demo_01', name: 'JSS 2', arm: 'Gold', created_at: '' },
+          { id: 'cls_jss3', school_id: schoolId || 'sch_demo_01', name: 'JSS 3', arm: 'Gold', created_at: '' },
+          { id: 'cls_ss1', school_id: schoolId || 'sch_demo_01', name: 'SS 1', arm: 'Science', created_at: '' },
+          { id: 'cls_ss2', school_id: schoolId || 'sch_demo_01', name: 'SS 2', arm: 'Science', created_at: '' },
+          { id: 'cls_ss3', school_id: schoolId || 'sch_demo_01', name: 'SS 3', arm: 'Science', created_at: '' },
+        ];
+        setClasses(defaultClasses);
+        setClassId(defaultClasses[0].id);
       } finally {
         setLoadingClasses(false);
       }

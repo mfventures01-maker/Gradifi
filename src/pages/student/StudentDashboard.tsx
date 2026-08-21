@@ -55,9 +55,9 @@ export const StudentDashboard: React.FC = () => {
             👋 Welcome, {stats?.student_name || 'Student'}
           </h1>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            {stats?.class_name || 'Class'} • Class Rank:{' '}
+            {stats?.class_name || 'No Class'} • Class Rank:{' '}
             <strong className="text-slate-800">
-              #{stats?.class_rank || 1}/{stats?.total_students_in_class || 34}
+              #{stats?.class_rank || 0}/{stats?.total_students_in_class || 0}
             </strong>
           </p>
         </div>
@@ -69,7 +69,7 @@ export const StudentDashboard: React.FC = () => {
               <Flame className="w-5 h-5 text-amber-100 fill-amber-100 animate-bounce" />
             </div>
             <div>
-              <h4 className="text-sm font-extrabold">{stats?.practice_streak_days || 7}-Day Practice Streak!</h4>
+              <h4 className="text-sm font-extrabold">{stats?.practice_streak_days || 0}-Day Practice Streak!</h4>
               <p className="text-[11px] text-amber-100">Keep solving daily CBT questions to earn badges</p>
             </div>
           </div>
