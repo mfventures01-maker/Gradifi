@@ -123,7 +123,23 @@ class OfflineStorageService {
 
   async getPendingQueue(): Promise<OfflineQueueItem[]> {
     if (!this.db) await this.initialize();
-    return await this.db!.getAllFromIndex('queue', 'synced', false);
+    try {
+      const store = this.db!.transaction('queue', 'readonly').objectStore('queue');
+      if (store.indexNames.contains('synced')) {
+        try {
+          return await this.db!.getAllFromIndex('queue', 'synced', false as any);
+        } catch {
+          const all = await this.db!.getAll('queue');
+          return all.filter(item => !item.synced);
+        }
+      } else {
+        const all = await this.db!.getAll('queue');
+        return all.filter(item => !item.synced);
+      }
+    } catch (error) {
+      console.warn('Failed to get pending queue:', error);
+      return [];
+    }
   }
 
   async markSynced(queueId: string): Promise<void> {
@@ -146,9 +162,20 @@ class OfflineStorageService {
 
   async getSyncStats(): Promise<{ pending: number; total: number }> {
     if (!this.db) await this.initialize();
-    const pending = await this.db!.countFromIndex('queue', 'synced', false);
-    const total = await this.db!.count('queue');
-    return { pending, total };
+    try {
+      const total = await this.db!.count('queue');
+      let pending = 0;
+      try {
+        pending = await this.db!.countFromIndex('queue', 'synced', false as any);
+      } catch {
+        const all = await this.db!.getAll('queue');
+        pending = all.filter(item => !item.synced).length;
+      }
+      return { pending, total };
+    } catch (error) {
+      console.warn('Failed to get sync stats:', error);
+      return { pending: 0, total: 0 };
+    }
   }
 
   async clearCache(): Promise<void> {

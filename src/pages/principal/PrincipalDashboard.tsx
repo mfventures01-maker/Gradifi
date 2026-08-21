@@ -166,28 +166,28 @@ export const PrincipalDashboard: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatsCard
           title="Total Students"
-          value={data?.total_students || 0}
+          value={data?.total_students ?? 0}
           icon={GraduationCap}
           loading={loading}
           subtitle="Enrolled across all arms"
         />
         <StatsCard
           title="Total Teachers"
-          value={data?.total_teachers || 0}
+          value={data?.total_teachers ?? 0}
           icon={Users}
           loading={loading}
           subtitle="Active faculty members"
         />
         <StatsCard
           title="Attendance Rate"
-          value={`${data?.attendance_rate || 0}%`}
+          value={`${data?.attendance_rate ?? 0}%`}
           icon={TrendingUp}
           loading={loading}
           trend={{ value: '+1.2%', isUpward: true }}
         />
         <StatsCard
           title="Term Average Score"
-          value={`${data?.avg_score || 0}%`}
+          value={`${data?.avg_score ?? 0}%`}
           icon={Award}
           loading={loading}
           trend={{ value: '+3.4%', isUpward: true }}

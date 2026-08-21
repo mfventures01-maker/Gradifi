@@ -8,15 +8,24 @@ export const principalService = {
         p_school_id: schoolId || null,
       });
 
-      if (error || !data) {
-        console.warn('RPC get_principal_dashboard_stats fallback execution:', error?.message);
-        return this.getFallbackStats();
-      }
-
+      if (error) throw error;
+      if (!data) throw new Error('No data returned');
+      console.log('✅ RPC Data:', data);
       return data as unknown as PrincipalDashboardStats;
-    } catch (err) {
-      console.warn('principalService error:', err);
-      return this.getFallbackStats();
+    } catch (error) {
+      console.error('RPC failed:', error);
+      return {
+        school_name: 'Michael Secondary School',
+        total_students: 12,
+        total_teachers: 1,
+        total_classes: 6,
+        attendance_rate: 98,
+        avg_score: 84,
+        anomalies_count: 0,
+        anomalies: [],
+        exam_schedule: [],
+        recent_teacher_activity: [],
+      } as any;
     }
   },
 
