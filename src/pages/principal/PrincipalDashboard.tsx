@@ -32,7 +32,8 @@ export const PrincipalDashboard: React.FC = () => {
     const loadData = async () => {
       try {
         setLoading(true);
-        const result = await principalService.getDashboardStats();
+        const schoolId = localStorage.getItem('school_id') || localStorage.getItem('schoolId') || '0178b8de-1df6-4de6-babf-7657743f8cd5';
+        const result = await principalService.getDashboardStats(schoolId);
         console.log('✅ Dashboard data:', result);
         setData(result);
       } catch (err) {

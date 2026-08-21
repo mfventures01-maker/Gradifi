@@ -3,9 +3,10 @@ import { PrincipalDashboardStats, AnomalyReport, ActivityItem, ExamSchedule } fr
 
 export const principalService = {
   async getDashboardStats(schoolId?: string): Promise<PrincipalDashboardStats> {
+    const targetSchoolId = schoolId || (typeof window !== 'undefined' ? (localStorage.getItem('school_id') || localStorage.getItem('schoolId')) : null) || '0178b8de-1df6-4de6-babf-7657743f8cd5';
     try {
       const { data, error } = await supabase.rpc('get_principal_dashboard_stats' as any, {
-        p_school_id: schoolId || null,
+        p_school_id: targetSchoolId,
       });
 
       if (error) throw error;
@@ -37,7 +38,7 @@ export const principalService = {
   async getTeacherActivity(schoolId?: string): Promise<ActivityItem[]> {
     try {
       const { data, error } = await supabase.rpc('get_teacher_activity' as any, {
-        p_school_id: schoolId || null,
+        p_school_id: schoolId,
       });
       if (error || !data) return (await this.getDashboardStats(schoolId)).recent_teacher_activity || [];
       return data as unknown as ActivityItem[];
