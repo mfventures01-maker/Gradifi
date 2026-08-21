@@ -27,11 +27,13 @@ export interface ExamSchedule {
   title: string;
   subject_name: string;
   class_name: string;
-  date: string;
-  time: string;
-  duration_minutes: number;
+  date?: string;
+  time?: string;
+  exam_date?: string;
+  start_time?: string;
+  duration_minutes?: number;
   total_students: number;
-  status: 'upcoming' | 'ongoing' | 'completed';
+  status: 'upcoming' | 'ongoing' | 'completed' | string;
 }
 
 export interface TeacherDashboardStats {

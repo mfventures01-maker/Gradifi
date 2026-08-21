@@ -110,7 +110,7 @@ export const PrincipalDashboard: React.FC = () => {
     { key: 'title', header: 'Exam Title', sortable: true },
     { key: 'subject_name', header: 'Subject', sortable: true },
     { key: 'class_name', header: 'Class', sortable: true },
-    { key: 'date', header: 'Date & Time', render: (r) => `${r.date} (${r.time})` },
+    { key: 'exam_date', header: 'Date', sortable: true },
     { key: 'total_students', header: 'Students', sortable: true },
     {
       key: 'status',
