@@ -40,13 +40,19 @@ const DYNAMIC_ROUTES = [
   '/tools/summarizer'
 ];
 
-// Install Event - Cache static assets
+// Install Event - Cache static assets with error handling
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE)
-      .then((cache) => {
+      .then(async (cache) => {
         console.log('[SW] Caching static assets...');
-        return cache.addAll(STATIC_ASSETS);
+        for (const asset of STATIC_ASSETS) {
+          try {
+            await cache.add(asset);
+          } catch (error) {
+            console.warn('[SW] Failed to cache asset:', asset, error);
+          }
+        }
       })
       .then(() => self.skipWaiting())
   );
