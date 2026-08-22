@@ -32,6 +32,8 @@ import { OfflineStatus } from './components/OfflineStatus';
 
 import { PlagiarismPage } from './pages/writing/PlagiarismPage';
 
+import { GradingEngineTestPage } from './pages/grading/GradingEngineTestPage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -41,6 +43,10 @@ function App() {
           path="/" 
           element={<HomePage />} 
         />
+        
+        {/* Public Grading Engine Test Page */}
+        <Route path="/grading/engine-test" element={<GradingEngineTestPage />} />
+        <Route path="/test-grading.html" element={<GradingEngineTestPage />} />
         
         {/* Phase 2: Onboarding (No Auth Required) */}
         <Route path="/onboarding" element={<OnboardingWizard />} />

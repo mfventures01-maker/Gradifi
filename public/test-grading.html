@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gradifi Grading Engine Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; background: #f8fafc; color: #0f172a; }
+        .upload-area { border: 2px dashed #cbd5e1; padding: 40px; text-align: center; border-radius: 12px; background: white; }
+        .upload-area:hover { border-color: #2563eb; }
+        button { background: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button:disabled { background: #94a3b8; }
+        .result { margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; white-space: pre-wrap; }
+        .error { color: #dc2626; }
+        .success { color: #16a34a; }
+    </style>
+</head>
+<body>
+    <h1>🏛️ Gradifi Grading Engine Test (OCR + Gemma + Nemotron)</h1>
+    
+    <div class="upload-area" id="dropZone">
+        <p>📸 Drop an essay image here or click to upload</p>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <br><br>
+        <button onclick="document.getElementById('fileInput').click()">Select Image File</button>
+    </div>
+
+    <div id="loading" style="display:none; margin-top:20px;">
+        <p>🔄 Processing OCR → Gemma → Nemotron Pipeline...</p>
+        <div style="width:100%; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
+            <div id="progress" style="width:0%; height:100%; background:#2563eb; transition: width 0.3s;"></div>
+        </div>
+    </div>
+
+    <div id="result" style="display:none;"></div>
+    <div id="error" style="display:none;" class="error"></div>
+
+    <script type="module">
+        import { gradingEngineService } from '/src/services/gradingEngineService.ts';
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+        const loadingDiv = document.getElementById('loading');
+        const progressBar = document.getElementById('progress');
+
+        let progress = 0;
+
+        function updateProgress(value) {
+            progress = Math.min(value, 100);
+            progressBar.style.width = progress + '%';
+        }
+
+        async function processFile(file) {
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            resultDiv.innerHTML = '';
+            errorDiv.innerHTML = '';
+            loadingDiv.style.display = 'block';
+            updateProgress(10);
+
+            try {
+                updateProgress(20);
+                console.log('📸 Processing file:', file.name);
+
+                const rubric = "Grammar: 30%, Content: 30%, Structure: 20%, Vocabulary: 10%, Coherence: 10%";
+                
+                updateProgress(40);
+                console.log('🔍 Starting grading engine pipeline...');
+
+                const result = await gradingEngineService.gradeSubmission(
+                    file,
+                    'test-assignment-001',
+                    rubric,
+                    'english'
+                );
+
+                updateProgress(100);
+                console.log('📊 Grading complete!', result);
+
+                const isSuccess = result.success && result.finalScore > 0;
+
+                resultDiv.innerHTML = `
+                    <h3>${isSuccess ? '✅' : '⚠️'} Grading ${isSuccess ? 'Complete' : 'Issues Found'}</h3>
+                    <hr>
+                    <p style="font-size: 1.25rem;"><strong>📊 Final Composite Score:</strong> ${result.finalScore}/100</p>
+                    <p><strong>📝 Extracted Text (OCR):</strong></p>
+                    <div style="background:#f1f5f9;padding:12px;border-radius:6px;border:1px solid #cbd5e1;max-height:150px;overflow-y:auto;font-family:monospace;">
+                        ${result.extractedText || 'No text extracted'}
+                    </div>
+                    <hr>
+                    <p><strong>🔍 OCR Confidence:</strong> ${result.ocrConfidence.toFixed(1)}% (${result.ocrConfidenceLevel.toUpperCase()})</p>
+                    <p><strong>🧠 Gemma Local AI Score:</strong> ${result.gemmaResult?.score || 0}/100</p>
+                    <p><strong>🏛️ Nemotron Reward Model Score:</strong> ${result.nemotronResult?.overallScore || 0}/100</p>
+                    <p><strong>⏱️ Pipeline Execution Time:</strong> ${result.processingTime}ms</p>
+                    <hr>
+                    <h4>💬 Comprehensive Pedagogical Feedback:</h4>
+                    <div style="background:#f1f5f9;padding:12px;border-radius:6px;border:1px solid #cbd5e1;max-height:300px;overflow-y:auto;white-space:pre-wrap;">
+                        ${result.feedback || 'No feedback generated'}
+                    </div>
+                    <hr>
+                    <p style="color: ${result.success ? '#16a34a' : '#dc2626'}; font-weight: bold;">
+                        <strong>Engine Pipeline Status:</strong> ${result.success ? '✅ Success' : '⚠️ Partial Success'}
+                    </p>
+                `;
+
+                resultDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                errorDiv.innerHTML = `❌ Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#2563eb';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#cbd5e1';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#cbd5e1';
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                processFile(files[0]);
+            } else {
+                alert('Please drop an image file.');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (fileInput.files.length > 0) {
+                processFile(fileInput.files[0]);
+            }
+        });
+
+        console.log('🏛️ Grading Engine Test Page Loaded');
+    </script>
+</body>
+</html>
