@@ -9,3 +9,11 @@ coverage/
 
 .vercel
 .env*
+
+# Test & report transient build outputs
+playwright-report/
+test-results/
+FEDERATION_RUN_REPORT.*
+tracked-at-head.txt
+commit-plan-verification.txt
+supabase/.temp/
