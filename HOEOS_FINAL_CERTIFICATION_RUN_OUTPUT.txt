@@ -1,0 +1,44 @@
+============================================================
+HOEOS FORENSIC EVIDENCE ARTIFACT: FINAL CERTIFICATION RUN OUTPUT
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+FINAL CERTIFIED SHA:  3f0d850270850d015fb387eae6130fcab71fd05d
+TIMESTAMP:            2026-09-13T14:21:05+01:00
+
+============================================================
+1. FINAL GIT HEAD SHA
+============================================================
+
+3f0d850270850d015fb387eae6130fcab71fd05d
+
+============================================================
+2. FINAL WORKING TREE STATUS (git status --short)
+============================================================
+
+(EMPTY - WORKING TREE IS 100% CLEAN)
+
+============================================================
+3. LATEST COMMIT LOG (git log -1 --oneline)
+============================================================
+
+3f0d850 chore(hoeos): add transient test report ignore rules to gitignore
+
+============================================================
+4. FINAL HOEOS CERTIFICATION STATUS
+============================================================
+
+HOEOS FINAL DETERMINISTIC CERTIFIED
+
+- Fresh Checkout Environment Bootstrap: PASS
+- P1-P6 Unit Regression:                 109 / 109 PASS
+- Production Build (vite build):         PASS (25.09s)
+- Determinism Audit:                     PASS (100% deterministic evidence paths)
+- Migration Canonicalization:             PASS (Timestamp-prefixed DDL canonicalized)
+- Working Tree Reconciliation:           PASS (100% clean status)
+- Security Scan:                         PASS (Zero secret leakage)
+
+============================================================
+END HOEOS FINAL CERTIFICATION RUN OUTPUT
+============================================================
