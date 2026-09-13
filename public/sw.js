@@ -125,9 +125,11 @@ self.addEventListener('fetch', (event) => {
             })
             .catch(() => {
               // If offline and no cache, return offline page
-              return caches.match('/offline.html') || new Response('Offline - Please check your connection', {
-                status: 503,
-                statusText: 'Service Unavailable'
+              return caches.match('/offline.html').then((offlineRes) => {
+                return offlineRes || new Response('Offline - Please check your connection', {
+                  status: 503,
+                  statusText: 'Service Unavailable'
+                });
               });
             });
 

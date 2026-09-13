@@ -31,6 +31,7 @@ import { SummarizerPage } from './pages/writing/SummarizerPage';
 import { OfflineStatus } from './components/OfflineStatus';
 
 import { PlagiarismPage } from './pages/writing/PlagiarismPage';
+import { GradifiVerifyDemoPage } from './pages/verify/GradifiVerifyDemoPage';
 
 import { GradingEngineTestPage } from './pages/grading/GradingEngineTestPage';
 
@@ -80,9 +81,12 @@ function App() {
           <Route path="manager" element={<CBTExamManager />} />
         </Route>
         
-        {/* Phase 5: Writing Tools (Public - No Auth Required) */}
+        {/* Phase 5: Writing & Verification Tools (Public - No Auth Required) */}
+        <Route path="/verify" element={<GradifiVerifyDemoPage />} />
+        <Route path="/verify/:verificationId" element={<GradifiVerifyDemoPage />} />
+        <Route path="/tools/verify" element={<GradifiVerifyDemoPage />} />
         <Route path="/tools" element={<WritingToolsHubPage />} />
-        <Route path="/tools/plagiarism" element={<PlagiarismPage />} />
+        <Route path="/tools/plagiarism" element={<GradifiVerifyDemoPage />} />
         <Route path="/tools/word-counter" element={<WordCounterPage />} />
         <Route path="/tools/paraphraser" element={<ParaphraserPage />} />
         <Route path="/tools/readability" element={<ReadabilityCheckerPage />} />

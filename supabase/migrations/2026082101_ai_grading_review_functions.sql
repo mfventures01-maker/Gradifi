@@ -193,8 +193,9 @@ DECLARE
 BEGIN
     -- Count reviewed scripts where ai_score and final_score match
     SELECT 
-        COUNT(*) FILTER (WHERE status IN ('approved', 'overridden', 'released')) INTO v_total,
-        COUNT(*) FILTER (WHERE status IN ('approved', 'overridden', 'released') AND ABS(COALESCE(ai_score, 0) - COALESCE(final_score, 0)) < 0.5) INTO v_agreed
+        COUNT(*) FILTER (WHERE status IN ('approved', 'overridden', 'released')),
+        COUNT(*) FILTER (WHERE status IN ('approved', 'overridden', 'released') AND ABS(COALESCE(ai_score, 0) - COALESCE(final_score, 0)) < 0.5)
+    INTO v_total, v_agreed
     FROM public.answer_scripts
     WHERE (p_teacher_id IS NULL OR teacher_id = p_teacher_id);
 

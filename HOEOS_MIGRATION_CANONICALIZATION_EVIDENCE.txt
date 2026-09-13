@@ -1,0 +1,59 @@
+============================================================
+HOEOS FORENSIC EVIDENCE ARTIFACT: MIGRATION CANONICALIZATION EVIDENCE
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+CERTIFIED HEAD SHA:   033a49594c7a0503144263eaa3d482a8fcb0fdc4
+TIMESTAMP:            2026-09-13T14:06:00+01:00
+
+============================================================
+1. MIGRATION PAIR ANALYSIS & CANONICALIZATION AUDIT
+============================================================
+
+MIGRATION PAIRS & AUDIT FINDINGS:
+
+1. 20260821_ai_grading_review_functions.sql -> 2026082101_ai_grading_review_functions.sql
+   - Old State at HEAD: 226 bytes incomplete DDL placeholder.
+   - New Canonical File: 6,580 bytes complete SQL RPC functions & triggers.
+   - Status: Intentional canonical replacement.
+
+2. 20260821_ai_grading_workflow.sql -> 2026082102_ai_grading_workflow.sql
+   - Old State at HEAD: 33 bytes incomplete stub.
+   - New Canonical File: 1,595 bytes complete SQL schema & policies.
+   - Status: Intentional canonical replacement.
+
+3. 20260821_bulk_student_import.sql -> 2026082103_bulk_student_import.sql
+   - Old State at HEAD: 183 bytes incomplete placeholder.
+   - New Canonical File: 6,091 bytes complete student import DDL.
+   - Status: Intentional canonical replacement.
+
+4. 20260821_create_parent_rpcs.sql -> 2026082104_create_parent_rpcs.sql
+   - Old State at HEAD: 282 bytes incomplete placeholder.
+   - New Canonical File: 8,053 bytes complete parent portal RPCs.
+   - Status: Intentional canonical replacement.
+
+5. 20260821_create_vp_bursar_rpcs.sql -> 2026082105_create_vp_bursar_rpcs.sql
+   - Old State at HEAD: 261 bytes incomplete placeholder.
+   - New Canonical File: 6,453 bytes complete bursar portal RPCs.
+   - Status: Intentional canonical replacement.
+
+6. 20260821_pin_authentication_enhancement.sql -> 2026082106_pin_authentication_enhancement.sql
+   - Old State at HEAD: 242 bytes incomplete placeholder.
+   - New Canonical File: 7,544 bytes complete PIN auth DDL.
+   - Status: Intentional canonical replacement.
+
+7. 2026091200_public_verification_records.sql
+   - Status: Canonical DDL migration for G6.1 public verification records table and RLS policies.
+   - Tested by: tests/verificationSchemaRLS.test.ts
+
+============================================================
+2. CANONICALIZATION DISPOSITION
+============================================================
+
+DISPOSITION:
+  The 6 old un-prefixed migration entries are canonicalized by staging their removal (`git rm`) and staging the 7 complete timestamp-prefixed migration DDL files (`supabase/migrations/2026082101_*.sql` through `2026082106_*.sql` and `2026091200_public_verification_records.sql`) into Git.
+
+============================================================
+END HOEOS MIGRATION CANONICALIZATION EVIDENCE
+============================================================

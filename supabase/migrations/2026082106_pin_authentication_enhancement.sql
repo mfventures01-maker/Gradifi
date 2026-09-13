@@ -8,7 +8,8 @@
 ALTER TABLE public.profiles 
 ADD COLUMN IF NOT EXISTS pin_hash TEXT,
 ADD COLUMN IF NOT EXISTS pin_changed_at TIMESTAMPTZ,
-ADD COLUMN IF NOT EXISTS pin_requires_change BOOLEAN DEFAULT false;
+ADD COLUMN IF NOT EXISTS pin_requires_change BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS phone TEXT;
 
 -- 2. Create index for phone lookups (if not exists)
 CREATE INDEX IF NOT EXISTS idx_profiles_phone ON public.profiles(phone);

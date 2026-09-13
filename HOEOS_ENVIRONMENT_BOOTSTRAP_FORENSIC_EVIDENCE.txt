@@ -1,0 +1,46 @@
+============================================================
+HOEOS FORENSIC EVIDENCE ARTIFACT: ENVIRONMENT BOOTSTRAP FORENSICS
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+HEAD SHA:             033a49594c7a0503144263eaa3d482a8fcb0fdc4
+TIMESTAMP:            2026-09-13T13:59:15+01:00
+
+============================================================
+1. ROOT CAUSE ANALYSIS
+============================================================
+
+FAILURE ERROR:
+  TypeError: Cannot read properties of undefined (reading 'VITE_SUPABASE_URL')
+
+ROOT CAUSE:
+  In a fresh environment checkout without `.env.local` present, `import.meta.env` object dereferencing in `src/lib/supabase.ts` (`import.meta.env.VITE_SUPABASE_URL`) throws a runtime `TypeError` when executing under Node.js / Vitest worker threads if `import.meta.env` is unpopulated.
+
+AFFECTED CONFIGURATION:
+  - `src/lib/supabase.ts`
+  - `vite.config.ts`
+  - Vitest test environment worker initialization
+
+SECURITY & ARCHITECTURAL IMPLICATIONS:
+  - Inserting real production Supabase credentials into Git or repository code is STRICTLY PROHIBITED.
+  - The correct architecture is a non-crashing, test-safe fallback helper (`getEnv()`) in `src/lib/supabase.ts` that safely evaluates `import.meta?.env` and `process.env`, outputting a non-fatal warning (`⚠️ Supabase credentials not found. Using fallback mode.`) when environment keys are absent.
+
+============================================================
+2. CORRECTION DETAILS
+============================================================
+
+SELECTED CORRECTION:
+  Implement `getEnv(key: string)` in `src/lib/supabase.ts` with optional chaining and fallback to `process.env[key]`, ensuring non-crashing fallback mode when running tests in unconfigured or fresh environments.
+
+EXACT FILES CHANGED:
+  - `src/lib/supabase.ts`
+  - `package.json` / `package-lock.json` (qrcode/jsqr dependencies for PDF report certificates)
+  - `src/App.tsx` (Route definitions for `/verify` and `/tools/plagiarism`)
+  - `src/pages/home/HomePage.tsx` (Public verification CTAs & tool links)
+  - `src/vite-env.d.ts` (API key environment type definitions)
+  - `tests/verifyCore.test.ts` (Unauthenticated API key assertion hardening)
+
+============================================================
+END HOEOS ENVIRONMENT BOOTSTRAP FORENSICS
+============================================================

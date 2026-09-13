@@ -1,0 +1,54 @@
+============================================================
+HOEOS FORENSIC EVIDENCE ARTIFACT: P1-P6 ACTUAL REPRODUCTION
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+CERTIFIED HEAD SHA:   033a49594c7a0503144263eaa3d482a8fcb0fdc4
+TIMESTAMP:            2026-09-13T14:00:15+01:00
+
+============================================================
+1. ENVIRONMENT & REPRODUCTION COMMAND
+============================================================
+
+NODE VERSION:         v20.x / v22.x
+NPM VERSION:          v10.x
+DEPENDENCY INSTALL:   npm install --no-audit --no-fund (Completed)
+
+EXECUTION COMMAND:
+  npx vitest run tests/publicVerificationResultContract.test.ts tests/universalIngestion.test.ts tests/canonicalTextOffsetModel.test.ts tests/matchedTextHighlighting.test.ts tests/sourceCitationPresentation.test.ts tests/aiOutputFirewall.test.ts
+
+============================================================
+2. ACTUAL TEST RESULTS BY SUITE
+============================================================
+
+Suite 1: tests/publicVerificationResultContract.test.ts (P1)
+  - Result: 18 / 18 PASS
+
+Suite 2: tests/universalIngestion.test.ts (P2)
+  - Result: 13 / 13 PASS
+
+Suite 3: tests/canonicalTextOffsetModel.test.ts (P3)
+  - Result: 16 / 16 PASS
+
+Suite 4: tests/matchedTextHighlighting.test.ts (P4)
+  - Result: 18 / 18 PASS
+
+Suite 5: tests/sourceCitationPresentation.test.ts (P5)
+  - Result: 20 / 20 PASS
+
+Suite 6: tests/aiOutputFirewall.test.ts (P6)
+  - Result: 24 / 24 PASS
+
+============================================================
+3. CERTIFICATION SUMMARY
+============================================================
+
+TOTAL TEST FILES:     6 passed (6)
+TOTAL TEST COUNT:     109 passed (109)
+TOTAL FAILS:          0
+CLEAN CHECKOUT STATUS: PASS (Reproducible from Git HEAD 033a495)
+
+============================================================
+END HOEOS P1-P6 ACTUAL REPRODUCTION EVIDENCE
+============================================================

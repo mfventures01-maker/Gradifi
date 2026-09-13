@@ -1,0 +1,93 @@
+============================================================
+HOEOS FORENSIC EVIDENCE ARTIFACT: FINAL RECOVERY BASELINE
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+STARTING HEAD SHA:    033a49594c7a0503144263eaa3d482a8fcb0fdc4
+TIMESTAMP:            2026-09-13T13:58:35+01:00
+
+============================================================
+1. HEAD CONFIRMATION
+============================================================
+
+git rev-parse HEAD:
+  033a49594c7a0503144263eaa3d482a8fcb0fdc4 (CONFIRMED)
+
+git branch --show-current:
+  clean-deploy (CONFIRMED)
+
+============================================================
+2. WORKING TREE STATUS (git status --short)
+============================================================
+
+ M package-lock.json
+ M package.json
+ M playwright-report/index.html
+ M public/sw.js
+ M src/App.tsx
+ M src/lib/supabase.ts
+ M src/pages/home/HomePage.tsx
+ M src/vite-env.d.ts
+ D supabase/migrations/20260821_ai_grading_review_functions.sql
+ D supabase/migrations/20260821_ai_grading_workflow.sql
+ D supabase/migrations/20260821_bulk_student_import.sql
+ D supabase/migrations/20260821_create_parent_rpcs.sql
+ D supabase/migrations/20260821_create_vp_bursar_rpcs.sql
+ D supabase/migrations/20260821_pin_authentication_enhancement.sql
+ M test-results/.playwright-temp/.last-run.json
+ M tests/verifyCore.test.ts
+?? FEDERATION_RUN_REPORT.json
+?? FEDERATION_RUN_REPORT.md
+?? HOEOS_COMMIT_3_P2_PREFLIGHT_EVIDENCE.txt
+?? HOEOS_FINAL_REPOSITORY_GIT_STATE_CORRECTION_EVIDENCE.txt
+?? HOEOS_WORKING_TREE_MODIFICATION_CLASSIFICATION_EVIDENCE.txt
+?? commit-plan-verification.txt
+?? scripts/apply-corrections.ps1
+?? scripts/diagnose-nemotron.ts
+?? scripts/executeSixProviderLiveRun.ts
+?? supabase/.temp/
+?? supabase/migrations/2026082101_ai_grading_review_functions.sql
+?? supabase/migrations/2026082102_ai_grading_workflow.sql
+?? supabase/migrations/2026082103_bulk_student_import.sql
+?? supabase/migrations/2026082104_create_parent_rpcs.sql
+?? supabase/migrations/2026082105_create_vp_bursar_rpcs.sql
+?? supabase/migrations/2026082106_pin_authentication_enhancement.sql
+?? supabase/migrations/2026091200_public_verification_records.sql
+?? tracked-at-head.txt
+
+============================================================
+3. DIFF STAT (git diff --stat HEAD)
+============================================================
+
+ package-lock.json                                  | 351 +++++++++++++++++++--
+ package.json                                       |   3 +
+ playwright-report/index.html                       |   2 +-
+ public/sw.js                                       |   8 +-
+ src/App.tsx                                        |   8 +-
+ src/lib/supabase.ts                                |  14 +-
+ src/pages/home/HomePage.tsx                        |  41 ++-
+ src/vite-env.d.ts                                  |   4 +-
+ .../20260821_ai_grading_review_functions.sql       | 226 -------------
+ .../migrations/20260821_ai_grading_workflow.sql    |  33 --
+ .../migrations/20260821_bulk_student_import.sql    | 183 -----------
+ .../migrations/20260821_create_parent_rpcs.sql     | 282 -----------------
+ .../migrations/20260821_create_vp_bursar_rpcs.sql  | 261 ---------------
+ .../20260821_pin_authentication_enhancement.sql    | 242 --------------
+ tests/verifyCore.test.ts                           |  26 +-
+ 15 files changed, 412 insertions(+), 1272 deletions(-)
+
+============================================================
+4. DELETED TRACKED FILES (git ls-files --deleted)
+============================================================
+
+supabase/migrations/20260821_ai_grading_review_functions.sql
+supabase/migrations/20260821_ai_grading_workflow.sql
+supabase/migrations/20260821_bulk_student_import.sql
+supabase/migrations/20260821_create_parent_rpcs.sql
+supabase/migrations/20260821_create_vp_bursar_rpcs.sql
+supabase/migrations/20260821_pin_authentication_enhancement.sql
+
+============================================================
+END HOEOS FINAL RECOVERY BASELINE
+============================================================

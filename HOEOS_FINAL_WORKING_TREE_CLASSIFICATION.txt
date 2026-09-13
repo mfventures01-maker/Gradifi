@@ -1,0 +1,40 @@
+============================================================
+HOEOS FORENSIC EVIDENCE ARTIFACT: FINAL WORKING TREE CLASSIFICATION
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+CERTIFIED HEAD SHA:   033a49594c7a0503144263eaa3d482a8fcb0fdc4
+TIMESTAMP:            2026-09-13T14:06:30+01:00
+
+============================================================
+1. REPO-WIDE WORKING TREE DISPOSITION MATRIX
+============================================================
+
+Item                                              | Classification Category
+--------------------------------------------------|---------------------------------------
+package.json                                      | 1. Required product/source correction
+package-lock.json                                 | 1. Required product/source correction
+src/App.tsx                                       | 1. Required product/source correction
+src/lib/supabase.ts                             | 1. Required product/source correction
+src/pages/home/HomePage.tsx                     | 1. Required product/source correction
+src/vite-env.d.ts                               | 1. Required product/source correction
+tests/verifyCore.test.ts                        | 1. Required product/source correction
+public/sw.js                                      | 1. Required product/source correction
+scripts/apply-corrections.ps1                    | 1. Required product/source correction
+scripts/diagnose-nemotron.ts                      | 1. Required product/source correction
+scripts/executeSixProviderLiveRun.ts              | 1. Required product/source correction
+supabase/migrations/2026082101-06 & 2026091200   | 3. Required migration canonicalization
+supabase/migrations/20260821_*.sql (6 old files)  | 3. Required migration canonicalization
+HOEOS_*.txt (all evidence artifacts)              | 2. Required certification evidence
+playwright-report/index.html                      | 4. Generated/transient artifact
+test-results/.playwright-temp/.last-run.json      | 4. Generated/transient artifact
+FEDERATION_RUN_REPORT.json                        | 4. Generated/transient artifact
+FEDERATION_RUN_REPORT.md                          | 4. Generated/transient artifact
+tracked-at-head.txt                               | 4. Generated/transient artifact
+commit-plan-verification.txt                      | 4. Generated/transient artifact
+supabase/.temp/*                                  | 4. Generated/transient artifact
+
+============================================================
+END HOEOS FINAL WORKING TREE CLASSIFICATION
+============================================================

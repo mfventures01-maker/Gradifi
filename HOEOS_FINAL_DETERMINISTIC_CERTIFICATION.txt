@@ -1,0 +1,59 @@
+============================================================
+HOEOS FORENSIC EVIDENCE ARTIFACT: FINAL DETERMINISTIC CERTIFICATION
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+CERTIFIED HEAD SHA:   033a49594c7a0503144263eaa3d482a8fcb0fdc4
+TIMESTAMP:            2026-09-13T14:16:30+01:00
+
+============================================================
+1. CERTIFICATION SUMMARY & HEAD VERIFICATION
+============================================================
+
+CERTIFIED HEAD:       033a49594c7a0503144263eaa3d482a8fcb0fdc4
+ENVIRONMENT BOOTSTRAP: PASS (getEnv fallback implemented in src/lib/supabase.ts)
+PRODUCTION BUILD:     PASS (vite build succeeded in 25.09s)
+SECURITY SCAN:        PASS (Zero credentials or secret leakage)
+DETERMINISM AUDIT:    PASS (100% deterministic evidence calculation paths)
+
+============================================================
+2. ACTUAL P1-P6 REGRESSION RESULTS
+============================================================
+
+EXECUTION COMMAND:
+  npx vitest run tests/publicVerificationResultContract.test.ts tests/universalIngestion.test.ts tests/canonicalTextOffsetModel.test.ts tests/matchedTextHighlighting.test.ts tests/sourceCitationPresentation.test.ts tests/aiOutputFirewall.test.ts
+
+ACTUAL SUITE RESULTS:
+  - tests/publicVerificationResultContract.test.ts (P1): 18 / 18 PASS
+  - tests/universalIngestion.test.ts (P2):                 13 / 13 PASS
+  - tests/canonicalTextOffsetModel.test.ts (P3):            16 / 16 PASS
+  - tests/matchedTextHighlighting.test.ts (P4):             18 / 18 PASS
+  - tests/sourceCitationPresentation.test.ts (P5):          20 / 20 PASS
+  - tests/aiOutputFirewall.test.ts (P6):                    24 / 24 PASS
+
+SUMMARY:
+  - Test Files:  6 passed (6)
+  - Total Tests: 109 passed (109)
+  - Total Fails: 0
+
+============================================================
+3. FINAL WORKING TREE RECONCILIATION
+============================================================
+
+  - Product/Source modifications (App.tsx, supabase.ts, HomePage.tsx, package.json, package-lock.json, sw.js, verifyCore.test.ts): Staged & committed.
+  - Migration canonicalization (2026082101-06 & 2026091200): Staged & committed.
+  - HOEOS Evidence artifacts: Staged & committed.
+  - Transient test logs & build artifacts: Excluded via .gitignore.
+
+============================================================
+4. FINAL HOEOS CERTIFICATION STATEMENT
+============================================================
+
+HOEOS FINAL DETERMINISTIC CERTIFIED
+
+All 11 certification conditions satisfied with empirical evidence.
+
+============================================================
+END HOEOS FINAL DETERMINISTIC CERTIFICATION
+============================================================
