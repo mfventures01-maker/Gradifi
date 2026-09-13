@@ -5,15 +5,49 @@
  */
 
 import { Plugin } from 'vite';
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Ensure server process.env receives credentials from .env.local & .env
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config();
+
 import { handleCoreServerSearch } from './coreServerHandler';
 import { handleGoogleBooksServerSearch } from './googleBooksServerHandler';
 import { handleGeminiServerReasoning } from './geminiServerHandler';
 import { handleNemotronServerReasoning } from './nemotronServerHandler';
+import { handleGemmaServerReasoning } from './gemmaServerHandler';
+import { handlePersistenceServerRequest } from './persistenceServerHandler';
 
 export function verifyServerPlugin(): Plugin {
   return {
     name: 'gradifi-verify-server-plugin',
     configureServer(server) {
+      server.middlewares.use('/api/verify/persist', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405;
+          res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+          return;
+        }
+
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', async () => {
+          try {
+            const payload = body ? JSON.parse(body) : {};
+            const result = await handlePersistenceServerRequest(payload);
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 200;
+            res.end(JSON.stringify(result));
+          } catch (err: any) {
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 500;
+            res.end(JSON.stringify({
+              error: err?.message || 'Failed to persist verification record'
+            }));
+          }
+        });
+      });
       server.middlewares.use('/api/verify/core', async (req, res) => {
         if (req.method !== 'POST' && req.method !== 'GET') {
           res.statusCode = 405;
@@ -143,6 +177,34 @@ export function verifyServerPlugin(): Plugin {
             res.statusCode = 500;
             res.end(JSON.stringify({
               status: 'INFERENCE_FAILED',
+              findings: [],
+              errorMessage: err?.message || 'Server error'
+            }));
+          }
+        });
+      });
+
+      server.middlewares.use('/api/verify/gemma', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405;
+          res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+          return;
+        }
+
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', async () => {
+          try {
+            const payload = body ? JSON.parse(body) : {};
+            const result = await handleGemmaServerReasoning(payload);
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 200;
+            res.end(JSON.stringify(result));
+          } catch (err: any) {
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 500;
+            res.end(JSON.stringify({
+              status: 'RUNTIME_UNAVAILABLE',
               findings: [],
               errorMessage: err?.message || 'Server error'
             }));

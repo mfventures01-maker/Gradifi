@@ -12,7 +12,7 @@ export interface GeminiServerRequestPayload {
 }
 
 export interface GeminiServerResponse {
-  status: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'UNAVAILABLE' | 'INFERENCE_FAILED';
+  status: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
   findings: AIFinding[];
   errorMessage?: string;
 }

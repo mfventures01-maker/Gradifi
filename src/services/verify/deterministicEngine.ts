@@ -4,7 +4,7 @@
  * HOEOS Standard: ZERO Math.random(). Reproducible evidence calculation.
  */
 
-import { EvidenceMatch, ProvenanceState } from './types';
+import { EvidenceMatch, ProvenanceState, CanonicalAnalysisDocument, SimilarityAnalysisResult, SimilarityFinding, SimilarityMatchMethod } from './types';
 import { normalizeText, tokenize, segmentSentences, generateNGrams, computeHash } from './documentNormalizer';
 
 export interface DeterministicAnalysisInput {
@@ -197,3 +197,189 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
     verifiedMatches: uniqueMatches
   };
 }
+
+/**
+ * Evaluates deterministic similarity between two canonical documents.
+ * Produces explainable, evidence-backed SimilarityFinding items.
+ * HOEOS G2 Standard: ZERO AI dependency, ZERO Math.random(), 100% reproducible.
+ */
+export function evaluateDocumentSimilarity(
+  sourceDoc: CanonicalAnalysisDocument,
+  comparisonDoc: CanonicalAnalysisDocument
+): SimilarityAnalysisResult {
+  const sourceText = sourceDoc.rawText || '';
+  const compText = comparisonDoc.rawText || '';
+  const findings: SimilarityFinding[] = [];
+  const warnings: string[] = [];
+
+  if (!sourceText.trim() || !compText.trim()) {
+    return {
+      analysisType: 'DETERMINISTIC_SIMILARITY',
+      sourceDocumentId: sourceDoc.documentId,
+      matchedDocumentId: comparisonDoc.documentId,
+      overallSimilarity: 0,
+      findings: [],
+      engineVersion: ENGINE_VERSION,
+      policyVersion: POLICY_VERSION,
+      deterministic: true,
+      warnings: ['One or both input documents are empty']
+    };
+  }
+
+  const compSentences = segmentSentences(compText);
+  const matchedSourceIndices = new Set<number>();
+
+  // 1. Exact Phrase Matching Strategy
+  for (const sentence of compSentences) {
+    if (sentence.length < 12) continue;
+    const sourceIdx = sourceText.indexOf(sentence);
+    const compIdx = compText.indexOf(sentence);
+
+    if (sourceIdx !== -1 && compIdx !== -1) {
+      const sourceStart = sourceIdx;
+      const sourceEnd = sourceIdx + sentence.length;
+      const matchedStart = compIdx;
+      const matchedEnd = compIdx + sentence.length;
+
+      // Deterministic finding identity
+      const findingId = computeHash(`${sourceDoc.documentId}:${comparisonDoc.documentId}:EXACT:${sourceStart}:${sentence.slice(0, 30)}`);
+
+      findings.push({
+        findingId,
+        sourceDocumentId: sourceDoc.documentId,
+        matchedDocumentId: comparisonDoc.documentId,
+        sourceSegment: sentence,
+        matchedSegment: sentence,
+        similarityScore: 100,
+        matchMethod: 'EXACT_PHRASE',
+        sourceStart,
+        sourceEnd,
+        matchedStart,
+        matchedEnd,
+        provenance: 'DETERMINISTIC'
+      });
+
+      matchedSourceIndices.add(sourceIdx);
+    }
+  }
+
+  // 2. Sliding N-Gram Phrase Matching Strategy (n=4 tokens)
+  const sourceTokens = tokenize(sourceText);
+  const compTokens = tokenize(compText);
+  const sourceNGrams = generateNGrams(sourceTokens, 4);
+  const compNGramsSet = new Set(generateNGrams(compTokens, 4));
+
+  const seenNGramPhrases = new Set<string>();
+
+  for (const ngram of sourceNGrams) {
+    if (compNGramsSet.has(ngram) && !seenNGramPhrases.has(ngram)) {
+      seenNGramPhrases.add(ngram);
+      
+      // Verify exact presence in raw text
+      const srcMatchIdx = sourceText.toLowerCase().indexOf(ngram);
+      const compMatchIdx = compText.toLowerCase().indexOf(ngram);
+
+      if (srcMatchIdx !== -1 && compMatchIdx !== -1) {
+        const sourceSegment = sourceText.slice(srcMatchIdx, srcMatchIdx + ngram.length);
+        const matchedSegment = compText.slice(compMatchIdx, compMatchIdx + ngram.length);
+
+        // Skip if already covered by exact phrase finding
+        const isCovered = findings.some(f => f.matchMethod === 'EXACT_PHRASE' && f.sourceSegment.toLowerCase().includes(ngram));
+        if (!isCovered) {
+          const findingId = computeHash(`${sourceDoc.documentId}:${comparisonDoc.documentId}:NGRAM:${srcMatchIdx}:${ngram}`);
+          
+          findings.push({
+            findingId,
+            sourceDocumentId: sourceDoc.documentId,
+            matchedDocumentId: comparisonDoc.documentId,
+            sourceSegment: sourceSegment || ngram,
+            matchedSegment: matchedSegment || ngram,
+            similarityScore: Math.min(100, Math.round(calculateNGramOverlap(sourceText, compText, 3))),
+            matchMethod: 'NGRAM',
+            sourceStart: srcMatchIdx,
+            sourceEnd: srcMatchIdx + ngram.length,
+            matchedStart: compMatchIdx,
+            matchedEnd: compMatchIdx + ngram.length,
+            provenance: 'DETERMINISTIC'
+          });
+        }
+      }
+    }
+  }
+
+  // Sort findings deterministically by sourceStart ascending, then similarityScore descending, then findingId ascending
+  findings.sort((a, b) => {
+    if ((a.sourceStart ?? 0) !== (b.sourceStart ?? 0)) return (a.sourceStart ?? 0) - (b.sourceStart ?? 0);
+    if (b.similarityScore !== a.similarityScore) return b.similarityScore - a.similarityScore;
+    return a.findingId.localeCompare(b.findingId);
+  });
+
+  // Calculate overall similarity score using token overlap ratio
+  const docNGramOverlap = calculateNGramOverlap(sourceText, compText, 3);
+  const exactMatchBonus = findings.some(f => f.matchMethod === 'EXACT_PHRASE') ? 20 : 0;
+  const overallSimilarity = Math.min(100, Math.round((docNGramOverlap * 0.8 + exactMatchBonus) * 10) / 10);
+
+  return {
+    analysisType: 'DETERMINISTIC_SIMILARITY',
+    sourceDocumentId: sourceDoc.documentId,
+    matchedDocumentId: comparisonDoc.documentId,
+    overallSimilarity,
+    findings,
+    engineVersion: ENGINE_VERSION,
+    policyVersion: POLICY_VERSION,
+    deterministic: true,
+    warnings
+  };
+}
+
+/**
+ * Extracts explainable SimilarityFinding items from evaluated candidate evidence matches.
+ */
+export function extractSimilarityFindingsFromEvidenceMatches(
+  documentText: string,
+  documentHash: string,
+  matches: EvidenceMatch[]
+): SimilarityFinding[] {
+  const findings: SimilarityFinding[] = [];
+
+  for (const match of matches) {
+    if (match.matchPercentage <= 0) continue;
+    const snippet = match.matchedText || match.originalSnippet || match.title;
+    if (!snippet) continue;
+
+    const normDoc = normalizeText(documentText);
+    const normSnippet = normalizeText(snippet);
+
+    let matchMethod: SimilarityMatchMethod = 'TOKEN_OVERLAP';
+    if (match.matchType === 'exact' || (normSnippet.length >= 12 && normDoc.includes(normSnippet))) {
+      matchMethod = 'EXACT_PHRASE';
+    } else if (match.matchType === 'lexical' || calculateNGramOverlap(documentText, snippet, 3) > 20) {
+      matchMethod = 'NGRAM';
+    }
+
+    const srcIdx = normDoc.indexOf(normSnippet);
+    const findingId = computeHash(`${documentHash}:${match.sourceId}:${matchMethod}:${match.matchPercentage}:${snippet.slice(0, 20)}`);
+
+    findings.push({
+      findingId,
+      sourceDocumentId: documentHash,
+      matchedDocumentId: match.sourceId,
+      sourceSegment: match.matchedText || snippet.slice(0, 150),
+      matchedSegment: snippet.slice(0, 150),
+      similarityScore: match.matchPercentage,
+      matchMethod,
+      sourceStart: srcIdx !== -1 ? srcIdx : undefined,
+      sourceEnd: srcIdx !== -1 ? srcIdx + snippet.length : undefined,
+      provenance: 'DETERMINISTIC'
+    });
+  }
+
+  // Sort findings deterministically
+  findings.sort((a, b) => {
+    if (b.similarityScore !== a.similarityScore) return b.similarityScore - a.similarityScore;
+    return a.findingId.localeCompare(b.findingId);
+  });
+
+  return findings;
+}
+

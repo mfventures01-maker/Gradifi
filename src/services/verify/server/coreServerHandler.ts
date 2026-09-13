@@ -11,9 +11,16 @@ export interface CoreServerRequestPayload {
   limit?: number;
 }
 
+function generateCorrelationId(prefix: string): string {
+  const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+    ? crypto.randomUUID().replace(/-/g, '').slice(0, 8)
+    : Date.now().toString(36);
+  return `${prefix}_${Date.now()}_${nonce}`;
+}
+
 export async function handleCoreServerSearch(payload: CoreServerRequestPayload): Promise<ProviderResult> {
   const requestTimestamp = new Date().toISOString();
-  const correlationId = `core_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const correlationId = generateCorrelationId('core');
 
   const rawQuery = typeof payload?.query === 'string' ? payload.query.trim() : '';
   if (!rawQuery) {

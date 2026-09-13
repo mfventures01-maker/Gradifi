@@ -11,9 +11,16 @@ export interface GoogleBooksServerRequestPayload {
   limit?: number;
 }
 
+function generateCorrelationId(prefix: string): string {
+  const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+    ? crypto.randomUUID().replace(/-/g, '').slice(0, 8)
+    : Date.now().toString(36);
+  return `${prefix}_${Date.now()}_${nonce}`;
+}
+
 export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRequestPayload): Promise<ProviderResult> {
   const requestTimestamp = new Date().toISOString();
-  const correlationId = `gb_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const correlationId = generateCorrelationId('gb');
 
   const rawQuery = typeof payload?.query === 'string' ? payload.query.trim() : '';
   if (!rawQuery) {
@@ -57,16 +64,18 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
     let response = await fetch(fetchUrl, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'User-Agent': 'GradifiVerify/1.0 (https://gradifi.org)'
       }
     });
 
-    if (!response.ok && response.status === 429) {
+    if (!response.ok && (response.status === 429 || response.status >= 500)) {
       await new Promise(r => setTimeout(r, 600));
       response = await fetch(fetchUrl, {
         method: 'GET',
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'User-Agent': 'GradifiVerify/1.0 (https://gradifi.org)'
         }
       });
     }
@@ -74,7 +83,7 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
     const responseTimestamp = new Date().toISOString();
 
     if (!response.ok) {
-      const isAuthError = response.status === 400 || response.status === 401 || response.status === 403;
+      const isAuthError = response.status === 401 || response.status === 403;
       return {
         providerId: 'googlebooks',
         status: isAuthError ? 'error' : 'unavailable',
@@ -109,6 +118,7 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
 
     for (const item of items) {
       const volumeInfo = item.volumeInfo || {};
+      const accessInfo = item.accessInfo || {};
       const id = item.id || `gb_${Date.now()}`;
       const title = volumeInfo.title || 'Untitled Google Books Record';
       const authors = Array.isArray(volumeInfo.authors) ? volumeInfo.authors : ['Unknown Author'];
@@ -150,8 +160,22 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
           title,
           authors,
           doi,
+          isbn,
           publishedYear: isNaN(publishedYear as number) ? undefined : publishedYear,
-          provenanceState: doi ? 'VERIFIED' : 'PARTIAL',
+          publisher: volumeInfo.publisher,
+          pageCount: volumeInfo.pageCount,
+          categories: Array.isArray(volumeInfo.categories) ? volumeInfo.categories : undefined,
+          language: volumeInfo.language,
+          accessInfo: {
+            viewability: accessInfo.viewability,
+            embeddable: accessInfo.embeddable,
+            publicDomain: accessInfo.publicDomain,
+            pdfAvailable: accessInfo.pdf?.isAvailable,
+            pdfDownloadUrl: accessInfo.pdf?.downloadLink,
+            epubAvailable: accessInfo.epub?.isAvailable,
+            webReaderLink: accessInfo.webReaderLink
+          },
+          provenanceState: (doi || isbn) ? 'VERIFIED' : 'PARTIAL',
           query,
           requestTimestamp,
           responseTimestamp,

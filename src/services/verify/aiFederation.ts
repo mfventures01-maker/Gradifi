@@ -7,9 +7,11 @@
 import { AIFinding, EvidenceMatch } from './types';
 import { handleGeminiServerReasoning, generateDeterministicFallbackFindings, validateAIFindingSchema } from './server/geminiServerHandler';
 import { handleNemotronServerReasoning } from './server/nemotronServerHandler';
+import { handleGemmaServerReasoning } from './server/gemmaServerHandler';
 
 export interface AIFederationResult {
   localAiStatus: 'RUNTIME_AVAILABLE' | 'RUNTIME_UNAVAILABLE';
+  gemmaStatus?: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
   nemotronStatus: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
   geminiStatus: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
   findings: AIFinding[];
@@ -37,6 +39,49 @@ export class AIFederationService {
       return response.ok ? 'RUNTIME_AVAILABLE' : 'RUNTIME_UNAVAILABLE';
     } catch {
       return 'RUNTIME_UNAVAILABLE';
+    }
+  }
+
+  /**
+   * Dispatches local Ollama / Gemma reasoning through the server boundary.
+   */
+  async runGemmaReasoning(documentText: string, matches: EvidenceMatch[], model = 'gemma4:31b'): Promise<{
+    status: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
+    findings: AIFinding[];
+  }> {
+    try {
+      const isBrowser = typeof window !== 'undefined';
+
+      if (isBrowser) {
+        const response = await fetch('/api/verify/gemma', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ documentText, matches, model })
+        });
+
+        if (!response.ok) {
+          return {
+            status: 'RUNTIME_UNAVAILABLE',
+            findings: generateDeterministicFallbackFindings(documentText, matches)
+          };
+        }
+
+        const data = await response.json();
+        return {
+          status: data.status || 'RUNTIME_UNAVAILABLE',
+          findings: Array.isArray(data.findings) ? data.findings : generateDeterministicFallbackFindings(documentText, matches)
+        };
+      } else {
+        return handleGemmaServerReasoning({ documentText, matches, model });
+      }
+    } catch {
+      return {
+        status: 'RUNTIME_UNAVAILABLE',
+        findings: generateDeterministicFallbackFindings(documentText, matches)
+      };
     }
   }
 
@@ -113,7 +158,7 @@ export class AIFederationService {
 
         const data = await response.json();
         return {
-          status: data.status || 'UNAVAILABLE',
+          status: data.status || 'RUNTIME_UNAVAILABLE',
           findings: Array.isArray(data.findings) ? data.findings : generateDeterministicFallbackFindings(documentText, matches)
         };
       } else {
@@ -132,11 +177,17 @@ export class AIFederationService {
    */
   async executeFederation(documentText: string, matches: EvidenceMatch[]): Promise<AIFederationResult> {
     const localAiStatus = await this.probeLocalGemma();
+    const gemmaResult = localAiStatus === 'RUNTIME_AVAILABLE'
+      ? await this.runGemmaReasoning(documentText, matches)
+      : { status: 'RUNTIME_UNAVAILABLE' as const, findings: [] };
     const nemotronResult = await this.runNemotronReasoning(documentText, matches);
     const geminiResult = await this.runGeminiReasoning(documentText, matches);
 
     const findings: AIFinding[] = [];
 
+    if (gemmaResult.findings.length > 0) {
+      findings.push(...gemmaResult.findings);
+    }
     if (nemotronResult.findings.length > 0) {
       findings.push(...nemotronResult.findings);
     }
@@ -150,6 +201,7 @@ export class AIFederationService {
 
     return {
       localAiStatus,
+      gemmaStatus: gemmaResult.status,
       nemotronStatus: nemotronResult.status,
       geminiStatus: geminiResult.status,
       findings

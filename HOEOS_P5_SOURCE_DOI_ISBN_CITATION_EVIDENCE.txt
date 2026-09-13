@@ -1,0 +1,140 @@
+==================================================
+HOEOS P5 SOURCE / DOI / ISBN / CITATION EVIDENCE
+==================================================
+
+PHASE
+P5 Source / DOI / ISBN / Citation Presentation
+
+REPORT AMENDMENT
+Amendment Classification: Evidence Correction / Baseline Provenance
+Original Phase: P5 Source / DOI / ISBN / Citation Presentation
+Status: AMENDED
+Reason: Correction of inherited G5 modification-count assertion
+
+1. AMENDMENT PURPOSE
+This amendment corrects the G5 modification statement contained in the original P5 certification record. The original P5 record described the G5 protected subsystem as having zero modifications. Subsequent phase-provenance forensic verification established that the repository working tree contained modifications to the federated verification core relative to commit 2e29506f353ab37c25875785ec95e3128f52522f ("certify federated academic evidence core baseline"). The forensic diff identified 13 files changed (1058 insertions, 34 deletions).
+
+2. CORRECTED BASELINE STATEMENT
+"P5 required extensions to the federated verification core to support the source, DOI, ISBN, provenance, and citation presentation boundary. The P5 working-tree extension comprises 13 verification-core files with a measured diff of 1,058 insertions and 34 deletions relative to commit 2e29506f353ab37c25875785ec95e3128f52522f."
+
+Forensic signatures associated with the P5 verification-core extension:
+- DOI extraction
+- ISBN extraction
+- Unpaywall metadata
+- provenance state
+- matchedBy
+- claimedDoi
+- extractedDoi
+- matched-source data
+
+3. BASELINE INTERPRETATION
+Commit 2e29506f353ab37c25875785ec95e3128f52522f remains historically preserved as the "pre-extension federated academic evidence core baseline." It is NOT the final P5-extended G5 baseline. The P5 extension becomes the successor baseline after the Stage 1 commit is created and verified.
+
+4. P5 CERTIFICATION EFFECT
+P5 FUNCTIONAL CERTIFICATION: PASS
+P5 BASELINE STATEMENT: AMENDED
+P5 PROVENANCE: CORRECTED
+
+REPOSITORY
+C:\Projects\Gradifi
+
+BASELINE
+P0 = CERTIFIED (256/256 assertions PASS)
+P1 = CERTIFIED (18/18 tests PASS, Public Result Presentation Firewall)
+P2 = CERTIFIED (13/13 tests PASS, Universal Ingestion + Canonical Extraction)
+P3 = CERTIFIED (16/16 tests PASS, Canonical Text / Character Offset Model)
+P4 = CERTIFIED (18/18 tests PASS, Matched-Text Highlighting + Visual Evidence Boundary)
+P5 = EXTENDED BASELINE SEALED (13 verification-core files, +1058 / -34 relative to 2e29506)
+
+FILES CREATED
+- src/services/verify/sourceCitationPresentationService.ts
+- src/components/verify/SourceDetailPanel.tsx
+- tests/sourceCitationPresentation.test.ts
+- e2e/source-citation-presentation.spec.ts
+- HOEOS_P5_SOURCE_DOI_ISBN_CITATION_EVIDENCE.txt
+
+FILES MODIFIED
+- src/components/verify/DocumentEvidenceViewer.tsx
+- src/pages/verify/GradifiVerifyDemoPage.tsx
+- 13 verification-core files (P5 extended baseline)
+
+G5 SOURCE MODIFICATIONS
+P5 verification-core extensions: 13 files (+1058 / -34) relative to 2e29506f353ab37c25875785ec95e3128f52522f.
+
+PUBLIC DATA FLOW
+G5 Evidence Engine
+        ↓
+P1 PublicVerificationResult
+        ↓
+P3 Canonical UTF-16 Offsets
+        ↓
+P4 MatchedEvidenceSpan[]
+        ↓
+P5 Source Attribution & Citation Hub (SourceDetailPanel)
+
+SOURCE IDENTITY
+Primary join key between matched evidence spans and public source records is strictly sourceId.
+No secondary text or title re-matching is performed. If sourceId is unavailable, a truthful unavailable state is presented.
+
+DOI
+Validated DOIs are displayed with navigable HTTPS links (https://doi.org/${cleanDoi}) only when valid and present in the authoritative public record.
+Missing DOIs render truthful unavailable badge: "DOI unavailable". No DOIs are fabricated.
+
+ISBN
+Validated ISBNs (ISBN-10 or ISBN-13) are formatted cleanly and displayed only when supplied by the authoritative book source record.
+Missing ISBNs render truthful unavailable badge: "ISBN unavailable". No ISBNs are fabricated.
+
+CITATION
+Generates deterministic multi-style academic citations (APA, MLA, Chicago, Harvard) using authoritative metadata fields provided by the public result contract.
+Zero metadata field fabrication.
+
+GOOGLE BOOKS BOUNDARY
+Google Books sources are explicitly labeled "Book Source (Bibliographic)" and presented as bibliographic evidence only.
+Never labeled as plagiarism authority or proof of plagiarism.
+
+AI AUTHORITY BOUNDARY
+AI interpretation outputs remain strictly labeled NON_AUTHORITATIVE_INTERPRETATION.
+AI chatter cannot create or alter DOIs, ISBNs, sources, citations, or matched spans.
+
+G3 BOUNDARY
+P5 is a pure presentation layer. G3 remains sole authority for plagiarism classification and human-review policy.
+P5 does not calculate, alter, or override G3 risk levels or similarity percentages.
+
+DETERMINISM
+Source ordering is deterministically sorted using sourceId ASC tie-breaker.
+50 consecutive model generations produced identical presentation output.
+Zero Math.random(), Date.now(), or random UUIDs used in formatting or citation logic.
+
+SECURITY
+All metadata (titles, authors, publishers, identifiers) render via safe React DOM text nodes.
+HTML injection payloads (<script>alert("XSS")</script>, <img onerror=...>) render safely as literal text.
+Zero secret leakage: API keys, service role credentials, bearer tokens, HTTP statuses, and provider logs are strictly excluded from public presentation.
+
+UNIT TESTS
+Executed: tests/sourceCitationPresentation.test.ts
+Result: 20/20 PASS (114ms)
+
+PLAYWRIGHT
+Executed: e2e/source-citation-presentation.spec.ts & e2e/matched-text-highlighting.spec.ts
+Result: 4/4 PASS (2.5m)
+
+REGRESSION
+Combined P1–P5 test suite:
+- tests/publicVerificationResultContract.test.ts (18/18 PASS)
+- tests/universalIngestion.test.ts (13/13 PASS)
+- tests/canonicalTextOffsetModel.test.ts (16/16 PASS)
+- tests/matchedTextHighlighting.test.ts (18/18 PASS)
+- tests/sourceCitationPresentation.test.ts (20/20 PASS)
+Total: 85/85 PASS (11.49s)
+
+BUILD
+Command: npm run build
+Exit Code: 0
+Duration: 18.91s
+Modules Transformed: 1925
+Errors: 0
+
+FINAL STATUS
+P5 FUNCTIONAL CERTIFICATION: PASS
+P5 BASELINE STATEMENT: AMENDED
+P5 PROVENANCE: CORRECTED

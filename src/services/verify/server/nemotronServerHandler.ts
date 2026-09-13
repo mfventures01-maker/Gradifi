@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GRADIFI VERIFY - SERVER-SIDE NEMOTRON REASONING HANDLER
  * Provable server/edge execution path for NVIDIA Nemotron Evidence Reasoning.
  * HOEOS Standard: Server-Only Credentials, Strict Input Boundary, Zero Secret Leakage.
@@ -25,7 +25,7 @@ export async function handleNemotronServerReasoning(payload: NemotronServerReque
 
   if (!nvidiaKey || nvidiaKey.includes('YOUR_')) {
     return {
-      status: 'RUNTIME_UNAVAILABLE',
+      status: 'AUTHENTICATION_FAILED',
       findings: [],
       errorMessage: 'NVIDIA_API_KEY server configuration is unavailable'
     };

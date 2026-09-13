@@ -6,6 +6,13 @@
 
 import { AcademicProvider, ProviderSearchInput, ProviderResult, EvidenceMatch } from '../types';
 
+function generateCorrelationId(prefix: string): string {
+  const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+    ? crypto.randomUUID().replace(/-/g, '').slice(0, 8)
+    : Date.now().toString(36);
+  return `${prefix}_${Date.now()}_${nonce}`;
+}
+
 export class OpenAlexProvider implements AcademicProvider {
   readonly id = 'openalex' as const;
 
@@ -13,7 +20,7 @@ export class OpenAlexProvider implements AcademicProvider {
     const limit = input.limit || 5;
     const query = input.query || input.documentText.slice(0, 200);
     const requestTimestamp = new Date().toISOString();
-    const correlationId = `oa_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const correlationId = generateCorrelationId('oa');
 
     if (!query.trim()) {
       return {
@@ -29,7 +36,15 @@ export class OpenAlexProvider implements AcademicProvider {
     }
 
     try {
-      const email = process.env.VITE_OPENALEX_EMAIL || 'verify@gradifi.org';
+      const getEnvVar = (key: string) => {
+        if (typeof process !== 'undefined' && process.env && process.env[key]) return process.env[key];
+        try {
+          return (import.meta as any)?.env?.[key];
+        } catch {
+          return undefined;
+        }
+      };
+      const email = getEnvVar('VITE_OPENALEX_EMAIL') || getEnvVar('OPENALEX_EMAIL') || 'verify@gradifi.org';
       const url = `https://api.openalex.org/works?search=${encodeURIComponent(query.slice(0, 200))}&per-page=${limit}&mailto=${encodeURIComponent(email)}`;
       const response = await fetch(url, {
         headers: {

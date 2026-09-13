@@ -10,9 +10,18 @@ import {
   FineGrainedProviderStatus,
   SourceType,
   EvidenceMatch,
-  VerificationMatrixEntry
+  VerificationMatrixEntry,
+  CanonicalAnalysisDocument,
+  AnalysisInputContract,
+  AnalysisResultEnvelope,
+  SimilarityAnalysisResult,
+  SimilarityFinding,
+  PlagiarismEvidenceResult,
+  PlagiarismEvidenceFinding
 } from './types';
-import { analyzeDocumentEvidence } from './deterministicEngine';
+import { analyzeDocumentEvidence, evaluateDocumentSimilarity, extractSimilarityFindingsFromEvidenceMatches } from './deterministicEngine';
+import { buildCanonicalAnalysisDocument } from './documentNormalizer';
+import { evaluatePlagiarismEvidence } from './plagiarismPolicy';
 import { OpenAlexProvider } from './providers/openAlexProvider';
 import { CrossrefProvider } from './providers/crossrefProvider';
 import { UnpaywallProvider } from './providers/unpaywallProvider';
@@ -29,11 +38,26 @@ export class VerifyCoreService {
   private aiFederation = new AIFederationService();
 
   /**
-   * Executes a complete federated evidence verification run.
+   * Executes a complete federated evidence verification run from a string, CanonicalAnalysisDocument, or AnalysisInputContract.
    */
-  async executeVerifyRun(documentText: string, options?: { searchLimit?: number }): Promise<EvidenceEngineResult> {
+  async executeVerifyRun(
+    input: string | CanonicalAnalysisDocument | AnalysisInputContract,
+    options?: { searchLimit?: number }
+  ): Promise<EvidenceEngineResult> {
     const startTime = Date.now();
     const limit = options?.searchLimit || 5;
+
+    // Resolve input into canonical document representation
+    let canonicalDoc: CanonicalAnalysisDocument;
+    if (typeof input === 'string') {
+      canonicalDoc = buildCanonicalAnalysisDocument({ rawText: input });
+    } else if ('canonicalDocument' in input) {
+      canonicalDoc = input.canonicalDocument;
+    } else {
+      canonicalDoc = input;
+    }
+
+    const documentText = canonicalDoc.rawText;
 
     const providerStatuses: Record<string, ProviderStatus> = {
       openalex: 'unavailable',
@@ -147,7 +171,7 @@ export class VerifyCoreService {
       },
       {
         provider: 'unpaywall',
-        credentialStatus: 'VERIFIED',
+        credentialStatus: 'NOT_APPLICABLE',
         realRequestStatus: fineGrainedStatuses.unpaywall === 'VERIFIED' ? 'VERIFIED' : 'FAILED',
         responseStatus: fineGrainedStatuses.unpaywall === 'VERIFIED' ? 'VERIFIED' : 'EMPTY',
         schemaStatus: 'VERIFIED',
@@ -186,7 +210,13 @@ export class VerifyCoreService {
         schemaStatus: 'VERIFIED',
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
-        aiInterpretationStatus: aiResult.geminiStatus === 'INFERENCE_VERIFIED' ? 'VERIFIED_INFERENCE' : aiResult.geminiStatus as any,
+        aiInterpretationStatus: aiResult.geminiStatus === 'INFERENCE_VERIFIED'
+          ? 'VERIFIED_INFERENCE'
+          : (aiResult.geminiStatus === 'AUTHENTICATION_FAILED'
+            ? 'AUTHENTICATION_FAILED'
+            : (aiResult.geminiStatus === 'INFERENCE_FAILED'
+              ? 'INFERENCE_FAILED'
+              : 'RUNTIME_UNAVAILABLE')),
         overallStatus: aiResult.geminiStatus as FineGrainedProviderStatus
       },
       {
@@ -197,23 +227,56 @@ export class VerifyCoreService {
         schemaStatus: 'VERIFIED',
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
-        aiInterpretationStatus: aiResult.nemotronStatus === 'INFERENCE_VERIFIED' ? 'VERIFIED_INFERENCE' : aiResult.nemotronStatus as any,
+        aiInterpretationStatus: aiResult.nemotronStatus === 'INFERENCE_VERIFIED'
+          ? 'VERIFIED_INFERENCE'
+          : (aiResult.nemotronStatus === 'AUTHENTICATION_FAILED'
+            ? 'AUTHENTICATION_FAILED'
+            : (aiResult.nemotronStatus === 'INFERENCE_FAILED'
+              ? 'INFERENCE_FAILED'
+              : 'RUNTIME_UNAVAILABLE')),
         overallStatus: aiResult.nemotronStatus as FineGrainedProviderStatus
       },
       {
         provider: 'gemma',
         credentialStatus: 'NOT_APPLICABLE',
-        realRequestStatus: aiResult.localAiStatus === 'RUNTIME_AVAILABLE' ? 'VERIFIED' : 'FAILED',
-        responseStatus: aiResult.localAiStatus === 'RUNTIME_AVAILABLE' ? 'VERIFIED' : 'EMPTY',
+        realRequestStatus: aiResult.gemmaStatus === 'INFERENCE_VERIFIED' ? 'VERIFIED' : 'FAILED',
+        responseStatus: aiResult.gemmaStatus === 'INFERENCE_VERIFIED' ? 'VERIFIED' : 'EMPTY',
         schemaStatus: 'VERIFIED',
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
-        aiInterpretationStatus: aiResult.localAiStatus === 'RUNTIME_AVAILABLE' ? 'VERIFIED_INFERENCE' : 'RUNTIME_UNAVAILABLE',
-        overallStatus: aiResult.localAiStatus as FineGrainedProviderStatus
+        aiInterpretationStatus: aiResult.gemmaStatus === 'INFERENCE_VERIFIED'
+          ? 'VERIFIED_INFERENCE'
+          : (aiResult.gemmaStatus === 'AUTHENTICATION_FAILED'
+            ? 'AUTHENTICATION_FAILED'
+            : (aiResult.gemmaStatus === 'INFERENCE_FAILED'
+              ? 'INFERENCE_FAILED'
+              : 'RUNTIME_UNAVAILABLE')),
+        overallStatus: (aiResult.gemmaStatus || aiResult.localAiStatus) as FineGrainedProviderStatus
       }
     ];
 
     const processingTimeMs = Date.now() - startTime;
+
+    // G2 Deterministic Similarity Analysis
+    const similarityFindings = extractSimilarityFindingsFromEvidenceMatches(
+      documentText,
+      canonicalDoc.documentId,
+      engineOutput.verifiedMatches
+    );
+
+    const similarityAnalysis: SimilarityAnalysisResult = {
+      analysisType: 'DETERMINISTIC_SIMILARITY',
+      sourceDocumentId: canonicalDoc.documentId,
+      overallSimilarity: engineOutput.overallSimilarity,
+      findings: similarityFindings,
+      engineVersion: engineOutput.engineVersion,
+      policyVersion: engineOutput.policyVersion,
+      deterministic: true,
+      warnings: []
+    };
+
+    // G3 Plagiarism Evidence & Policy Evaluation (Consumes G2 Similarity)
+    const plagiarismEvidence = evaluatePlagiarismEvidence(similarityAnalysis);
 
     return {
       documentHash: engineOutput.documentHash,
@@ -231,7 +294,68 @@ export class VerifyCoreService {
       nemotronStatus: aiResult.nemotronStatus,
       geminiStatus: aiResult.geminiStatus,
       processingTimeMs,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      canonicalDocument: canonicalDoc,
+      similarityAnalysis,
+      plagiarismEvidence
+    };
+  }
+
+  /**
+   * Executes deterministic similarity analysis comparing two canonical documents directly.
+   * HOEOS G2 Standard: Pure deterministic calculation, 0 AI calls, reproducible.
+   */
+  executeSimilarityAnalysis(
+    sourceInput: string | CanonicalAnalysisDocument,
+    comparisonInput: string | CanonicalAnalysisDocument
+  ): SimilarityAnalysisResult {
+    const sourceDoc = typeof sourceInput === 'string'
+      ? buildCanonicalAnalysisDocument({ rawText: sourceInput })
+      : sourceInput;
+
+    const compDoc = typeof comparisonInput === 'string'
+      ? buildCanonicalAnalysisDocument({ rawText: comparisonInput })
+      : comparisonInput;
+
+    return evaluateDocumentSimilarity(sourceDoc, compDoc);
+  }
+
+  /**
+   * Executes deterministic plagiarism evidence policy evaluation over G2 similarity results.
+   * HOEOS G3 Standard: Pure evidence policy classification, 0 AI dependency.
+   */
+  executePlagiarismPolicy(similarityResult: SimilarityAnalysisResult): PlagiarismEvidenceResult {
+    return evaluatePlagiarismEvidence(similarityResult);
+  }
+
+  /**
+   * Executes canonical document analysis producing a standardized AnalysisResultEnvelope.
+   * Stable contract for future analysis engines.
+   */
+  async executeCanonicalAnalysis(inputContract: AnalysisInputContract): Promise<AnalysisResultEnvelope> {
+    const startTime = Date.now();
+    const deterministicResult = await this.executeVerifyRun(inputContract, {
+      searchLimit: inputContract.options?.searchLimit
+    });
+    const processingTimeMs = Date.now() - startTime;
+
+    // Derive overall status from deterministic result matrix
+    const hasVerified = deterministicResult.verifiedSources.length > 0;
+    const status = hasVerified ? 'VERIFIED' : 'EMPTY_RESULT';
+
+    return {
+      analysisId: `ANL-${deterministicResult.documentHash.slice(0, 8)}-${Date.now().toString(36).toUpperCase()}`,
+      documentId: inputContract.canonicalDocument.documentId,
+      timestamp: deterministicResult.timestamp,
+      engineVersion: deterministicResult.engineVersion,
+      policyVersion: deterministicResult.policyVersion,
+      status,
+      deterministicResult,
+      canonicalDocument: inputContract.canonicalDocument,
+      processingTimeMs,
+      warnings: inputContract.canonicalDocument.source.isFixture
+        ? ['DOCUMENT_IS_DEMO_FIXTURE']
+        : undefined
     };
   }
 }

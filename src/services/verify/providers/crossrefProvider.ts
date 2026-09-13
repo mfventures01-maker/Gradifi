@@ -6,6 +6,13 @@
 
 import { AcademicProvider, ProviderSearchInput, ProviderResult, EvidenceMatch } from '../types';
 
+function generateCorrelationId(prefix: string): string {
+  const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+    ? crypto.randomUUID().replace(/-/g, '').slice(0, 8)
+    : Date.now().toString(36);
+  return `${prefix}_${Date.now()}_${nonce}`;
+}
+
 export class CrossrefProvider implements AcademicProvider {
   readonly id = 'crossref' as const;
 
@@ -13,7 +20,7 @@ export class CrossrefProvider implements AcademicProvider {
     const limit = input.limit || 5;
     const query = input.query || input.documentText.slice(0, 200);
     const requestTimestamp = new Date().toISOString();
-    const correlationId = `cr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const correlationId = generateCorrelationId('cr');
 
     if (!query.trim()) {
       return {
@@ -29,7 +36,15 @@ export class CrossrefProvider implements AcademicProvider {
     }
 
     try {
-      const email = process.env.VITE_CROSSREF_EMAIL || 'verify@gradifi.org';
+      const getEnvVar = (key: string) => {
+        if (typeof process !== 'undefined' && process.env && process.env[key]) return process.env[key];
+        try {
+          return (import.meta as any)?.env?.[key];
+        } catch {
+          return undefined;
+        }
+      };
+      const email = getEnvVar('VITE_CROSSREF_EMAIL') || getEnvVar('CROSSREF_EMAIL') || 'verify@gradifi.org';
       const url = `https://api.crossref.org/works?query=${encodeURIComponent(query.slice(0, 200))}&rows=${limit}&mailto=${encodeURIComponent(email)}`;
       const response = await fetch(url, {
         headers: {
