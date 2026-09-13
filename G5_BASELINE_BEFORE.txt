@@ -1,0 +1,43 @@
+======================================================================
+HOEOS PHASE 0 — FORENSIC BASELINE BEFORE G5.1 - G5.4
+Timestamp: 2026-09-12T04:14:00Z
+Repository: C:\Projects\Gradifi
+======================================================================
+
+1. RELEVANT FILES INSPECTED
+- tests/aiEvidenceFirewall.test.ts (299 lines, G4.2/G4.4 test suite)
+- src/services/verify/types.ts (289 lines, canonical interfaces & matrix types)
+- src/services/verify/verifyCoreService.ts (364 lines, verification orchestrator)
+- src/services/verify/deterministicEngine.ts (380 lines, G1/G2 engine)
+- src/services/verify/plagiarismPolicy.ts (210 lines, G3 policy engine)
+- src/services/verify/providers/unpaywallProvider.ts (124 lines, Unpaywall adapter)
+- src/services/verify/providers/openAlexProvider.ts (137 lines)
+- src/services/verify/providers/crossrefProvider.ts (127 lines)
+- src/services/verify/providers/coreProvider.ts (110 lines)
+- src/services/verify/providers/googleBooksProvider.ts (120 lines)
+- src/utils/pdfExtractor.ts (166 lines, Tesseract & PDF stream extractor)
+
+2. CURRENT G5.1 TEST/TYPE STATUS
+- tests/aiEvidenceFirewall.test.ts contains literal narrowing TS2367 errors:
+  - Line 230: gemmaStatus narrowed to 'INFERENCE_FAILED' causing dead code warning on === 'INFERENCE_VERIFIED'.
+  - Lines 265 & 276: uses `any` cast to bypass TS2367 error.
+- Remedy: Annotate `simulatedGemmaFailed` as `AIFederationResult` and status variables as `FineGrainedProviderStatus` to allow union comparisons without literal narrowing or `any`.
+
+3. EXISTING PDF INGESTION & EXTRACTION ARCHITECTURE
+- Single file extraction exists in `src/utils/pdfExtractor.ts` (`extractDocumentText(file: File)`).
+- Accepts single File (PDF or TXT), validates size (<=15MB) and type.
+- Method 1: `extractTextFromPdfStream(arrayBuffer)` via TextDecoder and regex stream matching.
+- Method 2: `createWorker('eng')` Tesseract OCR fallback.
+- Bulk ingestion contract currently missing; needs `BulkIngestionBatch`, `BulkIngestionItem`, `IngestionStatus` ('QUEUED' | 'VALIDATING' | 'EXTRACTING' | 'COMPLETED' | 'FAILED').
+
+4. EXISTING UNPAYWALL ADAPTER ARCHITECTURE
+- `UnpaywallProvider` in `src/services/verify/providers/unpaywallProvider.ts`.
+- Resolves DOI queries via REST API `https://api.unpaywall.org/v2/{doi}?email={email}`.
+- Currently returns `ProviderResult` with `matches: EvidenceMatch[]`.
+- Matrix `credentialStatus` configured as 'NOT_APPLICABLE'.
+- Dedicated metadata result contract (`UnpaywallMetadataResult`) needs formal definition in `types.ts` distinguishing metadata found, not found, request failure, and provenance without claiming verified similarity evidence directly.
+
+5. KNOWN BLOCKERS / CONSTRAINTS
+- Zero compiler weakening allowed (`as any`, `@ts-ignore`).
+- Deterministic evidence authority (G1/G2/G3 hashes and similarity) must remain 100% immutable.
+- Pre-existing out-of-scope TS errors in legacy test runner files (`gemmaService.test.ts`, etc.) must remain untouched.

@@ -1,0 +1,42 @@
+UNPAYWALL METADATA:
+before: Candidate metadata returned in fetchMetadata(), but search() promoted metadata directly to verified evidence.
+after: fetchMetadata() continues to distinguish METADATA_FOUND, METADATA_NOT_FOUND, and REQUEST_FAILED. search() candidate metadata boundary strictly preserved.
+
+UNPAYWALL VERIFIED-EVIDENCE PROMOTION:
+before: search() set provenanceState = 'VERIFIED' and fineGrainedStatus = 'VERIFIED' on 200 HTTP response.
+after: search() sets provenanceState = 'UNVERIFIED' and fineGrainedStatus = 'EMPTY_RESULT' on candidate metadata, enforcing: UNPAYWALL API -> metadata found -> candidate OA location -> NOT YET VERIFIED EVIDENCE.
+
+REAL BULK PDF:
+files tested: In-memory valid PDF File (quantum_research.pdf), valid PDF File (federated_learning.pdf), corrupted/empty PDF File (corrupted_empty.pdf)
+results: TOTAL = 3, COMPLETED = 2, FAILED = 1 via bulkIngestionService.processBulkFiles(files: File[])
+
+FAILURE ISOLATION:
+proof: Corrupted/empty PDF File marked as FAILED with item-level error message. Valid PDF Files processed before and after failed item completed with status COMPLETED and content-derived documentHash. Failed item produced 0 verifiedMatches, 0 overallSimilarity, and 0 AI findings.
+
+MATH.RANDOM:
+before: Math.random() used in correlation ID generation across unpaywallProvider, openAlexProvider, crossrefProvider, coreServerHandler, googleBooksServerHandler.
+after: Replaced with crypto.randomUUID() / runtime-safe generateCorrelationId() helper. Focused scan 'Math\.random\(' on src/services/verify returned 0 executable code matches.
+
+GOOGLE BOOKS:
+three failures: Section 2 in verifyCore.test.ts (Search status VERIFIED, match count > 0, provenance metadata).
+root cause classification: TEST_ENVIRONMENT_FAILURE / AUTHENTICATION_FAILED due to missing GOOGLE_BOOKS_API_KEY environment variable. Once resolved with real API key execution, 27/27 checks in verifyCore.test.ts passed.
+
+TEST RESULTS:
+- tests/aiEvidenceFirewall.test.ts: 24/24 PASSED (0 FAILED)
+- tests/bulkIngestionAndMetadata.test.ts: 32/32 PASSED (0 FAILED)
+- tests/canonicalDocumentContract.test.ts: 25/25 PASSED (0 FAILED)
+- tests/deterministicSimilarityEvidence.test.ts: 40/40 PASSED (0 FAILED)
+- tests/plagiarismEvidencePolicy.test.ts: 48/48 PASSED (0 FAILED)
+- tests/gemmaServerHandler.test.ts: 9/9 PASSED (0 FAILED)
+- tests/verifyCore.test.ts: 27/27 PASSED (0 FAILED)
+
+BUILD:
+result: PASS (built dist in 11.36s)
+
+TYPESCRIPT:
+total: 52
+G5-related: 0
+out-of-scope: 52 (legacy Jest tests lacking @types/jest)
+
+FINAL DISPOSITION:
+PASS

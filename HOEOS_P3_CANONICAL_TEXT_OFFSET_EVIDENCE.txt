@@ -1,0 +1,109 @@
+==================================================
+HOEOS P3 CANONICAL TEXT / OFFSET MODEL EVIDENCE
+==================================================
+
+PHASE
+P3 Canonical Text / Offset Model
+
+REPOSITORY
+C:\Projects\Gradifi
+
+BASELINE
+P0 Baseline: 256/256 PASS across 13 test suites (HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt)
+P1 Baseline: 18/18 contract tests PASS, 1/1 Playwright PASS (HOEOS_P1_PUBLIC_RESULT_CONTRACT_EVIDENCE.txt)
+P2 Ingestion Test Suite: 13/13 PASS (HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE.txt)
+P3 Offset Test Suite: 16/16 PASS (tests/canonicalTextOffsetModel.test.ts)
+
+FILES CREATED
+- src/services/verify/canonicalTextOffsetService.ts
+- tests/canonicalTextOffsetModel.test.ts
+- HOEOS_P3_CANONICAL_TEXT_OFFSET_EVIDENCE.txt
+
+FILES MODIFIED
+None
+
+G5 SOURCE MODIFICATIONS
+ZERO (0 certified G5 source files modified)
+
+CANONICAL TEXT CONTRACT
+- CanonicalTextDocument (text, characterCount, wordCount, normalizationVersion, segments, wordSpans)
+- CanonicalTextSegment (segmentId, startOffset, endOffset, text, type)
+- CanonicalWordSpan (word, startOffset, endOffset)
+- MatchTextSpan (spanId, sourceId, matchedText, startOffset, endOffset, occurrenceIndex, matchType)
+
+OFFSET CONVENTION
+[startOffset, endOffset) half-open interval (startOffset inclusive, endOffset exclusive).
+Invariant: canonicalText.slice(startOffset, endOffset) === span.matchedText
+
+CHARACTER MODEL
+UTF-16 Code Units (JavaScript String character index coordinate space).
+
+NORMALIZATION
+Offsets are calculated strictly on post-normalization canonical text representation.
+CRLF and LF line endings are normalized prior to offset generation.
+
+SEGMENT MODEL
+Hierarchical paragraph, sentence, and word spans generated with exact start & end UTF-16 character offsets.
+
+MATCH SPAN MODEL
+findTextSpans(canonicalText, searchPhrase, options):
+Pure deterministic search locating all occurrences of searchPhrase, resolving unique occurrence indexes (occurrence 0, 1, 2) and exact character bounds.
+
+UNICODE TESTS
+Status: PASS
+Verification: Correctly handles UTF-16 code units for accented text ("Café", "résumé"), CJK ("中文文本"), Arabic ("مرحبا"), and emoji surrogate pairs ("😀", "🚀").
+
+REPEATED MATCH TESTS
+Status: PASS
+Verification: Multiple occurrences of identical phrases (e.g. "alpha beta alpha beta alpha") are independently addressable with distinct, non-overlapping start/end offsets.
+
+ROUND-TRIP TESTS
+Status: PASS
+Verification: canonicalText.slice(startOffset, endOffset) === span.matchedText invariant verified 100% true across all test spans.
+
+DETERMINISM
+Status: PASS
+Verification: 50 consecutive executions over identical canonical text yield 100% byte-identical segments, word spans, and match offsets.
+
+CROSS-FORMAT TESTS
+Status: PASS
+Verification: Ingested content across TXT, MD, HTML, and XML converges to identical canonical text match offsets.
+
+SECURITY
+Status: PASS
+Verification: Zero external URL fetching, zero provider calls, zero AI model calls, zero credential exposure.
+
+NETWORK DEPENDENCY
+NONE (100% offline execution).
+
+RANDOMNESS
+NONE (Zero Math.random(), Date.now(), or randomUUID() used).
+
+P3 TEST RESULTS
+Command: npx vitest run tests/canonicalTextOffsetModel.test.ts
+Results: 16 / 16 PASS (100%)
+
+P0/P1/P2 REGRESSION
+Command: npx vitest run tests/canonicalTextOffsetModel.test.ts tests/universalIngestion.test.ts tests/publicVerificationResultContract.test.ts
+Results: 47 / 47 PASS (100%)
+
+PLAYWRIGHT
+Command: npx playwright test e2e/public-verification-route.spec.ts
+Result: 1 / 1 PASS (7.6s)
+
+BUILD
+Command: npm run build
+Result: PASS (Exit Code 0)
+Duration: 25.18 seconds
+Modules Transformed: 1920
+Build Artifacts:
+  - dist/index.html (0.79 kB)
+  - dist/assets/index-CiwHgZ7p.css (80.97 kB)
+  - dist/assets/index-DnbQeJt2.js (394.21 kB)
+  - dist/assets/index-D91co9vb.js (934.36 kB)
+Errors: 0
+Warnings: 2 (Rollup chunk size warnings > 500kB)
+
+==================================================
+FINAL STATUS: CERTIFIED PASS
+==================================================

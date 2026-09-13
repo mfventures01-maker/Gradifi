@@ -1,0 +1,215 @@
+==================================================
+HOEOS G5.5–G5.9 MASTER DISK EVIDENCE
+==================================================
+
+G5.5 OA LOCATION RESOLUTION
+---------------------------
+Files changed:
+- src/services/verify/types.ts
+
+Files created:
+- src/services/verify/unpaywallOAResolver.ts
+- tests/unpaywallOAResolver.test.ts
+- G5_5_DISK_EVIDENCE.txt
+
+Contract:
+- Resolves available Unpaywall locations from best_oa_location and oa_locations
+- Preserves url, urlForPdf, urlForLandingPage, evidence, license, version, isBest
+- Prefers provider-designated best location; deterministic fallback to oaLocations (PDF candidate preferred over landing page)
+- Zero URL manufacturing, Zero Math.random()
+- Distinct statuses: NO_OA_LOCATION, OA_LOCATION_FOUND, OA_LOCATION_INVALID
+- Never claims DETERMINISTIC_EVIDENCE_VERIFIED or provenanceState = VERIFIED
+
+Tests:
+- npx tsx tests/unpaywallOAResolver.test.ts (16/16 PASSED, 0 FAILED)
+
+Result: PASS
+
+G5.6 SOURCE RETRIEVAL
+---------------------
+Files changed:
+- src/services/verify/types.ts
+
+Files created:
+- src/services/verify/sourceRetrievalService.ts
+- tests/sourceRetrieval.test.ts
+- G5_6_DISK_EVIDENCE.txt
+
+Retrieval states:
+- SOURCE_RETRIEVED, HTTP_ERROR, NETWORK_ERROR, CONTENT_TYPE_MISMATCH, EMPTY_RESPONSE, RETRIEVAL_FAILED
+- HTTP 200 DOES NOT automatically mean CONTENT_VALID
+- Valid URL DOES NOT automatically mean SOURCE_RETRIEVED
+- Preserves httpStatus, contentType, contentLength, sourceUrl, retrievedAt, correlationId
+- Client-side safety: No server secrets in browser provider code
+
+Tests:
+- npx tsx tests/sourceRetrieval.test.ts (18/18 PASSED, 0 FAILED)
+
+Result: PASS
+
+G5.7 CONTENT VALIDATION
+-----------------------
+Files changed:
+- src/services/verify/types.ts
+- src/services/verify/documentNormalizer.ts
+
+Files created:
+- src/services/verify/contentValidationService.ts
+- tests/contentValidation.test.ts
+- G5_7_DISK_EVIDENCE.txt
+
+Validation states:
+- CONTENT_VALID, CONTENT_EMPTY, CONTENT_MALFORMED, CONTENT_UNSUPPORTED, CONTENT_VALIDATION_FAILED
+- Reuses canonical pdfExtractor engine and canonical document normalization (buildCanonicalAnalysisDocument)
+- Preserves documentHash, rawText, normalizedText, stats, extractionStatus, extractionMethod
+- Failure isolation: Failed validation returns CONTENT_MALFORMED / CONTENT_UNSUPPORTED without crashing or producing false verifiedMatches/AI findings
+
+Tests:
+- npx tsx tests/contentValidation.test.ts (14/14 PASSED, 0 FAILED)
+
+Result: PASS
+
+G5.8 IDENTITY CORRESPONDENCE
+----------------------------
+Files changed:
+- src/services/verify/types.ts
+
+Files created:
+- src/services/verify/identityCorrespondenceService.ts
+- tests/identityCorrespondence.test.ts
+- G5_8_DISK_EVIDENCE.txt
+
+DOI tests:
+- Exact DOI match -> IDENTITY_MATCHED (100% confidence, doi_exact)
+- DOI mismatch -> IDENTITY_MISMATCH (0% confidence)
+
+Title/author tests:
+- Title + Author token coverage >= 70% -> IDENTITY_MATCHED (80%-95% confidence)
+- Title + Author token coverage < 20% -> IDENTITY_MISMATCH (0% confidence)
+
+Inconclusive tests:
+- Partial title coverage (20%-69%) without DOI -> IDENTITY_INCONCLUSIVE
+
+Result: PASS
+
+G5.9 DETERMINISTIC EVIDENCE BRIDGE
+----------------------------------
+Files changed:
+- src/services/verify/types.ts
+
+Files created:
+- src/services/verify/deterministicEvidenceBridge.ts
+- tests/deterministicEvidenceBridge.test.ts
+- G5_9_DISK_EVIDENCE.txt
+
+Positive path:
+- Metadata -> OA Location -> Source Retrieval -> Content Validation -> Identity Match -> Deterministic Engine -> verifiedMatches -> Similarity
+
+Negative paths:
+- Missing metadata -> bridgeEligible = false
+- Missing OA location -> bridgeEligible = false
+- Retrieval failure -> bridgeEligible = false
+- Invalid content -> bridgeEligible = false
+- Identity mismatch -> bridgeEligible = false
+- Identity inconclusive -> bridgeEligible = false
+
+Deterministic engine:
+- analyzeDocumentEvidence remains authoritative
+- Provenance state becomes VERIFIED ONLY upon engine acceptance
+
+AI firewall:
+- AI failure leaves deterministic evidence unchanged
+- AI cannot mutate documentHash, evidenceHash, overallSimilarity, or verifiedMatches
+
+Result: PASS
+
+GOOGLE BOOKS
+------------
+Regression:
+- 27/27 checks PASSED in tests/verifyCore.test.ts
+- Follows strict provider response -> metadata/provenance -> candidate source -> validation -> deterministic evidence discipline
+
+BULK PDF
+--------
+Real File[] path:
+- 32/32 PASSED in tests/bulkIngestionAndMetadata.test.ts
+- Valid/invalid/valid result: 2 completed, 1 failed, 3 total with independent item states
+
+REGRESSION SUITE
+----------------
+- aiEvidenceFirewall.test.ts: 24/24 PASSED (0 FAILED)
+- bulkIngestionAndMetadata.test.ts: 32/32 PASSED (0 FAILED)
+- canonicalDocumentContract.test.ts: 25/25 PASSED (0 FAILED)
+- deterministicSimilarityEvidence.test.ts: 40/40 PASSED (0 FAILED)
+- plagiarismEvidencePolicy.test.ts: 48/48 PASSED (0 FAILED)
+- gemmaServerHandler.test.ts: 9/9 PASSED (0 FAILED)
+- verifyCore.test.ts: 27/27 PASSED (0 FAILED)
+- unpaywallOAResolver.test.ts: 16/16 PASSED (0 FAILED)
+- sourceRetrieval.test.ts: 18/18 PASSED (0 FAILED)
+- contentValidation.test.ts: 14/14 PASSED (0 FAILED)
+- identityCorrespondence.test.ts: 14/14 PASSED (0 FAILED)
+- deterministicEvidenceBridge.test.ts: 17/17 PASSED (0 FAILED)
+
+BUILD
+-----
+Result: PASS (built dist in 28.39s)
+
+TYPESCRIPT
+----------
+Total errors: 52
+G5-related: 0
+Pre-existing/out-of-scope: 52 (legacy Jest tests lacking @types/jest)
+
+SECURITY
+--------
+process.env browser reads: 0
+Math.random executable matches: 0
+Forbidden suppressions: 0
+Production secret scan: 0
+
+FILES CHANGED
+-------------
+- src/services/verify/types.ts
+- src/services/verify/documentNormalizer.ts
+- src/services/verify/providers/unpaywallProvider.ts
+- src/services/verify/providers/openAlexProvider.ts
+- src/services/verify/providers/crossrefProvider.ts
+- src/services/verify/server/coreServerHandler.ts
+- src/services/verify/server/googleBooksServerHandler.ts
+- src/utils/pdfExtractor.ts
+
+FILES CREATED
+-------------
+- src/services/verify/unpaywallOAResolver.ts
+- src/services/verify/sourceRetrievalService.ts
+- src/services/verify/contentValidationService.ts
+- src/services/verify/identityCorrespondenceService.ts
+- src/services/verify/deterministicEvidenceBridge.ts
+- tests/unpaywallOAResolver.test.ts
+- tests/sourceRetrieval.test.ts
+- tests/contentValidation.test.ts
+- tests/identityCorrespondence.test.ts
+- tests/deterministicEvidenceBridge.test.ts
+- G5_5_DISK_EVIDENCE.txt
+- G5_6_DISK_EVIDENCE.txt
+- G5_7_DISK_EVIDENCE.txt
+- G5_8_DISK_EVIDENCE.txt
+- G5_9_DISK_EVIDENCE.txt
+- G5_5_TO_G5_9_DISK_EVIDENCE.txt
+
+UNRESOLVED
+----------
+None.
+
+FINAL DISPOSITION
+-----------------
+G5.5: PASS
+G5.6: PASS
+G5.7: PASS
+G5.8: PASS
+G5.9: PASS
+
+OVERALL: PASS
+
+NEXT AUTHORIZED SLICE:
+G5.10

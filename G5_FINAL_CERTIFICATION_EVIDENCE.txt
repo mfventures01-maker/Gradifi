@@ -1,0 +1,49 @@
+GRADIFI VERIFY - HOEOS G5 FINAL CERTIFICATION EVIDENCE FILE
+========================================================================
+
+1. TIMESTAMP & SCOPE
+Timestamp: 2026-09-12T07:02:50+01:00
+Scope: Gradifi Verify Federated Evidence Architecture & Subsystem Gates G1 through G5.10R
+
+2. INSTALLED DEPENDENCY VERIFICATION
+- qrcode: 1.5.4
+- @types/qrcode: 1.5.6
+- jsqr: 1.4.0
+
+3. INDEPENDENT TEST RECONCILIATION & TEST COUNTS
+- G5.10R QR: 22/22 PASSED
+- VerifyCore: 27/27 PASSED
+- G5.2-G5.4: 32/32 PASSED
+- G2 (Similarity Authority): 40/40 PASSED
+- G3 (Plagiarism Policy): 48/48 PASSED
+- G4.2/G4.4 (AI Firewall & Matrix Truthfulness): 24/24 PASSED
+- G1 (Canonical Document): 25/25 PASSED
+- G5.9 (Deterministic Evidence Bridge): 17/17 PASSED
+
+TOTAL: 235 / 235 PASSED
+FAILURES: 0
+
+4. SYSTEM VERIFICATION & BOUNDARIES
+- Actual QR raster decode via jsQR: PASS
+- jsQR version: 1.4.0
+- QR encoder qrcode: 1.5.4
+- Verification ID determinism: PASS
+- QR security boundary: PASS
+- Production build: PASS
+- Verify TypeScript boundary: PASS (0 errors within the verify subsystem)
+
+5. VERIFICATION-ID CONTRACT
+- Contract Format: `VRF-${res.documentHash.slice(0, 12).toUpperCase()}`
+- Specification: 48-bit hash-derived deterministic verification identifier derived from the canonical SHA-256 document hash.
+- Grounding: Derived directly from the canonical SHA-256 document hash (res.documentHash).
+- Randomness Isolation: Does NOT depend on Math.random() or Date.now().
+
+6. TYPESCRIPT BOUNDARY DISTINCTION
+- The Gradifi Verify subsystem boundary contains 0 TypeScript errors.
+- Unrelated legacy repository TypeScript debt in non-verify components (e.g. missing Jest globals in legacy test files) is out of scope and explicitly distinguished from the 0-error G5 Verify certification boundary.
+
+7. RANDOMNESS BOUNDARY CERTIFICATION
+- Certified randomness elimination is specifically established for the G5 authority path and verification ID / QR generation workflow (`src/pages/verify/**`, `src/utils/qrGenerator.ts`, `src/utils/pdfReportGenerator.ts`, `src/services/verify/**`). Global repository randomness is not claimed.
+
+8. FINAL RECONCILIATION STATUS
+Certification Status: G5 CERTIFIED PASS

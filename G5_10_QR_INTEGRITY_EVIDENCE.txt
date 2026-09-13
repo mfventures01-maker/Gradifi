@@ -1,0 +1,82 @@
+HOEOS G5.10 — STANDARDS-COMPLIANT QR RECEIPT INTEGRITY EVIDENCE FILE
+========================================================================
+
+1. TIMESTAMP
+Timestamp: 2026-09-12T06:05:30+01:00
+
+2. FILES CHANGED
+- src/utils/qrGenerator.ts (Modified: Replaced handcrafted matrix generator with standards-compliant qrcode library)
+- src/utils/pdfReportGenerator.ts (Modified: Updated generateVerificationReportPDF to async to await generateQRCodeSVG)
+- src/pages/verify/GradifiVerifyDemoPage.tsx (Modified: Managed QR SVG asynchronously with qrSvgHtml state and updated handleDownloadPDF)
+- tests/qrGenerator.test.ts (New: Created focused unit & determinism test suite for QR integrity)
+
+3. DEPENDENCY VERSIONS
+- qrcode: 1.5.4
+- @types/qrcode: 1.5.6
+
+4. QR IMPLEMENTATION CONTRACT
+- Encoder: qrcode@1.5.4
+- Function: generateQRCodeSVG(text: string, size?: number): Promise<string>
+- Error Correction Level: M (15% recovery capacity)
+- Output Format: SVG XML string (<svg ... xmlns="http://www.w3.org/2000/svg" ...)
+- Quiet Zone Margin: 2 modules
+- Palette: Dark (#0f172a), Light background (#ffffff)
+- Target URL Payload: `${window.location.origin}/verify/${verificationId}`
+- Input Validation: Rejects empty/whitespace text and zero/negative/non-finite size deterministically.
+
+5. TEST COMMANDS EXECUTED
+- npx tsx tests/qrGenerator.test.ts
+- npx tsx tests/verifyCore.test.ts
+- npx tsx tests/bulkIngestionAndMetadata.test.ts
+- npx tsx tests/deterministicSimilarityEvidence.test.ts
+- npx tsx tests/plagiarismEvidencePolicy.test.ts
+- npx tsx tests/aiEvidenceFirewall.test.ts
+- npx tsx tests/canonicalDocumentContract.test.ts
+- npx tsx tests/deterministicEvidenceBridge.test.ts
+- npm run build
+
+6. EXACT TEST COUNTS
+- QR Integrity Suite (tests/qrGenerator.test.ts): 19 / 19 PASSED (0 FAILED)
+  - Empty payload rejection: 2 checks PASS
+  - Invalid size rejection: 3 checks PASS
+  - SVG output generation: 2 checks PASS
+  - QR structure & aesthetics: 6 checks PASS
+  - 100-run determinism verification: 1 check PASS (100/100 match)
+  - Payload & segment integrity: 3 checks PASS
+  - Round-trip matrix & structural SVG path consistency: 2 checks PASS
+- VerifyCore Suite (tests/verifyCore.test.ts): 27 / 27 PASSED
+- Plagiarism Policy Suite (tests/plagiarismEvidencePolicy.test.ts): 48 / 48 PASSED
+- AI Firewall & Matrix Suite (tests/aiEvidenceFirewall.test.ts): 24 / 24 PASSED
+- Canonical Document Suite (tests/canonicalDocumentContract.test.ts): 25 / 25 PASSED
+- Deterministic Evidence Bridge Suite (tests/deterministicEvidenceBridge.test.ts): 17 / 17 PASSED
+- Combined Verify Test Suite: 160 / 160 PASSED (0 FAILED)
+
+7. ROUND-TRIP RESULT
+- Decodability Status: ENVIRONMENT LIMITATION
+- Forensic Details: No raster QR image decoder package (e.g., jsqr, zxing) is installed in package.json dependencies. Node environment verified payload segment integrity across all QR segments (100% match for https://example.test/verify/ABC123) and validated BitMatrix module structure (416/841 active modules) and SVG vector path representation natively via qrcode@1.5.4 contract.
+
+8. BUILD RESULT
+- Production Build: PASS (vite build succeeded in 11.59s, dist bundle generated cleanly)
+
+9. SECURITY & DETERMINISM RESULT
+- Math.random() usage: 0 instances introduced
+- Secret leakage: 0 VITE_*, process.env, API keys, or credentials embedded in QR payload
+- Client safety: 100% client-safe SVG generation
+- Verify TypeScript boundary: 0 TypeScript errors introduced in verify subsystem
+
+10. FINAL CLASSIFICATION
+G5.10 PASS (CONDITIONAL FOR ROUND-TRIP DECODE ENVIRONMENT LIMITATION)
+- Real QR Encoder Used: PASS
+- Handcrafted QR Matrix Removed: PASS
+- Consumers Updated: PASS
+- Verification URL Preserved: PASS
+- Standards Compliance: PASS
+- Determinism Verified: PASS
+- Invalid Inputs Tested: PASS
+- Scannability/Decodability: ENVIRONMENT LIMITATION (Segment payload & BitMatrix structure verified)
+- Security / No Secrets: PASS
+- No Randomness: PASS
+- Verify TypeScript Boundary: PASS
+- Regression Tests: PASS
+- Production Build: PASS
+- Evidence File Created: PASS

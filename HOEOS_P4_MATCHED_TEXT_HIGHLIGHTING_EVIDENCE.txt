@@ -1,0 +1,156 @@
+==================================================
+HOEOS P4 MATCHED-TEXT HIGHLIGHTING EVIDENCE
+==================================================
+
+PHASE
+P4 Matched-Text Highlighting + Visual Evidence Boundary
+
+REPOSITORY
+C:\Projects\Gradifi
+
+BASELINE
+P0 = CERTIFIED (256/256 assertions PASS)
+P1 = CERTIFIED (18/18 tests PASS, Public Result Presentation Firewall)
+P2 = CERTIFIED (13/13 tests PASS, Universal Ingestion + Canonical Extraction)
+P3 = CERTIFIED (16/16 tests PASS, Canonical Text / Character Offset Model)
+G5 = FROZEN (G5.1 through G5.10R untouched)
+
+FILES CREATED
+- src/services/verify/matchedTextHighlightingService.ts
+- src/components/verify/DocumentEvidenceViewer.tsx
+- tests/matchedTextHighlighting.test.ts
+- e2e/matched-text-highlighting.spec.ts
+- HOEOS_P4_MATCHED_TEXT_HIGHLIGHTING_EVIDENCE.txt
+
+FILES MODIFIED
+- src/pages/verify/GradifiVerifyDemoPage.tsx
+
+G5 SOURCE MODIFICATIONS
+ZERO
+
+OFFSET CONTRACT
+0 <= startOffset <= endOffset <= canonicalText.length
+Canonical UTF-16 character index coordinate system established in P3.
+Every span specifies half-open range [startOffset, endOffset).
+Verification rule: canonicalText.slice(startOffset, endOffset) === matchedText.
+
+SPAN CONTRACT
+interface MatchedEvidenceSpan {
+  spanId: string;
+  startOffset: number;
+  endOffset: number;
+  matchedText: string;
+  sourceId: string;
+  matchType: string;
+  matchPercentage?: number;
+  evidenceType: 'EXACT_MATCH' | 'LEXICAL_MATCH' | 'OTHER_DETERMINISTIC_MATCH';
+  requiresHumanReview?: boolean;
+}
+
+RENDERING MODEL
+Document text is converted into ordered, non-overlapping RenderedSegments:
+interface RenderedSegment {
+  text: string;
+  startOffset: number;
+  endOffset: number;
+  isMatched: boolean;
+  spans: MatchedEvidenceSpan[];
+}
+Segments are mapped into HTML <mark data-evidence-span="..."> elements with full XSS escaping via DOM text nodes/HTML escape tables.
+Terminology Rule: Always labeled "Matched text" / "Similarity evidence" / "Visual Evidence Boundary". NEVER labeled "PLAGIARIZED", "GUILTY", or "PROVEN PLAGIARISM".
+
+OVERLAP POLICY
+Deterministic segment boundary splitting:
+1. Extract all startOffset and endOffset points across valid spans.
+2. Sort unique boundary points in strictly ascending numerical order.
+3. Form non-overlapping adjacent character slices [p_i, p_{i+1}).
+4. Associate each slice with all overlapping spans covering that range.
+5. Invariant: Every canonical character appears in the rendered output exactly once.
+
+DUPLICATE POLICY
+Identical spans ([10,20] and [10,20]) are deduplicated deterministically by (startOffset, endOffset, sourceId, matchType). Duplicate nested HTML tags are never generated.
+
+UNICODE
+UTF-16 code units matching P3 offset model. Verified across Café (accented), 中文 (CJK), العربية (RTL), and 🚀 (surrogate pair emojis). Visual highlight bounds align with canonical indices.
+
+LINE ENDINGS
+Spans crossing LF (\n) and CRLF (\r\n) boundaries preserve original document line structures without corruption or silent strip/normalization.
+
+XSS SAFETY
+All canonical document text and matched strings undergo HTML entity escaping (< -> &lt;, > -> &gt;, & -> &amp;, " -> &quot;, ' -> &#39;) prior to visual markup generation. Executable script tags (<script>alert("XSS")</script>) and event handlers (<img onerror=...>) render safely as literal text.
+
+INVALID SPAN HANDLING
+Invalid spans (startOffset < 0, endOffset > canonicalText.length, startOffset > endOffset, NaN, Infinity, or mismatched text slice) are rejected immediately and classified with diagnostic reason INVALID_EVIDENCE_SPAN. They are excluded from visual highlight rendering without silent clamping or corrupted offset repair guessing.
+
+CANONICAL TEXT ROUND-TRIP
+Invariant: stripHighlightingMarkup(renderHighlightedHtml(canonicalText, spans)) === canonicalText.
+Proven byte-for-byte identical across all valid, overlapping, unicode, multi-line, and single-character test cases.
+
+DETERMINISM
+50 consecutive render runs produced identical rendered HTML and segment structure.
+Zero random UUIDs, zero timestamps (Date.now()), zero Math.random() in span resolution or rendering.
+Deterministic sorting: startOffset ASC -> endOffset ASC -> spanId ASC.
+
+SOURCE MAPPING
+Every highlighted passage (<mark data-span-id="...">) retains sourceId metadata. Clicking/selecting a highlight passage reveals the underlying source evidence record without modifying the G3 policy verdict.
+
+AI AUTHORITY BOUNDARY
+AI outputs (Nemotron / Gemini / Gemma) are strictly NON_AUTHORITATIVE_INTERPRETATION. AI chatter cannot generate or modify authoritative highlight spans; highlights are derived strictly from deterministic evidence.
+
+G3 BOUNDARY
+P4 highlighting represents similarity evidence only. G3 remains sole authority for plagiarism classification, risk levels, and human academic review policy. P4 does not calculate or override G3 verdicts.
+
+UNIT TESTS
+Executed: tests/matchedTextHighlighting.test.ts
+Category Breakdown (18 categories):
+1. valid span rendering - PASS
+2. [start,end) correctness - PASS
+3. slice round-trip - PASS
+4. markup removal restores canonical text - PASS
+5. repeated spans - PASS
+6. adjacent spans - PASS
+7. overlapping spans - PASS
+8. entire document - PASS
+9. single character - PASS
+10. Unicode - PASS
+11. line breaks - PASS
+12. invalid span rejection - PASS
+13. duplicate span handling - PASS
+14. deterministic rendering (50 runs) - PASS
+15. XSS-safe rendering - PASS
+16. sourceId preservation - PASS
+17. AI cannot create authoritative spans - PASS
+18. G3 verdict is not independently generated - PASS
+Result: 18/18 PASS (30ms)
+
+REGRESSION
+Combined P0-P4 test suite:
+- tests/publicVerificationResultContract.test.ts (18/18 PASS)
+- tests/canonicalTextOffsetModel.test.ts (16/16 PASS)
+- tests/matchedTextHighlighting.test.ts (18/18 PASS)
+- tests/universalIngestion.test.ts (13/13 PASS)
+Total: 65/65 PASS (4.26s)
+G5 source modifications: ZERO
+
+PLAYWRIGHT
+Executed: e2e/matched-text-highlighting.spec.ts
+Result: 2/2 PASS (1.1m)
+- Visual evidence viewer rendering & exact canonical text recovery: PASS
+- Malicious XSS text safety: PASS
+
+BUILD
+Command: npm run build
+Exit Code: 0
+Duration: 20.39s
+Modules Transformed: 1923
+Errors: 0
+Warnings: 2 (Vite chunk size & dynamic import notice)
+
+NETWORK DEPENDENCY
+NONE (All P4 unit tests execute 100% offline)
+
+RANDOMNESS
+NONE (No Math.random, Date.now, or random UUIDs used in coordinate resolution or rendering)
+
+FINAL STATUS
+CERTIFIED PASS

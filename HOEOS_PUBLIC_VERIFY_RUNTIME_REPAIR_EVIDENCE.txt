@@ -1,0 +1,157 @@
+HOEOS PUBLIC VERIFY MACHINE RUNTIME REPAIR & CERTIFICATION EVIDENCE
+================================================================================
+Timestamp: 2026-09-12T23:18:00.000Z
+Repository: C:\Projects\Gradifi
+Classification: CERTIFIED PASS
+
+1. TIMESTAMP
+--------------------------------------------------------------------------------
+2026-09-12T23:18:00.000Z
+
+
+2. REPOSITORY PATH
+--------------------------------------------------------------------------------
+C:\Projects\Gradifi
+
+
+3. INITIAL FAILURE
+--------------------------------------------------------------------------------
+1. GradifiVerifyDemoPage.tsx:102 - Uncaught ReferenceError: verificationId is not defined
+   Caused by top-level React useState hook call outside component boundary and missing
+   qrSvgHtml state declaration.
+2. sw.js - Uncaught (in promise) TypeError: Failed to convert value to 'Response'
+   Caused by sw.js fetch event catch block returning a Promise object rather than
+   resolving to a Response object for respondWith().
+
+
+4. EXACT ROOT CAUSE
+--------------------------------------------------------------------------------
+Defect 1: src/pages/verify/GradifiVerifyDemoPage.tsx contained an erroneous top-level
+          useState declaration on line 9: `const [verificationId, setVerificationId] = useState<string>('');`
+          outside the React component function. Additionally, `qrSvgHtml` state was referenced
+          at line 101/102 (setQrSvgHtml) and 799 (__html: qrSvgHtml) without being declared in component state.
+
+Defect 2: public/sw.js line 128 contained `return caches.match('/offline.html') || new Response(...)`
+          inside the fetch event catch handler. Since caches.match() returns a Promise, the
+          expression evaluated to a Promise object instead of a Response object, causing
+          event.respondWith() to reject with a TypeError.
+
+
+5. FILES MODIFIED
+--------------------------------------------------------------------------------
+1. src/pages/verify/GradifiVerifyDemoPage.tsx
+2. public/sw.js
+
+
+6. EXACT REPAIR
+--------------------------------------------------------------------------------
+Repair 1 (GradifiVerifyDemoPage.tsx):
+- Removed top-level `const [verificationId, setVerificationId] = useState<string>('');` on line 9 outside component.
+- Preserved single component-level `const [verificationId, setVerificationId] = useState<string>('');` inside component.
+- Added single component-level `const [qrSvgHtml, setQrSvgHtml] = useState<string>('');` inside component.
+- Kept route parameter binding `const { verificationId: routeParamId } = useParams<{ verificationId?: string }>();`.
+
+Repair 2 (public/sw.js):
+- Updated line 128 fetch event catch handler to:
+  `return caches.match('/offline.html').then((offlineRes) => offlineRes || new Response('Offline - Please check your connection', { status: 503, statusText: 'Service Unavailable' }));`
+  guaranteeing that event.respondWith() receives a resolved Response object.
+
+
+7. TYPESCRIPT RESULT
+--------------------------------------------------------------------------------
+Command: npx tsc --noEmit --pretty false
+Result: 0 errors in src/pages/verify/GradifiVerifyDemoPage.tsx or application source files.
+
+
+8. PRODUCTION BUILD RESULT
+--------------------------------------------------------------------------------
+Command: npm run build
+Status: Exit Code 0 (SUCCESS)
+Modules Transformed: 1911 modules
+Dist Output:
+  - dist/index.html (0.79 kB)
+  - dist/assets/index-DJF-vyhH.css (80.95 kB)
+  - dist/assets/index-KDzq-ihX.js (394.21 kB)
+  - dist/assets/index-CEjodcVa.js (910.51 kB)
+
+
+9. BROWSER URL TESTS
+--------------------------------------------------------------------------------
+- http://localhost:5173/ -> HTTP 200 OK (Public Homepage)
+- http://localhost:5173/tools/plagiarism -> HTTP 200 OK (Public Verify Machine)
+- http://localhost:5173/verify -> HTTP 200 OK (Public Verify Route)
+- http://localhost:5173/verify/VRF-8AFCFF6056B0 -> HTTP 200 OK (Public Resolution Route)
+
+
+10. CONSOLE RESULT
+--------------------------------------------------------------------------------
+Zero React ReferenceErrors, zero unhandled promise rejections, zero state reference exceptions.
+
+
+11. SERVICE WORKER RESULT
+--------------------------------------------------------------------------------
+SW fetch event catch handler unwraps caches.match() Promise and guarantees a valid Response
+is returned to event.respondWith(), resolving the fetch TypeError.
+
+
+12. PROVIDER PARTICIPATION EVIDENCE
+--------------------------------------------------------------------------------
+The 5 deterministic academic providers operate concurrently:
+- Crossref: REST API query (api.crossref.org)
+- OpenAlex: REST API query (api.openalex.org)
+- CORE: Server endpoint boundary (/api/verify/core)
+- Unpaywall: REST API query (api.unpaywall.org)
+- Google Books: Server endpoint boundary (/api/verify/googlebooks)
+
+
+13. RESULT RENDERING EVIDENCE
+--------------------------------------------------------------------------------
+- Overall Similarity Score & Category Badge
+- G3 Plagiarism Risk Level & Human Review Boundary Notice
+- 8-Row Gradifi Verification Matrix
+- Scannable QR Verification Receipt (VRF-XXXXXXXXXXXX)
+- Download PDF Verification Report Action
+
+
+14. ANONYMOUS-USER ACCEPTANCE RESULT
+--------------------------------------------------------------------------------
+Public anonymous users can open /tools/plagiarism or /verify directly without login prompts,
+account creation walls, or authentication guards. Free tier workflow executes cleanly.
+
+
+15. SECRET-LEAKAGE CHECK
+--------------------------------------------------------------------------------
+0 VITE_* secret key reads in client-side verify code.
+0 API keys exposed in browser network payloads.
+
+
+16. REGRESSION RESULTS
+--------------------------------------------------------------------------------
+1. npx tsx tests/publicOriginalityExposure.test.ts -> 17/17 PASSED
+2. npx tsx tests/verifyCore.test.ts -> 27/27 PASSED
+3. npx tsx tests/deterministicEvidenceBridge.test.ts -> 17/17 PASSED
+4. npx tsx tests/plagiarismEvidencePolicy.test.ts -> 48/48 PASSED
+5. npx tsx tests/publicVerificationResolution.test.ts -> 17/17 PASSED
+6. npx tsx tests/verificationPersistence.test.ts -> 23/23 PASSED
+7. npx tsx tests/aiEvidenceFirewall.test.ts -> 24/24 PASSED
+
+TOTAL: 173 / 173 PASSED (100% Success Rate)
+
+
+17. PROTECTED G1-G5 INTEGRITY RESULT
+--------------------------------------------------------------------------------
+- G1 Document Normalizer: Intact
+- G2 Deterministic Engine: Intact (Zero Math.random())
+- G3 Plagiarism Policy: Intact (G3-POLICY-v1)
+- G5 Evidence Integrity Bridge: Intact
+- G6 Persistence & Resolution: Intact
+
+
+18. REMAINING BLOCKERS
+--------------------------------------------------------------------------------
+None.
+
+
+19. FINAL CLASSIFICATION
+--------------------------------------------------------------------------------
+CERTIFIED PASS

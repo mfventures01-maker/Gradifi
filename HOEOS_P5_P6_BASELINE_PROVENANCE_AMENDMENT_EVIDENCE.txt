@@ -1,0 +1,121 @@
+==================================================
+HOEOS P5/P6 BASELINE PROVENANCE AMENDMENT EVIDENCE
+==================================================
+
+TIMESTAMP: 2026-09-13T10:04:05+01:00
+REPOSITORY: C:\Projects\Gradifi
+MODE: HOEOS / VERIFICATION-FIRST / DETERMINISTIC
+
+------------------------------------------------------------
+BASELINE
+------------------------------------------------------------
+
+Original G5 Baseline Commit:
+2e29506f353ab37c25875785ec95e3128f52522f
+
+Original Commit Message:
+certify federated academic evidence core baseline
+
+P5 Extended Baseline Commit (Stage 1):
+5d73a9690321834e1ac15a92046a7c238a51211c
+
+P6 Certification Baseline Commit (Stage 2):
+5db4888a263d16b717c365493e808c18b7ba6ebd
+
+------------------------------------------------------------
+P5 VERIFICATION-CORE EXTENSION FORENSIC SUMMARY
+------------------------------------------------------------
+
+13 verification-core files changed relative to 2e29506f353ab37c25875785ec95e3128f52522f:
+1. src/services/verify/aiFederation.ts
+2. src/services/verify/deterministicEngine.ts
+3. src/services/verify/documentNormalizer.ts
+4. src/services/verify/providers/crossrefProvider.ts
+5. src/services/verify/providers/openAlexProvider.ts
+6. src/services/verify/providers/unpaywallProvider.ts
+7. src/services/verify/server/coreServerHandler.ts
+8. src/services/verify/server/geminiServerHandler.ts
+9. src/services/verify/server/googleBooksServerHandler.ts
+10. src/services/verify/server/nemotronServerHandler.ts
+11. src/services/verify/server/verifyServerPlugin.ts
+12. src/services/verify/types.ts
+13. src/services/verify/verifyCoreService.ts
+
+Measured Diff Stat:
+13 files changed, 1058 insertions(+), 34 deletions(-)
+
+Identified Forensic Signatures:
+- DOI extraction
+- ISBN extraction
+- Unpaywall metadata
+- provenance state
+- matchedBy
+- claimedDoi
+- extractedDoi
+- matched-source data
+
+P5 Baseline Statement Amended: YES
+P5 Certification Status: FUNCTIONAL PASS / BASELINE STATEMENT AMENDED / PROVENANCE CORRECTED
+
+------------------------------------------------------------
+P6 ARTIFACT LIST & FIREWALL INHERITANCE
+------------------------------------------------------------
+
+P6 Artifact List:
+- src/services/verify/aiOutputFirewallService.ts
+- tests/aiOutputFirewall.test.ts
+- e2e/ai-output-firewall.spec.ts
+- HOEOS_P6_AI_OUTPUT_FIREWALL_EVIDENCE.txt
+- src/services/verify/publicVerificationResult.ts (integration)
+
+P6 Firewall Signatures in 13 Verification-Core Files: ZERO
+The provenance forensic scan confirmed that P6 firewall signatures are NOT present inside the 13-file verification-core diff.
+
+P6 G5 Authority Modifications: ZERO
+P6 introduced zero modifications to G5 authoritative logic. P6 inherits the P5-extended G5 verification baseline.
+The modification count "G5 modifications: ZERO" in P6 report refers strictly to P6-introduced modifications, not the historical P5 verification-core extension.
+
+P6 Baseline Inheritance Corrected: YES
+P6 Certification Status: FUNCTIONAL TESTS PASS / FIREWALL BOUNDARY PASS / G5 MODIFICATIONS ZERO / BASELINE INHERITANCE CORRECTED
+
+------------------------------------------------------------
+HISTORY & LAW 11 COROLLARY
+------------------------------------------------------------
+
+Commit 2e29506f353ab37c25875785ec95e3128f52522f preserved in Git history: YES
+
+Law 11 Corollary:
+"No phase report SHALL assert the modification state of a protected or inherited phase without evidence against an explicitly identified frozen baseline. A phase report that repeats an inherited certification claim SHALL independently verify that claim against the applicable baseline. Modification counts SHALL distinguish between modifications introduced by the current phase and modifications inherited from preceding phases."
+
+------------------------------------------------------------
+FREEZE REGISTER
+------------------------------------------------------------
+
+ORIGINAL_G5_BASELINE: 2e29506f353ab37c25875785ec95e3128f52522f
+BASELINE_STATUS: HISTORICAL / PRE-EXTENSION
+P5_EXTENDED_G5_BASELINE: 5d73a9690321834e1ac15a92046a7c238a51211c
+P6_CERTIFICATION_BASELINE: 5db4888a263d16b717c365493e808c18b7ba6ebd
+P6_G5_AUTHORITY_MODIFICATIONS: ZERO
+P5_G5_EXTENSIONS: DOCUMENTED / SEALED
+
+------------------------------------------------------------
+WORKTREE
+------------------------------------------------------------
+
+Unintended verification-core modifications: ZERO
+Unexpected staged files: ZERO
+
+------------------------------------------------------------
+CERTIFICATION GATE
+------------------------------------------------------------
+
+NOT RUN BY THIS OPERATION.
+The final P4-P6 certification gate will be run as a separate subsequent operation after Stage 1 and Stage 2 baseline sealing.
+
+------------------------------------------------------------
+COMMANDS USED TO ESTABLISH BASELINE FACTS
+------------------------------------------------------------
+- git status --short
+- git diff 2e29506f353ab37c25875785ec95e3128f52522f --stat
+- git log -1 2e29506f353ab37c25875785ec95e3128f52522f
+- git rev-parse HEAD

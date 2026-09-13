@@ -1,0 +1,98 @@
+HOEOS G6.0 — PUBLIC VERIFICATION FORENSIC DISCOVERY EVIDENCE
+===================================================================
+
+1. EXECUTIVE FINDING
+- Can an independent person scan the QR code and reach /verify/{verificationId} and obtain an authoritative result without the originating browser session?
+  CLASSIFICATION: VERIFIED FAILS
+- Core Forensic Cause:
+  1. The QR code generates a valid locator URL: ${window.location.origin}/verify/${verificationId} (e.g. https://app.gradifi.org/verify/VRF-8AFCFF6056B0).
+  2. The frontend router (src/App.tsx) correctly routes /verify/:verificationId to GradifiVerifyDemoPage.
+  3. However, GradifiVerifyDemoPage does NOT invoke useParams() to extract :verificationId.
+  4. GradifiVerifyDemoPage does NOT query Supabase, IndexedDB, or any backend persistence service for :verificationId.
+  5. 0 database tables, 0 RLS policies, 0 RPCs, and 0 Edge Functions currently exist in Supabase for verification receipt persistence or public resolution.
+  6. When accessed from a new device or reloaded, state resets to currentStep = 'upload', displaying the initial upload prompt rather than the verification record.
+
+2. ROUTE MAP
+- Route Definition: <Route path="/verify/:verificationId" element={<GradifiVerifyDemoPage />} /> (src/App.tsx:86)
+- Route Component: GradifiVerifyDemoPage (src/pages/verify/GradifiVerifyDemoPage.tsx)
+- Route Guards: NONE (Public unauthenticated route).
+- Auth Requirement: None.
+- Loading States: verifying boolean state triggering FederationProgressSpinner.
+- Error States: uploadError string state rendering warning card.
+- Parameter Extraction: VERIFIED ABSENT. useParams() is not imported or called in GradifiVerifyDemoPage.
+
+3. VERIFICATION ID LIFECYCLE
+- Format: VRF-${res.documentHash.slice(0, 12).toUpperCase()} (48-bit hash-derived deterministic identifier).
+- Generation Point: handleExecuteVerification() in GradifiVerifyDemoPage.tsx following verifyCoreService.executeVerifyRun().
+- Storage: In-memory React state (const [verificationId, setVerificationId] = useState<string>('')).
+- Persistence: VERIFIED ABSENT.
+- Browser Reload Resolution: VERIFIED FAILS (state resets to empty string).
+- Cross-Browser/Device Resolution: VERIFIED FAILS (no network resolution path).
+
+4. PERSISTENCE MAP
+- Supabase Tables: 0 verification tables exist in supabase/migrations/ (existing migrations cover dashboard RPCs, AI grading, student import, pin auth).
+- Supabase RPCs / Edge Functions: 0 verification RPCs or Edge Functions exist.
+- Local Storage / IndexedDB: No verification records written to idb or localStorage.
+- Persistence Infrastructure: VERIFIED ABSENT.
+
+5. AUTHORITY MAP
+- Document Hash: Computed deterministically in buildCanonicalAnalysisDocument() / deterministicEngine.ts via SHA-256 over normalized text. (VERIFIED)
+- Evidence Hash: Computed deterministically in deterministicEngine.ts via SHA-256 over matched sources. (VERIFIED)
+- Overall Similarity: Computed deterministically in evaluateDocumentSimilarity() (deterministicEngine.ts). (VERIFIED)
+- Provenance & Provider Matrix: Computed in provider adapters & deterministicEvidenceBridge.ts. (VERIFIED)
+- Identity / Content Validation: Computed in identityCorrespondence.ts & contentValidationService.ts. (VERIFIED)
+- Execution Location: Currently executed strictly in client browser memory. No remote authority server signs or stores the generated result envelope. (VERIFIED)
+
+6. QR CONTRACT
+- QR Payload: ${window.location.origin}/verify/${verificationId}
+- Payload Type: Pure URL locator.
+- Embedded Evidence: Contains 0 embedded evidence bytes or signatures (locator only).
+- Resolution Chain: QR Scanner -> URL -> /verify/:verificationId -> GradifiVerifyDemoPage (fails at parameter extraction & persistence lookup).
+
+7. RECEIPT / PDF MAP
+- Generator: generateVerificationReportPDF() in src/utils/pdfReportGenerator.ts.
+- Displayed Fields: verificationId, documentName, timestamp, overallSimilarity, totalSources, normalized metadata, Provider Matrix, AI Federation Assessment, QR Code SVG, documentHash snippet, policyVersion.
+- Data Origin: Passed in-memory EvidenceEngineResult & PDFReportMetadata.
+- Reproducibility: 100% deterministic given identical EvidenceEngineResult.
+- Hash Inclusions: Displays verificationId and documentHash snippet (result.documentHash.slice(0, 16)).
+
+8. SECURITY BOUNDARY
+- Secret Access: VERIFIED SAFE (0 VITE_* secret key reads in client verify code).
+- Authorization Bypass: N/A (no public verification endpoints or RLS policies exist yet).
+- Verification Record Integrity: Currently unpersisted; client state is transient.
+- Verification Identifier Mutability: Derived deterministically from SHA-256 documentHash; cannot be altered without changing document text.
+
+9. EXISTING TEST COVERAGE
+- Unit & Determinism Tests: 163 passing tests across 8 test files covering QR SVG structure, jsQR decode, 100-run determinism, G1-G5 engines.
+- Public Verification & Persistence Tests: VERIFIED ABSENT (0 tests for /verify/:verificationId resolution, URL param reading, or DB lookup).
+
+10. INDEPENDENT VERIFIER SCENARIO
+- Step A: Browser generates verification receipt -> SUCCESS (In-memory state)
+- Step B: User closes browser -> STATE DESTROYED (React memory wiped)
+- Step C: Another person scans QR using another device -> SUCCESS (Decodes to URL)
+- Step D: Another device requests /verify/VRF-8AFCFF6056B0 -> SUCCESS (HTTP 200, route matches)
+- Step E: System resolves verification record -> FAILS (Component ignores URL parameter, no DB lookup, shows blank upload UI)
+
+11. CONFIRMED GAPS
+- Gap 1: GradifiVerifyDemoPage does not extract :verificationId from URL.
+- Gap 2: No database table (e.g. public_verification_records) exists for persistence.
+- Gap 3: No public RLS SELECT policy exists for anonymous verification resolution.
+- Gap 4: No persistence call executes upon verification completion.
+
+12. CONFIRMED EXISTING CAPABILITIES
+- Capability 1: G1-G5 deterministic evidence calculation engine certified and frozen.
+- Capability 2: Standards-compliant qrcode@1.5.4 encoder generating SVG receipts.
+- Capability 3: Verified jsQR@1.4.0 round-trip decoding.
+- Capability 4: Deterministic 48-bit verification ID (VRF-${res.documentHash.slice(0, 12).toUpperCase()}).
+- Capability 5: PDF verification report generator.
+- Capability 6: React Router path /verify/:verificationId mapped to page component.
+
+13. UNKNOWNS
+- Unknown 1: Whether public persistence should store the complete EvidenceEngineResult JSON or a lightweight public verification summary.
+- Unknown 2: Whether public anonymous users should be permitted to persist new verification records directly or require server-side ingestion.
+
+14. RECOMMENDED ATOMIC G6 SLICES
+- Slice G6.1: Verification Persistence Schema & RLS (Supabase migration for public_verification_records table with anonymous SELECT RLS policy).
+- Slice G6.2: Automated Verification Envelope Persistence (Save certified verification envelopes to Supabase on execution).
+- Slice G6.3: Public Verification Resolution Engine (Update GradifiVerifyDemoPage to extract :verificationId via useParams() and fetch/render stored verification records).
+- Slice G6.4: Public Verification End-to-End Verification Test Suite (Automated tests for cross-session QR scan, URL resolution, DB lookup, RLS boundary).

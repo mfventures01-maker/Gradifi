@@ -1,0 +1,26 @@
+=== HOEOS G5.6 DISK EVIDENCE ===
+Files changed:
+- src/services/verify/types.ts (Added SourceRetrievalStatus and SourceRetrievalResult)
+
+Files created:
+- src/services/verify/sourceRetrievalService.ts (Implemented SourceRetrievalService)
+- tests/sourceRetrieval.test.ts (Created test suite covering all G5.6 requirements)
+
+Retrieval states:
+- SOURCE_RETRIEVED: Actual bytes retrieved with matching Content-Type
+- HTTP_ERROR: HTTP status 404, 500, etc.
+- NETWORK_ERROR: Aborted / connection failure
+- CONTENT_TYPE_MISMATCH: HTML returned when expecting application/pdf
+- EMPTY_RESPONSE: HTTP 200 with 0-byte body
+- RETRIEVAL_FAILED: Missing or invalid URL
+
+Contract & Boundaries:
+- HTTP 200 DOES NOT automatically mean CONTENT_VALID
+- Valid URL DOES NOT automatically mean SOURCE_RETRIEVED
+- Preserves httpStatus, contentType, contentLength, sourceUrl, retrievedAt, correlationId
+- Zero secret leakage, client-side safety
+
+Tests:
+- npx tsx tests/sourceRetrieval.test.ts (18/18 PASSED, 0 FAILED)
+
+Result: PASS

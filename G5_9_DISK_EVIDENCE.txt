@@ -1,0 +1,22 @@
+=== HOEOS G5.9 DISK EVIDENCE ===
+Files changed:
+- src/services/verify/types.ts (Added EvidenceBridgeChainResult interface)
+
+Files created:
+- src/services/verify/deterministicEvidenceBridge.ts (Implemented DeterministicEvidenceBridge service)
+- tests/deterministicEvidenceBridge.test.ts (Created test suite covering all G5.9 positive & negative paths)
+
+Chain Integration:
+- Unpaywall metadata -> OA location -> Source retrieval -> Content validation -> Identity match -> Deterministic engine -> verifiedMatches -> similarity
+- Positive path: Complete 6-stage execution generates accepted evidence match with provenanceState = VERIFIED upon deterministic engine acceptance
+- Negative paths: Missing metadata, missing OA location, retrieval failure, invalid content, identity mismatch, identity inconclusive all yield bridgeEligible = false
+
+Contract & Firewall:
+- ONLY evidence that passes SOURCE_RETRIEVED, CONTENT_VALID, and IDENTITY_MATCHED enters candidate evaluation
+- Document hash and evidence hash remain 100% immutable by AI
+- Deterministic engine (analyzeDocumentEvidence) remains authoritative
+
+Tests:
+- npx tsx tests/deterministicEvidenceBridge.test.ts (17/17 PASSED, 0 FAILED)
+
+Result: PASS

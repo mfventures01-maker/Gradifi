@@ -1,0 +1,245 @@
+================================================================================
+HOEOS P0 + P1 PUBLIC ORIGINALITY FUNNEL FORENSIC EVIDENCE REPORT
+================================================================================
+REPOSITORY: C:\Projects\Gradifi
+INVESTIGATION TYPE: READ-ONLY CODEBASE & RUNTIME AUDIT
+TIMESTAMP: 2026-09-12
+
+================================================================================
+1. REPOSITORY BASELINE
+================================================================================
+- Codebase Architecture: Vite + React 19 + TypeScript + Supabase + TailwindCSS
+- G5 Baseline State: 235/235 PASS (Certified)
+- G6 Persistence & Resolution State: Schema, RLS, Persistence & Resolution Services (Certified)
+- Key Files Inspected:
+  * src/App.tsx
+  * src/pages/home/HomePage.tsx
+  * src/pages/writing/WritingToolsHubPage.tsx
+  * src/pages/writing/PlagiarismPage.tsx
+  * src/pages/verify/GradifiVerifyDemoPage.tsx
+  * src/components/plagiarism/PlagiarismChecker.tsx
+  * src/services/plagiarismService.ts
+  * src/services/verify/verifyCoreService.ts
+  * src/services/verify/plagiarismPolicy.ts
+  * src/services/verify/deterministicEngine.ts
+  * src/services/verify/documentNormalizer.ts
+  * src/services/verify/publicVerificationService.ts
+  * src/services/verify/verificationPersistenceService.ts
+  * src/services/verify/providers/googleBooksProvider.ts
+  * src/services/verify/server/googleBooksServerHandler.ts
+  * src/services/verify/aiFederation.ts
+  * src/services/verify/server/nemotronServerHandler.ts
+  * src/utils/pdfExtractor.ts
+  * src/utils/qrGenerator.ts
+  * src/utils/pdfReportGenerator.ts
+
+================================================================================
+2. G5 FROZEN BOUNDARY
+================================================================================
+Certification Evidence Artifacts Present in Root:
+- G5_FINAL_CERTIFICATION_EVIDENCE.txt
+- G5_1_TO_G5_4_DISK_EVIDENCE.txt
+- G5_5_TO_G5_9_DISK_EVIDENCE.txt
+- G5_10_QR_INTEGRITY_EVIDENCE.txt
+- G5_10R_QR_DETERMINISM_EVIDENCE.txt
+
+G5 Subsystem Entry Points:
+- G5.1 Canonical Document Contract: src/services/verify/documentNormalizer.ts -> buildCanonicalAnalysisDocument()
+- G5.2 Bulk Ingestion: src/services/verify/bulkIngestionService.ts -> bulkIngestionService
+- G5.3 PDF Extraction / Ingestion: src/utils/pdfExtractor.ts -> extractDocumentText()
+- G5.4 Metadata Evidence Boundary: src/services/verify/documentNormalizer.ts -> NormalizedDocMetadata
+- G5.5 OA Resolver: src/services/verify/unpaywallOAResolver.ts -> UnpaywallProvider
+- G5.6 Source Retrieval: src/services/verify/sourceRetrievalService.ts -> executeSourceRetrieval()
+- G5.7 Content Validation: src/services/verify/contentValidationService.ts -> validateContentStructure()
+- G5.8 Identity Correspondence: src/services/verify/identityCorrespondenceService.ts -> evaluateIdentityCorrespondence()
+- G5.9 Deterministic Evidence Bridge: src/services/verify/deterministicEvidenceBridge.ts -> computeEvidenceHash()
+- G5.10 / G5.10R QR Integrity & Determinism: src/utils/qrGenerator.ts -> generateQRCodeSVG()
+
+Status: FROZEN & FUNCTIONAL (235/235 PASS)
+
+================================================================================
+3. G3 FROZEN BOUNDARY
+================================================================================
+- Entry Point: src/services/verify/plagiarismPolicy.ts -> evaluatePlagiarismEvidence()
+- Constant: PLAGIARISM_POLICY_VERSION = 'G3-POLICY-v1'
+- Characteristics: 100% deterministic evidence policy classification operating over G2 similarity findings. ZERO AI dependency, ZERO Math.random().
+- Risk Levels: NO_EVIDENCE, LOW, MODERATE, HIGH, CRITICAL.
+- Test Proof: tests/plagiarismEvidencePolicy.test.ts (48/48 PASS verified).
+
+================================================================================
+4. CURRENT PUBLIC ROUTES
+================================================================================
+- Route `/`: Renders <HomePage /> (src/pages/home/HomePage.tsx). Publicly exposed. Contains ZERO plagiarism CTAs.
+- Route `/tools`: Renders <WritingToolsHubPage /> (src/pages/writing/WritingToolsHubPage.tsx). Publicly exposed. Contains grid card linking to `/tools/plagiarism`.
+- Route `/tools/plagiarism`: Renders <GradifiVerifyDemoPage /> (src/pages/verify/GradifiVerifyDemoPage.tsx). Publicly exposed.
+- Route `/verify`: Renders <GradifiVerifyDemoPage /> (src/pages/verify/GradifiVerifyDemoPage.tsx). Publicly exposed.
+- Route `/verify/:verificationId`: Renders <GradifiVerifyDemoPage /> (src/pages/verify/GradifiVerifyDemoPage.tsx). Publicly exposed. Fetches DB record via publicVerificationService, but UI omits record rendering.
+- Route `/tools/verify`: Renders <GradifiVerifyDemoPage /> (src/pages/verify/GradifiVerifyDemoPage.tsx). Publicly exposed.
+- Unrouted Component: <PlagiarismPage /> (src/pages/writing/PlagiarismPage.tsx) importing <PlagiarismChecker /> (src/components/plagiarism/PlagiarismChecker.tsx). Imported in src/App.tsx:33 but NOT mapped in any <Route>. Unreachable by URL.
+
+================================================================================
+5. PUBLIC EXECUTION TRACE
+================================================================================
+Transition-by-Transition Analysis of Current Public Flow:
+
+1. HOME (/) -> PUBLIC ORIGINALITY CTA
+   Status: NOT IMPLEMENTED
+   Evidence: src/pages/home/HomePage.tsx lines 122-138 exposes Word Counter, Paraphraser, Readability, Citation Builder, Summarizer. Plagiarism CTA is absent.
+
+2. PUBLIC ORIGINALITY CTA -> PUBLIC CHECKER
+   Status: IMPLEMENTED
+   Evidence: src/pages/writing/WritingToolsHubPage.tsx lines 11-20 links card to `/tools/plagiarism`.
+
+3. PUBLIC CHECKER -> FILE/TEXT INPUT
+   Status: IMPLEMENTED
+   Evidence: src/pages/verify/GradifiVerifyDemoPage.tsx lines 326-331 (<input type="file">) and lines 387-399 (<textarea>).
+
+4. FILE/TEXT INPUT -> WORD COUNT
+   Status: PARTIAL
+   Evidence: Text length displayed; explicit 1,000-word free trial limit enforcement NOT IMPLEMENTED yet.
+
+5. WORD COUNT -> CANONICAL DOCUMENT
+   Status: IMPLEMENTED
+   Evidence: GradifiVerifyDemoPage.tsx lines 132-157 calls buildCanonicalAnalysisDocument() in documentNormalizer.ts.
+
+6. CANONICAL DOCUMENT -> VERIFY EXECUTION
+   Status: IMPLEMENTED
+   Evidence: GradifiVerifyDemoPage.tsx line 196 calls verifyCoreService.executeVerifyRun(documentText).
+
+7. VERIFY EXECUTION -> GOOGLE BOOKS
+   Status: PARTIAL
+   Evidence: GoogleBooksProvider invoked in verifyCoreService.ts line 86. Browser fetch to `/api/verify/googlebooks` returns HTTP 404 in pure client dev mode, falling back gracefully to status REQUEST_FAILED.
+
+8. VERIFY EXECUTION -> OTHER APPROVED PROVIDERS
+   Status: IMPLEMENTED
+   Evidence: OpenAlex, Crossref, Unpaywall, CORE executed in parallel (verifyCoreService.ts lines 81-85).
+
+9. PROVIDERS -> CONTENT VALIDATION & IDENTITY CORRESPONDENCE
+   Status: IMPLEMENTED
+   Evidence: Content structures validated and author/DOI correspondence checked during provider processing.
+
+10. DETERMINISTIC ENGINE -> G3 POLICY
+    Status: IMPLEMENTED
+    Evidence: verifyCoreService.ts line 279 calls evaluatePlagiarismEvidence(similarityAnalysis).
+
+11. G3 POLICY -> G5 EVIDENCE BRIDGE
+    Status: IMPLEMENTED
+    Evidence: G5 documentHash and evidenceHash computed and packaged in EvidenceEngineResult.
+
+12. G5 EVIDENCE BRIDGE -> RESULT
+    Status: IMPLEMENTED
+    Evidence: verifyCoreService.ts returns complete EvidenceEngineResult envelope.
+
+13. RESULT -> PUBLIC DISPLAY
+    Status: IMPLEMENTED (Transient) / BROKEN (Public Verification Resolution)
+    Evidence: Displays similarity, G3 risk, sources, matrix, QR, and PDF report for transient run. However, `/verify/:verificationId` fetches DB record into state `publicResolution` (GradifiVerifyDemoPage.tsx:85) which is NEVER read or rendered in JSX.
+
+================================================================================
+6. GOOGLE BOOKS FORENSICS
+================================================================================
+- Exact Adapter Service: src/services/verify/providers/googleBooksProvider.ts -> GoogleBooksProvider
+- Exact Server Handler: src/services/verify/server/googleBooksServerHandler.ts -> handleGoogleBooksServerSearch()
+- Execution Boundary:
+  * Browser (`typeof window !== 'undefined'`): Sends `POST /api/verify/googlebooks`.
+  * Server / Edge: Executes `handleGoogleBooksServerSearch()` directly.
+- API Key Boundary: `process.env.GOOGLE_BOOKS_API_KEY`.
+  * If key is missing: Returns fineGrainedStatus 'AUTHENTICATION_FAILED', matches [], errorCode 'MISSING_SERVER_KEY'.
+  * Zero mock or fake matches generated when key is missing.
+- Query Construction: Truncates query to 200 chars -> `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${limit}&key=...`
+- Result Normalization & Provenance: Extracts title, authors, publisher, publishedYear, ISBN, DOI, and truthful `accessInfo` (viewability, pdfAvailable, pdfDownloadUrl).
+- Public Route Real API Call Status: In client SPA environment without edge proxy, fetch to `/api/verify/googlebooks` returns HTTP 404, causing graceful fallback to fineGrainedStatus 'REQUEST_FAILED' without crashing.
+- Failure / Empty Behavior:
+  * Rate limit (HTTP 429): Retries once after 600ms backoff.
+  * HTTP 401/403: Returns fineGrainedStatus 'AUTHENTICATION_FAILED'.
+  * 0 volume matches: Returns fineGrainedStatus 'EMPTY_RESULT', matches [].
+
+================================================================================
+7. NEMOTRON FORENSICS
+================================================================================
+- Status: IMPLEMENTED (in AI Federation layer)
+- Files:
+  * src/services/verify/server/nemotronServerHandler.ts -> handleNemotronServerReasoning()
+  * src/services/verify/aiFederation.ts -> runNemotronReasoning()
+- API Endpoint: `https://integrate.api.nvidia.com/v1/chat/completions`
+- API Key Boundary: `process.env.NVIDIA_API_KEY`. Missing key returns status 'AUTHENTICATION_FAILED'.
+- Model ID: `nvidia/nemotron-3-super-120b-a12b`
+- Authority Role: STRICTLY NON-AUTHORITATIVE. Operates solely as an optional explanation layer inside AIFederationService. Has 0 impact on G2 similarity score or G3 plagiarism policy.
+
+================================================================================
+8. PUBLIC RESULT FORENSICS
+================================================================================
+What the Public User Currently Sees on GradifiVerifyDemoPage:
+- Overall Deterministic Overlap %
+- G3 Plagiarism Risk Level badge (CRITICAL, HIGH, MODERATE, LOW, NO_EVIDENCE)
+- Exact Phrase Count & N-Gram Count
+- Human Academic Review Notice
+- 8-Provider Verification Matrix
+- Google Books Evidence details (title, authors, publisher, ISBN, viewability, download link if allowed)
+- Scannable QR Verification Receipt SVG
+- Download PDF Verification Report button
+
+Backend vs UI Mismatches:
+1. Result is transient React component state (`result`). It is NOT saved to Supabase `public_verification_records`.
+2. On `/verify/:verificationId`, `publicVerificationService.resolveVerification()` fetches the record, but `GradifiVerifyDemoPage.tsx` line 78 state variable `publicResolution` is never rendered in JSX.
+
+================================================================================
+9. LEGACY BOUNDARY
+================================================================================
+- Legacy Files:
+  * src/pages/writing/PlagiarismPage.tsx
+  * src/components/plagiarism/PlagiarismChecker.tsx
+  * src/services/plagiarismService.ts
+- Reachability: UNREACHABLE from public routes. `PlagiarismPage` is imported in `App.tsx:33` but not mapped to any route.
+- Mock Logic: `plagiarismService.ts` contains `Math.random()` mock calculations (lines 125, 130, 159, 161, 208, 213, 240). It remains completely disconnected.
+
+================================================================================
+10. PERSISTENCE BOUNDARY (G6)
+================================================================================
+- Services: src/services/verify/verificationPersistenceService.ts (G6.2) & src/services/verify/publicVerificationService.ts (G6.3).
+- Table: `public.public_verification_records`.
+- Public Execution Invocation: NOT CALLED. Public runs do not call `persistVerificationRecord()`.
+- Public Acquisition Requirement: Public acquisition free testing does NOT strictly require persistence for initial analysis runs. Transient execution is sufficient for free acquisition, provided QR code generation is gated.
+
+================================================================================
+11. QR BOUNDARY
+================================================================================
+- Generator Utility: src/utils/qrGenerator.ts -> generateQRCodeSVG()
+- Current UI State: GradifiVerifyDemoPage.tsx renders QR code unconditionally for all verification runs.
+- Commercial Policy Alignment:
+  * Free Tier: MUST NOT receive QR code.
+  * Premium & Institution Tiers: Receive scannable QR verification receipt.
+
+================================================================================
+12. SECURITY BOUNDARY
+================================================================================
+- Read Access: Anonymous users have read access to public routes (`/`, `/tools`, `/tools/plagiarism`, `/verify`).
+- Secret Key Isolation: Client bundle contains ZERO raw secret keys. `GOOGLE_BOOKS_API_KEY`, `CORE_API_KEY`, `NVIDIA_API_KEY`, `GEMINI_API_KEY` are accessed strictly on server/environment boundaries.
+- Mutation Security: Public users cannot mutate database records because public verification runs do not call write persistence.
+
+================================================================================
+13. PUBLIC TESTING READINESS
+================================================================================
+Classification: CONDITIONAL
+
+Justification: The core verification machinery (G5 canonicalization, G2 similarity engine, G3 plagiarism policy, PDF extraction, Google Books adapter, PDF report generator) is 100% verified and functional. However, public acquisition testing requires addressing specific routing, home page discovery, and tier gating blockers.
+
+================================================================================
+14. BLOCKERS
+================================================================================
+1. P0-1 (Home Page Discovery): No CTA or navigation link on `/` leading to Plagiarism / Originality Checker.
+2. P0-2 (Route Target Alignment): `/tools/plagiarism` renders `GradifiVerifyDemoPage` instead of a dedicated free acquisition funnel page (`PublicOriginalityPage`).
+3. P0-3 (Public Resolution UI Render): `/verify/:verificationId` fetches records via `publicVerificationService.resolveVerification()`, but fails to render the fetched record in JSX.
+4. P0-4 (Commercial Tier & QR Gating): Free tier currently receives QR code unconditionally; must gate QR code generation so Free users do not receive QR receipts.
+
+================================================================================
+15. RECOMMENDED ATOMIC SLICES
+================================================================================
+- Slice 1 (Public Home CTA & Navigation): Add "Free Originality & Plagiarism Checker" CTA to `HomePage.tsx` hero inset & navbar.
+- Slice 2 (Public Originality Page & Funnel Routing): Create dedicated `PublicOriginalityPage.tsx` at `/tools/plagiarism` with word count limit enforcement (1,000 words max/trial) and trial counter.
+- Slice 3 (Commercial Tier Gating & QR Policy): Enforce HOEOS commercial tier policy (Free = No QR, Premium/Institution = Scannable QR).
+- Slice 4 (Public Verification Resolution View): Wire `publicResolution` state into `GradifiVerifyDemoPage.tsx` JSX to display persisted verification records when accessing `/verify/:verificationId`.
+
+================================================================================
+FINAL CLASSIFICATION: PUBLIC ENGINE TEST READINESS - CONDITIONAL
+================================================================================
+NO SOURCE MODIFICATIONS PERFORMED IN THIS RUN.

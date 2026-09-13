@@ -1,0 +1,24 @@
+=== HOEOS G5.7 DISK EVIDENCE ===
+Files changed:
+- src/services/verify/types.ts (Added ContentValidationStatus and ContentValidationResult)
+
+Files created:
+- src/services/verify/contentValidationService.ts (Implemented ContentValidationService)
+- tests/contentValidation.test.ts (Created test suite covering all G5.7 requirements)
+
+Validation states:
+- CONTENT_VALID: Valid PDF binary stream with legible extracted text and CanonicalAnalysisDocument
+- CONTENT_EMPTY: Response buffer is 0 bytes
+- CONTENT_MALFORMED: PDF stream syntax corrupted or contains no extractable text
+- CONTENT_UNSUPPORTED: HTML landing page or non-PDF binary format
+- CONTENT_VALIDATION_FAILED: Retrieval step failed prior to validation
+
+Contract & Boundaries:
+- Reuses canonical pdfExtractor engine and canonical document normalization (buildCanonicalAnalysisDocument)
+- Preserves documentHash, rawText, normalizedText, stats, extractionStatus, extractionMethod
+- Failure isolation: Failed validation returns CONTENT_MALFORMED / CONTENT_UNSUPPORTED without crashing or producing false verifiedMatches/AI findings
+
+Tests:
+- npx tsx tests/contentValidation.test.ts (14/14 PASSED, 0 FAILED)
+
+Result: PASS

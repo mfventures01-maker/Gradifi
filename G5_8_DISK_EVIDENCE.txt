@@ -1,0 +1,24 @@
+=== HOEOS G5.8 DISK EVIDENCE ===
+Files changed:
+- src/services/verify/types.ts (Added IdentityCorrespondenceStatus and IdentityCorrespondenceResult)
+
+Files created:
+- src/services/verify/identityCorrespondenceService.ts (Implemented IdentityCorrespondenceService)
+- tests/identityCorrespondence.test.ts (Created test suite covering all G5.8 requirements)
+
+Identity Hierarchy & Outcomes:
+- Preferred hierarchy: Exact DOI match -> Title & Author token coverage fallback -> Publication corroboration
+- IDENTITY_MATCHED: DOI match or >= 70% title token coverage (ELIGIBLE for deterministic evidence bridge)
+- IDENTITY_MISMATCH: Extracted DOI differs from claimed DOI or title/author coverage < 20% (NOT ELIGIBLE)
+- IDENTITY_INCONCLUSIVE: Partial title overlap between 20%-69% without DOI (NOT ELIGIBLE)
+- IDENTITY_UNAVAILABLE: Content or canonical document missing
+
+Contract & Boundaries:
+- Zero AI dependency for identity verification
+- IDENTITY_MISMATCH and IDENTITY_INCONCLUSIVE strictly prevent source from entering verifiedMatches
+- Does not manufacture provenanceState = VERIFIED
+
+Tests:
+- npx tsx tests/identityCorrespondence.test.ts (14/14 PASSED, 0 FAILED)
+
+Result: PASS

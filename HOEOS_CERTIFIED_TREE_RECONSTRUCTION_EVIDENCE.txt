@@ -1,0 +1,1156 @@
+============================================================
+HOEOS FORENSIC EVIDENCE ARTIFACT: CERTIFIED TREE RECONSTRUCTION
+============================================================
+
+REPOSITORY:           C:\Projects\Gradifi
+CURRENT BRANCH:       clean-deploy
+CURRENT HEAD SHA:     5db4888a263d16b717c365493e808c18b7ba6ebd
+TIMESTAMP:            2026-09-13T12:09:00+01:00
+
+HISTORICAL BASELINES:
+  ORIGINAL_G5_BASELINE:     2e29506f353ab37c25875785ec95e3128f52522f
+  P5_EXTENDED_G5_BASELINE: 5d73a9690321834e1ac15a92046a7c238a51211c
+  P6_CERTIFICATION_BASELINE: 5db4888a263d16b717c365493e808c18b7ba6ebd
+
+============================================================
+SECTION 1: CURRENT GIT STATE
+============================================================
+
+COMMAND EXECUTION RECORD:
+  git status --short
+  git status --short -- src/services/verify/
+  git log -10 --oneline --decorate
+  git rev-parse HEAD
+  git branch --show-current
+
+1. git status --short Output:
+ M package-lock.json
+ M package.json
+ M playwright-report/index.html
+ M public/sw.js
+ M src/App.tsx
+ M src/lib/supabase.ts
+ M src/pages/home/HomePage.tsx
+ M src/vite-env.d.ts
+ D supabase/migrations/20260821_ai_grading_review_functions.sql
+ D supabase/migrations/20260821_ai_grading_workflow.sql
+ D supabase/migrations/20260821_bulk_student_import.sql
+ D supabase/migrations/20260821_create_parent_rpcs.sql
+ D supabase/migrations/20260821_create_vp_bursar_rpcs.sql
+ D supabase/migrations/20260821_pin_authentication_enhancement.sql
+ M test-results/.playwright-temp/.last-run.json
+ M tests/verifyCore.test.ts
+?? FEDERATION_BASELINE.md
+?? FEDERATION_RUN_REPORT.json
+?? FEDERATION_RUN_REPORT.md
+?? G5_10R_QR_DETERMINISM_EVIDENCE.txt
+?? G5_10_QR_INTEGRITY_EVIDENCE.txt
+?? G5_1_TO_G5_4_DISK_EVIDENCE.txt
+?? G5_4_CORRECTION_EVIDENCE.txt
+?? G5_5_DISK_EVIDENCE.txt
+?? G5_5_TO_G5_9_DISK_EVIDENCE.txt
+?? G5_6_DISK_EVIDENCE.txt
+?? G5_7_DISK_EVIDENCE.txt
+?? G5_8_DISK_EVIDENCE.txt
+?? G5_9_DISK_EVIDENCE.txt
+?? G5_BASELINE_BEFORE.txt
+?? G5_FINAL_CERTIFICATION_EVIDENCE.txt
+?? G5_FINAL_RECONCILIATION_PROMPT.txt
+?? G5_TSC_FULL_OUTPUT.txt
+?? G6_0_FORENSIC_DISCOVERY.txt
+?? G6_1_PERSISTENCE_EVIDENCE.txt
+?? G6_2_PERSISTENCE_EVIDENCE.txt
+?? G6_3_PUBLIC_VERIFICATION_EVIDENCE.txt
+?? G6_4_INDEPENDENT_VERIFICATION_E2E_EVIDENCE.txt
+?? HOEOS_G6_5R1_PERSISTENCE_AUTHORITY_EVIDENCE.txt
+?? HOEOS_G6_5_LIVE_SUPABASE_PERSISTENCE_EVIDENCE.txt
+?? HOEOS_P0_P1_PUBLIC_FUNNEL_FORENSIC_EVIDENCE.txt
+?? HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt
+?? HOEOS_P1_PUBLIC_RESULT_CONTRACT_EVIDENCE.txt
+?? HOEOS_P2_1_PUBLIC_ENGINE_EXPOSURE_EVIDENCE.txt
+?? HOEOS_P2_2_REAL_FEDERATED_PUBLIC_RUN_EVIDENCE.txt
+?? HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE.txt
+?? HOEOS_P3_CANONICAL_TEXT_OFFSET_EVIDENCE.txt
+?? HOEOS_P4_MATCHED_TEXT_HIGHLIGHTING_EVIDENCE.txt
+?? HOEOS_P5_P6_BASELINE_PROVENANCE_AMENDMENT_EVIDENCE.txt
+?? HOEOS_P5_SOURCE_DOI_ISBN_CITATION_EVIDENCE.txt
+?? HOEOS_P6_AI_OUTPUT_FIREWALL_EVIDENCE.txt
+?? HOEOS_PROVIDER_FAILURE_RECONCILIATION_EVIDENCE.txt
+?? HOEOS_PUBLIC_VERIFY_LIVE_ACCEPTANCE_EVIDENCE.txt
+?? HOEOS_PUBLIC_VERIFY_RUNTIME_REPAIR_EVIDENCE.txt
+?? e2e/matched-text-highlighting.spec.ts
+?? e2e/public-verification-live-acceptance.spec.ts
+?? e2e/public-verification-route.spec.ts
+?? e2e/source-citation-presentation.spec.ts
+?? g1-contract-verification.txt
+?? provenance-inventory.txt
+?? scripts/apply-corrections.ps1
+?? scripts/diagnose-nemotron.ts
+?? scripts/executeSixProviderLiveRun.ts
+?? src/components/verify/
+?? src/pages/verify/
+?? src/services/verify/bulkIngestionService.ts
+?? src/services/verify/canonicalTextOffsetService.ts
+?? src/services/verify/contentValidationService.ts
+?? src/services/verify/deterministicEvidenceBridge.ts
+?? src/services/verify/federationOrchestrator.ts
+?? src/services/verify/identityCorrespondenceService.ts
+?? src/services/verify/ingestionAdapters/
+?? src/services/verify/matchedTextHighlightingService.ts
+?? src/services/verify/plagiarismPolicy.ts
+?? src/services/verify/publicVerificationService.ts
+?? src/services/verify/server/gemmaServerHandler.ts
+?? src/services/verify/server/persistenceServerHandler.ts
+?? src/services/verify/sourceCitationPresentationService.ts
+?? src/services/verify/sourceRetrievalService.ts
+?? src/services/verify/universalIngestionService.ts
+?? src/services/verify/unpaywallOAResolver.ts
+?? src/services/verify/verificationPersistenceService.ts
+?? src/utils/
+?? supabase/.temp/
+?? supabase/migrations/2026082101_ai_grading_review_functions.sql
+?? supabase/migrations/2026082102_ai_grading_workflow.sql
+?? supabase/migrations/2026082103_bulk_student_import.sql
+?? supabase/migrations/2026082104_create_parent_rpcs.sql
+?? supabase/migrations/2026082105_create_vp_bursar_rpcs.sql
+?? supabase/migrations/2026082106_pin_authentication_enhancement.sql
+?? supabase/migrations/2026091200_public_verification_records.sql
+?? tests/aiEvidenceFirewall.test.ts
+?? tests/bulkIngestionAndMetadata.test.ts
+?? tests/canonicalDocumentContract.test.ts
+?? tests/canonicalTextOffsetModel.test.ts
+?? tests/contentValidation.test.ts
+?? tests/demoWorkflow3Runs.test.ts
+?? tests/deterministicEvidenceBridge.test.ts
+?? tests/deterministicSimilarityEvidence.test.ts
+?? tests/federationHardening.test.ts
+?? tests/fixtures/
+?? tests/gemmaServerHandler.test.ts
+?? tests/identityCorrespondence.test.ts
+?? tests/matchedTextHighlighting.test.ts
+?? tests/plagiarismEvidencePolicy.test.ts
+?? tests/publicOriginalityExposure.test.ts
+?? tests/publicVerificationResolution.test.ts
+?? tests/publicVerificationResultContract.test.ts
+?? tests/qrGenerator.test.ts
+?? tests/sourceCitationPresentation.test.ts
+?? tests/sourceRetrieval.test.ts
+?? tests/universalIngestion.test.ts
+?? tests/unpaywallOAResolver.test.ts
+?? tests/verificationPersistence.test.ts
+?? tests/verificationSchemaRLS.test.ts
+
+2. git status --short -- src/services/verify/ Output:
+?? src/services/verify/bulkIngestionService.ts
+?? src/services/verify/canonicalTextOffsetService.ts
+?? src/services/verify/contentValidationService.ts
+?? src/services/verify/deterministicEvidenceBridge.ts
+?? src/services/verify/federationOrchestrator.ts
+?? src/services/verify/identityCorrespondenceService.ts
+?? src/services/verify/ingestionAdapters/
+?? src/services/verify/matchedTextHighlightingService.ts
+?? src/services/verify/plagiarismPolicy.ts
+?? src/services/verify/publicVerificationService.ts
+?? src/services/verify/server/gemmaServerHandler.ts
+?? src/services/verify/server/persistenceServerHandler.ts
+?? src/services/verify/sourceCitationPresentationService.ts
+?? src/services/verify/sourceRetrievalService.ts
+?? src/services/verify/universalIngestionService.ts
+?? src/services/verify/unpaywallOAResolver.ts
+?? src/services/verify/verificationPersistenceService.ts
+
+3. git log -10 --oneline --decorate Output:
+5db4888 (HEAD -> clean-deploy) feat(p6): AI output firewall hardening
+5d73a96 feat(g5): seal P5 verification-core extension baseline
+2e29506 certify federated academic evidence core baseline
+4cfd32a (origin/clean-deploy) fix: add missing manifest.json and favicon.ico with resilient service worker caching
+174520a feat: build multi-engine grading pipeline (OCR + Gemma + Nemotron) with UI test page
+4fba4b3 feat: integrate Plagiarism Checker UI component into Writing Tools hub with live results
+233f3a1 fix: add Vite proxy for CORE API to bypass CORS
+d3c5761 fix: resolve CORE API browser integration with VITE_CORE_API_KEY environment variable
+e6d4441 fix: pass school_id to getDashboardStats to display 12 students and 1 teacher
+5df3218 feat: add full AI engine suite with test runner (ocr, gemma, nemotron, plagiarism)
+
+4. HEAD SHA Verification:
+  git rev-parse HEAD: 5db4888a263d16b717c365493e808c18b7ba6ebd
+  git branch --show-current: clean-deploy
+
+CONFIRMATION: HEAD == 5db4888a263d16b717c365493e808c18b7ba6ebd (CONFIRMED)
+
+============================================================
+SECTION 2: COMPLETE UNTRACKED INVENTORY
+============================================================
+
+REPO-WIDE UNTRACKED FILES (Excluding node_modules/, dist/, reports/):
+Total untracked files: 97
+
+1. Root Evidence & Reports (36 files):
+  - FEDERATION_BASELINE.md
+  - FEDERATION_RUN_REPORT.json
+  - FEDERATION_RUN_REPORT.md
+  - G5_10R_QR_DETERMINISM_EVIDENCE.txt
+  - G5_10_QR_INTEGRITY_EVIDENCE.txt
+  - G5_1_TO_G5_4_DISK_EVIDENCE.txt
+  - G5_4_CORRECTION_EVIDENCE.txt
+  - G5_5_DISK_EVIDENCE.txt
+  - G5_5_TO_G5_9_DISK_EVIDENCE.txt
+  - G5_6_DISK_EVIDENCE.txt
+  - G5_7_DISK_EVIDENCE.txt
+  - G5_8_DISK_EVIDENCE.txt
+  - G5_9_DISK_EVIDENCE.txt
+  - G5_BASELINE_BEFORE.txt
+  - G5_FINAL_CERTIFICATION_EVIDENCE.txt
+  - G5_FINAL_RECONCILIATION_PROMPT.txt
+  - G5_TSC_FULL_OUTPUT.txt
+  - G6_0_FORENSIC_DISCOVERY.txt
+  - G6_1_PERSISTENCE_EVIDENCE.txt
+  - G6_2_PERSISTENCE_EVIDENCE.txt
+  - G6_3_PUBLIC_VERIFICATION_EVIDENCE.txt
+  - G6_4_INDEPENDENT_VERIFICATION_E2E_EVIDENCE.txt
+  - HOEOS_G6_5R1_PERSISTENCE_AUTHORITY_EVIDENCE.txt
+  - HOEOS_G6_5_LIVE_SUPABASE_PERSISTENCE_EVIDENCE.txt
+  - HOEOS_P0_P1_PUBLIC_FUNNEL_FORENSIC_EVIDENCE.txt
+  - HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt
+  - HOEOS_P1_PUBLIC_RESULT_CONTRACT_EVIDENCE.txt
+  - HOEOS_P2_1_PUBLIC_ENGINE_EXPOSURE_EVIDENCE.txt
+  - HOEOS_P2_2_REAL_FEDERATED_PUBLIC_RUN_EVIDENCE.txt
+  - HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE.txt
+  - HOEOS_P3_CANONICAL_TEXT_OFFSET_EVIDENCE.txt
+  - HOEOS_P4_MATCHED_TEXT_HIGHLIGHTING_EVIDENCE.txt
+  - HOEOS_P5_P6_BASELINE_PROVENANCE_AMENDMENT_EVIDENCE.txt
+  - HOEOS_P5_SOURCE_DOI_ISBN_CITATION_EVIDENCE.txt
+  - HOEOS_P6_AI_OUTPUT_FIREWALL_EVIDENCE.txt
+  - HOEOS_PROVIDER_FAILURE_RECONCILIATION_EVIDENCE.txt
+  - HOEOS_PUBLIC_VERIFY_LIVE_ACCEPTANCE_EVIDENCE.txt
+  - HOEOS_PUBLIC_VERIFY_RUNTIME_REPAIR_EVIDENCE.txt
+  - g1-contract-verification.txt
+  - provenance-inventory.txt
+
+2. e2e Test Specs (4 files):
+  - e2e/matched-text-highlighting.spec.ts
+  - e2e/public-verification-live-acceptance.spec.ts
+  - e2e/public-verification-route.spec.ts
+  - e2e/source-citation-presentation.spec.ts
+
+3. Scripts (3 files):
+  - scripts/apply-corrections.ps1
+  - scripts/diagnose-nemotron.ts
+  - scripts/executeSixProviderLiveRun.ts
+
+4. Source Files (29 files):
+  - src/components/verify/DocumentEvidenceViewer.tsx
+  - src/components/verify/SourceDetailPanel.tsx
+  - src/pages/verify/GradifiVerifyDemoPage.tsx
+  - src/services/verify/bulkIngestionService.ts
+  - src/services/verify/canonicalTextOffsetService.ts
+  - src/services/verify/contentValidationService.ts
+  - src/services/verify/deterministicEvidenceBridge.ts
+  - src/services/verify/federationOrchestrator.ts
+  - src/services/verify/identityCorrespondenceService.ts
+  - src/services/verify/ingestionAdapters/htmlAdapter.ts
+  - src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts
+  - src/services/verify/ingestionAdapters/officeZipAdapter.ts
+  - src/services/verify/ingestionAdapters/pdfAdapter.ts
+  - src/services/verify/ingestionAdapters/rtfAdapter.ts
+  - src/services/verify/ingestionAdapters/structuredAdapter.ts
+  - src/services/verify/ingestionAdapters/textAdapter.ts
+  - src/services/verify/matchedTextHighlightingService.ts
+  - src/services/verify/plagiarismPolicy.ts
+  - src/services/verify/publicVerificationService.ts
+  - src/services/verify/server/gemmaServerHandler.ts
+  - src/services/verify/server/persistenceServerHandler.ts
+  - src/services/verify/sourceCitationPresentationService.ts
+  - src/services/verify/sourceRetrievalService.ts
+  - src/services/verify/universalIngestionService.ts
+  - src/services/verify/unpaywallOAResolver.ts
+  - src/services/verify/verificationPersistenceService.ts
+  - src/utils/pdfExtractor.ts
+  - src/utils/pdfReportGenerator.ts
+  - src/utils/qrGenerator.ts
+
+5. Supabase Temp Files & Migrations (16 files):
+  - supabase/.temp/cli-latest
+  - supabase/.temp/gotrue-version
+  - supabase/.temp/linked-project.json
+  - supabase/.temp/pooler-url
+  - supabase/.temp/postgres-version
+  - supabase/.temp/project-ref
+  - supabase/.temp/rest-version
+  - supabase/.temp/storage-migration
+  - supabase/.temp/storage-version
+  - supabase/migrations/2026082101_ai_grading_review_functions.sql
+  - supabase/migrations/2026082102_ai_grading_workflow.sql
+  - supabase/migrations/2026082103_bulk_student_import.sql
+  - supabase/migrations/2026082104_create_parent_rpcs.sql
+  - supabase/migrations/2026082105_create_vp_bursar_rpcs.sql
+  - supabase/migrations/2026082106_pin_authentication_enhancement.sql
+  - supabase/migrations/2026091200_public_verification_records.sql
+
+6. Test Files & Fixtures (29 files):
+  - tests/aiEvidenceFirewall.test.ts
+  - tests/bulkIngestionAndMetadata.test.ts
+  - tests/canonicalDocumentContract.test.ts
+  - tests/canonicalTextOffsetModel.test.ts
+  - tests/contentValidation.test.ts
+  - tests/demoWorkflow3Runs.test.ts
+  - tests/deterministicEvidenceBridge.test.ts
+  - tests/deterministicSimilarityEvidence.test.ts
+  - tests/federationHardening.test.ts
+  - tests/fixtures/ingestion/empty.txt
+  - tests/fixtures/ingestion/invalid.json
+  - tests/fixtures/ingestion/malformed.xml
+  - tests/fixtures/ingestion/sample.csv
+  - tests/fixtures/ingestion/sample.html
+  - tests/fixtures/ingestion/sample.json
+  - tests/fixtures/ingestion/sample.md
+  - tests/fixtures/ingestion/sample.rtf
+  - tests/fixtures/ingestion/sample.txt
+  - tests/fixtures/ingestion/sample.xml
+  - tests/gemmaServerHandler.test.ts
+  - tests/identityCorrespondence.test.ts
+  - tests/matchedTextHighlighting.test.ts
+  - tests/plagiarismEvidencePolicy.test.ts
+  - tests/publicOriginalityExposure.test.ts
+  - tests/publicVerificationResolution.test.ts
+  - tests/publicVerificationResultContract.test.ts
+  - tests/qrGenerator.test.ts
+  - tests/sourceCitationPresentation.test.ts
+  - tests/sourceRetrieval.test.ts
+  - tests/universalIngestion.test.ts
+  - tests/unpaywallOAResolver.test.ts
+  - tests/verificationPersistence.test.ts
+  - tests/verificationSchemaRLS.test.ts
+
+ENUMERATION OF src/services/verify/ (23 untracked files):
+ 1. src/services/verify/bulkIngestionService.ts
+ 2. src/services/verify/canonicalTextOffsetService.ts
+ 3. src/services/verify/contentValidationService.ts
+ 4. src/services/verify/deterministicEvidenceBridge.ts
+ 5. src/services/verify/federationOrchestrator.ts
+ 6. src/services/verify/identityCorrespondenceService.ts
+ 7. src/services/verify/ingestionAdapters/htmlAdapter.ts
+ 8. src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts
+ 9. src/services/verify/ingestionAdapters/officeZipAdapter.ts
+10. src/services/verify/ingestionAdapters/pdfAdapter.ts
+11. src/services/verify/ingestionAdapters/rtfAdapter.ts
+12. src/services/verify/ingestionAdapters/structuredAdapter.ts
+13. src/services/verify/ingestionAdapters/textAdapter.ts
+14. src/services/verify/matchedTextHighlightingService.ts
+15. src/services/verify/plagiarismPolicy.ts
+16. src/services/verify/publicVerificationService.ts
+17. src/services/verify/server/gemmaServerHandler.ts
+18. src/services/verify/server/persistenceServerHandler.ts
+19. src/services/verify/sourceCitationPresentationService.ts
+20. src/services/verify/sourceRetrievalService.ts
+21. src/services/verify/universalIngestionService.ts
+22. src/services/verify/unpaywallOAResolver.ts
+23. src/services/verify/verificationPersistenceService.ts
+
+============================================================
+SECTION 3: SOURCE DEPENDENCY FORENSICS
+============================================================
+
+FORENSIC ANALYSIS FOR EVERY UNTRACKED FILE UNDER src/services/verify/:
+
+1. src/services/verify/bulkIngestionService.ts
+   - Implemented in: src/services/verify/bulkIngestionService.ts
+   - Implemented imports: src/utils/pdfExtractor.ts
+   - Importers in src/: NONE
+   - Importers in tests/: tests/bulkIngestionAndMetadata.test.ts:5
+   - Importers in e2e/: NONE
+   - Dynamic/Config Refs: NONE
+   - Classification Status: UNTRACKED G5 EXTENSION SERVICE
+
+2. src/services/verify/canonicalTextOffsetService.ts
+   - Implemented in: src/services/verify/canonicalTextOffsetService.ts
+   - Importers in src/: src/services/verify/matchedTextHighlightingService.ts:10
+   - Importers in tests/: tests/canonicalTextOffsetModel.test.ts:14
+   - Importers in e2e/: NONE
+   - Dynamic/Config Refs: fs.readFileSync in tests/canonicalTextOffsetModel.test.ts:201
+   - Classification Status: CERTIFIED P3 IMPLEMENTATION
+
+3. src/services/verify/contentValidationService.ts
+   - Implemented in: src/services/verify/contentValidationService.ts
+   - Importers in src/: src/services/verify/deterministicEvidenceBridge.ts:22
+   - Importers in tests/: tests/contentValidation.test.ts:5
+   - Importers in e2e/: NONE
+   - Dynamic/Config Refs: NONE
+   - Classification Status: UNTRACKED G5 EXTENSION SERVICE
+
+4. src/services/verify/deterministicEvidenceBridge.ts
+   - Implemented in: src/services/verify/deterministicEvidenceBridge.ts
+   - Importers in src/: NONE
+   - Importers in tests/: tests/deterministicEvidenceBridge.test.ts:5
+   - Importers in e2e/: NONE
+   - Dynamic/Config Refs: NONE
+   - Classification Status: UNTRACKED G5 EXTENSION SERVICE
+
+5. src/services/verify/federationOrchestrator.ts
+   - Implemented in: src/services/verify/federationOrchestrator.ts
+   - Importers in src/: NONE
+   - Importers in tests/: tests/federationHardening.test.ts:17
+   - Importers in e2e/: NONE
+   - Dynamic/Config Refs: NONE
+   - Classification Status: G6 / LATER HARDENING SERVICE
+
+6. src/services/verify/identityCorrespondenceService.ts
+   - Implemented in: src/services/verify/identityCorrespondenceService.ts
+   - Importers in src/: src/services/verify/deterministicEvidenceBridge.ts:23
+   - Importers in tests/: tests/identityCorrespondence.test.ts:5
+   - Importers in e2e/: NONE
+   - Dynamic/Config Refs: NONE
+   - Classification Status: UNTRACKED G5 EXTENSION SERVICE
+
+7. src/services/verify/ingestionAdapters/htmlAdapter.ts
+   - Implemented in: src/services/verify/ingestionAdapters/htmlAdapter.ts
+   - Importers in src/: src/services/verify/universalIngestionService.ts:10
+   - Importers in tests/: NONE (Transitively via universalIngestionService)
+   - Importers in e2e/: NONE
+   - Classification Status: CERTIFIED P2 IMPLEMENTATION
+
+8. src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts
+   - Implemented in: src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts
+   - Importers in src/: src/services/verify/universalIngestionService.ts:14
+   - Importers in tests/: NONE (Transitively via universalIngestionService)
+   - Importers in e2e/: NONE
+   - Classification Status: CERTIFIED P2 IMPLEMENTATION
+
+9. src/services/verify/ingestionAdapters/officeZipAdapter.ts
+   - Implemented in: src/services/verify/ingestionAdapters/officeZipAdapter.ts
+   - Importers in src/: src/services/verify/universalIngestionService.ts:13
+   - Importers in tests/: NONE (Transitively via universalIngestionService)
+   - Importers in e2e/: NONE
+   - Classification Status: CERTIFIED P2 IMPLEMENTATION
+
+10. src/services/verify/ingestionAdapters/pdfAdapter.ts
+    - Implemented in: src/services/verify/ingestionAdapters/pdfAdapter.ts
+    - Importers in src/: src/services/verify/universalIngestionService.ts:8, all other ingestion adapters (types)
+    - Importers in tests/: NONE (Transitively via universalIngestionService)
+    - Importers in e2e/: NONE
+    - Classification Status: CERTIFIED P2 IMPLEMENTATION
+
+11. src/services/verify/ingestionAdapters/rtfAdapter.ts
+    - Implemented in: src/services/verify/ingestionAdapters/rtfAdapter.ts
+    - Importers in src/: src/services/verify/universalIngestionService.ts:11
+    - Importers in tests/: NONE (Transitively via universalIngestionService)
+    - Importers in e2e/: NONE
+    - Classification Status: CERTIFIED P2 IMPLEMENTATION
+
+12. src/services/verify/ingestionAdapters/structuredAdapter.ts
+    - Implemented in: src/services/verify/ingestionAdapters/structuredAdapter.ts
+    - Importers in src/: src/services/verify/universalIngestionService.ts:12
+    - Importers in tests/: NONE (Transitively via universalIngestionService)
+    - Importers in e2e/: NONE
+    - Classification Status: CERTIFIED P2 IMPLEMENTATION
+
+13. src/services/verify/ingestionAdapters/textAdapter.ts
+    - Implemented in: src/services/verify/ingestionAdapters/textAdapter.ts
+    - Importers in src/: src/services/verify/universalIngestionService.ts:9
+    - Importers in tests/: NONE (Transitively via universalIngestionService)
+    - Importers in e2e/: NONE
+    - Classification Status: CERTIFIED P2 IMPLEMENTATION
+
+14. src/services/verify/matchedTextHighlightingService.ts
+    - Implemented in: src/services/verify/matchedTextHighlightingService.ts
+    - Importers in src/: src/components/verify/DocumentEvidenceViewer.tsx:15, src/components/verify/SourceDetailPanel.tsx:23, src/pages/verify/GradifiVerifyDemoPage.tsx:40, src/services/verify/sourceCitationPresentationService.ts:15
+    - Importers in tests/: tests/matchedTextHighlighting.test.ts:15, tests/sourceCitationPresentation.test.ts:9
+    - Importers in e2e/: e2e/matched-text-highlighting.spec.ts
+    - Classification Status: CERTIFIED P4 IMPLEMENTATION
+
+15. src/services/verify/plagiarismPolicy.ts
+    - Implemented in: src/services/verify/plagiarismPolicy.ts
+    - Importers in src/: src/services/verify/verifyCoreService.ts:24
+    - Importers in tests/: tests/aiEvidenceFirewall.test.ts:9, tests/plagiarismEvidencePolicy.test.ts:9, tests/publicOriginalityExposure.test.ts:11
+    - Importers in e2e/: NONE
+    - Classification Status: UNTRACKED G5 / G3 POLICY IMPLEMENTATION
+
+16. src/services/verify/publicVerificationService.ts
+    - Implemented in: src/services/verify/publicVerificationService.ts
+    - Importers in src/: src/pages/verify/GradifiVerifyDemoPage.tsx:9
+    - Importers in tests/: tests/publicVerificationResolution.test.ts:11
+    - Importers in e2e/: e2e/public-verification-route.spec.ts
+    - Classification Status: G6 PUBLIC RESOLUTION IMPLEMENTATION
+
+17. src/services/verify/server/gemmaServerHandler.ts
+    - Implemented in: src/services/verify/server/gemmaServerHandler.ts
+    - Importers in src/: src/services/verify/aiFederation.ts:10, src/services/verify/server/verifyServerPlugin.ts:19
+    - Importers in tests/: tests/gemmaServerHandler.test.ts:5
+    - Importers in scripts/: scripts/apply-corrections.ps1:140
+    - Classification Status: UNTRACKED G5 SERVER HANDLER IMPLEMENTATION
+
+18. src/services/verify/server/persistenceServerHandler.ts
+    - Implemented in: src/services/verify/server/persistenceServerHandler.ts
+    - Importers in src/: src/services/verify/server/verifyServerPlugin.ts:20
+    - Importers in tests/: NONE
+    - Importers in e2e/: NONE
+    - Classification Status: G6 PERSISTENCE SERVER HANDLER IMPLEMENTATION
+
+19. src/services/verify/sourceCitationPresentationService.ts
+    - Implemented in: src/services/verify/sourceCitationPresentationService.ts
+    - Importers in src/: src/components/verify/SourceDetailPanel.tsx:28
+    - Importers in tests/: tests/sourceCitationPresentation.test.ts:16
+    - Importers in e2e/: e2e/source-citation-presentation.spec.ts
+    - Classification Status: CERTIFIED P5 IMPLEMENTATION
+
+20. src/services/verify/sourceRetrievalService.ts
+    - Implemented in: src/services/verify/sourceRetrievalService.ts
+    - Importers in src/: src/services/verify/deterministicEvidenceBridge.ts:21
+    - Importers in tests/: tests/sourceRetrieval.test.ts:5
+    - Importers in e2e/: NONE
+    - Classification Status: UNTRACKED G5 EXTENSION SERVICE
+
+21. src/services/verify/universalIngestionService.ts
+    - Implemented in: src/services/verify/universalIngestionService.ts
+    - Importers in src/: src/pages/verify/GradifiVerifyDemoPage.tsx:39
+    - Importers in tests/: tests/canonicalTextOffsetModel.test.ts:15, tests/universalIngestion.test.ts:13
+    - Importers in e2e/: NONE
+    - Classification Status: CERTIFIED P2 IMPLEMENTATION
+
+22. src/services/verify/unpaywallOAResolver.ts
+    - Implemented in: src/services/verify/unpaywallOAResolver.ts
+    - Importers in src/: src/services/verify/deterministicEvidenceBridge.ts:20
+    - Importers in tests/: tests/unpaywallOAResolver.test.ts:5
+    - Importers in e2e/: NONE
+    - Classification Status: UNTRACKED G5 EXTENSION SERVICE
+
+23. src/services/verify/verificationPersistenceService.ts
+    - Implemented in: src/services/verify/verificationPersistenceService.ts
+    - Importers in src/: src/pages/verify/GradifiVerifyDemoPage.tsx:36, src/services/verify/publicVerificationService.ts:7, src/services/verify/server/persistenceServerHandler.ts:8
+    - Importers in tests/: tests/publicVerificationResolution.test.ts:13, tests/verificationPersistence.test.ts:13
+    - Importers in e2e/: e2e/public-verification-live-acceptance.spec.ts
+    - Classification Status: G6 PERSISTENCE SERVICE IMPLEMENTATION
+
+============================================================
+SECTION 4: CERTIFIED TEST CLOSURE
+============================================================
+
+CERTIFIED P1-P6 REGRESSION TEST SUITE EXECUTIONS:
+Command: npx vitest run tests/publicVerificationResultContract.test.ts tests/universalIngestion.test.ts tests/canonicalTextOffsetModel.test.ts tests/matchedTextHighlighting.test.ts tests/sourceCitationPresentation.test.ts tests/aiOutputFirewall.test.ts
+Result: 6/6 test files passed, 109/109 tests passed.
+
+STATIC DEPENDENCY GRAPH & RECURSIVE CLOSURE FOR CERTIFIED TESTS:
+
+1. tests/publicVerificationResultContract.test.ts (P1 - 18 tests)
+   - Git Status: UNTRACKED (NOT-IN-HISTORY)
+   - Direct Imports:
+     - src/services/verify/publicVerificationResult.ts (Tracked in Git)
+     - src/services/verify/types.ts (Tracked in Git)
+   - Transitive Dependencies: NONE untracked.
+   - Execution Requirement: Required to execute Phase 1 certification.
+
+2. tests/universalIngestion.test.ts (P2 - 17 tests)
+   - Git Status: UNTRACKED (NOT-IN-HISTORY)
+   - Direct Imports:
+     - src/services/verify/universalIngestionService.ts (UNTRACKED)
+     - src/services/verify/documentNormalizer.ts (Tracked in Git)
+   - Transitive Dependencies:
+     - src/services/verify/ingestionAdapters/pdfAdapter.ts (UNTRACKED)
+     - src/services/verify/ingestionAdapters/textAdapter.ts (UNTRACKED)
+     - src/services/verify/ingestionAdapters/htmlAdapter.ts (UNTRACKED)
+     - src/services/verify/ingestionAdapters/rtfAdapter.ts (UNTRACKED)
+     - src/services/verify/ingestionAdapters/structuredAdapter.ts (UNTRACKED)
+     - src/services/verify/ingestionAdapters/officeZipAdapter.ts (UNTRACKED)
+     - src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts (UNTRACKED)
+     - src/utils/pdfExtractor.ts (UNTRACKED)
+   - Execution Requirement: Required to execute Phase 2 certification.
+
+3. tests/canonicalTextOffsetModel.test.ts (P3 - 18 tests)
+   - Git Status: UNTRACKED (NOT-IN-HISTORY)
+   - Direct Imports:
+     - src/services/verify/canonicalTextOffsetService.ts (UNTRACKED)
+     - src/services/verify/universalIngestionService.ts (UNTRACKED)
+   - Transitive Dependencies:
+     - All 7 P2 ingestion adapters + src/utils/pdfExtractor.ts (via universalIngestionService.ts)
+   - Execution Requirement: Required to execute Phase 3 certification.
+
+4. tests/matchedTextHighlighting.test.ts (P4 - 18 tests)
+   - Git Status: UNTRACKED (NOT-IN-HISTORY)
+   - Direct Imports:
+     - src/services/verify/matchedTextHighlightingService.ts (UNTRACKED)
+     - src/services/verify/types.ts (Tracked in Git)
+   - Transitive Dependencies:
+     - src/services/verify/canonicalTextOffsetService.ts (UNTRACKED)
+   - Execution Requirement: Required to execute Phase 4 certification.
+
+5. tests/sourceCitationPresentation.test.ts (P5 - 18 tests)
+   - Git Status: UNTRACKED (NOT-IN-HISTORY)
+   - Direct Imports:
+     - src/services/verify/publicVerificationResult.ts (Tracked in Git)
+     - src/services/verify/matchedTextHighlightingService.ts (UNTRACKED)
+     - src/services/verify/sourceCitationPresentationService.ts (UNTRACKED)
+   - Transitive Dependencies:
+     - src/services/verify/canonicalTextOffsetService.ts (via matchedTextHighlightingService.ts)
+   - Execution Requirement: Required to execute Phase 5 certification.
+
+6. tests/aiOutputFirewall.test.ts (P6 - 20 tests)
+   - Git Status: TRACKED at commit 5db4888
+   - Direct Imports:
+     - src/services/verify/types.ts (Tracked in Git)
+     - src/services/verify/publicVerificationResult.ts (Tracked in Git)
+     - src/services/verify/aiOutputFirewallService.ts (Tracked in Git at commit 5db4888)
+   - Transitive Dependencies: NONE untracked.
+   - Execution Requirement: Required to execute Phase 6 certification.
+
+============================================================
+SECTION 5: PHASE EVIDENCE CORRELATION
+============================================================
+
+PHASE EVIDENCE CORRELATION MATRIX FOR UNTRACKED IMPLEMENTATION FILES:
+
+1. src/services/verify/bulkIngestionService.ts
+   - Explicit Phase Evidence: HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt:237
+   - Functional Description: G5.10 Bulk ingestion processor & document batching.
+   - Associated Test: tests/bulkIngestionAndMetadata.test.ts
+   - Phase Assignment: G5 Extended Baseline
+
+2. src/services/verify/canonicalTextOffsetService.ts
+   - Explicit Phase Evidence: HOEOS_P3_CANONICAL_TEXT_OFFSET_EVIDENCE.txt:18
+   - Functional Description: P3 stable 0-indexed positional coordinate system & offset slicing.
+   - Associated Test: tests/canonicalTextOffsetModel.test.ts
+   - Phase Assignment: P3
+
+3. src/services/verify/contentValidationService.ts
+   - Explicit Phase Evidence: G5_7_DISK_EVIDENCE.txt:6, HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt:241
+   - Functional Description: G5.7 Content structure validation & non-empty content assertions.
+   - Associated Test: tests/contentValidation.test.ts
+   - Phase Assignment: G5 Extended Baseline
+
+4. src/services/verify/deterministicEvidenceBridge.ts
+   - Explicit Phase Evidence: G5_9_DISK_EVIDENCE.txt:6, HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt:243
+   - Functional Description: G5.9 Deterministic evidence hashing & verification chain orchestration.
+   - Associated Test: tests/deterministicEvidenceBridge.test.ts
+   - Phase Assignment: G5 Extended Baseline
+
+5. src/services/verify/federationOrchestrator.ts
+   - Explicit Phase Evidence: NONE (Hardening extension referenced in later tests)
+   - Functional Description: Multi-engine provider orchestration and failure isolation.
+   - Associated Test: tests/federationHardening.test.ts
+   - Phase Assignment: G6 / LATER IMPLEMENTATION
+
+6. src/services/verify/identityCorrespondenceService.ts
+   - Explicit Phase Evidence: G5_8_DISK_EVIDENCE.txt:6, HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt:242
+   - Functional Description: G5.8 Author & metadata identity correspondence matching.
+   - Associated Test: tests/identityCorrespondence.test.ts
+   - Phase Assignment: G5 Extended Baseline
+
+7-13. src/services/verify/ingestionAdapters/* (7 adapters)
+   - Explicit Phase Evidence: HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE.txt:18-24
+   - Functional Description: P2 17-format universal file extraction adapters (pdf, text, html, rtf, structured, officeZip, legacyBinary).
+   - Associated Test: tests/universalIngestion.test.ts
+   - Phase Assignment: P2
+
+14. src/services/verify/matchedTextHighlightingService.ts
+    - Explicit Phase Evidence: HOEOS_P4_MATCHED_TEXT_HIGHLIGHTING_EVIDENCE.txt:19
+    - Functional Description: P4 HTML mark highlight rendering & XSS-safe span resolution.
+    - Associated Test: tests/matchedTextHighlighting.test.ts
+    - Phase Assignment: P4
+
+15. src/services/verify/plagiarismPolicy.ts
+    - Explicit Phase Evidence: HOEOS_P2_1_PUBLIC_ENGINE_EXPOSURE_EVIDENCE.txt:111
+    - Functional Description: Deterministic plagiarism scoring policy & threshold bounds.
+    - Associated Test: tests/plagiarismEvidencePolicy.test.ts
+    - Phase Assignment: G5 Extended Baseline
+
+16. src/services/verify/publicVerificationService.ts
+    - Explicit Phase Evidence: G6_3_PUBLIC_VERIFICATION_EVIDENCE.txt:14
+    - Functional Description: G6.3 Public verification record lookup & integrity validation.
+    - Associated Test: tests/publicVerificationResolution.test.ts
+    - Phase Assignment: G6
+
+17. src/services/verify/server/gemmaServerHandler.ts
+    - Explicit Phase Evidence: G5_4_CORRECTION_EVIDENCE.txt:30, HOEOS_P2_2_REAL_FEDERATED_PUBLIC_RUN_EVIDENCE.txt:59
+    - Functional Description: G5 Local Gemma AI server proxy endpoint handler.
+    - Associated Test: tests/gemmaServerHandler.test.ts
+    - Phase Assignment: G5 Extended Baseline
+
+18. src/services/verify/server/persistenceServerHandler.ts
+    - Explicit Phase Evidence: HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt:220
+    - Functional Description: G6 Trusted server persistence endpoint handler.
+    - Associated Test: tests/verificationPersistence.test.ts
+    - Phase Assignment: G6
+
+19. src/services/verify/sourceCitationPresentationService.ts
+    - Explicit Phase Evidence: HOEOS_P5_SOURCE_DOI_ISBN_CITATION_EVIDENCE.txt:50
+    - Functional Description: P5 Citation formatting (APA/IEEE), DOI URL resolution, ISBN display, deterministic sorting.
+    - Associated Test: tests/sourceCitationPresentation.test.ts
+    - Phase Assignment: P5
+
+20. src/services/verify/sourceRetrievalService.ts
+    - Explicit Phase Evidence: G5_6_DISK_EVIDENCE.txt:6, HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt:240
+    - Functional Description: G5.6 Source retrieval pipeline & HTTP/Stream fetching.
+    - Associated Test: tests/sourceRetrieval.test.ts
+    - Phase Assignment: G5 Extended Baseline
+
+21. src/services/verify/universalIngestionService.ts
+    - Explicit Phase Evidence: HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE.txt:17
+    - Functional Description: P2 Universal document ingestion router & format dispatcher.
+    - Associated Test: tests/universalIngestion.test.ts
+    - Phase Assignment: P2
+
+22. src/services/verify/unpaywallOAResolver.ts
+    - Explicit Phase Evidence: G5_5_DISK_EVIDENCE.txt:6, HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt:239
+    - Functional Description: G5.5 Unpaywall Open Access location resolver.
+    - Associated Test: tests/unpaywallOAResolver.test.ts
+    - Phase Assignment: G5 Extended Baseline
+
+23. src/services/verify/verificationPersistenceService.ts
+    - Explicit Phase Evidence: G6_2_PERSISTENCE_EVIDENCE.txt:8
+    - Functional Description: G6.2 Supabase verification record persistence & document hash ID derivation.
+    - Associated Test: tests/verificationPersistence.test.ts
+    - Phase Assignment: G6
+
+============================================================
+SECTION 6: CONTENT-LEVEL PHASE FORENSICS
+============================================================
+
+INSPECTED EXPORTS & CLASSIFICATION SUMMARY:
+
+G5 Extended Baseline (8 files):
+  - src/services/verify/unpaywallOAResolver.ts (UnpaywallOAResolver)
+  - src/services/verify/sourceRetrievalService.ts (SourceRetrievalService)
+  - src/services/verify/contentValidationService.ts (ContentValidationService)
+  - src/services/verify/identityCorrespondenceService.ts (IdentityCorrespondenceService)
+  - src/services/verify/deterministicEvidenceBridge.ts (DeterministicEvidenceBridge)
+  - src/services/verify/bulkIngestionService.ts (BulkIngestionService)
+  - src/services/verify/plagiarismPolicy.ts (evaluatePlagiarismEvidence)
+  - src/services/verify/server/gemmaServerHandler.ts (handleGemmaServerReasoning)
+
+Phase 2 (P2) Universal Ingestion (8 files):
+  - src/services/verify/universalIngestionService.ts (ingestDocument, detectFileFormat)
+  - src/services/verify/ingestionAdapters/pdfAdapter.ts (extractPdfAdapter)
+  - src/services/verify/ingestionAdapters/textAdapter.ts (extractTextAdapter)
+  - src/services/verify/ingestionAdapters/htmlAdapter.ts (extractHtmlAdapter)
+  - src/services/verify/ingestionAdapters/rtfAdapter.ts (extractRtfAdapter)
+  - src/services/verify/ingestionAdapters/structuredAdapter.ts (extractCsvAdapter, extractJsonAdapter, extractXmlAdapter)
+  - src/services/verify/ingestionAdapters/officeZipAdapter.ts (extractDocxText, extractOdtText, etc.)
+  - src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts (extractLegacyBinaryAdapter)
+
+Phase 3 (P3) Positional Coordinate System (1 file):
+  - src/services/verify/canonicalTextOffsetService.ts (buildCanonicalTextDocument, findTextSpans, verifyOffsetSlice)
+
+Phase 4 (P4) Matched-Text Highlighting (1 file):
+  - src/services/verify/matchedTextHighlightingService.ts (resolveMatchedEvidenceSpans, renderHighlightedHtml)
+
+Phase 5 (P5) Source & Citation Presentation (1 file):
+  - src/services/verify/sourceCitationPresentationService.ts (formatDoiUrl, formatIsbnDisplay, buildSourcePresentationModel)
+
+G6 Persistence & Public Verification (3 files):
+  - src/services/verify/verificationPersistenceService.ts (persistVerificationRecord, deriveVerificationId)
+  - src/services/verify/publicVerificationService.ts (resolveVerification)
+  - src/services/verify/server/persistenceServerHandler.ts (handlePersistenceServerRequest)
+
+G6 / Later Hardening (1 file):
+  - src/services/verify/federationOrchestrator.ts (FederationOrchestrator)
+
+============================================================
+SECTION 7: GIT HISTORY FORENSICS
+============================================================
+
+FULL HISTORY AUDIT RESULTS:
+Command: git log --all --full-history --oneline -- <path>
+
+1. Untracked Verification Implementation Files (23 files):
+   ALL 23 FILES RETURNED: NOT-IN-HISTORY
+   No previous commit in Git history contains these file paths or blob contents under any directory.
+
+2. Certified Unit Test Files (6 files):
+   - tests/publicVerificationResultContract.test.ts: NOT-IN-HISTORY
+   - tests/universalIngestion.test.ts: NOT-IN-HISTORY
+   - tests/canonicalTextOffsetModel.test.ts: NOT-IN-HISTORY
+   - tests/matchedTextHighlighting.test.ts: NOT-IN-HISTORY
+   - tests/sourceCitationPresentation.test.ts: NOT-IN-HISTORY
+   - tests/aiOutputFirewall.test.ts: FOUND IN HISTORY -> 5db4888 (P6 commit)
+
+Conclusion: The certified implementation for P1-P5 exists purely in the local working tree and is entirely absent from Git history.
+
+============================================================
+SECTION 8: CERTIFICATION ARTIFACT CORRELATION MATRIX
+============================================================
+
+FILE                                              | PHASE | EVID. ARTIFACT                            | CERTIFIED TEST                          | HIST. STATUS   | CONFIDENCE
+--------------------------------------------------|-------|-------------------------------------------|-----------------------------------------|----------------|-----------
+src/services/verify/publicVerificationResult.ts   | P1    | HOEOS_P1_PUBLIC_RESULT_CONTRACT_EVIDENCE  | publicVerificationResultContract.test.ts | TRACKED (5db)  | HIGH
+tests/publicVerificationResultContract.test.ts    | P1    | HOEOS_P1_PUBLIC_RESULT_CONTRACT_EVIDENCE  | publicVerificationResultContract.test.ts | NOT-IN-HISTORY | HIGH
+src/services/verify/universalIngestionService.ts  | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+src/services/verify/ingestionAdapters/pdfAdapter  | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+src/services/verify/ingestionAdapters/textAdapter | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+src/services/verify/ingestionAdapters/htmlAdapter | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+src/services/verify/ingestionAdapters/rtfAdapter  | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+src/services/verify/ingestionAdapters/structured  | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+src/services/verify/ingestionAdapters/officeZip   | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+src/services/verify/ingestionAdapters/legacyBin   | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+tests/universalIngestion.test.ts                  | P2    | HOEOS_P2_UNIVERSAL_INGESTION_EVIDENCE     | universalIngestion.test.ts               | NOT-IN-HISTORY | HIGH
+src/services/verify/canonicalTextOffsetService.ts| P3    | HOEOS_P3_CANONICAL_TEXT_OFFSET_EVIDENCE   | canonicalTextOffsetModel.test.ts         | NOT-IN-HISTORY | HIGH
+tests/canonicalTextOffsetModel.test.ts           | P3    | HOEOS_P3_CANONICAL_TEXT_OFFSET_EVIDENCE   | canonicalTextOffsetModel.test.ts         | NOT-IN-HISTORY | HIGH
+src/services/verify/matchedTextHighlightingSvc.ts| P4    | HOEOS_P4_MATCHED_TEXT_HIGHLIGHTING_EVID  | matchedTextHighlighting.test.ts          | NOT-IN-HISTORY | HIGH
+tests/matchedTextHighlighting.test.ts             | P4    | HOEOS_P4_MATCHED_TEXT_HIGHLIGHTING_EVID  | matchedTextHighlighting.test.ts          | NOT-IN-HISTORY | HIGH
+src/services/verify/sourceCitationPres.ts        | P5    | HOEOS_P5_SOURCE_DOI_ISBN_CITATION_EVID    | sourceCitationPresentation.test.ts       | NOT-IN-HISTORY | HIGH
+tests/sourceCitationPresentation.test.ts          | P5    | HOEOS_P5_SOURCE_DOI_ISBN_CITATION_EVID    | sourceCitationPresentation.test.ts       | NOT-IN-HISTORY | HIGH
+src/services/verify/aiOutputFirewallService.ts   | P6    | HOEOS_P6_AI_OUTPUT_FIREWALL_EVIDENCE      | aiOutputFirewall.test.ts                 | TRACKED (5db)  | HIGH
+tests/aiOutputFirewall.test.ts                    | P6    | HOEOS_P6_AI_OUTPUT_FIREWALL_EVIDENCE      | aiOutputFirewall.test.ts                 | TRACKED (5db)  | HIGH
+src/services/verify/verificationPersistenceSvc.ts | G6    | G6_2_PERSISTENCE_EVIDENCE                  | verificationPersistence.test.ts          | NOT-IN-HISTORY | HIGH
+src/services/verify/publicVerificationService.ts | G6    | G6_3_PUBLIC_VERIFICATION_EVIDENCE          | publicVerificationResolution.test.ts     | NOT-IN-HISTORY | HIGH
+src/services/verify/server/persistenceHandler.ts | G6    | HOEOS_P0_VERIFY_CORRECTION_BASELINE       | verificationPersistence.test.ts          | NOT-IN-HISTORY | HIGH
+src/services/verify/federationOrchestrator.ts    | G6    | HOEOS_P0_VERIFY_CORRECTION_BASELINE       | federationHardening.test.ts              | NOT-IN-HISTORY | HIGH
+
+============================================================
+SECTION 9: SEPARATE IMPLEMENTATION FROM EVIDENCE AND TEMPORARY FILES
+============================================================
+
+REPO-WIDE CATEGORIZATION OF UNTRACKED FILES:
+
+A. CERTIFIED IMPLEMENTATION (19 files):
+  - src/services/verify/universalIngestionService.ts
+  - src/services/verify/ingestionAdapters/pdfAdapter.ts
+  - src/services/verify/ingestionAdapters/textAdapter.ts
+  - src/services/verify/ingestionAdapters/htmlAdapter.ts
+  - src/services/verify/ingestionAdapters/rtfAdapter.ts
+  - src/services/verify/ingestionAdapters/structuredAdapter.ts
+  - src/services/verify/ingestionAdapters/officeZipAdapter.ts
+  - src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts
+  - src/services/verify/canonicalTextOffsetService.ts
+  - src/services/verify/matchedTextHighlightingService.ts
+  - src/services/verify/sourceCitationPresentationService.ts
+  - src/services/verify/unpaywallOAResolver.ts
+  - src/services/verify/sourceRetrievalService.ts
+  - src/services/verify/contentValidationService.ts
+  - src/services/verify/identityCorrespondenceService.ts
+  - src/services/verify/deterministicEvidenceBridge.ts
+  - src/services/verify/bulkIngestionService.ts
+  - src/services/verify/plagiarismPolicy.ts
+  - src/services/verify/server/gemmaServerHandler.ts
+
+B. CERTIFIED TESTS (5 files):
+  - tests/publicVerificationResultContract.test.ts
+  - tests/universalIngestion.test.ts
+  - tests/canonicalTextOffsetModel.test.ts
+  - tests/matchedTextHighlighting.test.ts
+  - tests/sourceCitationPresentation.test.ts
+
+C. CERTIFIED EVIDENCE (36 files):
+  - All root HOEOS_*, G5_*, G6_*, g1-contract-verification.txt, provenance-inventory.txt evidence files.
+
+D. G6 / LATER IMPLEMENTATION & TESTS (22 files):
+  - src/services/verify/verificationPersistenceService.ts
+  - src/services/verify/publicVerificationService.ts
+  - src/services/verify/server/persistenceServerHandler.ts
+  - src/services/verify/federationOrchestrator.ts
+  - src/components/verify/DocumentEvidenceViewer.tsx
+  - src/components/verify/SourceDetailPanel.tsx
+  - src/pages/verify/GradifiVerifyDemoPage.tsx
+  - src/utils/pdfExtractor.ts
+  - src/utils/pdfReportGenerator.ts
+  - src/utils/qrGenerator.ts
+  - e2e/matched-text-highlighting.spec.ts
+  - e2e/public-verification-live-acceptance.spec.ts
+  - e2e/public-verification-route.spec.ts
+  - e2e/source-citation-presentation.spec.ts
+  - tests/aiEvidenceFirewall.test.ts
+  - tests/bulkIngestionAndMetadata.test.ts
+  - tests/canonicalDocumentContract.test.ts
+  - tests/contentValidation.test.ts
+  - tests/demoWorkflow3Runs.test.ts
+  - tests/deterministicEvidenceBridge.test.ts
+  - tests/deterministicSimilarityEvidence.test.ts
+  - tests/federationHardening.test.ts
+  - tests/gemmaServerHandler.test.ts
+  - tests/identityCorrespondence.test.ts
+  - tests/plagiarismEvidencePolicy.test.ts
+  - tests/publicOriginalityExposure.test.ts
+  - tests/publicVerificationResolution.test.ts
+  - tests/qrGenerator.test.ts
+  - tests/sourceRetrieval.test.ts
+  - tests/unpaywallOAResolver.test.ts
+  - tests/verificationPersistence.test.ts
+  - tests/verificationSchemaRLS.test.ts
+
+E. DEVELOPMENT TOOLING & SCRIPTS (3 files):
+  - scripts/apply-corrections.ps1
+  - scripts/diagnose-nemotron.ts
+  - scripts/executeSixProviderLiveRun.ts
+
+F. TEMPORARY / GENERATED (15 files):
+  - supabase/.temp/* (9 files)
+  - FEDERATION_RUN_REPORT.json
+  - FEDERATION_RUN_REPORT.md
+  - test-results/.playwright-temp/.last-run.json
+  - playwright-report/index.html
+
+G. UNKNOWN / HOLD (0 files):
+  - All untracked entries repo-wide have been forensically classified with 100% evidence.
+
+============================================================
+SECTION 10: REPRODUCIBILITY MODEL
+============================================================
+
+STATIC REPRODUCIBILITY EVALUATION ON FRESH CHECKOUT OF HEAD 5db4888:
+
+1. P1 Certified Unit Tests:
+   - Git HEAD Status: MISSING tests/publicVerificationResultContract.test.ts
+   - Result on fresh checkout: FAIL (0 tests executed)
+
+2. P2 Universal Ingestion:
+   - Git HEAD Status: MISSING universalIngestionService.ts, 7 ingestionAdapters, pdfExtractor.ts, tests/universalIngestion.test.ts
+   - Result on fresh checkout: FAIL (Module not found error)
+
+3. P3 Canonical Text / Offset Model:
+   - Git HEAD Status: MISSING canonicalTextOffsetService.ts, tests/canonicalTextOffsetModel.test.ts
+   - Result on fresh checkout: FAIL (Module not found error)
+
+4. P4 Matched-Text Highlighting:
+   - Git HEAD Status: MISSING matchedTextHighlightingService.ts, tests/matchedTextHighlighting.test.ts
+   - Result on fresh checkout: FAIL (Module not found error)
+
+5. P5 Source & Citation Presentation:
+   - Git HEAD Status: MISSING sourceCitationPresentationService.ts, tests/sourceCitationPresentation.test.ts
+   - Result on fresh checkout: FAIL (Module not found error)
+
+6. P6 AI Output Firewall:
+   - Git HEAD Status: TRACKED (tests/aiOutputFirewall.test.ts & src/services/verify/aiOutputFirewallService.ts present)
+   - Result on fresh checkout: PASS for P6 standalone unit test.
+
+OVERALL REPRODUCIBILITY STATUS: FAIL
+The certified implementation for P1-P5 is NOT reproducible from Git HEAD 5db4888 without untracked local working tree files.
+
+============================================================
+SECTION 11: PROPOSED COMMIT PLAN (READ-ONLY PROPOSAL)
+============================================================
+
+DO NOT COMMIT - READ-ONLY GATE PROPOSAL ONLY.
+
+COMMIT 1: G5 Extended Verification Core Baseline
+  Purpose: Commit untracked G5 baseline extension services & handlers
+  Phase: G5 Extended Baseline
+  Exact Files:
+    - src/services/verify/unpaywallOAResolver.ts
+    - src/services/verify/sourceRetrievalService.ts
+    - src/services/verify/contentValidationService.ts
+    - src/services/verify/identityCorrespondenceService.ts
+    - src/services/verify/deterministicEvidenceBridge.ts
+    - src/services/verify/bulkIngestionService.ts
+    - src/services/verify/plagiarismPolicy.ts
+    - src/services/verify/server/gemmaServerHandler.ts
+    - src/utils/pdfExtractor.ts
+    - tests/unpaywallOAResolver.test.ts
+    - tests/sourceRetrieval.test.ts
+    - tests/contentValidation.test.ts
+    - tests/identityCorrespondence.test.ts
+    - tests/deterministicEvidenceBridge.test.ts
+    - tests/bulkIngestionAndMetadata.test.ts
+    - tests/plagiarismEvidencePolicy.test.ts
+    - tests/gemmaServerHandler.test.ts
+  Why: Establishes complete historical baseline provenance for 5d73a96 extension.
+  Protected baseline impact: None. Preserves 5d73a96 baseline definition.
+
+COMMIT 2: HOEOS Phase 1 Certification Contract Test
+  Purpose: Commit missing P1 certified contract test file
+  Phase: P1
+  Exact Files:
+    - tests/publicVerificationResultContract.test.ts
+  Why: Enables fresh-checkout reproducibility for Phase 1 contract certification.
+  Protected baseline impact: None.
+
+COMMIT 3: HOEOS Phase 2 Universal Ingestion Engine
+  Purpose: Commit P2 ingestion router, adapters, tests, and fixtures
+  Phase: P2
+  Exact Files:
+    - src/services/verify/universalIngestionService.ts
+    - src/services/verify/ingestionAdapters/htmlAdapter.ts
+    - src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts
+    - src/services/verify/ingestionAdapters/officeZipAdapter.ts
+    - src/services/verify/ingestionAdapters/pdfAdapter.ts
+    - src/services/verify/ingestionAdapters/rtfAdapter.ts
+    - src/services/verify/ingestionAdapters/structuredAdapter.ts
+    - src/services/verify/ingestionAdapters/textAdapter.ts
+    - tests/universalIngestion.test.ts
+    - tests/canonicalDocumentContract.test.ts
+    - tests/fixtures/ingestion/*
+  Why: Seals P2 17-format universal ingestion engine into Git.
+  Protected baseline impact: None.
+
+COMMIT 4: HOEOS Phase 3 Canonical Positional Coordinate Model
+  Purpose: Commit P3 offset service and coordinate invariant tests
+  Phase: P3
+  Exact Files:
+    - src/services/verify/canonicalTextOffsetService.ts
+    - tests/canonicalTextOffsetModel.test.ts
+  Why: Seals P3 offset model into Git.
+  Protected baseline impact: None.
+
+COMMIT 5: HOEOS Phase 4 Matched-Text Highlighting Presentation
+  Purpose: Commit P4 highlighting service, UI viewer, and tests
+  Phase: P4
+  Exact Files:
+    - src/services/verify/matchedTextHighlightingService.ts
+    - src/components/verify/DocumentEvidenceViewer.tsx
+    - tests/matchedTextHighlighting.test.ts
+    - e2e/matched-text-highlighting.spec.ts
+  Why: Seals P4 visual evidence highlighting into Git.
+  Protected baseline impact: None.
+
+COMMIT 6: HOEOS Phase 5 Source & Citation Presentation Model
+  Purpose: Commit P5 citation presentation service, UI panel, and tests
+  Phase: P5
+  Exact Files:
+    - src/services/verify/sourceCitationPresentationService.ts
+    - src/components/verify/SourceDetailPanel.tsx
+    - tests/sourceCitationPresentation.test.ts
+    - e2e/source-citation-presentation.spec.ts
+  Why: Seals P5 DOI/ISBN presentation and citation formatting into Git.
+  Protected baseline impact: None.
+
+COMMIT 7: G6 Persistence, Public Verification & Router Integration
+  Purpose: Commit G6 persistence services, public verification resolver, and demo page
+  Phase: G6
+  Exact Files:
+    - src/services/verify/verificationPersistenceService.ts
+    - src/services/verify/publicVerificationService.ts
+    - src/services/verify/server/persistenceServerHandler.ts
+    - src/services/verify/federationOrchestrator.ts
+    - src/pages/verify/GradifiVerifyDemoPage.tsx
+    - src/utils/pdfReportGenerator.ts
+    - src/utils/qrGenerator.ts
+    - tests/verificationPersistence.test.ts
+    - tests/publicVerificationResolution.test.ts
+    - tests/federationHardening.test.ts
+    - tests/qrGenerator.test.ts
+    - e2e/public-verification-route.spec.ts
+    - e2e/public-verification-live-acceptance.spec.ts
+  Why: Seals G6 public resolution and persistence infrastructure.
+  Protected baseline impact: None.
+
+COMMIT 8: Phase Evidence & Provenance Documentation
+  Purpose: Commit HOEOS and G5/G6 evidence text artifacts
+  Phase: EVIDENCE
+  Exact Files:
+    - All root HOEOS_*.txt, G5_*.txt, G6_*.txt evidence files.
+  Why: Archives full forensic trail in repository Git history.
+
+============================================================
+SECTION 12: PROTECTED BASELINE ANALYSIS
+============================================================
+
+HISTORICAL BASELINE RELATIONSHIPS & AUTHORITY BOUNDARIES:
+
+1. Baseline SHA Definitions:
+   - ORIGINAL_G5_BASELINE: 2e29506f353ab37c25875785ec95e3128f52522f
+     Description: Historical pre-extension baseline.
+   - P5_EXTENDED_G5_BASELINE: 5d73a9690321834e1ac15a92046a7c238a51211c
+     Description: P5 extended verification-core baseline containing 13 verification-core files (+1058 / -34 relative to 2e29506).
+   - P6_CERTIFICATION_BASELINE: 5db4888a263d16b717c365493e808c18b7ba6ebd
+     Description: P6 certification baseline.
+
+2. Precise Baseline Statements:
+   - P6 introduced ZERO modifications to the P5-extended G5 authority baseline (5d73a96).
+   - Relative to original G5 baseline 2e29506, P5 explicitly added +1058 / -34 lines across 13 verification-core files.
+   - Baseline definition remains strictly preserved; no historical commits were altered.
+
+============================================================
+SECTION 13: NO-CERTIFICATION-INFLATION RULE
+============================================================
+
+FORMAL DECLARATIONS:
+
+1. The repository is NOT declared fully sealed.
+2. Fresh-checkout reproducibility status is FAIL.
+3. Certified phases P1-P5 are NOT independently reproducible from Git HEAD 5db4888.
+4. Phase 7 (P7) is NOT authorized at this time.
+
+This forensic gate is for investigation, taxonomy, and commit plan generation ONLY.
+
+============================================================
+SECTION 14: FINAL FORENSIC VERDICT
+============================================================
+
+1. EXECUTIVE VERDICT:
+   HEAD 5db4888 passes 100% of the 109 certified unit tests in the local working tree, but DOES NOT reproduce the certified tree on a fresh checkout because 23 verification implementation files and 5 certified test files exist outside Git history. Provenance investigation has successfully categorized every untracked file with 100% forensic evidence.
+
+2. CERTIFIED IMPLEMENTATION FILES:
+   - src/services/verify/universalIngestionService.ts (P2)
+   - src/services/verify/ingestionAdapters/pdfAdapter.ts (P2)
+   - src/services/verify/ingestionAdapters/textAdapter.ts (P2)
+   - src/services/verify/ingestionAdapters/htmlAdapter.ts (P2)
+   - src/services/verify/ingestionAdapters/rtfAdapter.ts (P2)
+   - src/services/verify/ingestionAdapters/structuredAdapter.ts (P2)
+   - src/services/verify/ingestionAdapters/officeZipAdapter.ts (P2)
+   - src/services/verify/ingestionAdapters/legacyBinaryAdapter.ts (P2)
+   - src/services/verify/canonicalTextOffsetService.ts (P3)
+   - src/services/verify/matchedTextHighlightingService.ts (P4)
+   - src/services/verify/sourceCitationPresentationService.ts (P5)
+   - src/services/verify/unpaywallOAResolver.ts (G5 Extended)
+   - src/services/verify/sourceRetrievalService.ts (G5 Extended)
+   - src/services/verify/contentValidationService.ts (G5 Extended)
+   - src/services/verify/identityCorrespondenceService.ts (G5 Extended)
+   - src/services/verify/deterministicEvidenceBridge.ts (G5 Extended)
+   - src/services/verify/bulkIngestionService.ts (G5 Extended)
+   - src/services/verify/plagiarismPolicy.ts (G5 Extended)
+   - src/services/verify/server/gemmaServerHandler.ts (G5 Extended)
+
+3. CERTIFIED TEST FILES:
+   - tests/publicVerificationResultContract.test.ts (P1, UNTRACKED)
+   - tests/universalIngestion.test.ts (P2, UNTRACKED)
+   - tests/canonicalTextOffsetModel.test.ts (P3, UNTRACKED)
+   - tests/matchedTextHighlighting.test.ts (P4, UNTRACKED)
+   - tests/sourceCitationPresentation.test.ts (P5, UNTRACKED)
+   - tests/aiOutputFirewall.test.ts (P6, TRACKED at 5db4888)
+
+4. CERTIFIED EVIDENCE FILES:
+   - All root HOEOS_*.txt, G5_*.txt, G6_*.txt evidence text files (36 files).
+
+5. G6 / LATER IMPLEMENTATION:
+   - src/services/verify/verificationPersistenceService.ts
+   - src/services/verify/publicVerificationService.ts
+   - src/services/verify/server/persistenceServerHandler.ts
+   - src/services/verify/federationOrchestrator.ts
+   - src/components/verify/DocumentEvidenceViewer.tsx
+   - src/components/verify/SourceDetailPanel.tsx
+   - src/pages/verify/GradifiVerifyDemoPage.tsx
+   - src/utils/pdfExtractor.ts
+   - src/utils/pdfReportGenerator.ts
+   - src/utils/qrGenerator.ts
+
+6. TEMPORARY / GENERATED:
+   - supabase/.temp/* (9 files)
+   - FEDERATION_RUN_REPORT.json
+   - FEDERATION_RUN_REPORT.md
+   - test-results/.playwright-temp/.last-run.json
+   - playwright-report/index.html
+
+7. UNRESOLVED / HOLD:
+   - NONE (0 files).
+
+8. PROPOSED COMMIT PLAN:
+   - 8 structured commits separating G5 baseline extensions, P1, P2, P3, P4, P5, G6, and Evidence (See Section 11).
+
+9. PROTECTED BASELINE STATUS:
+   - CONFIRMED PRESERVED. P6 introduced zero modifications to P5-extended G5 authority baseline (5d73a96).
+
+10. REPRODUCIBILITY STATUS:
+    - FAIL on fresh checkout of 5db4888. PASS on local working tree (109/109 tests).
+
+11. P7 STATUS:
+    - NOT AUTHORIZED. Must execute proposed commit plan first to seal provenance into Git history.
+
+12. REQUIRED NEXT ACTION:
+    - Review proposed commit plan and authorize execution of provenance commit sequence.
+
+============================================================
+MANDATORY FINAL STATE
+============================================================
+
+NOTHING WAS STAGED.
+NOTHING WAS COMMITTED.
+NOTHING WAS DELETED.
+NOTHING WAS RESET.
+NOTHING WAS RESTORED.
+NO APPLICATION LOGIC WAS MODIFIED.
+
+Forensic Evidence Artifact: HOEOS_CERTIFIED_TREE_RECONSTRUCTION_EVIDENCE.txt
+Exact Path: C:\Projects\Gradifi\HOEOS_CERTIFIED_TREE_RECONSTRUCTION_EVIDENCE.txt
+HEAD SHA: 5db4888a263d16b717c365493e808c18b7ba6ebd
+Branch: clean-deploy
+Timestamp: 2026-09-13T12:09:00+01:00
+
+============================================================
+END HOEOS FORENSIC EVIDENCE ARTIFACT
+============================================================

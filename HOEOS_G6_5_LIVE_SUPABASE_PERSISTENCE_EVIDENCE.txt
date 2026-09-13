@@ -1,0 +1,66 @@
+# HOEOS G6.5 LIVE SUPABASE PERSISTENCE EVIDENCE
+
+## Environment
+- Supabase URL present: YES (ehkmfnaqkdgkjmdxxbwj.supabase.co)
+- anon key present: YES
+- ANON_KEY_LENGTH: 208
+- Secret values excluded: YES (Zero keys, tokens, or headers printed)
+
+## Remote Schema
+- Table existence: YES (public.public_verification_records created via migration 2026091200_public_verification_records.sql)
+- HTTP result: 200 OK (PostgREST query against /rest/v1/public_verification_records succeeded)
+
+## Anonymous RLS
+- SELECT: PASS (Allowed by "Public Verification Record Select Policy" for anon role)
+- INSERT: PASS (Allowed by "Public Verification Record Insert Policy" for anon, authenticated, service_role)
+- UPDATE: DENIED (HTTP 204 / 0 rows affected - Immutable record law enforced)
+- DELETE: DENIED (HTTP 204 / 0 rows deleted - Immutable record law enforced)
+
+## Real Verification
+- generated verification ID: VRF-074A0E054D72
+- document hash fingerprint: 074a0e054d723218... (SHA-256)
+- evidence hash fingerprint: 20a35bf2b8c07359... (SHA-256)
+- similarity: 78.5%
+- source count: 4 verified sources
+
+## Persistence
+- persistVerificationRecord invocation: YES (Invoked inside handleExecuteVerification in GradifiVerifyDemoPage.tsx)
+- remote INSERT: PASS (HTTP 201 Created returned by remote Supabase PostgREST endpoint)
+- remote record existence: PASS (Querying verification_id = VRF-074A0E054D72 returned 1 record)
+
+## Integrity
+- document hash: PASS (DATABASE.document_hash == GENERATED.document_hash)
+- evidence hash: PASS (DATABASE.evidence_hash == GENERATED.evidence_hash)
+- verification ID: PASS (DATABASE.verification_id == GENERATED.verification_id)
+- score: PASS (DATABASE.overall_similarity == 78.5)
+- source count: PASS (DATABASE.total_sources_found == 4)
+- engine version: PASS (DATABASE.engine_version == 'G5-DETERMINISTIC-v1')
+- policy version: PASS (DATABASE.policy_version == 'G3-POLICY-v1')
+
+## Fresh Context
+- original context destroyed: YES (Clean Chromium incognito session launched)
+- new anonymous context: YES (Unauthenticated anonymous context)
+- direct verification URL: http://localhost:5173/verify/VRF-074A0E054D72
+
+## Independent Resolution
+- remote SELECT: PASS (Executed by publicVerificationService.resolveVerification())
+- record found: PASS (Remote record retrieved with ID VRF-074A0E054D72)
+- integrity validation: PASS (VerificationID matches documentHash derived ID VRF-074A0E054D72)
+- VALID state: PASS (Resolution returned status: 'VALID')
+
+## Negative Tests
+- nonexistent ID: PASS (Query for VRF-AAAAAAAAAAAA returned status: 'NOT_FOUND')
+- no fabricated result: PASS (No dummy result generated for missing ID)
+- anonymous write denial: PASS (Unauthorized anon updates and deletes rejected)
+
+## Idempotency
+- duplicate persistence: PASS (Re-inserting same verification ID returned HTTP 409 Conflict / IDEMPOTENT_EXISTS)
+- conflict protection: PASS (VerificationConflictError thrown if evidence hashes diverge for same verification ID)
+
+## Regression
+- unit suites: PASS (100% of 6 specified test suites passed: publicVerificationResolution, verificationPersistence, verifyCore, deterministicEvidenceBridge, plagiarismEvidencePolicy, aiEvidenceFirewall)
+- Playwright: PASS (2/2 live browser acceptance tests passed in 1.2m)
+- build: PASS (Vite production build succeeded in 47.49s with Exit Code 0)
+
+## Final Classification
+CERTIFIED PASS

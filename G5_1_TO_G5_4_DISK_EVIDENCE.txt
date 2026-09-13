@@ -1,0 +1,81 @@
+=== G5.1 ===
+files changed:
+- tests/aiEvidenceFirewall.test.ts
+
+tests executed:
+- npx tsx tests/aiEvidenceFirewall.test.ts
+
+test results:
+- 24/24 PASS (0 FAIL)
+
+type errors before:
+- 4 TypeScript errors (literal narrowing around Gemma status comparisons in fixture)
+
+type errors after:
+- 0 TypeScript errors in tests/aiEvidenceFirewall.test.ts
+
+=== G5.2 ===
+files changed/created:
+- src/services/verify/types.ts (Added IngestionStatus, BulkIngestionItem, BulkIngestionBatch)
+- src/services/verify/bulkIngestionService.ts (Implemented BulkIngestionService with batch contract & failure isolation)
+
+bulk contract:
+- Total, completed, failed, queued, inProgress counts
+- Item lifecycle: QUEUED -> VALIDATING -> EXTRACTING -> COMPLETED / FAILED
+- Document identity anchored to canonical content hash (CanonicalAnalysisDocument documentId)
+
+per-file isolation proof:
+- Evaluated mixed batch with valid and invalid items in tests/bulkIngestionAndMetadata.test.ts. One failed item marked as FAILED with item-level error while valid items complete with status COMPLETED and documentHash. Batch overall count reflects completed: 2, failed: 1, total: 3.
+
+tests:
+- npx tsx tests/bulkIngestionAndMetadata.test.ts (20/20 PASS)
+
+=== G5.3 ===
+files changed:
+- src/services/verify/bulkIngestionService.ts
+- src/utils/pdfExtractor.ts (Reused canonical pdfExtractor engine without modifications)
+
+extraction contract:
+- Controlled per-document extraction via extractDocumentText()
+- Distinguishes empty/unextractable text without throwing unhandled exceptions
+- Preserves documentHash and canonical token statistics
+
+failure isolation proof:
+- Empty PDF/text produces item-level FAILED status with error 'No extractable text found in file' or 'Empty document text provided'. Processing continues for subsequent batch items.
+- Extraction failure does NOT generate verifiedMatches, overallSimilarity, or AI findings.
+
+tests:
+- npx tsx tests/bulkIngestionAndMetadata.test.ts (Section 3: Failure Isolation PASS)
+
+=== G5.4 ===
+files changed:
+- src/services/verify/types.ts (Added UnpaywallMetadataResult, UnpaywallOALocation)
+- src/services/verify/providers/unpaywallProvider.ts (Implemented fetchMetadata(doi) boundary method)
+
+Unpaywall metadata contract:
+- Distinguishes METADATA_FOUND, METADATA_NOT_FOUND, and REQUEST_FAILED
+- Returns candidate metadata (title, authors, year, journal, publisher, oaLocations)
+- Candidate metadata is NOT passed directly into deterministic similarity as verified evidence
+
+credential semantics:
+- Unpaywall credentialStatus strictly preserved as NOT_APPLICABLE
+- Unpaywall contact email used as metadata header only, not authentication credential
+
+tests:
+- npx tsx tests/bulkIngestionAndMetadata.test.ts (Section 4 & 5 PASS)
+- npx tsx tests/verifyCore.test.ts (Section 8 Matrix check: credentialStatus = NOT_APPLICABLE PASS)
+
+=== GLOBAL ===
+production build:
+- PASS (vite v6.4.3 built dist in 29.10s without errors)
+
+TypeScript result:
+- total errors: 52 (in pre-existing Jest test files lacking @types/jest)
+- G5-related errors: 0
+- pre-existing/out-of-scope errors: 52 (tests/gemmaService.test.ts, tests/nemotronService.test.ts, tests/ocrService.test.ts, tests/plagiarismService.test.ts, tests/run-all-tests.ts)
+
+forbidden-pattern scan:
+- 0 forbidden type suppressions (as any / @ts-ignore / @ts-expect-error) introduced in G5 files.
+
+process.env browser scan:
+- 0 process.env reads in src/services/verify/providers/* (browser code strictly isolated from server credentials).

@@ -1,0 +1,179 @@
+============================================================================
+GRADIFI VERIFY — HOEOS PUBLIC EVIDENCE & UNIVERSAL INGESTION CORRECTION PROGRAM
+PHASE 1 PUBLIC RESULT CONTRACT & PRESENTATION FIREWALL EVIDENCE ARTIFACT
+============================================================================
+
+A. PHASE IDENTIFIER
+----------------------------------------------------------------------------
+Phase: PHASE 1 — PUBLIC RESULT CONTRACT & PRESENTATION FIREWALL
+Status: CERTIFIED PASS
+
+B. TIMESTAMP
+----------------------------------------------------------------------------
+Timestamp: 2026-09-13T02:35:00.000Z
+
+C. REPOSITORY PATH
+----------------------------------------------------------------------------
+Repository: C:\Projects\Gradifi
+Git Branch: clean-deploy
+Git Commit: 2e29506
+
+D. PHASE 0 BASELINE REFERENCE
+----------------------------------------------------------------------------
+Phase 0 Baseline Artifact: HOEOS_P0_VERIFY_CORRECTION_BASELINE.txt
+Phase 0 Status: COMPLETE
+Baseline Tests: 256/256 PASS across 13 test suites
+Baseline Build: PASS (0 errors)
+
+E. FILES INSPECTED
+----------------------------------------------------------------------------
+- src/services/verify/types.ts
+- src/pages/verify/GradifiVerifyDemoPage.tsx
+- src/utils/pdfReportGenerator.ts
+- src/services/verify/verifyCoreService.ts
+- src/services/verify/verificationPersistenceService.ts
+- src/services/verify/publicVerificationService.ts
+
+F. FILES MODIFIED
+----------------------------------------------------------------------------
+- src/utils/pdfReportGenerator.ts
+- src/pages/verify/GradifiVerifyDemoPage.tsx
+
+G. FILES CREATED
+----------------------------------------------------------------------------
+- src/services/verify/publicVerificationResult.ts
+- tests/publicVerificationResultContract.test.ts
+- HOEOS_P1_PUBLIC_RESULT_CONTRACT_EVIDENCE.txt
+
+H. PUBLIC RESULT CONTRACT LOCATION
+----------------------------------------------------------------------------
+Contract Module: src/services/verify/publicVerificationResult.ts
+Canonical Interfaces:
+  - PublicVerificationResult
+  - PublicDocumentMetadata
+  - PublicSimilarityScore
+  - PublicMatchedEvidence
+  - PublicAcademicSource
+  - PublicBookSource
+  - PublicCitation
+  - PublicAIInterpretation
+  - PublicVerificationReceipt
+
+I. DATA TRANSFORMATION PATH
+----------------------------------------------------------------------------
+INTERNAL ENGINE / PROVIDER RUN
+        ↓ (EvidenceEngineResult)
+toPublicVerificationResult(engineResult, verificationId)
+        ↓ (PublicVerificationResult)
+PUBLIC UI (GradifiVerifyDemoPage.tsx) & PUBLIC REPORT (pdfReportGenerator.ts)
+
+J. PROVIDER-TO-PUBLIC BOUNDARY
+----------------------------------------------------------------------------
+- Provider credentials, API keys, authorization headers, and access tokens: EXCLUDED
+- Raw provider HTTP request/response payloads: EXCLUDED
+- Provider HTTP diagnostic matrix (credentialStatus, realRequestStatus, responseStatus): EXCLUDED from public contract & report
+- Evidence representation: Provider-agnostic PublicAcademicSource & PublicBookSource contracts
+
+K. AI-TO-PUBLIC BOUNDARY
+----------------------------------------------------------------------------
+- AI Authority: NON_AUTHORITATIVE_INTERPRETATION (Strictly advisory, cannot modify deterministic similarity or findings)
+- Raw AI conversational output (e.g. "Okay, the user wants me to analyze..."): SANITIZED / FILTERED to "AI INTERPRETATION UNAVAILABLE"
+- AI Confidence: Bounded strictly to 0.0 – 1.0 internally
+
+L. NUMERIC NORMALIZATION EVIDENCE
+----------------------------------------------------------------------------
+- Overall Similarity Percentage: Strictly bounded to [0, 100]
+- AI Confidence Score: Bounded to [0.0, 1.0] internally (rendered as 0-100%)
+- Anomaly Prevention: Multiplier bugs (8000%, 8500%) mathematically prevented by normalizeSimilarityPercentage() and normalizeAiConfidence()
+
+M. SOURCE COUNT SEMANTICS
+----------------------------------------------------------------------------
+- Total Verified Sources: Evaluated as explicit count of verified academic papers and books (totalVerifiedSources)
+- Ambiguous labels (e.g. "10 / 8 Sources Active") eliminated from UI presentation
+
+N. METADATA HANDLING
+----------------------------------------------------------------------------
+- Author Metadata: Placeholder "Unknown Author" replaced with truthful "Author metadata unavailable"
+- Identifiers: DOI and ISBN retained where evidence-backed; zero metadata fabricated when missing
+
+O. PUBLIC REPORT LEAKAGE AUDIT
+----------------------------------------------------------------------------
+- Provider HTTP diagnostic matrix table removed from downloadable PDF report
+- Verified Academic Evidence Sources table added to report
+- QR receipt caption updated to truthful: "Scan to independently verify this Gradifi verification record."
+
+P. SECURITY BOUNDARY AUDIT
+----------------------------------------------------------------------------
+- Zero client-visible secret exposures in PublicVerificationResult, DOM, generated PDF report, or QR payload
+- Public Verification Receipt includes only verification ID, document hash, evidence hash, engine version, policy version, and timestamp
+
+Q. TESTS AND EXACT RESULTS
+----------------------------------------------------------------------------
+Suite: tests/publicVerificationResultContract.test.ts
+Command: npx vitest run tests/publicVerificationResultContract.test.ts
+Results: 18 / 18 PASS (100%)
+
+Detailed Test Checklist:
+  1. constructs PublicVerificationResult from valid EvidenceEngineResult: PASS
+  2. includes all required top-level fields: PASS
+  3. normalizes overall similarity score strictly to [0, 100]: PASS
+  4. normalizes AI confidence strictly to [0.0, 1.0] internally: PASS
+  5. prevents multiplier bug from turning 85 or 8500 confidence into 8500%: PASS
+  6. retains deterministic source mapping in matched evidence items: PASS
+  7. retains validated DOI in academic source records: PASS
+  8. retains validated ISBN in book source records: PASS
+  9. does not fabricate missing author metadata: PASS
+ 10. deterministically deduplicates identical matched evidence records: PASS
+ 11. classifies all AI findings explicitly as NON_AUTHORITATIVE_INTERPRETATION: PASS
+ 12. guarantees AI findings do not alter deterministic similarity calculation: PASS
+ 13. excludes raw provider response payloads from public result contract: PASS
+ 14. excludes credential status and secret fields from public result contract: PASS
+ 15. excludes internal HTTP provider matrix diagnostics from public result contract: PASS
+ 16. filters out raw AI model conversational preamble: PASS
+ 17. preserves verification receipt hashes, versions, and timestamp: PASS
+ 18. provides provider-agnostic source representations: PASS
+
+R. PLAYWRIGHT RESULTS
+----------------------------------------------------------------------------
+Command: npx playwright test e2e/public-verification-route.spec.ts
+Result: 1 / 1 PASS (6.5s)
+Status: Public verification route navigation verified clean
+
+S. PRODUCTION BUILD RESULT
+----------------------------------------------------------------------------
+Command: npm run build
+Result: PASS (Exit Code 0)
+Duration: 14.20 seconds
+Modules Transformed: 1912
+Build Artifacts:
+  - dist/index.html (0.79 kB)
+  - dist/assets/index-CiwHgZ7p.css (80.97 kB)
+  - dist/assets/index-CZ8H7Pjo.js (394.21 kB)
+  - dist/assets/index-CyRlKCG3.js (916.73 kB)
+Errors: 0
+Warnings: 2 (Rollup chunk size warnings > 500kB)
+
+T. G5 REGRESSION RESULT
+----------------------------------------------------------------------------
+Certified G5 Source Modification Audit: 0 G5 files modified during Phase 1.
+Frozen Boundaries:
+  - G5.1 Canonical Document Contract: UNTOUCHED
+  - G5.2 Bulk Ingestion: UNTOUCHED
+  - G5.3 PDF Extraction / Ingestion: UNTOUCHED
+  - G5.4 Metadata Evidence Boundary: UNTOUCHED
+  - G5.5 OA Resolver: UNTOUCHED
+  - G5.6 Source Retrieval: UNTOUCHED
+  - G5.7 Content Validation: UNTOUCHED
+  - G5.8 Identity Correspondence: UNTOUCHED
+  - G5.9 Deterministic Evidence Bridge: UNTOUCHED
+  - G5.10 QR Integrity: UNTOUCHED
+  - G5.10R QR Decode + Determinism: UNTOUCHED
+
+U. REMAINING UNRESOLVED FINDINGS
+----------------------------------------------------------------------------
+- Universal document ingestion expansion (DOCX, EPUB, RTF, PPTX) scheduled for Phase 2 / future phase as planned.
+- Character offset calculation for visual highlights scheduled for Phase 2 / future phase as planned.
+
+============================================================================
+PHASE 1 STATUS: CERTIFIED PASS
+============================================================================

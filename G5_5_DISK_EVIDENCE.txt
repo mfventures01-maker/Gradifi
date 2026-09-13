@@ -1,0 +1,20 @@
+=== HOEOS G5.5 DISK EVIDENCE ===
+Files changed:
+- src/services/verify/types.ts (Added OALocationStatus and OALocationResolutionResult)
+
+Files created:
+- src/services/verify/unpaywallOAResolver.ts (Implemented UnpaywallOAResolver service)
+- tests/unpaywallOAResolver.test.ts (Created test suite covering all G5.5 requirements)
+
+Contract:
+- Candidate OA location resolution boundary: Unpaywall metadata -> Candidate OA location
+- Selected location prefers bestOALocation with deterministic fallback to oaLocations (PDF candidate preferred over landing page)
+- Preserves url, urlForPdf, urlForLandingPage, evidence, license, version, isBest
+- Zero URL manufacturing, Zero Math.random()
+- Distinct statuses: NO_OA_LOCATION, OA_LOCATION_FOUND, OA_LOCATION_INVALID
+- Never claims DETERMINISTIC_EVIDENCE_VERIFIED or provenanceState = VERIFIED
+
+Tests:
+- npx tsx tests/unpaywallOAResolver.test.ts (16/16 PASSED, 0 FAILED)
+
+Result: PASS

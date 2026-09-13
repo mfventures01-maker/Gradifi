@@ -1,0 +1,61 @@
+HOEOS G5 FINAL EVIDENCE RECONCILIATION
+
+Do not modify implementation logic.
+
+1. Inspect:
+   - G5_10R_QR_DETERMINISM_EVIDENCE.txt
+   - package.json
+   - src/utils/qrGenerator.ts
+   - src/pages/verify/GradifiVerifyDemoPage.tsx
+   - tests/qrGenerator.test.ts
+
+2. Correct evidence accuracy:
+   - jsqr version MUST be reported as the actually installed version: 1.4.0
+   - Do NOT describe the 12-hex-character truncated SHA-256 verification ID as "collision-safe".
+   - Describe it as:
+     "48-bit hash-derived deterministic verification identifier derived from the canonical SHA-256 document hash."
+
+3. Create:
+   G5_FINAL_CERTIFICATION_EVIDENCE.txt
+
+4. Consolidate the verified results:
+   G5.1 Canonical Document Contract: PASS
+   G5.2 Bulk Ingestion: PASS
+   G5.3 PDF Extraction / Ingestion: PASS
+   G5.4 Metadata Evidence Boundary: PASS
+   G5.5 OA Resolver: PASS
+   G5.6 Source Retrieval: PASS
+   G5.7 Content Validation: PASS
+   G5.8 Identity Correspondence: PASS
+   G5.9 Deterministic Evidence Bridge: PASS
+   G5.10 QR Integrity: PASS
+   G5.10R QR Decode + Determinism: PASS
+
+5. Record exact independently verified regression counts:
+   QR 22/22
+   VerifyCore 27/27
+   Bulk 32/32
+   G2 40/40
+   G3 48/48
+   G4.2/G4.4 24/24
+   G1 25/25
+   G5.9 17/17
+   Total: 235/235
+   Failures: 0
+
+6. Record:
+   - Actual jsQR raster decode: PASS
+   - Verification ID determinism: PASS
+   - QR security boundary: PASS
+   - Production build: PASS
+   - Verify TypeScript boundary: PASS
+
+7. Clearly separate unrelated repository TypeScript errors from the G5 certification.
+   Do NOT fix unrelated errors.
+
+8. Do not claim anything that was not actually verified.
+
+9. Return only:
+   - files changed
+   - exact evidence corrections
+   - certification status
