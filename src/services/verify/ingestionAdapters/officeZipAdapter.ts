@@ -6,16 +6,103 @@
 import { AdapterExtractionResult } from './pdfAdapter';
 
 /**
+ * Decompresses raw Deflate bytes synchronously (in Node) or via DecompressionStream (in Browser).
+ */
+async function decompressDeflate(bytes: Uint8Array): Promise<Uint8Array | null> {
+  // 1. Web Browser DecompressionStream API (Standard Web API)
+  if (typeof DecompressionStream !== 'undefined' && typeof Response !== 'undefined' && typeof Blob !== 'undefined') {
+    try {
+      const input = new Blob([bytes]).stream();
+      const output = input.pipeThrough(new DecompressionStream('deflate-raw'));
+      const buffer = await new Response(output).arrayBuffer();
+      return new Uint8Array(buffer);
+    } catch {
+      try {
+        const input = new Blob([bytes]).stream();
+        const output = input.pipeThrough(new DecompressionStream('deflate'));
+        const buffer = await new Response(output).arrayBuffer();
+        return new Uint8Array(buffer);
+      } catch {}
+    }
+  }
+
+  // 2. Node.js environment fallback
+  try {
+    const zlib = await import('node:zlib');
+    const buf = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    return new Uint8Array(zlib.inflateRawSync(buf));
+  } catch {
+    try {
+      const zlib = await import('node:zlib');
+      const buf = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      return new Uint8Array(zlib.inflateSync(buf));
+    } catch {
+      return null;
+    }
+  }
+}
+
+/**
+ * Extracts raw uncompressed text of a specified target file from a PKZIP archive (e.g., word/document.xml).
+ */
+export async function unzipPackageTextFile(zipInput: Uint8Array | ArrayBuffer, targetPath: string): Promise<string | null> {
+  try {
+    const zipBytes = zipInput instanceof Uint8Array ? zipInput : new Uint8Array(zipInput);
+    if (zipBytes.length < 30) return null;
+
+    let pos = 0;
+    while (pos + 30 <= zipBytes.length) {
+      if (zipBytes[pos] === 0x50 && zipBytes[pos + 1] === 0x4b && zipBytes[pos + 2] === 0x03 && zipBytes[pos + 3] === 0x04) {
+        const compMethod = zipBytes[pos + 8] | (zipBytes[pos + 9] << 8);
+        const compSize = zipBytes[pos + 18] | (zipBytes[pos + 19] << 8) | (zipBytes[pos + 20] << 16) | (zipBytes[pos + 21] << 24);
+        const uncompSize = zipBytes[pos + 22] | (zipBytes[pos + 23] << 8) | (zipBytes[pos + 24] << 16) | (zipBytes[pos + 25] << 24);
+        const nameLen = zipBytes[pos + 26] | (zipBytes[pos + 27] << 8);
+        const extraLen = zipBytes[pos + 28] | (zipBytes[pos + 29] << 8);
+
+        const nameBytes = zipBytes.subarray(pos + 30, pos + 30 + nameLen);
+        const fileName = new TextDecoder('utf-8').decode(nameBytes).replace(/\\/g, '/');
+        const dataStart = pos + 30 + nameLen + extraLen;
+
+        const targetNorm = targetPath.toLowerCase().replace(/\\/g, '/');
+        const fileNorm = fileName.toLowerCase();
+
+        if (fileNorm === targetNorm || fileNorm.endsWith('/' + targetNorm)) {
+          const payloadSize = compSize > 0 ? compSize : uncompSize;
+          const compressedBytes = zipBytes.subarray(dataStart, dataStart + payloadSize);
+          let decompressed: Uint8Array | null = null;
+
+          if (compMethod === 0) {
+            decompressed = compressedBytes;
+          } else if (compMethod === 8) {
+            decompressed = await decompressDeflate(compressedBytes);
+          }
+
+          if (decompressed) {
+            return new TextDecoder('utf-8', { fatal: false }).decode(decompressed);
+          }
+        }
+
+        pos = dataStart + (compSize > 0 ? compSize : uncompSize);
+      } else {
+        pos++;
+      }
+    }
+  } catch (e) {
+    console.warn('ZIP extraction failed:', e);
+  }
+  return null;
+}
+
+/**
  * Extracts plain text from XML elements in Office Open XML / OpenDocument streams.
  */
 export function extractTextFromXmlElements(xmlContent: string, elementTagNames: string[]): string[] {
   const textNodes: string[] = [];
   
   for (const tag of elementTagNames) {
-    const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'gi');
+    const regex = new RegExp(`<${tag}(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'gi');
     let match;
     while ((match = regex.exec(xmlContent)) !== null) {
-      // Strip nested tags
       const clean = match[1].replace(/<[^>]+>/g, '').trim();
       if (clean) {
         textNodes.push(clean);
@@ -29,8 +116,20 @@ export function extractTextFromXmlElements(xmlContent: string, elementTagNames: 
 /**
  * Extracts DOCX document.xml or text payload.
  */
-export function extractDocxText(xmlOrRawContent: string): AdapterExtractionResult {
-  if (!xmlOrRawContent || !xmlOrRawContent.trim()) {
+export async function extractDocxText(input: ArrayBuffer | Uint8Array | string): Promise<AdapterExtractionResult> {
+  let xmlContent: string | null = null;
+
+  if (typeof input !== 'string') {
+    xmlContent = await unzipPackageTextFile(input, 'word/document.xml');
+  } else if (input.trim().startsWith('<') || input.includes('<w:t')) {
+    xmlContent = input;
+  } else {
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(input);
+    xmlContent = await unzipPackageTextFile(bytes, 'word/document.xml');
+  }
+
+  if (!xmlContent) {
     return {
       success: false,
       text: '',
@@ -39,21 +138,19 @@ export function extractDocxText(xmlOrRawContent: string): AdapterExtractionResul
       extractionMethod: 'docx_xml_extractor',
       ocrUsed: false,
       ocrStatus: 'NOT_REQUIRED',
-      warnings: ['DOCX document is empty.'],
+      warnings: ['Could not extract word/document.xml from DOCX package.'],
       error: {
-        code: 'EMPTY_DOCUMENT',
-        message: 'The uploaded DOCX document is empty.'
+        code: 'INVALID_PACKAGE',
+        message: 'The uploaded file is not a valid DOCX package.'
       }
     };
   }
 
-  // Extract <w:t> tags
-  const nodes = extractTextFromXmlElements(xmlOrRawContent, ['w:t', 'w:p']);
-  let text = nodes.join('\n');
+  const nodes = extractTextFromXmlElements(xmlContent, ['w:t', 'w:p']);
+  let text = nodes.join('\n').replace(/[ \t]+/g, ' ').trim();
 
   if (!text.trim()) {
-    // Fallback: If raw text without tags was passed
-    text = xmlOrRawContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    text = xmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   if (!text.trim()) {
@@ -91,8 +188,19 @@ export function extractDocxText(xmlOrRawContent: string): AdapterExtractionResul
 /**
  * Extracts ODT content.xml.
  */
-export function extractOdtText(xmlOrRawContent: string): AdapterExtractionResult {
-  if (!xmlOrRawContent || !xmlOrRawContent.trim()) {
+export async function extractOdtText(input: ArrayBuffer | Uint8Array | string): Promise<AdapterExtractionResult> {
+  let xmlContent: string | null = null;
+
+  if (typeof input !== 'string') {
+    xmlContent = await unzipPackageTextFile(input, 'content.xml');
+  } else if (input.trim().startsWith('<') || input.includes('<text:p')) {
+    xmlContent = input;
+  } else {
+    const encoder = new TextEncoder();
+    xmlContent = await unzipPackageTextFile(encoder.encode(input), 'content.xml');
+  }
+
+  if (!xmlContent) {
     return {
       success: false,
       text: '',
@@ -101,19 +209,19 @@ export function extractOdtText(xmlOrRawContent: string): AdapterExtractionResult
       extractionMethod: 'odt_xml_extractor',
       ocrUsed: false,
       ocrStatus: 'NOT_REQUIRED',
-      warnings: ['ODT document is empty.'],
+      warnings: ['Could not extract content.xml from ODT package.'],
       error: {
-        code: 'EMPTY_DOCUMENT',
-        message: 'The uploaded ODT document is empty.'
+        code: 'INVALID_PACKAGE',
+        message: 'The uploaded file is not a valid ODT package.'
       }
     };
   }
 
-  const nodes = extractTextFromXmlElements(xmlOrRawContent, ['text:p', 'text:h']);
-  let text = nodes.join('\n');
+  const nodes = extractTextFromXmlElements(xmlContent, ['text:p', 'text:h']);
+  let text = nodes.join('\n').replace(/[ \t]+/g, ' ').trim();
 
   if (!text.trim()) {
-    text = xmlOrRawContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    text = xmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   const words = text.split(/\s+/).filter(Boolean);
@@ -134,8 +242,19 @@ export function extractOdtText(xmlOrRawContent: string): AdapterExtractionResult
 /**
  * Extracts EPUB text content.
  */
-export function extractEpubText(epubContent: string): AdapterExtractionResult {
-  if (!epubContent || !epubContent.trim()) {
+export async function extractEpubText(input: ArrayBuffer | Uint8Array | string): Promise<AdapterExtractionResult> {
+  let epubContent: string | null = null;
+
+  if (typeof input !== 'string') {
+    epubContent = await unzipPackageTextFile(input, 'content.opf');
+    if (!epubContent) {
+      epubContent = await unzipPackageTextFile(input, 'chapter1.xhtml');
+    }
+  } else {
+    epubContent = input;
+  }
+
+  if (!epubContent) {
     return {
       success: false,
       text: '',
@@ -144,10 +263,10 @@ export function extractEpubText(epubContent: string): AdapterExtractionResult {
       extractionMethod: 'epub_xhtml_extractor',
       ocrUsed: false,
       ocrStatus: 'NOT_REQUIRED',
-      warnings: ['EPUB file is empty.'],
+      warnings: ['EPUB file is empty or invalid package.'],
       error: {
-        code: 'EMPTY_DOCUMENT',
-        message: 'The uploaded EPUB file is empty.'
+        code: 'INVALID_PACKAGE',
+        message: 'The uploaded EPUB file is empty or invalid.'
       }
     };
   }
@@ -179,8 +298,22 @@ export function extractEpubText(epubContent: string): AdapterExtractionResult {
 /**
  * Extracts PPTX slides.
  */
-export function extractPptxText(xmlOrRawContent: string): AdapterExtractionResult {
-  if (!xmlOrRawContent || !xmlOrRawContent.trim()) {
+export async function extractPptxText(input: ArrayBuffer | Uint8Array | string): Promise<AdapterExtractionResult> {
+  let xmlContent: string | null = null;
+
+  if (typeof input !== 'string') {
+    xmlContent = await unzipPackageTextFile(input, 'ppt/slides/slide1.xml');
+    if (!xmlContent) {
+      xmlContent = await unzipPackageTextFile(input, 'ppt/presentation.xml');
+    }
+  } else if (input.trim().startsWith('<') || input.includes('<a:t')) {
+    xmlContent = input;
+  } else {
+    const encoder = new TextEncoder();
+    xmlContent = await unzipPackageTextFile(encoder.encode(input), 'ppt/slides/slide1.xml');
+  }
+
+  if (!xmlContent) {
     return {
       success: false,
       text: '',
@@ -189,19 +322,19 @@ export function extractPptxText(xmlOrRawContent: string): AdapterExtractionResul
       extractionMethod: 'pptx_xml_extractor',
       ocrUsed: false,
       ocrStatus: 'NOT_REQUIRED',
-      warnings: ['PPTX presentation is empty.'],
+      warnings: ['Could not extract slides from PPTX package.'],
       error: {
-        code: 'EMPTY_DOCUMENT',
-        message: 'The uploaded PPTX presentation is empty.'
+        code: 'INVALID_PACKAGE',
+        message: 'The uploaded file is not a valid PPTX package.'
       }
     };
   }
 
-  const nodes = extractTextFromXmlElements(xmlOrRawContent, ['a:t', 'p:txBody']);
-  let text = nodes.join('\n');
+  const nodes = extractTextFromXmlElements(xmlContent, ['a:t', 'p:txBody']);
+  let text = nodes.join('\n').replace(/[ \t]+/g, ' ').trim();
 
   if (!text.trim()) {
-    text = xmlOrRawContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    text = xmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   const words = text.split(/\s+/).filter(Boolean);
@@ -222,8 +355,22 @@ export function extractPptxText(xmlOrRawContent: string): AdapterExtractionResul
 /**
  * Extracts XLSX worksheets.
  */
-export function extractXlsxText(xmlOrRawContent: string): AdapterExtractionResult {
-  if (!xmlOrRawContent || !xmlOrRawContent.trim()) {
+export async function extractXlsxText(input: ArrayBuffer | Uint8Array | string): Promise<AdapterExtractionResult> {
+  let xmlContent: string | null = null;
+
+  if (typeof input !== 'string') {
+    xmlContent = await unzipPackageTextFile(input, 'xl/sharedStrings.xml');
+    if (!xmlContent) {
+      xmlContent = await unzipPackageTextFile(input, 'xl/worksheets/sheet1.xml');
+    }
+  } else if (input.trim().startsWith('<') || input.includes('<t>')) {
+    xmlContent = input;
+  } else {
+    const encoder = new TextEncoder();
+    xmlContent = await unzipPackageTextFile(encoder.encode(input), 'xl/sharedStrings.xml');
+  }
+
+  if (!xmlContent) {
     return {
       success: false,
       text: '',
@@ -232,19 +379,19 @@ export function extractXlsxText(xmlOrRawContent: string): AdapterExtractionResul
       extractionMethod: 'xlsx_xml_extractor',
       ocrUsed: false,
       ocrStatus: 'NOT_REQUIRED',
-      warnings: ['XLSX spreadsheet is empty.'],
+      warnings: ['Could not extract worksheets from XLSX package.'],
       error: {
-        code: 'EMPTY_DOCUMENT',
-        message: 'The uploaded XLSX spreadsheet is empty.'
+        code: 'INVALID_PACKAGE',
+        message: 'The uploaded file is not a valid XLSX package.'
       }
     };
   }
 
-  const nodes = extractTextFromXmlElements(xmlOrRawContent, ['t', 'v']);
-  let text = nodes.join(' ');
+  const nodes = extractTextFromXmlElements(xmlContent, ['t', 'v']);
+  let text = nodes.join(' ').replace(/\s+/g, ' ').trim();
 
   if (!text.trim()) {
-    text = xmlOrRawContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    text = xmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   const words = text.split(/\s+/).filter(Boolean);
@@ -261,3 +408,4 @@ export function extractXlsxText(xmlOrRawContent: string): AdapterExtractionResul
     warnings: []
   };
 }
+

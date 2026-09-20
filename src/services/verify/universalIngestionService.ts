@@ -242,28 +242,28 @@ export async function ingestDocument(
       break;
     }
     case 'docx': {
-      const rawContent = payload.text || (payload.buffer ? new TextDecoder('utf-8').decode(payload.buffer) : '');
-      adapterResult = extractDocxText(rawContent);
+      const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
+      adapterResult = await extractDocxText(buf);
       break;
     }
     case 'odt': {
-      const rawContent = payload.text || (payload.buffer ? new TextDecoder('utf-8').decode(payload.buffer) : '');
-      adapterResult = extractOdtText(rawContent);
+      const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
+      adapterResult = await extractOdtText(buf);
       break;
     }
     case 'epub': {
-      const rawContent = payload.text || (payload.buffer ? new TextDecoder('utf-8').decode(payload.buffer) : '');
-      adapterResult = extractEpubText(rawContent);
+      const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
+      adapterResult = await extractEpubText(buf);
       break;
     }
     case 'pptx': {
-      const rawContent = payload.text || (payload.buffer ? new TextDecoder('utf-8').decode(payload.buffer) : '');
-      adapterResult = extractPptxText(rawContent);
+      const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
+      adapterResult = await extractPptxText(buf);
       break;
     }
     case 'xlsx': {
-      const rawContent = payload.text || (payload.buffer ? new TextDecoder('utf-8').decode(payload.buffer) : '');
-      adapterResult = extractXlsxText(rawContent);
+      const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
+      adapterResult = await extractXlsxText(buf);
       break;
     }
     case 'doc':
