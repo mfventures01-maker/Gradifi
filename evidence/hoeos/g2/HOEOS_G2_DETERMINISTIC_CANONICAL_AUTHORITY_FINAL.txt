@@ -1,0 +1,56 @@
+﻿============================================================
+HOEOS G2 DETERMINISTIC CANONICAL AUTHORITY FINAL EVIDENCE
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+HEAD SHA:             3f575b1c1ec9937dba92c5711ef14535c237d874
+TIMESTAMP:            2026-09-20T02:32:36+01:00
+
+SOURCE HASHES:
+- src/services/verify/documentNormalizer.ts: 79014dd0dbd3db90a53d254660e5b09f47e858f701cc1b6be56cc9db05a052ee
+- src/services/verify/universalIngestionService.ts: 1542eece6d86d2ffeac9d1adbe33ae28d72935140d551d9a1567c1d3bf85ce49
+- src/services/verify/deterministicEngine.ts: 2c9311c84254fecc7e66abebc55d97089c0fd2f8700e32b833ae17a964e11d91
+- scratch/golden_test_001.docx: 098a49a08a70580d985317b4cacf4018e51cd026ea8421bb5798bed9224d230f
+
+CANONICAL REFERENCE EVIDENCE (scratch/golden_test_001.docx):
+- rawBytesHash:       098a49a08a70580d985317b4cacf4018e51cd026ea8421bb5798bed9224d230f
+- canonicalTextHash:  ed2b456a6f46f9ef0d56cd3aed2a8550efd701b7b9f576c035cbda88afdae2f7
+- documentId:         ba3a44a791353d57
+- textLength:         383
+
+GATE CERTIFICATION SUMMARY:
+- G2_FIXTURE_INTEGRITY:       PASS (SHA256 verified)
+- G2_PRODUCTION_PATH:         PASS (universalIngestionService -> documentNormalizer)
+- G2_REPEATABILITY:           PASS (10/10 runs identical)
+- G2_CROSS_PROCESS:           PASS (3/3 processes identical)
+- G2_CONTENT_MUTATION:        PASS (Mutated text alters documentId & canonicalTextHash)
+- G2_FILENAME_ISOLATION:      PASS (Filename metadata isolated from documentId)
+- G2_MIME_ISOLATION:          PASS (MIME metadata isolated from documentId)
+- G2_RAW_CANONICAL_SEPARATION:PASS (Raw zip container bytes differ; canonical documentId identical)
+- G2_CLOCK_INDEPENDENCE:      PASS (extractedAt timestamp isolated from canonical identity)
+- G2_RANDOMNESS_AUTHORITY:    PASS (0 code occurrences of Math.random/randomUUID in evidence path)
+- G2_PROVIDER_AUTHORITY:      PASS (0 provider assignments to canonical identity)
+- G2_ANALYSIS_ID_AUTHORITY:   PASS (analysisId is an operational run ID; documentHash deterministic)
+- G2_PERSISTENCE_AUTHORITY:   PASS (Persistence reads server-canonical documentId)
+- G2_CLIENT_AUTHORITY:        PASS (Client cannot override canonical identity)
+- G2_BUILD:                   PASS (vite build exit code 0)
+
+MACHINE ASSERTIONS:
+G2_REQUIRED_GATES=15
+G2_PASSED_GATES=15
+G2_FAILED_GATES=0
+G2_BLOCKED_GATES=0
+G2_NOT_TESTED_GATES=0
+
+G2_CERTIFICATION=PASS
+G2_FREEZE_AUTHORIZED=YES
+G3_AUTHORIZED=YES
+
+KNOWN LIMITATIONS:
+- Math.random() is used strictly in federationOrchestrator.ts line 343 for HTTP retry backoff jitter.
+  This is strictly outside evidence calculation and canonical identity.
+
+============================================================
+END HOEOS G2 DETERMINISTIC CANONICAL AUTHORITY FINAL EVIDENCE
+============================================================

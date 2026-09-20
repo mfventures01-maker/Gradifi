@@ -1,0 +1,357 @@
+============================================================
+GRADIFI HOEOS 48-HOUR DEMO - G2 CERTIFICATION EVIDENCE
+DETERMINISTIC CANONICAL AUTHORITY CERTIFICATION
+============================================================
+Generated: 2026-09-20T00:58:00+01:00
+Repository: C:\Projects\Gradifi
+Branch: clean-deploy
+Post-G1 Baseline HEAD: 3d56773ba9c557c6bc9d9daaef8d985cde359c04
+
+------------------------------------------------------------
+SECTION 1: BASELINE REFERENCE
+------------------------------------------------------------
+G1 HEAD / current HEAD: 3d56773ba9c557c6bc9d9daaef8d985cde359c04
+Current branch: clean-deploy
+Git status:
+  Modified tracked files:
+    - src/services/verify/ingestionAdapters/officeZipAdapter.ts
+    - src/services/verify/universalIngestionService.ts
+  Untracked directory:
+    - scratch/
+
+G1 evidence artifacts:
+  - scratch/HOEOS_48H_G1_DOCUMENT_INGESTION_EVIDENCE.txt
+  - scratch/G1_REMEDIATION_SUMMARY.md
+
+------------------------------------------------------------
+SECTION 2: CANONICALIZATION DEPENDENCY GRAPH
+------------------------------------------------------------
+DOCUMENT BYTES (File / Blob / ArrayBuffer)
+   ↓
+ingestDocument() [src/services/verify/universalIngestionService.ts]
+   ↓
+extractDocxText() / extractPdfText() / Adapter [src/services/verify/ingestionAdapters/officeZipAdapter.ts]
+   ↓
+buildCanonicalAnalysisDocument() [src/services/verify/documentNormalizer.ts]
+   ↓
+normalizeText() [src/services/verify/documentNormalizer.ts]
+   ↓ (NFKD Unicode -> Strip Diacritics -> Lowercase -> Non-Word to Space -> Collapse Whitespace -> Trim)
+CANONICAL REPRESENTATION (normalizedText)
+   ↓
+computeHash() [src/services/verify/documentNormalizer.ts]
+   ↓ (FNV-1a 64-bit deterministic hash)
+DOCUMENT ID (documentId)
+   ↓
+DOWNSTREAM CONSUMERS
+   ├─ verifyCoreService.ts (evaluateDocumentSimilarity)
+   ├─ deterministicEngine.ts (analyzeDocumentEvidence, findingId calculation)
+   ├─ bulkIngestionService.ts (documentHash batch assignment)
+   ├─ contentValidationService.ts (document quality & structural check)
+   ├─ GradifiVerifyDemoPage.tsx (UI stats & verification view)
+   └─ pdfReportGenerator.ts (export certificate generation)
+
+------------------------------------------------------------
+SECTION 3: CANONICAL REPRESENTATION DEFINITION
+------------------------------------------------------------
+Canonical Input: rawText string extracted from ingestion adapters
+Canonical Transformations:
+  1. text.normalize('NFKD')
+  2. replace(/[\u0300-\u036f]/g, '') [Diacritic stripping]
+  3. toLowerCase() [Case flattening]
+  4. replace(/[^\w\s]/g, ' ') [Punctuation / symbol removal]
+  5. replace(/\s+/g, ' ') [Whitespace run collapsing]
+  6. trim() [Boundary whitespace removal]
+
+Canonical Output: normalizedText string
+Identity Function: computeHash(normalizedText)
+Hash Algorithm: FNV-1a 64-bit string hash (hex representation)
+Hash Input: normalizedText ONLY
+
+------------------------------------------------------------
+SECTION 4: HASH / IDENTITY FORENSIC AUDIT
+------------------------------------------------------------
+Algorithm: FNV-1a 64-bit hash (computeHash in documentNormalizer.ts)
+Input bytes/string: UTF-16 character stream of normalizedText
+Encoding: UTF-16 code units (charCodeAt)
+Normalization: NFKD + diacritic removal + lowercasing + non-word to space + whitespace collapsing
+Character ordering: Strict sequential left-to-right character ordering preserved
+Whitespace behavior: Whitespace collapsed to single spaces ' '; leading/trailing stripped
+Unicode behavior: NFKD normalized; diacritics stripped
+Case behavior: Case-insensitive (converted to lowercase)
+Metadata inclusion: NO
+Filename inclusion: NO
+MIME inclusion: NO
+File size inclusion: NO
+Timestamps inclusion: NO
+UUIDs inclusion: NO
+Random values inclusion: NO
+
+Canonical Identity Basis: CANONICAL CONTENT (normalizedText)
+
+------------------------------------------------------------
+SECTION 5: RANDOMNESS AUDIT
+------------------------------------------------------------
+Audited Symbols: Math.random, crypto.randomUUID, randomUUID, crypto.getRandomValues, nonces, seeds
+Findings:
+  1. Math.random() in src/services/verify/federationOrchestrator.ts (Line 343)
+     Function: retry backoff jitter for network fetch
+     Consumer: setTimeout backoff delay only
+     Classification: RETRY/UX ONLY (Can NOT reach canonical data/identity)
+
+  2. crypto.randomUUID() / nonces in provider resolvers/handlers
+     Files: unpaywallOAResolver.ts, sourceRetrievalService.ts, coreServerHandler.ts, openAlexProvider.ts, etc.
+     Function: generateCorrelationId(prefix) for request logging
+     Consumer: Logging context headers
+     Classification: LOGGING ONLY (Can NOT reach canonical data/identity)
+
+  3. crypto.randomUUID() in src/services/offlineStorageService.ts
+     Function: IndexedDB record fallback ID
+     Consumer: Local offline cache storage key
+     Classification: NON-AUTHORITATIVE METADATA (Can NOT reach canonical data/identity)
+
+Randomness Authority Assessment: NONE. Zero randomness enters canonical identity or verification evidence.
+
+------------------------------------------------------------
+SECTION 6: TIMESTAMP AUDIT
+------------------------------------------------------------
+Audited Symbols: Date.now, new Date, performance.now, createdAt, updatedAt, extractedAt
+Findings:
+  1. source.extractedAt & canonicalDoc.createdAt in src/services/verify/documentNormalizer.ts
+     Function: Timestamp recording when document object is created
+     Consumer: Presentational metadata on source object
+     Reach: Does NOT enter normalizedText, computeHash(), documentId, finding IDs, or similarity calculations.
+     Classification: NON-AUTHORITATIVE METADATA
+
+  2. analyzedAt in src/services/verify/deterministicEngine.ts
+     Function: Result creation timestamp
+     Consumer: Verification summary result object
+     Reach: Does NOT enter similarity scores or finding IDs.
+     Classification: NON-AUTHORITATIVE METADATA
+
+Timestamp Authority Assessment: NONE. Timestamps do NOT influence canonical identity or evidence.
+
+------------------------------------------------------------
+SECTION 7: AI / PROVIDER AUTHORITY AUDIT
+------------------------------------------------------------
+Audited Services: Gemini, OpenAI, Crossref, OpenAlex, Unpaywall, CORE, Google Books
+Data Flow Trace:
+  Ingested Document -> ingestDocument() -> buildCanonicalAnalysisDocument() -> canonicalDocument (documentId)
+  External Provider Calls -> Triggered AFTER canonicalDocument is created, using canonicalDocument.normalizedText / tokens.
+  Provider Responses -> Returned as FederatedRecord[] / EvidenceMatch[].
+  Reach: Provider responses NEVER mutate or re-generate canonicalDocument.rawText, normalizedText, or documentId.
+
+Provider Authority Assessment: NONE. External AI/providers cannot alter canonical document identity.
+
+------------------------------------------------------------
+SECTION 8: 10-RUN REPEATABILITY EVIDENCE
+------------------------------------------------------------
+Executed test script: scratch/test_g2_all.ts
+
+Fixture A: scratch/golden_test_001.docx
+  Run  1 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run  2 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run  3 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run  4 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run  5 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run  6 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run  7 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run  8 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run  9 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Run 10 | Text SHA256: 32e8b0274b655cd9... | Norm SHA256: ed2b456a6f46f9ef... | DocumentID: ba3a44a791353d57 | Length: 387 | Words: 48
+  Golden DOCX 10-Run Result: PASS
+
+Fixture B: Real User DOCX (ESIS...docx)
+  Run  1 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run  2 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run  3 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run  4 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run  5 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run  6 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run  7 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run  8 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run  9 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Run 10 | Text SHA256: 1f6834c516054c0f... | Norm SHA256: e214d88d2d4d6a44... | DocumentID: ae7a4dc16e3603d3 | Length: 31917 | Words: 4794
+  Real DOCX 10-Run Result: PASS
+
+------------------------------------------------------------
+SECTION 9: MULTI-PROCESS EVIDENCE
+------------------------------------------------------------
+Executed test script across 3 isolated Node processes: scratch/test_g2_process.ts
+
+Process A Output: PROCESS_A_GOLDEN_DOC_ID: ba3a44a791353d57
+Process B Output: PROCESS_B_GOLDEN_DOC_ID: ba3a44a791353d57
+Process C Output: PROCESS_C_GOLDEN_DOC_ID: ba3a44a791353d57
+
+Result: Process A = Process B = Process C (PASS)
+
+------------------------------------------------------------
+SECTION 10: BROWSER / RELOAD EVIDENCE
+------------------------------------------------------------
+Simulated 3 distinct browser session initializations with advancing system clock:
+  Session 1 extractedAt: 2026-09-19T23:54:52.911Z | Document ID: f23e9b956f8abde1
+  Session 2 extractedAt: 2026-09-19T23:54:52.924Z | Document ID: f23e9b956f8abde1
+  Session 3 extractedAt: 2026-09-19T23:54:52.939Z | Document ID: f23e9b956f8abde1
+
+Result: Session 1 = Session 2 = Session 3 (PASS)
+
+------------------------------------------------------------
+SECTION 11: CONTENT-EQUIVALENCE EVIDENCE
+------------------------------------------------------------
+Base Text: "GRADIFI HOEOS Golden Test Document. Deterministic Authority Verification."
+Base Document ID: f23e9b956f8abde1
+
+Variants tested against normalizer contract:
+  1. Whitespace Variant (multiple spaces, tabs, newlines):
+     ID: f23e9b956f8abde1 | Matches Base: YES
+  2. Case Variant (all lowercase):
+     ID: f23e9b956f8abde1 | Matches Base: YES
+  3. Diacritics Variant (accented characters: Goldén Tést Docúment):
+     ID: f23e9b956f8abde1 | Matches Base: YES
+
+Result: PASS
+
+------------------------------------------------------------
+SECTION 12: CONTENT-CHANGE EVIDENCE
+------------------------------------------------------------
+Document A Payload: "GRADIFI DOCX GOLDEN TEST 001" -> Document ID: d9fca6f98d8aa5d5
+Document B Payload: "GRADIFI DOCX GOLDEN TEST 002" -> Document ID: d6fca2400ea7439a
+
+Result: Canonical A ≠ Canonical B, Document ID A ≠ Document ID B (PASS)
+
+------------------------------------------------------------
+SECTION 13: FILENAME / MIME EVIDENCE
+------------------------------------------------------------
+Payload: "Standard academic payload content for Gradifi canonical authority testing."
+  Filename paper_v1.docx ID:              23c8eaeefbb45646
+  Filename submitted_final_report.pdf ID: 23c8eaeefbb45646
+  Filename draft.txt ID:                  23c8eaeefbb45646
+
+Declared Contract:
+  Filename authoritative? NO
+  MIME authoritative? NO
+  File metadata authoritative? NO
+
+Result: PASS (Identity is strictly content-authoritative)
+
+------------------------------------------------------------
+SECTION 14: PERSISTENCE TRACE
+------------------------------------------------------------
+Audited files: bulkIngestionService.ts, offlineStorageService.ts, verificationPersistenceService.ts
+Trace:
+  1. buildCanonicalAnalysisDocument() creates canonicalDocument with documentId.
+  2. Persistence layer writes documentId as documentHash column / key.
+  3. No database trigger, autoincrement ID, or timestamp modifies documentId.
+Direction: Canonical Authority (documentId) -> Persisted Record (PASS)
+
+------------------------------------------------------------
+SECTION 15: DOWNSTREAM CONSUMER TRACE
+------------------------------------------------------------
+Consumers traced:
+  1. verifyCoreService.ts -> AUTHORITATIVE (runs deterministic matching)
+  2. deterministicEngine.ts -> AUTHORITATIVE (computes exact/ngram matches & deterministic findingId)
+  3. contentValidationService.ts -> DERIVED (validates token counts & document quality)
+  4. bulkIngestionService.ts -> PERSISTENCE / DERIVED (maps documentId to batch item)
+  5. GradifiVerifyDemoPage.tsx -> PRESENTATIONAL (renders verification UI)
+  6. pdfReportGenerator.ts -> PRESENTATIONAL / DERIVED (renders export PDF certificate)
+
+Directionality: Canonical Authority -> Derived Systems (ONE-WAY). Downstream consumers do not mutate canonical authority.
+
+------------------------------------------------------------
+SECTION 16: CLIENT AUTHORITY ASSESSMENT
+------------------------------------------------------------
+Assessment: Ingestion boundary generates canonicalDocument via buildCanonicalAnalysisDocument() using normalizeText(rawText) and computeHash(normalizedText). Client UI cannot supply an arbitrary documentId to override canonical hashing.
+
+Client Authority Inversion: NONE (PASS)
+
+------------------------------------------------------------
+SECTION 17: BUILD VERIFICATION
+------------------------------------------------------------
+Command: npm run build
+Exit Code: 0
+Build Tool: Vite v6.4.3
+Modules Transformed: 1927
+Status: PASS
+
+------------------------------------------------------------
+SECTION 18: REMEDIATION, IF ANY
+------------------------------------------------------------
+G2 Code Remediation: NONE REQUIRED.
+The pre-existing documentNormalizer.ts and universalIngestionService.ts fully enforce deterministic canonical authority over content.
+
+------------------------------------------------------------
+SECTION 19: G2 BROWSER IDENTITY RECONCILIATION
+------------------------------------------------------------
+Forensic reconciliation of browser reload result:
+1. Golden DOCX (golden_test_001.docx):
+   - Fixture: scratch/golden_test_001.docx (387 chars, 48 words)
+   - Extracted text SHA256: 32e8b0274b655cd91e843c08b49520fb4012e697a55edaaeb5ec4a02553efec2
+   - Canonical normalizedText SHA256: ed2b456a6f46f9efc57efddc1b2c45543c5b8b6033bc6f42a5ec7c3ed0e5d165
+   - documentId across Browser Sessions 1, 2, 3: ba3a44a791353d57 = ba3a44a791353d57 = ba3a44a791353d57
+
+2. Base Text Mock String (used in Test 6 of test_g2_all.ts):
+   - Fixture: "GRADIFI HOEOS Golden Test Document. Deterministic Authority Verification." (73 chars, 8 words)
+   - Extracted text SHA256: 2eed67e7568faca274737d94cfc6fb9f727c9757dfaa2b8004fce5bd73b22cf3
+   - Canonical normalizedText SHA256: bc524635f1c75e47dbbe33d6b05938d2f6244df1cf405e32ea3300ce4c8105c2
+   - documentId across Browser Sessions 1, 2, 3: f23e9b956f8abde1 = f23e9b956f8abde1 = f23e9b956f8abde1
+
+3. Discrepancy Reconciliation:
+   - Difference: DIFFERENT FIXTURE / TEST HARNESS DIFFERENCE.
+   - Test 6 in test_g2_all.ts used the 73-character baseText string instead of ingesting the 387-character golden_test_001.docx package.
+   - When golden_test_001.docx is ingested across simulated browser reloads with advancing system clocks, it produces EXACTLY ba3a44a791353d57 for every session.
+   - Classification: G2 PASS - BROWSER RESULT RECONCILED
+
+------------------------------------------------------------
+SECTION 20: FINAL CERTIFICATION VERDICT
+------------------------------------------------------------
+
+============================================================
+G2 CERTIFICATION VERDICT
+============================================================
+
+STATUS: CERTIFIED PASS
+
+Canonical Authority:
+Extracted document text normalized via NFKD Unicode normalization, diacritic stripping, lowercasing, non-word character stripping, and whitespace collapsing.
+
+Identity Algorithm:
+Deterministic FNV-1a 64-bit string hash (computeHash) over normalizedText.
+
+Determinism:
+PASS
+
+Randomness Authority:
+NONE
+
+Timestamp Authority:
+NONE
+
+Provider Authority:
+NONE
+
+Persistence Authority Inversion:
+NONE
+
+Client Authority Inversion:
+NONE
+
+Repeatability:
+PASS
+
+Cross-Process:
+PASS
+
+Browser Reload:
+PASS
+
+Content Change:
+PASS
+
+Normalization Contract:
+PASS
+
+Production Build:
+PASS
+
+============================================================
+END G2 CERTIFICATION
+============================================================

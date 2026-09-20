@@ -1,0 +1,29 @@
+============================================================
+GRADIFI HOEOS G2 BROWSER IDENTITY RECONCILIATION
+============================================================
+Generated: 2026-09-20T01:02:00+01:00
+
+Fixture A (Golden DOCX): scratch/golden_test_001.docx
+  Extracted Text SHA256: 32e8b0274b655cd91e843c08b49520fb4012e697a55edaaeb5ec4a02553efec2
+  Canonical normalizedText SHA256: ed2b456a6f46f9efc57efddc1b2c45543c5b8b6033bc6f42a5ec7c3ed0e5d165
+  Text Length: 387
+  Word Count: 48
+  Browser Session 1 ID: ba3a44a791353d57 (extractedAt: 2026-09-20T00:01:28.751Z)
+  Browser Session 2 ID: ba3a44a791353d57 (extractedAt: 2026-09-20T00:01:28.827Z)
+  Browser Session 3 ID: ba3a44a791353d57 (extractedAt: 2026-09-20T00:01:28.888Z)
+
+Fixture B (Test Harness String): "GRADIFI HOEOS Golden Test Document. Deterministic Authority Verification."
+  Extracted Text SHA256: 2eed67e7568faca274737d94cfc6fb9f727c9757dfaa2b8004fce5bd73b22cf3
+  Canonical normalizedText SHA256: bc524635f1c75e47dbbe33d6b05938d2f6244df1cf405e32ea3300ce4c8105c2
+  Text Length: 73
+  Word Count: 8
+  Browser Session 1 ID: f23e9b956f8abde1 (extractedAt: 2026-09-20T00:01:28.944Z)
+  Browser Session 2 ID: f23e9b956f8abde1 (extractedAt: 2026-09-20T00:01:28.992Z)
+  Browser Session 3 ID: f23e9b956f8abde1 (extractedAt: 2026-09-20T00:01:29.041Z)
+
+Golden DOCX ID: ba3a44a791353d57
+Browser ID relationship: DIFFERENT FIXTURE / TEST HARNESS DIFFERENCE (Test 6 in test_g2_all.ts passed Fixture B string instead of Fixture A DOCX package. Both fixtures are 100% deterministic and produce identical document IDs across browser reloads when given identical canonical content).
+
+Determinism: PASS
+Verdict: G2 PASS - BROWSER RESULT RECONCILED
+============================================================

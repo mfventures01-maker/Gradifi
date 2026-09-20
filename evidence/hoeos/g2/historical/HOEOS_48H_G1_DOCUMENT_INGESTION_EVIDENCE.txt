@@ -1,0 +1,131 @@
+============================================================
+HOEOS 48-HOUR G1 DOCUMENT INGESTION EVIDENCE
+============================================================
+
+1. G1 OBJECTIVE & MANDATORY PATH
+------------------------------------------------------------
+Mandatory Path Verified:
+  REAL DOCX
+    -> UPLOAD
+    -> BINARY PRESERVATION
+    -> ZIP PACKAGE EXTRACTION
+    -> word/document.xml
+    -> TEXT EXTRACTION
+    -> NORMALIZATION
+    -> CANONICAL DOCUMENT REPRESENTATION
+    -> DETERMINISTIC IDENTITY
+    -> VERIFICATION-READY INPUT
+
+2. INGESTION DEPENDENCY CHAIN (G1.1)
+------------------------------------------------------------
+UI Upload (src/components/VerifyView.tsx / DocumentIngestionCard.tsx)
+  -> ingestDocument() (src/services/verify/universalIngestionService.ts)
+  -> getFilePayload() -> extracts { filename, mimeType, size, buffer }
+  -> detectFileFormat() -> 'docx'
+  -> extractDocxText() (src/services/verify/ingestionAdapters/officeZipAdapter.ts)
+  -> unzipPackageTextFile() -> extracts word/document.xml from PKZIP
+  -> extractTextFromXmlElements() -> parses <w:t> and <w:p> XML nodes
+  -> buildCanonicalAnalysisDocument() (src/services/verify/documentNormalizer.ts)
+  -> CanonicalAnalysisDocument (documentId: FNV-1a 64-bit hash)
+
+3. DOCX FORENSIC BASELINE & FAILURE BOUNDARY (G1.3)
+------------------------------------------------------------
+Before Remediation Failure Boundary:
+  INPUT (golden_test_001.docx binary PKZIP buffer)
+  -> ingestDocument()
+  -> getFilePayload() -> TextDecoder('utf-8').decode(payload.buffer)
+  -> extractDocxText(rawBinaryString)
+  -> INCORRECT REPRESENTATION (PKZIP binary header treated as UTF-8 string)
+  -> FAILURE (XML tags not extracted from compressed binary payload)
+  -> OBSERVED RESULT (Raw binary garbage " PK\x03\x04...\ returned as canonical document text with 22 garbage words)
+
+4. REMEDIATION DETAILS (G1.4)
+------------------------------------------------------------
+Files Modified:
+ - src/services/verify/ingestionAdapters/officeZipAdapter.ts
+ - src/services/verify/universalIngestionService.ts
+
+Dependencies Introduced:
+ - NONE (Zero external npm dependencies introduced; built using Web-native DecompressionStream API with node:zlib fallback).
+
+Remediation Changes:
+ 1. Implemented unzipPackageTextFile() PKZIP local header parser in officeZipAdapter.ts.
+ 2. Implemented decompressDeflate() Deflate stream decompressor in officeZipAdapter.ts.
+ 3. Refactored extractDocxText() to accept ArrayBuffer/Uint8Array, extract word/document.xml from ZIP package, and parse XML text nodes.
+ 4. Refactored extractOdtText(), extractPptxText(), extractXlsxText(), extractEpubText() to use async package decompression.
+ 5. Updated universalIngestionService.ts to pass raw ArrayBuffer to officeZipAdapter extractors.
+
+5. ACCEPTANCE TEST RESULTS (G1.5)
+------------------------------------------------------------
+Test Fixture 1: scratch/golden_test_001.docx
+ - Byte Size: 1012 bytes
+ - SHA256: 098A49A08A70580D985317B4CACF4018E51CD026EA8421BB5798BED9224D230F
+ - Success: true
+ - Format: docx
+ - Method: docx_xml_extractor
+ - Text Length: 387 chars
+ - Word Count: 48 words
+ - Canonical Ready: true
+ - Document ID: ba3a44a791353d57
+ - Recovered Text:
+ \GRADIFI DOCX GOLDEN TEST 001
+ This is an authentic structured DOCX document for forensic verification.
+ Gradifi Universal Ingestion Service extracts text deterministically from word/document.xml.\
+
+Test Fixture 2: ESIS Individual Transformation Journey Video Script.docx
+ - Path: C:\Users\faith\Downloads\ESIS Individual Transformation Journey Video Script.docx
+ - Byte Size: 41,120 bytes
+ - Success: true
+ - Text Length: 31,917 chars
+ - Word Count: 4,794 words
+ - Document ID: ae7a4dc16e3603d3
+ - Contains PK Header Garbage: false
+
+6. REPEATABILITY & DETERMINISM (G1.6)
+------------------------------------------------------------
+Executed 3 consecutive runs on golden_test_001.docx:
+ - Run 1 Document ID: ba3a44a791353d57
+ - Run 2 Document ID: ba3a44a791353d57
+ - Run 3 Document ID: ba3a44a791353d57
+Repeatability Result: PASS (100% byte-for-byte identical canonical representation)
+
+7. NEGATIVE TESTS (G1.7)
+------------------------------------------------------------
+Test A: Non-DOCX Plain Text file with .docx extension (\fake.docx\)
+ - Success: false
+ - Error Code: INVALID_PACKAGE
+ - Error Message: \The uploaded file is not a valid DOCX package.\
+
+Test B: Corrupted/Truncated PKZIP Binary Package (\corrupt.docx\)
+ - Success: false
+ - Error Code: INVALID_PACKAGE
+ - Error Message: \The uploaded file is not a valid DOCX package.\
+
+8. FORMAT INGESTION MATRIX (G1.8)
+------------------------------------------------------------
+Format Status Extraction Engine
+------------------------------------------------------------
+PDF PASS extractDocumentText (stream text extractor)
+TXT PASS textAdapter (UTF-8 text reader)
+DOCX PASS officeZipAdapter (PKZIP word/document.xml reader)
+RTF PASS rtfAdapter (control-word extractor)
+ODT PASS officeZipAdapter (PKZIP content.xml reader)
+EPUB PASS officeZipAdapter (PKZIP XHTML reader)
+HTML/HTM PASS htmlAdapter (DOM/regex extractor)
+MD PASS textAdapter (Markdown text reader)
+
+9. G1 CERTIFICATION VERDICT
+------------------------------------------------------------
+[X] Real DOCX reaches the application ingestion path
+[X] DOCX binary is treated as a package rather than plain UTF-8 text
+[X] word/document.xml is successfully extracted
+[X] expected text is recovered
+[X] canonical text is produced
+[X] malformed DOCX fails safely
+[X] ingestion does not hang
+[X] repeated ingestion is stable
+[X] browser/runtime evidence exists
+[X] machine evidence exists
+
+G1 VERDICT: CERTIFIED PASS
+============================================================

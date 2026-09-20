@@ -1,0 +1,72 @@
+============================================================
+HOEOS 48-HOUR G0 BASELINE FREEZE EVIDENCE
+============================================================
+
+1. REPOSITORY STATE (G0.1)
+------------------------------------------------------------
+Timestamp UTC:               2026-09-20T00:14:00.000Z
+Repository Path:             C:\Projects\Gradifi
+Current Branch:              clean-deploy
+Current HEAD Commit:         3d56773ba9c557c6bc9d9daaef8d985cde359c04
+Git Worktree Status:         CLEAN (0 uncommitted changes)
+Tracked File Count:          355
+package.json SHA256:         A1877984C2D1F580282734617A7049B84E66AEEA2B563A405E07D0A5691A86C7
+package-lock.json SHA256:    1018BEF042790A47C2EC3EBBEA6D90B159B3579F9CF7026E52C49FB8F47A3C5F
+
+2. PRODUCTION BUILD STATE (G0.2)
+------------------------------------------------------------
+Build Command:               npm run build (vite build)
+Exit Code:                   0
+Build Status:                BUILD = PASS
+Modules Transformed:         1926
+Output Artifacts:
+  - dist/index.html                   (0.79 kB)
+  - dist/assets/index-D4xyts7B.css   (82.72 kB)
+  - dist/assets/index-BF4DOR9E.js   (394.21 kB)
+  - dist/assets/index-B3swh5D-.js   (951.12 kB)
+
+3. EXISTING RUNTIME BASELINE (G0.3)
+------------------------------------------------------------
+Application Startup:         PASS (Vite dev server & production bundle run cleanly)
+Upload Entrypoint:           src/components/VerifyView.tsx -> DocumentIngestionCard.tsx
+Ingestion Pipeline:          ingestDocument() in src/services/verify/universalIngestionService.ts
+Format Ingestion Baseline Status:
+  - PDF:       PASS (Deterministic PDF stream text extraction)
+  - TXT / MD:  PASS (textAdapter UTF-8 text extraction)
+  - HTML/HTM:  PASS (htmlAdapter DOM/regex text extraction)
+  - RTF:       PASS (rtfAdapter control-word extraction)
+  - CSV:       PASS (structuredAdapter CSV extraction)
+  - JSON:      PASS (structuredAdapter JSON key-value extraction)
+  - XML:       PASS (structuredAdapter XML node extraction)
+  - DOCX:      FAIL / DEFECT (Attempts UTF-8 TextDecoder over raw PKZIP binary buffer)
+  - ODT:       FAIL / DEFECT (Same ZIP binary text decoding defect as DOCX)
+  - PPTX:      FAIL / DEFECT (Same ZIP binary text decoding defect as DOCX)
+  - XLSX:      FAIL / DEFECT (Same ZIP binary text decoding defect as DOCX)
+  - EPUB:      FAIL / DEFECT (Same ZIP binary text decoding defect as DOCX)
+
+4. EXISTING FORENSIC FINDINGS (G0.4)
+------------------------------------------------------------
+Observed Fact:
+    universalIngestionService.ts line 245 passes TextDecoder('utf-8').decode(payload.buffer) to extractDocxText().
+    Because a real DOCX file is a compressed PKZIP package containing word/document.xml, raw TextDecoder yields corrupted binary string 'PK\x03\x04...'.
+    extractDocxText() regex searches for <w:t> tags inside binary garbage, fails to find XML elements, and returns EMPTY_DOCUMENT or corrupt output.
+
+Expected Behavior:
+    DOCX binary buffer -> ZIP package decompression -> extract word/document.xml -> parse <w:t> & <w:p> XML nodes -> canonical text document.
+
+Classification:
+    DEFECT (G1 Mandatory Remediation Target).
+
+5. G0 CERTIFICATION VERDICT
+------------------------------------------------------------
+[X] HEAD recorded (3d56773ba9c557c6bc9d9daaef8d985cde359c04)
+[X] branch recorded (clean-deploy)
+[X] git status recorded (clean)
+[X] build result recorded (BUILD = PASS)
+[X] runtime baseline recorded (PDF/TXT/HTML/RTF PASS, DOCX/ZIP FAIL)
+[X] existing successful evidence preserved
+[X] known ingestion defects recorded
+[X] current repository state frozen as the G0 baseline
+
+G0 VERDICT: CERTIFIED PASS
+============================================================

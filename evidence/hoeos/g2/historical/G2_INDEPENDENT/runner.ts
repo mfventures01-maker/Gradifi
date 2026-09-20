@@ -1,0 +1,113 @@
+import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { ingestDocument } from "../../src/services/verify/universalIngestionService";
+
+const fixture = "scratch/golden_test_001.docx";
+
+function sha256(data: Uint8Array | ArrayBuffer | string): string {
+  return createHash("sha256")
+    .update(
+      typeof data === "string"
+        ? data
+        : Buffer.from(
+            data instanceof ArrayBuffer
+              ? new Uint8Array(data)
+              : data
+          )
+    )
+    .digest("hex");
+}
+
+try {
+  const rawBytes = await readFile(fixture);
+  const rawBytesHash = sha256(rawBytes);
+
+  const input = {
+    name: "golden_test_001.docx",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    buffer: rawBytes.buffer.slice(
+      rawBytes.byteOffset,
+      rawBytes.byteOffset + rawBytes.byteLength
+    )
+  };
+
+  const result = await ingestDocument(input as any);
+
+  if (!result?.success) {
+    console.error(`INGEST_FAILURE: ${JSON.stringify(result?.error ?? null)}`);
+
+    console.log(JSON.stringify({
+      fixture,
+      rawBytesHash,
+      extractionSuccess: false,
+      canonicalReady: false,
+      extractedTextHash: null,
+      canonicalTextHash: null,
+      textLength: null,
+      wordCount: null,
+      documentId: null,
+      error: result?.error ?? "ingestDocument returned success=false"
+    }));
+
+    process.exit(1);
+  }
+
+  if (!result.canonicalReady || !result.canonicalDocument) {
+    console.error("CANONICAL_DOCUMENT_MISSING");
+
+    console.log(JSON.stringify({
+      fixture,
+      rawBytesHash,
+      extractionSuccess: true,
+      canonicalReady: false,
+      extractedTextHash: null,
+      canonicalTextHash: null,
+      textLength: null,
+      wordCount: null,
+      documentId: null,
+      error: "canonicalDocument missing"
+    }));
+
+    process.exit(2);
+  }
+
+  const canonical = result.canonicalDocument;
+  const rawText = canonical.rawText ?? "";
+  const normalizedText = canonical.normalizedText ?? "";
+
+  console.log(JSON.stringify({
+    fixture,
+    rawBytesHash,
+    extractionSuccess: true,
+    canonicalReady: true,
+    extractedTextHash: sha256(rawText),
+    canonicalTextHash: sha256(normalizedText),
+    textLength: normalizedText.length,
+    documentId: canonical.documentId,
+    error: null
+  }));
+
+  process.exit(0);
+} catch (error) {
+  console.error(
+    `RUNNER_EXCEPTION: ${
+      error instanceof Error ? error.stack ?? error.message : String(error)
+    }`
+  );
+
+  console.log(JSON.stringify({
+    fixture,
+    rawBytesHash: null,
+    extractionSuccess: false,
+    canonicalReady: false,
+    extractedTextHash: null,
+    canonicalTextHash: null,
+    textLength: null,
+    wordCount: null,
+    documentId: null,
+    error: String(error)
+  }));
+
+  process.exit(3);
+}
