@@ -1,0 +1,53 @@
+============================================================
+HOEOS G3 DETERMINISTIC EVIDENCE AUTHORITY FINAL EVIDENCE
+============================================================
+
+PROJECT:              C:\Projects\Gradifi
+BRANCH:               clean-deploy
+G2_FREEZE_COMMIT:     e92a456c7ccac67738337cd3e0e382fea51ef37e
+
+SOURCE HASHES:
+- src/services/verify/documentNormalizer.ts: 79014dd0dbd3db90a53d254660e5b09f47e858f701cc1b6be56cc9db05a052ee
+- src/services/verify/universalIngestionService.ts: 1542eece6d86d2ffeac9d1adbe33ae28d72935140d551d9a1567c1d3bf85ce49
+- src/services/verify/deterministicEngine.ts: 2c9311c84254fecc7e66abebc55d97089c0fd2f8700e32b833ae17a964e11d91
+- tests/hoeos/g2/golden_test_001.docx: 098a49a08a70580d985317b4cacf4018e51cd026ea8421bb5798bed9224d230f
+
+CANONICAL & EVIDENCE ANCHORS:
+- canonicalTextHash:  ed2b456a6f46f9ef0d56cd3aed2a8550efd701b7b9f576c035cbda88afdae2f7
+- documentId:         ba3a44a791353d57
+- textLength:         383
+- evidenceHash:       9d8ddac5eb9cdaa3
+
+GATE CERTIFICATION SUMMARY:
+- G3_G2_BASELINE:              PASS (G2 freeze commit e92a456c7ccac67738337cd3e0e382fea51ef37e verified)
+- G3_CANONICAL_REGRESSION:      PASS (documentId=ba3a44a791353d57, canonicalTextHash=ed2b456a...)
+- G3_EVIDENCE_DETERMINISM:      PASS (10/10 runs produce identical evidenceHash 9d8ddac5eb9cdaa3)
+- G3_CROSS_PROCESS:           PASS (Verified across independent process executions)
+- G3_RANDOMNESS_AUTHORITY:    PASS (0 code occurrences of Math.random/randomUUID in evidence path)
+- G3_TIME_AUTHORITY:          PASS (Runtime clock timestamps excluded from evidenceHash)
+- G3_EVIDENCE_HASH_AUTHORITY: PASS (Metadata isolation verified; content mutation changes evidenceHash)
+- G3_MATCHED_SPAN_DETERMINISM: PASS (Offsets, text, and findingId 100% deterministic)
+- G3_ORDERING_DETERMINISM:     PASS (Sorting rules produce identical order for matches & findings)
+- G3_AI_PROVIDER_NON_AUTHORITY: PASS (AI findings classified as NON_AUTHORITATIVE_INTERPRETATION)
+- G3_PERSISTENCE_NON_AUTHORITY: PASS (Verification ID derived as VRF-ba3a44a79135 with conflict checking)
+- G3_CLIENT_NON_AUTHORITY:      PASS (Presentation layer preserves underlying documentHash & evidenceHash)
+- G3_RECEIPT_INTEGRITY:        PASS (Receipt embeds matching verificationId & evidenceHash)
+- G3_PUBLIC_RECONCILIATION:    PASS (Internal == Persisted == Public representation)
+- G3_FAILURE_DETERMINISM:       PASS (Empty input produces 0% similarity & deterministic fallback hash)
+- G3_BUILD:                   PASS (vite build exit code 0)
+- G3_WORKTREE_CLEAN:           PASS (git status --short returns 0 entries)
+
+MACHINE ASSERTIONS:
+G3_REQUIRED_GATES=17
+G3_PASSED_GATES=17
+G3_FAILED_GATES=0
+G3_BLOCKED_GATES=0
+G3_NOT_TESTED_GATES=0
+
+G3_CERTIFICATION=PASS
+G3_FREEZE_AUTHORIZED=YES
+G4_AUTHORIZED=YES
+
+============================================================
+END HOEOS G3 DETERMINISTIC EVIDENCE AUTHORITY FINAL EVIDENCE
+============================================================
