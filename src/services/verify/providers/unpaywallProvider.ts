@@ -49,6 +49,7 @@ export class UnpaywallProvider implements AcademicProvider {
       const email = getEnvVar('VITE_UNPAYWALL_EMAIL') || getEnvVar('UNPAYWALL_EMAIL') || 'verify@gradifi.org';
       const url = `https://api.unpaywall.org/v2/${encodeURIComponent(cleanedDoi)}?email=${encodeURIComponent(email)}`;
       const response = await fetch(url, {
+        signal: AbortSignal.timeout(5000),
         headers: { 'Accept': 'application/json' }
       });
       const responseTimestamp = new Date().toISOString();

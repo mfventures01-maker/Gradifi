@@ -30,6 +30,7 @@ export class CoreProvider implements AcademicProvider {
         // Controlled server/edge boundary call in browser environment
         const response = await fetch('/api/verify/core', {
           method: 'POST',
+          signal: AbortSignal.timeout(5000),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'

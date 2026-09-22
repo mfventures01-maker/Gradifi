@@ -225,6 +225,9 @@ Distributed machine learning frameworks require mathematical determinism to guar
     try {
       const res = await verifyCoreService.executeVerifyRun(documentText);
       const { record } = await verificationPersistenceService.persistVerificationRecord(res);
+      if (!record || !record.verification_id) {
+        throw new Error('Persistence failed: Server record could not be established.');
+      }
       setVerificationId(record.verification_id);
       setResult(res);
       setCurrentStep('result');

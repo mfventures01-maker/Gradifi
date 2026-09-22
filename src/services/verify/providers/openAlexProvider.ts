@@ -47,6 +47,7 @@ export class OpenAlexProvider implements AcademicProvider {
       const email = getEnvVar('VITE_OPENALEX_EMAIL') || getEnvVar('OPENALEX_EMAIL') || 'verify@gradifi.org';
       const url = `https://api.openalex.org/works?search=${encodeURIComponent(query.slice(0, 200))}&per-page=${limit}&mailto=${encodeURIComponent(email)}`;
       const response = await fetch(url, {
+        signal: AbortSignal.timeout(5000),
         headers: {
           'Accept': 'application/json',
           'User-Agent': `GradifiVerify/1.0 (mailto:${email})`

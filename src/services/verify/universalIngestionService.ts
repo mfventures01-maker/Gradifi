@@ -33,6 +33,9 @@ export type SupportedFormat =
   | 'json'
   | 'xml';
 
+export const G1_MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+export const G1_MAX_CANONICAL_TEXT_BYTES = 1 * 1024 * 1024; // 1MB
+
 export interface DocumentIngestionResult {
   success: boolean;
   filename: string;
@@ -49,6 +52,7 @@ export interface DocumentIngestionResult {
   chapterCount?: number;
   ocrUsed: boolean;
   ocrStatus: 'NOT_REQUIRED' | 'NOT_AVAILABLE' | 'USED' | 'FAILED';
+  processingTimeMs?: number;
   warnings: string[];
   error?: {
     code: string;
@@ -147,12 +151,13 @@ export async function getFilePayload(
 export async function ingestDocument(
   fileOrInput: File | { name: string; text?: string; buffer?: ArrayBuffer; mimeType?: string }
 ): Promise<DocumentIngestionResult> {
+  const startTime = Date.now();
   const payload = await getFilePayload(fileOrInput);
   const ext = payload.filename.split('.').pop()?.toLowerCase() || '';
   const format = detectFileFormat(payload.filename, payload.mimeType);
 
   // Security Gate 1: Check File Size
-  if (payload.size > MAX_FILE_SIZE_BYTES) {
+  if (payload.size > G1_MAX_FILE_SIZE_BYTES) {
     return {
       success: false,
       filename: payload.filename,
@@ -165,10 +170,11 @@ export async function ingestDocument(
       characterCount: 0,
       ocrUsed: false,
       ocrStatus: 'NOT_REQUIRED',
-      warnings: ['File exceeds maximum allowed size (15MB).'],
+      processingTimeMs: Date.now() - startTime,
+      warnings: ['File exceeds maximum allowed size (50MB).'],
       error: {
         code: 'FILE_TOO_LARGE',
-        message: 'File size exceeds maximum allowed 15MB limit.'
+        message: 'File size exceeds maximum allowed 50MB limit.'
       },
       canonicalReady: false
     };
@@ -188,6 +194,7 @@ export async function ingestDocument(
       characterCount: 0,
       ocrUsed: false,
       ocrStatus: 'NOT_REQUIRED',
+      processingTimeMs: Date.now() - startTime,
       warnings: ['Unsupported document format.'],
       error: {
         code: 'UNSUPPORTED_FORMAT',
@@ -287,6 +294,30 @@ export async function ingestDocument(
     }
   }
 
+  // Security Gate 3: Check Canonical Text Payload Limit (1MB)
+  if (adapterResult.success && adapterResult.text && new TextEncoder().encode(adapterResult.text).length > G1_MAX_CANONICAL_TEXT_BYTES) {
+    return {
+      success: false,
+      filename: payload.filename,
+      mimeType: payload.mimeType,
+      extension: ext,
+      format,
+      extractionMethod: adapterResult.extractionMethod,
+      text: '',
+      wordCount: 0,
+      characterCount: 0,
+      ocrUsed: adapterResult.ocrUsed || false,
+      ocrStatus: adapterResult.ocrStatus || 'NOT_REQUIRED',
+      processingTimeMs: Date.now() - startTime,
+      warnings: ['Extracted canonical text exceeds maximum 1MB payload limit.'],
+      error: {
+        code: 'TEXT_SIZE_EXCEEDED',
+        message: 'Canonical text payload exceeds maximum 1MB limit.'
+      },
+      canonicalReady: false
+    };
+  }
+
   // Canonical Convergence
   let canonicalDocument: CanonicalAnalysisDocument | undefined = undefined;
   let canonicalReady = false;
@@ -317,6 +348,7 @@ export async function ingestDocument(
     chapterCount: adapterResult.chapterCount,
     ocrUsed: adapterResult.ocrUsed,
     ocrStatus: adapterResult.ocrStatus,
+    processingTimeMs: Date.now() - startTime,
     warnings: adapterResult.warnings,
     error: adapterResult.error,
     canonicalReady,

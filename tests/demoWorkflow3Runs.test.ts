@@ -34,7 +34,7 @@ Federated learning across decoupled edge networks faces significant communicatio
     console.log(`[Run ${runIndex}] Verified Sources Found:`, result.verifiedSources.length);
 
     // Step 8: QR Code Receipt Generation
-    const qrSvg = generateQRCodeSVG(`http://localhost:5173/verify/VRF-DEMO-RUN-${runIndex}`, 100);
+    const qrSvg = await generateQRCodeSVG(`http://localhost:5173/verify/VRF-DEMO-RUN-${runIndex}`, 100);
     if (!qrSvg.includes('<svg') || !qrSvg.includes('viewBox')) {
       throw new Error(`[Run ${runIndex}] QR SVG Generation Failed`);
     }

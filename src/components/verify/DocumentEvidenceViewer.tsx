@@ -93,6 +93,8 @@ export const DocumentEvidenceViewer: React.FC<DocumentEvidenceViewerProps> = ({
             <mark
               key={idx}
               data-evidence-span={primarySpan?.spanId}
+              data-source-id={primarySpan?.sourceId}
+              data-match-type={primarySpan?.matchType}
               onClick={() => {
                 if (primarySpan) {
                   setActiveSpan(primarySpan);

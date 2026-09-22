@@ -47,6 +47,7 @@ export class CrossrefProvider implements AcademicProvider {
       const email = getEnvVar('VITE_CROSSREF_EMAIL') || getEnvVar('CROSSREF_EMAIL') || 'verify@gradifi.org';
       const url = `https://api.crossref.org/works?query=${encodeURIComponent(query.slice(0, 200))}&rows=${limit}&mailto=${encodeURIComponent(email)}`;
       const response = await fetch(url, {
+        signal: AbortSignal.timeout(5000),
         headers: {
           'Accept': 'application/json',
           'User-Agent': `GradifiVerify/1.0 (mailto:${email})`

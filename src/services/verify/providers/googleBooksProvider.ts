@@ -30,6 +30,7 @@ export class GoogleBooksProvider implements AcademicProvider {
       if (isBrowser) {
         const response = await fetch('/api/verify/googlebooks', {
           method: 'POST',
+          signal: AbortSignal.timeout(5000),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'

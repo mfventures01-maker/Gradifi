@@ -55,6 +55,7 @@ export class AIFederationService {
       if (isBrowser) {
         const response = await fetch('/api/verify/gemma', {
           method: 'POST',
+          signal: AbortSignal.timeout(5000),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -99,6 +100,7 @@ export class AIFederationService {
       if (isBrowser) {
         const response = await fetch('/api/verify/nemotron', {
           method: 'POST',
+          signal: AbortSignal.timeout(5000),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -142,6 +144,7 @@ export class AIFederationService {
       if (isBrowser) {
         const response = await fetch('/api/verify/gemini', {
           method: 'POST',
+          signal: AbortSignal.timeout(5000),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
