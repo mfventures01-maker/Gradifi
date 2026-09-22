@@ -1,0 +1,27 @@
+{
+  "consoleLogs": [
+    "[CONSOLE LOG] [OfflineStorage] Database initialized",
+    "[CONSOLE LOG] ✅ Offline storage initialized",
+    "[CONSOLE LOG] [OfflineStorage] Database initialized",
+    "[CONSOLE LOG] ✅ Initial sync: 0 items synced",
+    "[CONSOLE LOG] [SW] Service Worker registered successfully: ServiceWorkerRegistration",
+    "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 405 ()",
+    "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 405 ()",
+    "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 405 ()",
+    "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 405 ()",
+    "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 405 ()",
+    "[CONSOLE ERROR] Verification execution error: Error: Server returned HTTP 405\n    at t1.persistVerificationRecord (https://gradifi.vercel.app/assets/index-BIO0u7jd.js:481:196329)\n    at async de (https://gradifi.vercel.app/assets/index-BIO0u7jd.js:876:1796)"
+  ],
+  "networkRequests": [
+    "[NETWORK] 200 https://gradifi.vercel.app/assets/pdf.worker.min-BmVo14Nb.mjs",
+    "[NETWORK] 200 https://cdn.jsdelivr.net/npm/tesseract.js@v7.0.0/dist/worker.min.js",
+    "[NETWORK] 200 https://cdn.jsdelivr.net/npm/tesseract.js@v7.0.0/dist/worker.min.js",
+    "[NETWORK] 200 https://cdn.jsdelivr.net/npm/tesseract.js@v7.0.0/dist/worker.min.js",
+    "[NETWORK] 200 https://cdn.jsdelivr.net/npm/tesseract.js@v7.0.0/dist/worker.min.js",
+    "[NETWORK] 200 https://cdn.jsdelivr.net/npm/tesseract.js@v7.0.0/dist/worker.min.js"
+  ],
+  "workerErrorPresent": false,
+  "pageContent": "Back to Gradifi Tools Hub\nGRADIFI VERIFY\nHOEOS 2-HOUR DEMO CRITICAL PATH\n\nFederated Academic Evidence Core • Deterministic Similarity Engine • Multi-Model AI Federation • Authentic Scannable QR Receipts\n\nPre-load Demo Document\n01 UPLOAD\n02 EXTRACT\n03 NORMALIZE\n04 VERIFY\n05 FEDERATE\n06 RESULT\n07 RECEIPT\n1. PDF Document Upload\nSTATUS: EXTRACTED\nDrop your document file here (.pdf, .txt, .docx, .epub, .md, .rtf, etc.)\nUniversal ingestion & deterministic extraction up to 15MB\nM.ENG Project (SEFAES) (1).pdf\n1.6 KB • Method: ocr_tesseract\nServer returned HTTP 405\nDOCUMENT TEXT PAYLOAD\nRun Academic Evidence Verification\n2. Canonical Analysis Document\nPROVENANCE: NORMALIZED\nTITLE\nCOVER PAGE\nAUTHORS\nUnknown Author\nPUBLICATION / YEAR\nEVALUATION SYSTEM (SEFAES) (2026)\nIDENTIFIERS\nReady for Evidence Verification\n\nUpload a PDF paper or click \"Pre-load Demo Document\" to trigger the federated verification pipeline across Google Books, OpenAlex, Crossref, Unpaywall, CORE, and AI Federation.\n\nOnline\nSync Now",
+  "success": true
+}

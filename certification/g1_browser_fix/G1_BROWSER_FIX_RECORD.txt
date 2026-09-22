@@ -1,0 +1,35 @@
+﻿# G1 BROWSER PDF WORKER — REPAIR RECORD
+# Repair ID: G1-BROWSER-FIX-2026-09-22
+# Classification: RUNTIME PASS (browser)
+# Status: FROZEN
+
+[ROOT CAUSE]
+pdfjsLib.GlobalWorkerOptions.workerSrc was not configured for the
+browser build. PDF.js requires a separate worker .mjs file loaded
+from a resolvable URL in browsers. The prior Node certification
+used the in-process fake worker and never exercised this path.
+
+[FIX]
+1. src/utils/pdfExtractor.ts
+   - Configure pdfjsLib.GlobalWorkerOptions.workerSrc when
+     typeof window !== 'undefined', using a Vite-resolved URL.
+2. vite.config.ts
+   - worker.format: 'es'
+   - optimizeDeps.include: ['pdfjs-dist']
+
+[VERIFICATION]
+- npm run build: clean, worker asset emitted in dist/assets/
+- npx tsx tests/demoWorkflow3Runs.test.ts: 3/3 PASS
+- npx vitest run tests/g1_ocr_scanned.test.ts: PASS
+- npx tsx tests/g1_epub_ocr.test.ts: PASS
+- npx vercel --prod: deployed
+- Browser upload of SEFAES PDF: text extracted, pipeline advanced
+- Browser console: no worker error
+
+[CORRECTED CERTIFICATION STATE]
+G1 NODE    RUNTIME PASS (unchanged)
+G1 BROWSER RUNTIME PASS (new)
+
+[CERTIFICATION]
+Requires fresh-clone reproduction of the four commands above,
+plus one browser upload of a text-native PDF.
