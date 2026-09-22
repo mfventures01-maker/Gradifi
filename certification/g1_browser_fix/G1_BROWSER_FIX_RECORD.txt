@@ -33,3 +33,10 @@ G1 BROWSER RUNTIME PASS (new)
 [CERTIFICATION]
 Requires fresh-clone reproduction of the four commands above,
 plus one browser upload of a text-native PDF.
+
+[COMMITS]
+bdf3098   G1 browser fix: configure pdfjs-dist worker URL
+153c98c   G1 browser fix: record and composite hash
+
+[COMPOSITE]
+G1_BROWSER_FIX_COMPOSITE: F4ECF8C7CC784F78712B04A9CBF2619182132CECE8C87F73CE6CB61433550846
