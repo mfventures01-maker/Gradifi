@@ -4,6 +4,59 @@
  */
 
 import { AdapterExtractionResult } from './pdfAdapter';
+import { ocrService } from '../../ocrService';
+
+/**
+ * Extracts binary media file payloads from a PKZIP archive matching a path filter.
+ */
+export async function unzipPackageMediaFiles(
+  zipInput: Uint8Array | ArrayBuffer,
+  pathFilter: (fileName: string) => boolean
+): Promise<Array<{ fileName: string; bytes: Uint8Array }>> {
+  const results: Array<{ fileName: string; bytes: Uint8Array }> = [];
+  try {
+    const zipBytes = zipInput instanceof Uint8Array ? zipInput : new Uint8Array(zipInput);
+    if (zipBytes.length < 30) return results;
+
+    let pos = 0;
+    while (pos + 30 <= zipBytes.length) {
+      if (zipBytes[pos] === 0x50 && zipBytes[pos + 1] === 0x4b && zipBytes[pos + 2] === 0x03 && zipBytes[pos + 3] === 0x04) {
+        const compMethod = zipBytes[pos + 8] | (zipBytes[pos + 9] << 8);
+        const compSize = zipBytes[pos + 18] | (zipBytes[pos + 19] << 8) | (zipBytes[pos + 20] << 16) | (zipBytes[pos + 21] << 24);
+        const uncompSize = zipBytes[pos + 22] | (zipBytes[pos + 23] << 8) | (zipBytes[pos + 24] << 16) | (zipBytes[pos + 25] << 24);
+        const nameLen = zipBytes[pos + 26] | (zipBytes[pos + 27] << 8);
+        const extraLen = zipBytes[pos + 28] | (zipBytes[pos + 29] << 8);
+
+        const nameBytes = zipBytes.subarray(pos + 30, pos + 30 + nameLen);
+        const fileName = new TextDecoder('utf-8').decode(nameBytes).replace(/\\/g, '/');
+        const dataStart = pos + 30 + nameLen + extraLen;
+        const payloadSize = compSize > 0 ? compSize : uncompSize;
+
+        if (pathFilter(fileName)) {
+          const compressedBytes = zipBytes.subarray(dataStart, dataStart + payloadSize);
+          let decompressed: Uint8Array | null = null;
+
+          if (compMethod === 0) {
+            decompressed = compressedBytes;
+          } else if (compMethod === 8) {
+            decompressed = await decompressDeflate(compressedBytes);
+          }
+
+          if (decompressed) {
+            results.push({ fileName, bytes: decompressed });
+          }
+        }
+
+        pos = dataStart + payloadSize;
+      } else {
+        pos++;
+      }
+    }
+  } catch (e) {
+    console.warn('ZIP media extraction failed:', e);
+  }
+  return results;
+}
 
 /**
  * Decompresses raw Deflate bytes synchronously (in Node) or via DecompressionStream (in Browser).
@@ -42,8 +95,11 @@ async function decompressDeflate(bytes: Uint8Array): Promise<Uint8Array | null> 
   }
 }
 
+export const MAX_UNCOMPRESSED_ZIP_BYTES = 100 * 1024 * 1024; // 100MB decompression limit
+
 /**
  * Extracts raw uncompressed text of a specified target file from a PKZIP archive (e.g., word/document.xml).
+ * Enforces strict zip decompression bomb payload size limit (100MB max).
  */
 export async function unzipPackageTextFile(zipInput: Uint8Array | ArrayBuffer, targetPath: string): Promise<string | null> {
   try {
@@ -51,6 +107,8 @@ export async function unzipPackageTextFile(zipInput: Uint8Array | ArrayBuffer, t
     if (zipBytes.length < 30) return null;
 
     let pos = 0;
+    let totalUncompressedBytes = 0;
+
     while (pos + 30 <= zipBytes.length) {
       if (zipBytes[pos] === 0x50 && zipBytes[pos + 1] === 0x4b && zipBytes[pos + 2] === 0x03 && zipBytes[pos + 3] === 0x04) {
         const compMethod = zipBytes[pos + 8] | (zipBytes[pos + 9] << 8);
@@ -58,6 +116,12 @@ export async function unzipPackageTextFile(zipInput: Uint8Array | ArrayBuffer, t
         const uncompSize = zipBytes[pos + 22] | (zipBytes[pos + 23] << 8) | (zipBytes[pos + 24] << 16) | (zipBytes[pos + 25] << 24);
         const nameLen = zipBytes[pos + 26] | (zipBytes[pos + 27] << 8);
         const extraLen = zipBytes[pos + 28] | (zipBytes[pos + 29] << 8);
+
+        totalUncompressedBytes += (uncompSize > 0 ? uncompSize : compSize);
+        if (totalUncompressedBytes > MAX_UNCOMPRESSED_ZIP_BYTES) {
+          console.warn('ZIP decompression bomb payload limit exceeded (100MB).');
+          return null;
+        }
 
         const nameBytes = zipBytes.subarray(pos + 30, pos + 30 + nameLen);
         const fileName = new TextDecoder('utf-8').decode(nameBytes).replace(/\\/g, '/');
@@ -153,21 +217,58 @@ export async function extractDocxText(input: ArrayBuffer | Uint8Array | string):
     text = xmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
-  if (!text.trim()) {
-    return {
-      success: false,
-      text: '',
-      wordCount: 0,
-      characterCount: 0,
-      extractionMethod: 'docx_xml_extractor',
-      ocrUsed: false,
-      ocrStatus: 'NOT_REQUIRED',
-      warnings: ['DOCX file contains no extractable text.'],
-      error: {
-        code: 'EMPTY_DOCUMENT',
-        message: 'The DOCX file contains no extractable text.'
+  if (!text.trim() || text.trim().length < 50) {
+    if (typeof input !== 'string') {
+      const mediaFiles = await unzipPackageMediaFiles(
+        input,
+        n => /\.(png|jpe?g)$/i.test(n) && !n.includes('__MACOSX')
+      );
+      if (mediaFiles.length > 0) {
+        const ocrResults: string[] = [];
+        for (const media of mediaFiles.slice(0, 10)) {
+          try {
+            const ocrRes = await ocrService.extractText(media.bytes);
+            if (ocrRes.text && ocrRes.text.trim().length > 0) {
+              ocrResults.push(ocrRes.text.trim());
+            }
+          } catch (e) {
+            console.warn(`OCR failed for DOCX media ${media.fileName}:`, e);
+          }
+        }
+        if (ocrResults.length > 0) {
+          const ocrText = ocrResults.join('\n\n');
+          const words = ocrText.split(/\s+/).filter(Boolean);
+          return {
+            success: true,
+            text: ocrText,
+            wordCount: words.length,
+            characterCount: ocrText.length,
+            pageCount: mediaFiles.length,
+            extractionMethod: 'docx_ocr_tesseract',
+            ocrUsed: true,
+            ocrStatus: 'USED',
+            warnings: ['No XML text layer; content extracted via OCR of embedded images.']
+          };
+        }
       }
-    };
+    }
+
+    if (!text.trim()) {
+      return {
+        success: false,
+        text: '',
+        wordCount: 0,
+        characterCount: 0,
+        extractionMethod: 'docx_xml_extractor',
+        ocrUsed: false,
+        ocrStatus: 'NOT_REQUIRED',
+        warnings: ['DOCX file contains no extractable text.'],
+        error: {
+          code: 'EMPTY_DOCUMENT',
+          message: 'The DOCX file contains no extractable text.'
+        }
+      };
+    }
   }
 
   const words = text.split(/\s+/).filter(Boolean);
@@ -242,52 +343,206 @@ export async function extractOdtText(input: ArrayBuffer | Uint8Array | string): 
 /**
  * Extracts EPUB text content.
  */
+/**
+ * Extracts EPUB text content according to Open Container Format (OCF) specification.
+ * Parses META-INF/container.xml -> OPF Package Document -> Spine Order -> XHTML Text.
+ */
 export async function extractEpubText(input: ArrayBuffer | Uint8Array | string): Promise<AdapterExtractionResult> {
-  let epubContent: string | null = null;
+  if (typeof input === 'string') {
+    let text = input
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<\/(p|h[1-6]|div|li)>/gi, '\n')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
 
-  if (typeof input !== 'string') {
-    epubContent = await unzipPackageTextFile(input, 'content.opf');
-    if (!epubContent) {
-      epubContent = await unzipPackageTextFile(input, 'chapter1.xhtml');
+    const words = text.split(/\s+/).filter(Boolean);
+    if (!words.length) {
+      return {
+        success: false,
+        text: '',
+        wordCount: 0,
+        characterCount: 0,
+        extractionMethod: 'epub_xhtml_extractor',
+        ocrUsed: false,
+        ocrStatus: 'NOT_REQUIRED',
+        warnings: ['EPUB file contains no extractable text.'],
+        error: {
+          code: 'EMPTY_DOCUMENT',
+          message: 'The EPUB file contains no extractable text.'
+        }
+      };
     }
-  } else {
-    epubContent = input;
-  }
 
-  if (!epubContent) {
     return {
-      success: false,
-      text: '',
-      wordCount: 0,
-      characterCount: 0,
+      success: true,
+      text,
+      wordCount: words.length,
+      characterCount: text.length,
+      chapterCount: 1,
+      pageCount: Math.max(1, Math.ceil(text.length / 2000)),
       extractionMethod: 'epub_xhtml_extractor',
       ocrUsed: false,
       ocrStatus: 'NOT_REQUIRED',
-      warnings: ['EPUB file is empty or invalid package.'],
-      error: {
-        code: 'INVALID_PACKAGE',
-        message: 'The uploaded EPUB file is empty or invalid.'
-      }
+      warnings: []
     };
   }
 
-  let text = epubContent
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<\/(p|h[1-6]|div|li)>/gi, '\n')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  // 1. Read META-INF/container.xml to locate OPF package document
+  const containerXml = await unzipPackageTextFile(input, 'META-INF/container.xml');
+  let opfPath = 'OEBPS/content.opf';
 
-  const words = text.split(/\s+/).filter(Boolean);
+  if (containerXml) {
+    const fullPathMatch = containerXml.match(/full-path\s*=\s*["']([^"']+)["']/i);
+    if (fullPathMatch && fullPathMatch[1]) {
+      opfPath = fullPathMatch[1];
+    }
+  }
+
+  // 2. Read OPF Package Document
+  let opfContent = await unzipPackageTextFile(input, opfPath);
+  if (!opfContent) {
+    opfContent = await unzipPackageTextFile(input, 'content.opf');
+    if (opfContent) {
+      opfPath = 'content.opf';
+    }
+  }
+
+  const opfDir = opfPath.includes('/') ? opfPath.substring(0, opfPath.lastIndexOf('/') + 1) : '';
+  const chapterTexts: string[] = [];
+  let chapterCount = 0;
+
+  if (opfContent) {
+    // 3. Parse Manifest items (<item id="..." href="..." media-type="..."/>)
+    const manifestMap = new Map<string, string>();
+    const rawItemTags = opfContent.match(/<item\s+[^>]+>/gi) || [];
+    for (const tag of rawItemTags) {
+      const idM = tag.match(/\bid\s*=\s*["']([^"']+)["']/i);
+      const hrefM = tag.match(/\bhref\s*=\s*["']([^"']+)["']/i);
+      if (idM && hrefM) {
+        manifestMap.set(idM[1], hrefM[1]);
+      }
+    }
+
+    // 4. Parse Spine (<spine ...><itemref idref="..."/></spine>)
+    const spineItems: string[] = [];
+    const itemrefRegex = /<itemref\s+[^>]*\bidref\s*=\s*["']([^"']+)["'][^>]*>/gi;
+    let itemrefMatch;
+    while ((itemrefMatch = itemrefRegex.exec(opfContent)) !== null) {
+      spineItems.push(itemrefMatch[1]);
+    }
+
+    // 5. Process Content Documents in Spine Order
+    for (const idref of spineItems) {
+      const href = manifestMap.get(idref);
+      if (!href) continue;
+
+      let fullDocPath = (opfDir + href).replace(/^\//, '');
+      const docContent = await unzipPackageTextFile(input, fullDocPath);
+      if (docContent) {
+        let cleanText = docContent
+          .replace(/<script[\s\S]*?<\/script>/gi, '')
+          .replace(/<style[\s\S]*?<\/style>/gi, '')
+          .replace(/<\/(p|h[1-6]|div|li|tr)>/gi, '\n')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/[ \t]+/g, ' ')
+          .trim();
+
+        if (cleanText) {
+          chapterTexts.push(cleanText);
+          chapterCount++;
+        }
+      }
+    }
+  }
+
+  // Fallback if container/OPF parsing yielded no chapter text
+  if (chapterTexts.length === 0) {
+    for (const candidate of ['chapter1.xhtml', 'chapter1.html', 'index.xhtml', 'index.html', 'content.html']) {
+      const docContent = await unzipPackageTextFile(input, candidate);
+      if (docContent) {
+        let cleanText = docContent
+          .replace(/<script[\s\S]*?<\/script>/gi, '')
+          .replace(/<style[\s\S]*?<\/style>/gi, '')
+          .replace(/<\/(p|h[1-6]|div|li)>/gi, '\n')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if (cleanText) {
+          chapterTexts.push(cleanText);
+          chapterCount = 1;
+          break;
+        }
+      }
+    }
+  }
+
+  const fullText = chapterTexts.join('\n\n').trim();
+
+  if (!fullText || fullText.length < 50) {
+    if (typeof input !== 'string') {
+      const mediaFiles = await unzipPackageMediaFiles(
+        input,
+        n => /\.(png|jpe?g)$/i.test(n) && !n.includes('__MACOSX')
+      );
+      if (mediaFiles.length > 0) {
+        const ocrResults: string[] = [];
+        for (const media of mediaFiles.slice(0, 10)) {
+          try {
+            const ocrRes = await ocrService.extractText(media.bytes);
+            if (ocrRes.text && ocrRes.text.trim().length > 0) {
+              ocrResults.push(ocrRes.text.trim());
+            }
+          } catch (e) {
+            console.warn(`OCR failed for EPUB media ${media.fileName}:`, e);
+          }
+        }
+        if (ocrResults.length > 0) {
+          const ocrText = ocrResults.join('\n\n');
+          const words = ocrText.split(/\s+/).filter(Boolean);
+          return {
+            success: true,
+            text: ocrText,
+            wordCount: words.length,
+            characterCount: ocrText.length,
+            pageCount: mediaFiles.length,
+            extractionMethod: 'epub_ocr_tesseract',
+            ocrUsed: true,
+            ocrStatus: 'USED',
+            warnings: ['No XHTML text layer; content extracted via OCR of embedded images.']
+          };
+        }
+      }
+    }
+
+    if (!fullText) {
+      return {
+        success: false,
+        text: '',
+        wordCount: 0,
+        characterCount: 0,
+        extractionMethod: 'epub_xhtml_extractor',
+        ocrUsed: false,
+        ocrStatus: 'NOT_REQUIRED',
+        warnings: ['EPUB file contains no extractable text.'],
+        error: {
+          code: 'EMPTY_DOCUMENT',
+          message: 'The EPUB file contains no extractable text.'
+        }
+      };
+    }
+  }
+
+  const words = fullText.split(/\s+/).filter(Boolean);
 
   return {
     success: true,
-    text,
+    text: fullText,
     wordCount: words.length,
-    characterCount: text.length,
-    chapterCount: 1,
-    pageCount: Math.max(1, Math.ceil(text.length / 2000)),
+    characterCount: fullText.length,
+    chapterCount: chapterCount || 1,
+    pageCount: Math.max(1, Math.ceil(fullText.length / 2000)),
     extractionMethod: 'epub_xhtml_extractor',
     ocrUsed: false,
     ocrStatus: 'NOT_REQUIRED',
