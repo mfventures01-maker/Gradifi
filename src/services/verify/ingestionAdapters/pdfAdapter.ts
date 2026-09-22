@@ -1,10 +1,10 @@
-/**
+﻿/**
  * GRADIFI VERIFY - UNIVERSAL INGESTION PDF ADAPTER
  * Delegates to certified pdfExtractor.ts without modifying it.
  * Enforces strict OCR-required failure boundary when text extraction yields 0 words.
  */
 
-import { extractDocumentText, MAX_FILE_SIZE_BYTES } from '../../../utils/pdfExtractor';
+import { extractDocumentText, MAX_FILE_SIZE_BYTES, validatePdfExtractedTextQuality } from '../../../utils/pdfExtractor';
 
 export interface AdapterExtractionResult {
   success: boolean;
@@ -58,20 +58,27 @@ export async function extractPdfAdapter(
     const extracted = await extractDocumentText(extractedFile);
     const text = extracted.extractedText.trim();
     const words = text ? text.split(/\s+/).filter(Boolean) : [];
+    const isOcr = extracted.extractionMethod === 'ocr_tesseract';
 
-    if (words.length < 5) {
+    const isValidQuality = isOcr
+      ? (words.length >= 1 && text.length >= 10)
+      : (words.length >= 5 && validatePdfExtractedTextQuality(text));
+
+    if (!isValidQuality) {
       return {
         success: false,
         text: '',
         wordCount: 0,
         characterCount: 0,
         extractionMethod: extracted.extractionMethod,
-        ocrUsed: extracted.extractionMethod === 'ocr_tesseract',
-        ocrStatus: extracted.extractionMethod === 'ocr_tesseract' ? 'FAILED' : 'NOT_AVAILABLE',
-        warnings: ['PDF stream contains no extractable text.'],
+        ocrUsed: isOcr,
+        ocrStatus: isOcr ? 'FAILED' : 'NOT_AVAILABLE',
+        warnings: ['Text extraction unavailable or failed quality validation.'],
         error: {
           code: 'TEXT_EXTRACTION_UNAVAILABLE',
-          message: 'Text extraction unavailable. OCR required.'
+          message: isOcr
+            ? 'OCR extraction failed or yielded insufficient text.'
+            : 'Text stream extraction unavailable.'
         }
       };
     }
@@ -83,24 +90,26 @@ export async function extractPdfAdapter(
       characterCount: text.length,
       pageCount: extracted.pageCountEstimate,
       extractionMethod: extracted.extractionMethod,
-      ocrUsed: extracted.extractionMethod === 'ocr_tesseract',
-      ocrStatus: extracted.extractionMethod === 'ocr_tesseract' ? 'USED' : 'NOT_REQUIRED',
+      ocrUsed: isOcr,
+      ocrStatus: isOcr ? 'USED' : 'NOT_REQUIRED',
       warnings: []
     };
   } catch (err: any) {
+    const isOcrError = err?.message?.toLowerCase().includes('ocr') || false;
     return {
       success: false,
       text: '',
       wordCount: 0,
       characterCount: 0,
-      extractionMethod: 'pdf_stream_extractor',
-      ocrUsed: false,
-      ocrStatus: 'NOT_AVAILABLE',
+      extractionMethod: isOcrError ? 'ocr_tesseract' : 'pdf_stream_extractor',
+      ocrUsed: isOcrError,
+      ocrStatus: isOcrError ? 'FAILED' : 'NOT_AVAILABLE',
       warnings: [err?.message || 'PDF extraction failed.'],
       error: {
         code: 'TEXT_EXTRACTION_UNAVAILABLE',
-        message: 'Text extraction unavailable. OCR required.'
+        message: err?.message || 'Text extraction unavailable.'
       }
     };
   }
 }
+

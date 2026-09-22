@@ -18,14 +18,40 @@ export interface OCRResult {
 export const ocrService = {
   /**
    * Extract text from an image (File, Buffer, or base64 string)
+   * Enforces 30-second OCR timeout and guaranteed worker termination.
    * @param imageInput - Image file, buffer, or string URL/base64
+   * @param timeoutMs - Max execution time in ms (default 30000ms)
    * @returns Extracted text with confidence scores
    */
-  async extractText(imageInput: any): Promise<OCRResult> {
+  async extractText(imageInput: any, timeoutMs: number = 30000): Promise<OCRResult> {
+    let worker: any = null;
+    let timeoutTimer: NodeJS.Timeout | null = null;
+
     try {
-      const worker = await createWorker('eng');
-      const { data } = await worker.recognize(imageInput);
-      await worker.terminate();
+      let payload = imageInput;
+      if (
+        typeof Blob !== 'undefined' &&
+        imageInput instanceof Blob &&
+        typeof process !== 'undefined' &&
+        process.versions?.node
+      ) {
+        const arrayBuffer = await imageInput.arrayBuffer();
+        payload = Buffer.from(arrayBuffer);
+      }
+
+      const workerPromise = (async () => {
+        worker = await createWorker('eng');
+        const { data } = await worker.recognize(payload);
+        return data;
+      })();
+
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutTimer = setTimeout(() => {
+          reject(new Error('OCR_TIMEOUT'));
+        }, timeoutMs);
+      });
+
+      const data: any = await Promise.race([workerPromise, timeoutPromise]);
 
       return {
         text: data.text || '',
@@ -35,9 +61,23 @@ export const ocrService = {
         wordCount: data.words?.length || 0,
         charCount: data.text?.length || 0
       };
-    } catch (error) {
-      console.error('❌ OCR Error:', error);
-      throw new Error('Failed to extract text from image. Please ensure the image is clear and contains readable text.');
+    } catch (error: any) {
+      console.error('❌ OCR Error:', error?.message || error);
+      if (error?.message === 'OCR_TIMEOUT') {
+        throw new Error('OCR_TIMEOUT');
+      }
+      throw new Error('OCR_WORKER_FAILURE');
+    } finally {
+      if (timeoutTimer) {
+        clearTimeout(timeoutTimer);
+      }
+      if (worker) {
+        try {
+          await worker.terminate();
+        } catch {
+          // Ignore termination errors during cleanup
+        }
+      }
     }
   },
 

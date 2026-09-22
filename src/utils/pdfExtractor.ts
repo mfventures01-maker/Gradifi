@@ -51,6 +51,68 @@ export function validateDocumentFile(file: File): { valid: boolean; error?: stri
 }
 
 /**
+ * Rigorous text quality validation to prevent binary/corrupted PDF stream garbage from passing.
+ * Enforces fail-closed HOEOS Gate 1 requirements:
+ * 1. printableRatio >= 0.70
+ * 2. U+FFFD replacement character contamination check (< 0.5%)
+ * 3. Control-character contamination check (ASCII 0-8, 11-12, 14-31)
+ * 4. Legible word count >= 5 (real alphanumeric words, not hex or stream syntax)
+ * 5. Minimum text length >= 50
+ */
+export function validatePdfExtractedTextQuality(text: string): boolean {
+  if (!text || typeof text !== 'string') return false;
+  const clean = text.trim();
+  if (clean.length < 50) return false;
+
+  // 1. Check U+FFFD replacement character contamination
+  const ufffdMatches = clean.match(/\uFFFD/g);
+  const ufffdCount = ufffdMatches ? ufffdMatches.length : 0;
+  if (ufffdCount > 0 && (ufffdCount / clean.length) > 0.005) {
+    return false;
+  }
+
+  // 2. Check control characters (ASCII 0-8, 11-12, 14-31)
+  const controlMatches = clean.match(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g);
+  const controlCount = controlMatches ? controlMatches.length : 0;
+  if (controlCount > 0 && (controlCount / clean.length) > 0.01) {
+    return false;
+  }
+
+  // 3. Check printable character ratio (ASCII 32-126 + \n + \r + \t + Unicode letters/accents)
+  let printableCount = 0;
+  for (let i = 0; i < clean.length; i++) {
+    const code = clean.charCodeAt(i);
+    if (
+      (code >= 32 && code <= 126) ||
+      code === 10 || code === 13 || code === 9 ||
+      (code >= 160 && code !== 0xFFFD)
+    ) {
+      printableCount++;
+    }
+  }
+
+  const printableRatio = printableCount / clean.length;
+  if (printableRatio < 0.70) {
+    return false;
+  }
+
+  // 4. Validate meaningful word count (words with at least 2 consecutive alphabetic/numeric chars)
+  const words = clean.split(/\s+/).filter(Boolean);
+  const legibleWords = words.filter(w => /[a-zA-Z0-9]{2,}/.test(w) && !/^[0-9A-Fa-f]{8,}$/.test(w));
+
+  if (legibleWords.length < 5) {
+    return false;
+  }
+
+  // 5. Check ratio of legible words to total words
+  if (words.length > 0 && (legibleWords.length / words.length) < 0.40) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Extracts raw text from PDF bytes via text stream extraction.
  */
 export function extractTextFromPdfStream(arrayBuffer: ArrayBuffer): string {
@@ -79,8 +141,11 @@ export function extractTextFromPdfStream(arrayBuffer: ArrayBuffer): string {
       }
     }
 
-    if (textMatches.length > 0 && textMatches.join(' ').length >= 10) {
-      return textMatches.join(' ');
+    if (textMatches.length > 0) {
+      const extractedStr = textMatches.join(' ');
+      if (extractedStr.length >= 50 && validatePdfExtractedTextQuality(extractedStr)) {
+        return extractedStr;
+      }
     }
   } catch (e) {
     console.warn('PDF stream extraction failed, falling back to OCR:', e);
@@ -88,8 +153,108 @@ export function extractTextFromPdfStream(arrayBuffer: ArrayBuffer): string {
   return '';
 }
 
+import { ocrService } from '../services/ocrService';
+
+/**
+ * Helper to extract JPEG image streams (/Filter /DCTDecode) from raw PDF bytes.
+ */
+export function extractJpegImagesFromPdf(arrayBuffer: ArrayBuffer): Uint8Array[] {
+  const bytes = new Uint8Array(arrayBuffer);
+  const images: Uint8Array[] = [];
+  let pos = 0;
+
+  while (pos < bytes.length - 3) {
+    if (bytes[pos] === 0xFF && bytes[pos + 1] === 0xD8 && bytes[pos + 2] === 0xFF) {
+      const start = pos;
+      pos += 2;
+      let foundEnd = false;
+      while (pos < bytes.length - 1) {
+        if (bytes[pos] === 0xFF && bytes[pos + 1] === 0xD9) {
+          const end = pos + 2;
+          const imageBytes = bytes.subarray(start, end);
+          if (imageBytes.length > 2048) {
+            images.push(imageBytes);
+          }
+          pos = end;
+          foundEnd = true;
+          break;
+        }
+        pos++;
+      }
+      if (!foundEnd) break;
+    } else {
+      pos++;
+    }
+  }
+
+  return images;
+}
+
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+
+/**
+ * Renders PDF pages to PNG raster image payloads (image/png) for OCR processing.
+ * Works in both browser environment (HTMLCanvasElement) and Node.js environment (@napi-rs/canvas).
+ */
+export async function renderPdfPagesToRasterImages(arrayBuffer: ArrayBuffer): Promise<Uint8Array[]> {
+  const images: Uint8Array[] = [];
+  try {
+    const data = new Uint8Array(arrayBuffer);
+    const loadingTask = pdfjsLib.getDocument({ data, useSystemFonts: true });
+    const pdfDoc = await loadingTask.promise;
+
+    for (let pageNum = 1; pageNum <= Math.min(pdfDoc.numPages, 5); pageNum++) {
+      const page = await pdfDoc.getPage(pageNum);
+      const viewport = page.getViewport({ scale: 2.0 });
+
+      let canvas: any;
+      if (typeof document !== 'undefined') {
+        canvas = document.createElement('canvas');
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+      } else {
+        const canvasPkg = '@napi-rs/canvas';
+        const { createCanvas } = await import(/* @vite-ignore */ canvasPkg);
+        canvas = createCanvas(Math.floor(viewport.width), Math.floor(viewport.height));
+      }
+
+      const context = canvas.getContext('2d');
+      if (context) {
+        if ('fillStyle' in context) {
+          context.fillStyle = 'white';
+          context.fillRect(0, 0, viewport.width, viewport.height);
+        }
+        await page.render({ canvasContext: context as any, viewport }).promise;
+
+        let imageBytes: Uint8Array;
+        if (typeof canvas.toBuffer === 'function') {
+          imageBytes = new Uint8Array(canvas.toBuffer('image/png'));
+        } else if (typeof canvas.toDataURL === 'function') {
+          const dataUrl = canvas.toDataURL('image/png');
+          const base64 = dataUrl.split(',')[1];
+          const binaryStr = atob(base64);
+          imageBytes = new Uint8Array(binaryStr.length);
+          for (let i = 0; i < binaryStr.length; i++) {
+            imageBytes[i] = binaryStr.charCodeAt(i);
+          }
+        } else {
+          continue;
+        }
+
+        if (imageBytes && imageBytes.length > 0) {
+          images.push(imageBytes);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('PDF page rasterization failed:', err);
+  }
+  return images;
+}
+
 /**
  * Primary extraction pipeline for uploaded PDF or text file.
+ * Handles text-native PDFs via stream parsing and scanned/image PDFs via Tesseract OCR fallback.
  */
 export async function extractDocumentText(
   file: File,
@@ -107,7 +272,7 @@ export async function extractDocumentText(
     onProgress?.(50, 'Reading text document...');
     const text = await file.text();
     onProgress?.(100, 'Text extraction complete');
-    
+
     if (!text.trim()) {
       throw new Error('The uploaded text file is empty.');
     }
@@ -125,10 +290,10 @@ export async function extractDocumentText(
   // Handle PDF files
   onProgress?.(20, 'Inspecting PDF document structure...');
   const arrayBuffer = await file.arrayBuffer();
-  
-  // Method 1: Fast PDF stream text extraction
+
+  // Method 1: Fast PDF stream text extraction for text-native PDFs
   const streamText = extractTextFromPdfStream(arrayBuffer);
-  if (streamText.length >= 50) {
+  if (streamText.length >= 50 && validatePdfExtractedTextQuality(streamText)) {
     onProgress?.(100, 'PDF text extraction complete');
     return {
       filename: file.name,
@@ -140,38 +305,47 @@ export async function extractDocumentText(
     };
   }
 
-  // Method 2: OCR with Tesseract.js for scanned image PDFs
-  onProgress?.(40, 'Running Tesseract OCR on PDF document...');
+  // Method 2: OCR Fallback for scanned / image-only PDFs
+  onProgress?.(40, 'Text stream unavailable. Rasterizing PDF pages for Tesseract OCR...');
   try {
-    const worker = await Promise.race([
-      createWorker('eng'),
-      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Tesseract OCR engine initialization timed out')), 1500))
-    ]);
-    onProgress?.(60, 'Processing PDF pages with Tesseract OCR...');
-    const ret = await worker.recognize(file);
-    await worker.terminate();
-
-    onProgress?.(100, 'OCR extraction complete');
-    const ocrText = ret.data.text.trim();
-
-    if (!ocrText) {
-      throw new Error('Could not extract legible text from this PDF file.');
+    let rasterImages = extractJpegImagesFromPdf(arrayBuffer);
+    if (rasterImages.length === 0) {
+      rasterImages = await renderPdfPagesToRasterImages(arrayBuffer);
     }
 
-    const lines = ret.data.blocks
-      ? ret.data.blocks.flatMap(b => b.paragraphs.flatMap(p => p.lines))
-      : ('lines' in ret.data && Array.isArray((ret.data as { lines?: unknown[] }).lines) ? (ret.data as { lines: unknown[] }).lines : []);
-    const lineCount = lines.length;
+    let ocrText = '';
+    let pageEstimate = 1;
 
-    return {
-      filename: file.name,
-      fileSizeFormatted: formatFileSize(file.size),
-      fileSizeBytes: file.size,
-      extractedText: ocrText,
-      pageCountEstimate: Math.max(1, lineCount ? Math.ceil(lineCount / 40) : 1),
-      extractionMethod: 'ocr_tesseract'
-    };
-  } catch (err: any) {
-    throw new Error(err?.message || 'Failed to extract text from PDF file.');
+    if (rasterImages.length > 0) {
+      onProgress?.(60, `Extracted ${rasterImages.length} raster image payload(s). Running Tesseract OCR...`);
+      const ocrResults = await Promise.all(
+        rasterImages.slice(0, 5).map(imgBytes => {
+          const isJpeg = imgBytes[0] === 0xFF && imgBytes[1] === 0xD8;
+          const mimeType = isJpeg ? 'image/jpeg' : 'image/png';
+          return ocrService.extractText(new Blob([imgBytes], { type: mimeType }));
+        })
+      );
+      ocrText = ocrResults.map(r => r.text).join('\n\n').trim();
+      pageEstimate = rasterImages.length;
+    }
+
+    if (ocrText && ocrText.length >= 10) {
+      onProgress?.(100, 'OCR text extraction complete');
+      return {
+        filename: file.name,
+        fileSizeFormatted: formatFileSize(file.size),
+        fileSizeBytes: file.size,
+        extractedText: ocrText,
+        pageCountEstimate: pageEstimate,
+        extractionMethod: 'ocr_tesseract'
+      };
+    }
+  } catch (ocrErr: any) {
+    console.warn('OCR extraction fallback failed:', ocrErr);
   }
+
+  // Honest failure boundary if neither stream nor OCR yielded legible text
+  throw new Error('Text extraction unavailable. PDF contains no legible text or OCR failed.');
 }
+
+
