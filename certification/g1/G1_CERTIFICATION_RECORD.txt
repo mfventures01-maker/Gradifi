@@ -1,0 +1,53 @@
+﻿# G1 OCR CERTIFICATION RECORD
+# Certification ID: G1-CERT-OCR-2026-09-22
+# Classification: G1 CERTIFIED PASS (RUNTIME)
+# Status: FROZEN
+# Commit: 24ac365 (clean-deploy)
+# Timestamp: 2026-09-22T14:29:40Z
+# Environment: Windows PowerShell, Node v24.18.1, npm 11.16.0, Vitest 5.0.1
+
+[FIXTURE]
+Path: tests/fixtures/ingestion/scanned_page_001.pdf
+SHA256: 62F34DCAC71EDD6563D95F3CFD6EF7D1301A227D6F4A1FAC752255B450D688A2
+Structure: FlateDecode image, no text operators, no JPEG markers
+KnownPhrase: HOEOS_KNOWN_PHRASE_7F3A9C
+NegativeProof: phrase absent from raw PDF bytes
+
+[TEST]
+Path: tests/g1_ocr_scanned.test.ts
+Assertions: success=true, extractionMethod=ocr_tesseract, ocrUsed=true, ocrStatus=USED, phrase present
+Timeout: 120000 ms
+
+[PRODUCTION]
+src/utils/pdfExtractor.ts
+src/services/verify/ingestionAdapters/pdfAdapter.ts
+src/services/ocrService.ts
+src/services/verify/universalIngestionService.ts
+
+[COMMAND]
+Set-Location C:\Projects\Gradifi
+npx vitest run tests/g1_ocr_scanned.test.ts --reporter=verbose
+
+[RESULT]
+SUCCESS: true
+EXTRACTION_METHOD: ocr_tesseract
+OCR_USED: true
+OCR_STATUS: USED
+TEXT_LENGTH: 25
+TEXT_JSON: "HOEOS_KNOWN_PHRASE_7F3A9C"
+NORMALIZED: "HOEOS KNOWN PHRASE 7F3A9C"
+PHRASE_PRESENT: true
+
+Test Files  1 passed (1)
+Tests  1 passed (1)
+Duration  6.52s
+
+[CLASSIFICATION]
+G1 CERTIFIED PASS (RUNTIME)
+
+[DEFECTS_RESOLVED]
+D1 stream-extractor metadata false positive - FIXED
+D2 test pooled ArrayBuffer - FIXED
+D3 fixture placeholder image - FIXED via base64 data URI
+D4 JPEG-only image extractor - SUPERSEDED by PDF.js rasterization
+D5 OCR gate 3-word minimum - FIXED to 1-word minimum
