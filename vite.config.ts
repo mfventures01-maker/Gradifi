@@ -7,6 +7,12 @@ import {verifyServerPlugin} from './src/services/verify/server/verifyServerPlugi
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss(), verifyServerPlugin()],
+    worker: {
+      format: 'es',
+    },
+    optimizeDeps: {
+      include: ['pdfjs-dist'],
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

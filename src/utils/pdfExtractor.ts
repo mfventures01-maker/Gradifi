@@ -192,6 +192,13 @@ export function extractJpegImagesFromPdf(arrayBuffer: ArrayBuffer): Uint8Array[]
 
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+    import.meta.url
+  ).toString();
+}
+
 /**
  * Renders PDF pages to PNG raster image payloads (image/png) for OCR processing.
  * Works in both browser environment (HTMLCanvasElement) and Node.js environment (@napi-rs/canvas).
