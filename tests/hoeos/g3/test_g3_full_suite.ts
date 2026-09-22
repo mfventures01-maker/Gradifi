@@ -309,7 +309,7 @@ export async function runG3FullSuite() {
     fineGrainedStatuses: {},
     matrix: [],
     processingTimeMs: 120,
-    timestamp: new Date().toISOString(),
+    timestamp: '2026-01-01T00:00:00.000Z',
     canonicalDocument: canonicalDoc
   };
 
