@@ -1,0 +1,74 @@
+﻿# G1 STREAM EXTRACTOR — INDEPENDENT VERIFICATION
+# Verification ID: G1-STREAM-INDEP-2026-09-23
+# Verifier: second session, fresh clone, no prior state
+# Classification: RUNTIME PASS (independently reproduced)
+
+[CLONE]
+Path:      C:\tmp\gradifi-stream-verify
+Branch:    clean-deploy
+Commit:    4257c8c7b5eccebbde7f9b1159346bae28aacf80
+Packages:  207 via npm ci (matches original session)
+
+[BUILD]
+Modules transformed:  1928 (matches original session)
+Worker asset:         pdf.worker.min-BmVo14Nb.mjs
+Worker size:          1,317,034 bytes
+Worker hash suffix:   BmVo14Nb (content-addressed — matches certified build)
+
+[NODE TESTS]
+g1_epub_ocr:          PASS, phrase HOEOS_KNOWN_PHRASE_7F3A9C recovered
+demoWorkflow3Runs:    3/3 PASS
+                      documentHash 186f390eb1d32fb4 on all three runs
+                      (matches original session value)
+
+[LOCAL BROWSER — vite preview on port 4174]
+URL:                  http://localhost:4174/verify
+Uploaded file:        M.ENG Project (SEFAES) (1).pdf
+Console observation:  [BROWSER_STREAM_EXTRACTOR_RESULT]
+                      combined.length: 41524
+                      isValid: true
+                      preview: "i  COVER PAGE DEVELOPMENT OF A
+                      SENTIMENT AND EMOTION FREE ASSESSMENT AND
+                      EVALUATION SYSTEM (SEFAES) BY ABUGEWA BRIAN
+                      ERUTEI PG/ENG/0601137 SUBMITTED TO DEPARTMENT
+                      OF COMPUTER ENGINEERING FACULTY OF EN..."
+File card:            Method: pdf_stream_extractor
+Status badge:         EXTRACTED
+Canonical document:   PROVENANCE: NORMALIZED
+                      Title and abstract parsed
+
+[LOCAL BROWSER — vite dev on port 5174]
+URL:                  http://localhost:5174/verify
+API route statuses:
+  POST /api/verify/core         200 OK
+  POST /api/verify/googlebooks  200 OK
+  POST /api/verify/nemotron     200 OK
+  api.openalex.org (direct)     429 Too Many Requests
+  api.crossref.org (direct)     200 OK
+  POST /api/verify/persist      500 (Supabase configuration unavailable)
+
+[ACCEPTANCE CRITERION — BEFORE/AFTER PAIR]
+Before (original session, production):
+  SEFAES PDF -> Method: ocr_tesseract
+After (independent reproduction, local preview and vite dev):
+  SEFAES PDF -> Method: pdf_stream_extractor
+
+[VERDICT]
+G1_BROWSER_STREAM_EXTRACTOR_RETURNS_EMPTY
+  = RESOLVED, INDEPENDENTLY REPRODUCED
+
+Classification: RUNTIME PASS (independently verified)
+Not claimed:    CERTIFICATION (requires a second
+                independent actor on a separate machine)
+
+[RELATED FINDINGS — NOT PART OF THIS VERIFICATION]
+PERSISTENCE_REQUIRES_SUPABASE
+  /api/verify/persist returns 500 because the environment
+  lacks VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
+  Handler at persistenceServerHandler.ts:21-29 throws
+  "Supabase server configuration unavailable" by design.
+
+DEPLOYED_API_ROUTES_MISSING
+  Vercel serves a static dist/ build. verifyServerPlugin
+  middleware does not run there. /api/verify/* returns 404
+  on the deployed URL.
