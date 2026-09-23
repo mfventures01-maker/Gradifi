@@ -39,6 +39,7 @@ import { toPublicVerificationResult, PublicVerificationResult } from '../../serv
 import { ingestDocument } from '../../services/verify/universalIngestionService';
 import { resolveMatchedEvidenceSpans } from '../../services/verify/matchedTextHighlightingService';
 import { CanonicalDocumentViewer } from '../../components/verify/CanonicalDocumentViewer';
+import { CorrectionPanel } from '../../components/verify/CorrectionPanel';
 import { SourceDetailPanel } from '../../components/verify/SourceDetailPanel';
 import { getStatusStyle } from '../../services/verify/statusColorMapping';
 import { extractDocumentText, ExtractedDocument, validateDocumentFile, formatFileSize } from '../../utils/pdfExtractor';
@@ -713,6 +714,15 @@ Distributed machine learning frameworks require mathematical determinism to guar
                     }}
                   />
                 </div>
+
+                {/* Correction Guidance Panel */}
+                <CorrectionPanel
+                  findings={result.similarityAnalysis?.findings ?? []}
+                  matches={result.verifiedSources}
+                  onActionClick={(id, action) => {
+                    // optional: wire to existing scroll behaviour
+                  }}
+                />
 
                 {/* Source Attribution & Citation Hub (P5) */}
                 {publicResult && (
