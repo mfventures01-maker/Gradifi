@@ -1,0 +1,119 @@
+[VIEWER DIAGNOSTIC] {
+  "documentTextLength": 1083,
+  "inputFindingsCount": 2,
+  "inputFindingsSample": [
+    {
+      "id": "8492d77b7f9286b9",
+      "docId": "doi:10.14722/ndss.2024.23233",
+      "segment": "CrowdGuard: Federated Backdoor Detection"
+    },
+    {
+      "id": "5277569dd356523d",
+      "docId": "doi:10.5220/0012150700003555",
+      "segment": "Δ SFL: (Decoupled Server Federated Learn"
+    }
+  ],
+  "inputMatchesCount": 19,
+  "inputMatchesSample": [
+    "doi:10.14722/ndss.2024.23233",
+    "doi:10.5220/0012150700003555",
+    "https://openalex.org/W4387587706",
+    "https://openalex.org/W3212941463",
+    "https://openalex.org/W4392487628",
+    "https://openalex.org/W4318484030"
+  ],
+  "verifiedCount": 2,
+  "segmentsCount": 3,
+  "highlightedCount": 1,
+  "firstHighlight": "in Federated Learning"
+}
+
+[VIEWER DIAGNOSTIC] {
+  "documentTextLength": 1083,
+  "inputFindingsCount": 2,
+  "inputFindingsSample": [
+    {
+      "id": "8492d77b7f9286b9",
+      "docId": "doi:10.14722/ndss.2024.23233",
+      "segment": "CrowdGuard: Federated Backdoor Detection"
+    },
+    {
+      "id": "5277569dd356523d",
+      "docId": "doi:10.5220/0012150700003555",
+      "segment": "Δ SFL: (Decoupled Server Federated Learn"
+    }
+  ],
+  "inputMatchesCount": 19,
+  "inputMatchesSample": [
+    "doi:10.14722/ndss.2024.23233",
+    "doi:10.5220/0012150700003555",
+    "https://openalex.org/W4387587706",
+    "https://openalex.org/W3212941463",
+    "https://openalex.org/W4392487628",
+    "https://openalex.org/W4318484030"
+  ],
+  "verifiedCount": 2,
+  "segmentsCount": 3,
+  "highlightedCount": 1,
+  "firstHighlight": "in Federated Learning"
+}
+
+[VIEWER DIAGNOSTIC] {
+  "documentTextLength": 1083,
+  "inputFindingsCount": 2,
+  "inputFindingsSample": [
+    {
+      "id": "8492d77b7f9286b9",
+      "docId": "doi:10.14722/ndss.2024.23233",
+      "segment": "CrowdGuard: Federated Backdoor Detection"
+    },
+    {
+      "id": "5277569dd356523d",
+      "docId": "doi:10.5220/0012150700003555",
+      "segment": "Δ SFL: (Decoupled Server Federated Learn"
+    }
+  ],
+  "inputMatchesCount": 19,
+  "inputMatchesSample": [
+    "doi:10.14722/ndss.2024.23233",
+    "doi:10.5220/0012150700003555",
+    "https://openalex.org/W4387587706",
+    "https://openalex.org/W3212941463",
+    "https://openalex.org/W4392487628",
+    "https://openalex.org/W4318484030"
+  ],
+  "verifiedCount": 2,
+  "segmentsCount": 3,
+  "highlightedCount": 1,
+  "firstHighlight": "in Federated Learning"
+}
+
+[VIEWER DIAGNOSTIC] {
+  "documentTextLength": 1083,
+  "inputFindingsCount": 2,
+  "inputFindingsSample": [
+    {
+      "id": "8492d77b7f9286b9",
+      "docId": "doi:10.14722/ndss.2024.23233",
+      "segment": "CrowdGuard: Federated Backdoor Detection"
+    },
+    {
+      "id": "5277569dd356523d",
+      "docId": "doi:10.5220/0012150700003555",
+      "segment": "Δ SFL: (Decoupled Server Federated Learn"
+    }
+  ],
+  "inputMatchesCount": 19,
+  "inputMatchesSample": [
+    "doi:10.14722/ndss.2024.23233",
+    "doi:10.5220/0012150700003555",
+    "https://openalex.org/W4387587706",
+    "https://openalex.org/W3212941463",
+    "https://openalex.org/W4392487628",
+    "https://openalex.org/W4318484030"
+  ],
+  "verifiedCount": 2,
+  "segmentsCount": 3,
+  "highlightedCount": 1,
+  "firstHighlight": "in Federated Learning"
+}
