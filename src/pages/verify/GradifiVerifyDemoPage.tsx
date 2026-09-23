@@ -260,9 +260,26 @@ Distributed machine learning frameworks require mathematical determinism to guar
     });
   };
 
-  // Find Google Books provenance if available
-  const googleBooksMatch = result?.verifiedSources.find(s => s.provenance.provider === 'googlebooks');
-  const googleBooksProvenance: ProviderProvenance | undefined = googleBooksMatch?.provenance;
+  // Derive Google Books matches for evidence panel and hub consistency
+  const googleBooksMatches = (result?.verifiedSources || []).filter(
+    m => m.provenance?.provider === 'googlebooks'
+  );
+  const googleBooksProvenance: ProviderProvenance | undefined = googleBooksMatches[0]?.provenance;
+
+  // Derive Gemma status once for AI panel and matrix consistency
+  const gemmaStatus: 'RUNTIME_AVAILABLE' | 'RUNTIME_UNAVAILABLE' =
+    result?.localAiStatus === 'RUNTIME_AVAILABLE'
+      ? 'RUNTIME_AVAILABLE'
+      : 'RUNTIME_UNAVAILABLE';
+
+  // AI Federation verification state
+  const anyAiVerified = Boolean(
+    result && (
+      result.geminiStatus === 'INFERENCE_VERIFIED' ||
+      result.nemotronStatus === 'INFERENCE_VERIFIED' ||
+      (result as any).gemmaStatus === 'INFERENCE_VERIFIED'
+    )
+  );
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-6 md:p-8 selection:bg-blue-600 selection:text-white">
@@ -526,91 +543,99 @@ Distributed machine learning frameworks require mathematical determinism to guar
                       <BookOpen className="w-5 h-5 text-amber-400" />
                       <h2 className="text-base font-bold text-white">3. Google Books Evidence</h2>
                     </div>
-                    {(() => {
-                      const gbStatus = result.fineGrainedStatuses['googlebooks'] || 'NOT_TESTED';
-                      const style = getStatusStyle(gbStatus);
-                      return (
-                        <span className={`text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5 ${style.badgeBgClass} ${style.badgeTextClass}`}>
-                          <span className={`w-2 h-2 rounded-full ${style.dotBgClass}`} />
-                          {style.label}
-                        </span>
-                      );
-                    })()}
+                    {googleBooksMatches.length > 0 ? (
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5 bg-emerald-500/10 border-emerald-500/30 text-emerald-400">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                        VERIFIED ({googleBooksMatches.length})
+                      </span>
+                    ) : (
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5 bg-amber-500/10 border-amber-500/30 text-amber-400">
+                        <span className="w-2 h-2 rounded-full bg-amber-400" />
+                        EMPTY RESULT
+                      </span>
+                    )}
                   </div>
 
-                  {googleBooksProvenance ? (
+                  {googleBooksMatches.length > 0 ? (
                     <div className="space-y-4 text-xs">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-                        <div>
-                          <span className="text-slate-500 font-bold uppercase text-[10px] block">Title</span>
-                          <span className="font-bold text-white">{googleBooksProvenance.title}</span>
-                        </div>
-                        <div>
-                          <span className="text-slate-500 font-bold uppercase text-[10px] block">Author(s)</span>
-                          <span className="text-slate-200">{googleBooksProvenance.authors.join(', ')}</span>
-                        </div>
-                        <div>
-                          <span className="text-slate-500 font-bold uppercase text-[10px] block">Publisher / Published Date</span>
-                          <span className="text-slate-300">{googleBooksProvenance.publisher || 'Google Books Archive'} ({googleBooksProvenance.publishedYear || 'N/A'})</span>
-                        </div>
-                        <div>
-                          <span className="text-slate-500 font-bold uppercase text-[10px] block">ISBN / Volume ID</span>
-                          <span className="font-mono text-blue-400">{googleBooksProvenance.isbn || googleBooksProvenance.providerRecordId}</span>
-                        </div>
-                      </div>
+                      {googleBooksMatches.map((match, idx) => {
+                        const prov = match.provenance;
+                        return (
+                          <div key={match.sourceId || idx} className="space-y-3 pb-3 border-b border-slate-800/60 last:border-0 last:pb-0">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+                              <div>
+                                <span className="text-slate-500 font-bold uppercase text-[10px] block">Title</span>
+                                <span className="font-bold text-white">{prov.title}</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500 font-bold uppercase text-[10px] block">Author(s)</span>
+                                <span className="text-slate-200">{prov.authors?.join(', ') || 'N/A'}</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500 font-bold uppercase text-[10px] block">Publisher / Published Date</span>
+                                <span className="text-slate-300">{prov.publisher || 'Google Books Archive'} ({prov.publishedYear || 'N/A'})</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500 font-bold uppercase text-[10px] block">ISBN / Volume ID</span>
+                                <span className="font-mono text-blue-400">{prov.isbn || prov.providerRecordId}</span>
+                              </div>
+                            </div>
 
-                      {/* Truthful AccessInfo Display */}
-                      {googleBooksProvenance.accessInfo && (
-                        <div className="bg-slate-950/40 p-3.5 rounded-xl border border-slate-800/60 space-y-2">
-                          <span className="text-slate-400 font-bold uppercase text-[10px] block">Truthful Access & PDF Availability (accessInfo)</span>
-                          <div className="flex flex-wrap gap-2 text-[11px]">
-                            <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
-                              Viewability: {googleBooksProvenance.accessInfo.viewability || 'UNKNOWN'}
-                            </span>
-                            <span className={`px-2 py-0.5 rounded-md border ${
-                              googleBooksProvenance.accessInfo.pdfAvailable ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-800 text-slate-400 border-slate-700'
-                            }`}>
-                              PDF Available: {googleBooksProvenance.accessInfo.pdfAvailable ? 'YES' : 'NO'}
-                            </span>
-                            <span className={`px-2 py-0.5 rounded-md border ${
-                              googleBooksProvenance.accessInfo.epubAvailable ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-800 text-slate-400 border-slate-700'
-                            }`}>
-                              EPUB Available: {googleBooksProvenance.accessInfo.epubAvailable ? 'YES' : 'NO'}
-                            </span>
-                          </div>
+                            {/* Truthful AccessInfo Display */}
+                            {prov.accessInfo && (
+                              <div className="bg-slate-950/40 p-3.5 rounded-xl border border-slate-800/60 space-y-2">
+                                <span className="text-slate-400 font-bold uppercase text-[10px] block">Truthful Access & PDF Availability (accessInfo)</span>
+                                <div className="flex flex-wrap gap-2 text-[11px]">
+                                  <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                                    Viewability: {prov.accessInfo.viewability || 'UNKNOWN'}
+                                  </span>
+                                  <span className={`px-2 py-0.5 rounded-md border ${
+                                    prov.accessInfo.pdfAvailable ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-800 text-slate-400 border-slate-700'
+                                  }`}>
+                                    PDF Available: {prov.accessInfo.pdfAvailable ? 'YES' : 'NO'}
+                                  </span>
+                                  <span className={`px-2 py-0.5 rounded-md border ${
+                                    prov.accessInfo.epubAvailable ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-800 text-slate-400 border-slate-700'
+                                  }`}>
+                                    EPUB Available: {prov.accessInfo.epubAvailable ? 'YES' : 'NO'}
+                                  </span>
+                                </div>
 
-                          {/* Only show download link if accessInfo explicitly permits */}
-                          {googleBooksProvenance.accessInfo.pdfAvailable && googleBooksProvenance.accessInfo.pdfDownloadUrl && (
-                            <div className="mt-2 pt-2 border-t border-slate-800">
+                                {/* Only show download link if accessInfo explicitly permits */}
+                                {prov.accessInfo.pdfAvailable && prov.accessInfo.pdfDownloadUrl && (
+                                  <div className="mt-2 pt-2 border-t border-slate-800">
+                                    <a
+                                      href={prov.accessInfo.pdfDownloadUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1"
+                                    >
+                                      <Download className="w-3.5 h-3.5" /> Download Google Books PDF Edition
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            <div className="flex items-center justify-between text-[11px] pt-1">
+                              <span className="text-slate-500">Google Books Record ID: <code className="text-slate-300">{prov.providerRecordId}</code></span>
                               <a
-                                href={googleBooksProvenance.accessInfo.pdfDownloadUrl}
+                                href={prov.sourceUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1"
+                                className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1"
                               >
-                                <Download className="w-3.5 h-3.5" /> Download Google Books PDF Edition
+                                Google Books Source <ExternalLink className="w-3 h-3" />
                               </a>
                             </div>
-                          )}
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between text-[11px] pt-1">
-                        <span className="text-slate-500">Google Books Record ID: <code className="text-slate-300">{googleBooksProvenance.providerRecordId}</code></span>
-                        <a
-                          href={googleBooksProvenance.sourceUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1"
-                        >
-                          Google Books Source <ExternalLink className="w-3 h-3" />
-                        </a>
-                      </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-400 flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 shrink-0" />
-                      Google Books returned status: <strong>{result.fineGrainedStatuses['googlebooks'] || 'EMPTY_RESULT'}</strong> (No volume matches found for this specific query segment).
+                      Google Books returned status: <strong>EMPTY RESULT</strong> (No volume matches found).
                     </div>
                   )}
                 </div>
@@ -765,9 +790,15 @@ Distributed machine learning frameworks require mathematical determinism to guar
                         <div className="font-bold text-purple-300 text-[11px] flex items-center gap-1.5">
                           <Sparkles className="w-3.5 h-3.5 text-purple-400" /> AI Findings Interpretation
                         </div>
-                        <p className="text-slate-300 text-[11px] leading-relaxed">
-                          {result.findings?.[0]?.explanation || 'Retrieved evidence aligns consistently with standard academic citations.'}
-                        </p>
+                        {anyAiVerified ? (
+                          <p className="text-slate-300 text-[11px] leading-relaxed">
+                            {result.findings?.[0]?.explanation || 'AI evidence analysis verified.'}
+                          </p>
+                        ) : (
+                          <p className="text-slate-500 text-[11px] leading-relaxed">
+                            AI Federation unavailable. No AI-derived signals were produced. Deterministic similarity findings above remain authoritative.
+                          </p>
+                        )}
                       </div>
 
                       <div className="space-y-1.5">
@@ -785,8 +816,8 @@ Distributed machine learning frameworks require mathematical determinism to guar
                         </div>
                         <div className="flex justify-between text-[11px]">
                           <span className="text-slate-400">Local Gemma Engine:</span>
-                          <span className={`font-bold ${result.localAiStatus === 'RUNTIME_AVAILABLE' ? 'text-emerald-400' : 'text-amber-400'}`}>
-                            {result.localAiStatus}
+                          <span className={`font-bold ${gemmaStatus === 'RUNTIME_AVAILABLE' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                            {gemmaStatus}
                           </span>
                         </div>
                       </div>
@@ -818,7 +849,8 @@ Distributed machine learning frameworks require mathematical determinism to guar
                       </thead>
                       <tbody className="divide-y divide-slate-800/60 font-medium">
                         {result.matrix.map(entry => {
-                          const style = getStatusStyle(entry.overallStatus);
+                          const overallStatus = entry.provider === 'gemma' ? gemmaStatus : entry.overallStatus;
+                          const style = getStatusStyle(overallStatus);
                           return (
                             <tr key={entry.provider} className="hover:bg-slate-800/30 transition-colors">
                               <td className="py-2.5 px-3 font-bold text-slate-200 uppercase">{entry.provider}</td>

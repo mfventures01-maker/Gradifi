@@ -1,0 +1,16 @@
+REPAIR 1 — AI PANEL FALSE CLAIM
+  anyAiVerified false path:        PASS
+  anyAiVerified true path:         PASS
+  positive-claim string absent:    PASS
+
+REPAIR 2 — GEMMA STATE
+  AI panel Gemma status:           RUNTIME_AVAILABLE
+  Matrix Gemma status:             RUNTIME_AVAILABLE
+  both identical:                  PASS
+  single derivation in source:     PASS
+
+REPAIR 3 — GOOGLE BOOKS PANEL
+  hub count:                       5
+  panel count:                     5
+  counts identical:                PASS
+  panel not keyed on query:        PASS
