@@ -17,3 +17,6 @@ FEDERATION_RUN_REPORT.*
 tracked-at-head.txt
 commit-plan-verification.txt
 supabase/.temp/
+
+eng.traineddata
+*.traineddata
