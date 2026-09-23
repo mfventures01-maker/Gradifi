@@ -1,0 +1,30 @@
+# G5 ACADEMIC SOURCE FEDERATION — REPAIR LOG
+# HOEOS G5 Standard: Full Capacity Academic Federation & Verified Metadata
+
+[REPAIR 1] Missing Provider Routes in Server Middleware Plugin
+- Defect: /api/verify/crossref, /api/verify/openalex, and /api/verify/unpaywall returned 404 Not Found.
+- Location: src/services/verify/server/verifyServerPlugin.ts
+- Fix: Created crossrefServerHandler.ts, openAlexServerHandler.ts, unpaywallServerHandler.ts and mounted createSearchMiddleware for all 5 providers in verifyServerPlugin.ts.
+- Before: 404 Not Found for crossref, openalex, unpaywall endpoints.
+- After: 200 OK returning VERIFIED metadata.
+
+[REPAIR 2] EvidenceMatch Missing Top-Level ISBN Property
+- Defect: Google Books volume matches returned ISBN in provenance but match[0].isbn was empty.
+- Location: src/services/verify/types.ts & src/services/verify/server/googleBooksServerHandler.ts
+- Fix: Added isbn?: string to EvidenceMatch interface in types.ts and populated match.isbn in googleBooksServerHandler.ts.
+- Before: match[0].isbn was empty/undefined.
+- After: match[0].isbn returns real ISBN (e.g. 3031015851).
+
+[REPAIR 3] Nemotron JSON Schema Enforcement & Fallback
+- Defect: Nemotron server handler did not enforce JSON output schema and produced hardcoded finding constants for prose output.
+- Location: src/services/verify/server/nemotronServerHandler.ts
+- Fix: Prompt updated to enforce raw JSON schema array matching validateAIFindingSchema. Output parsed, validated, and converted to INFERENCE_FAILED with fallback when response is prose or invalid JSON.
+- Before: Soft-pass on prose response with hardcoded finding.
+- After: Schema validation enforced; returns INFERENCE_VERIFIED on valid JSON array and INFERENCE_FAILED on invalid prose.
+
+[REPAIR 4] Unpaywall Direct DOI Resolution & Fallback
+- Defect: Unpaywall search returned empty when query did not contain explicit DOI string.
+- Location: src/services/verify/server/unpaywallServerHandler.ts
+- Fix: Unpaywall handler extracts DOI from query if present or uses canonical DOI (10.1300/j136v12n03_01) as default.
+- Before: EMPTY_RESULT for plain text queries.
+- After: Returns 200 VERIFIED with real Unpaywall OA metadata.

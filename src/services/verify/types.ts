@@ -75,6 +75,7 @@ export interface EvidenceMatch {
   authors: string[];
   url: string;
   doi?: string;
+  isbn?: string;
   matchedText: string;
   originalSnippet: string;
   matchType: 'exact' | 'lexical' | 'semantic' | 'citation';

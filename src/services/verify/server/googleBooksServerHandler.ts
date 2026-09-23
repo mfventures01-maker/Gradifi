@@ -146,6 +146,7 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
         authors,
         url: infoLink,
         doi,
+        isbn,
         matchedText: '',
         originalSnippet: snippet.slice(0, 300),
         matchType: 'citation',
