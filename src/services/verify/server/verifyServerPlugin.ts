@@ -87,9 +87,26 @@ export function verifyServerPlugin(): Plugin {
             res.end(JSON.stringify(result));
           } catch (err: any) {
             res.setHeader('Content-Type', 'application/json');
+
+            const errName = err?.name || err?.constructor?.name || '';
+            const errMessage = String(err?.message || '');
+
+            if (
+              errName === 'VerificationConflictError' ||
+              errMessage.toLowerCase().includes('conflicting verification record')
+            ) {
+              res.statusCode = 200;
+              res.end(JSON.stringify({
+                status: 'ALREADY_PERSISTED',
+                verificationId: err?.verificationId || null,
+                message: errMessage || 'Verification record already exists'
+              }));
+              return;
+            }
+
             res.statusCode = 500;
             res.end(JSON.stringify({
-              error: err?.message || 'Failed to persist verification record'
+              error: errMessage || 'Failed to persist verification record'
             }));
           }
         });
