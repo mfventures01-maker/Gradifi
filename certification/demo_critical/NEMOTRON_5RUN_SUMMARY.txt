@@ -1,0 +1,5 @@
+RUN_1: HTTP 200 | status=INFERENCE_FAILED | errorMessage=Nemotron JSON contained no valid findings matching schema
+RUN_2: HTTP 200 | status=INFERENCE_FAILED | errorMessage=Nemotron JSON contained no valid findings matching schema
+RUN_3: HTTP 200 | status=INFERENCE_FAILED | errorMessage=Nemotron JSON contained no valid findings matching schema
+RUN_4: HTTP 200 | status=INFERENCE_FAILED | errorMessage=NVIDIA API returned HTTP 503: Service Unavailable
+RUN_5: HTTP 200 | status=INFERENCE_FAILED | errorMessage=Nemotron JSON contained no valid findings matching schema

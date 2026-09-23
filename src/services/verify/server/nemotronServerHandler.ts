@@ -18,6 +18,38 @@ export interface NemotronServerResponse {
   errorMessage?: string;
 }
 
+const RETRIABLE_STATUSES = new Set([429, 502, 503, 504]);
+const MAX_ATTEMPTS = 3;
+const BACKOFF_MS = [1000, 2000, 4000];
+
+export async function callNvidiaWithRetry(
+  url: string,
+  options: RequestInit,
+  maxAttempts = 3
+): Promise<Response> {
+  let lastError: unknown = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const resp = await fetch(url, {
+        ...options,
+        signal: AbortSignal.timeout(45000)
+      });
+      if (!RETRIABLE_STATUSES.has(resp.status)) {
+        return resp;
+      }
+      lastError = new Error(`HTTP ${resp.status}`);
+    } catch (err) {
+      lastError = err;
+    }
+    if (attempt < maxAttempts) {
+      await new Promise(r =>
+        setTimeout(r, BACKOFF_MS[attempt - 1] ?? 1000)
+      );
+    }
+  }
+  throw lastError ?? new Error('NVIDIA request failed');
+}
+
 export async function handleNemotronServerReasoning(payload: NemotronServerRequestPayload): Promise<NemotronServerResponse> {
   const documentText = typeof payload?.documentText === 'string' ? payload.documentText : '';
   const matches = Array.isArray(payload?.matches) ? payload.matches : [];
@@ -60,19 +92,33 @@ CRITICAL: You MUST respond ONLY with a raw JSON array matching this exact schema
 ]
 Do NOT wrap in markdown backticks. Do NOT include any intro or outro text. Output ONLY valid JSON.`;
 
-    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${nvidiaKey}`
-      },
-      body: JSON.stringify({
-        model: 'nvidia/nemotron-3-super-120b-a12b',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 500,
-        temperature: 0.2
-      })
-    });
+    let response: Response;
+    try {
+      response = await callNvidiaWithRetry(
+        'https://integrate.api.nvidia.com/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${nvidiaKey}`
+          },
+          body: JSON.stringify({
+            model: 'nvidia/nemotron-3-super-120b-a12b',
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 500,
+            temperature: 0.2
+          })
+        }
+      );
+    } catch (err) {
+      return {
+        status: 'INFERENCE_FAILED',
+        findings: generateDeterministicFallbackFindings(
+          documentText, matches
+        ),
+        errorMessage: `NVIDIA API unreachable after ${MAX_ATTEMPTS} attempts`
+      };
+    }
 
     if (!response.ok) {
       const isAuthError = response.status === 401 || response.status === 403;
