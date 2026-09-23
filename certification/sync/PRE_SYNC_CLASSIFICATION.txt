@@ -1,0 +1,15 @@
+REPO: C:\Projects\Gradifi
+  HEAD:                a7b58fb21bd0142074827934caea506f6c0c2061
+  origin/clean-deploy: a7b58fb21bd0142074827934caea506f6c0c2061
+  ahead:               0
+  behind:              0
+  tracked-dirty:       yes
+  untracked-count:     21
+
+REPO: C:\tmp\gradifi-stream-verify
+  HEAD:                34a3992e0b5bf5ab7a30a9e121f9e3107a168713
+  origin/clean-deploy: 34a3992e0b5bf5ab7a30a9e121f9e3107a168713
+  ahead:               0
+  behind:              0
+  tracked-dirty:       no
+  untracked-count:     3

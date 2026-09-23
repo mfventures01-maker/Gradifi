@@ -1,0 +1,43 @@
+=== REPO: C:\Projects\Gradifi ===
+git rev-parse HEAD:
+a7b58fb21bd0142074827934caea506f6c0c2061
+git branch --show-current:
+clean-deploy
+git status --short:
+ M certification/g1_extension/G1_EXTENSION_RECORD.txt
+ M scripts/hoeos/verifyG3Certification.ps1
+?? A42R_FORENSIC_CERTIFICATION_REPORT.md
+?? FOCUSED_REPAIR_HOEOS_CERTIFICATION_REPORT.md
+?? FOUR_GATES_CERTIFICATION_REPORT.md
+?? G3_VR_001_CERTIFICATION_REPORT.md
+?? G4_FORENSIC_CERTIFICATION_REPORT.md
+?? HOEOS_G1_ENGINE_CERTIFICATION_REPORT.md
+?? HOEOS_G1_ENGINE_IMPLEMENTATION_REPORT.md
+?? certification/g1_browser_fix/stream_extractor_preview_result.png
+?? certification/g1_browser_fix/stream_extractor_prod_result.png
+?? certification/g1_browser_fix/stream_extractor_verification_log.json
+?? certification/g1_extension/G1_EXTENSION_COMPOSITE.txt
+?? e2e/four-gates-g4-browser.spec.ts
+?? scratch/
+?? tests/g1_certification.test.ts
+?? tests/g1_format_matrix.test.ts
+?? tests/g1_ocr_branch_forensic.test.ts
+?? tests/g1_ocr_complete_forensic_runtime.test.ts
+?? tests/hoeos/a4_2/
+?? tests/hoeos/four_gates/
+?? tests/hoeos/g4/
+
+git log origin/clean-deploy..HEAD --oneline:
+
+=== REPO: C:\tmp\gradifi-stream-verify ===
+git rev-parse HEAD:
+34a3992e0b5bf5ab7a30a9e121f9e3107a168713
+git branch --show-current:
+clean-deploy
+git status --short:
+?? certification/g5_7/
+?? certification/runtime/
+?? eng.traineddata
+
+git log origin/clean-deploy..HEAD --oneline:
+
