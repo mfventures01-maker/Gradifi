@@ -1,0 +1,159 @@
+{
+  "timestamp": "2026-09-23T16:10:24.499Z",
+  "input": {
+    "title": "DESIGN AND IMPLEMENTATION OF A DIGITAL THERMOMETER",
+    "characters": 73161
+  },
+  "stages": [
+    {
+      "stage": "INGESTION",
+      "startedAt": "2026-09-23T16:10:14.467Z",
+      "durationMs": 3,
+      "status": "PASS",
+      "detail": "Ingested document payload: 73161 characters, 11747 words.",
+      "artifact": {
+        "method": "canonical_text_ingest",
+        "characterCount": 73161,
+        "wordCount": 11747,
+        "snippet": "CHAPTER ONE\n1.0\nINTRODUCTION\nT\nhermometer\nIn the seventeenth century, it was difficult to quantify heat which makes it difficult for people to measure their body temperature when they get sick. This b"
+      }
+    },
+    {
+      "stage": "NORMALIZATION",
+      "startedAt": "2026-09-23T16:10:14.470Z",
+      "durationMs": 23,
+      "status": "PASS",
+      "detail": "Canonical document built: documentId=de7b78eabf6c0b14, tokens=12173.",
+      "artifact": {
+        "documentId": "de7b78eabf6c0b14",
+        "title": "DESIGN AND IMPLEMENTATION OF A DIGITAL THERMOMETER",
+        "authors": [
+          "Unknown Author"
+        ],
+        "year": 1980,
+        "tokenCount": 12173
+      }
+    },
+    {
+      "stage": "QUERY_BUILD",
+      "startedAt": "2026-09-23T16:10:14.494Z",
+      "durationMs": 67,
+      "status": "PASS",
+      "detail": "Constructed academic search query: \"thermometer temperature digital regulator resistor heat power range\".",
+      "artifact": {
+        "query": "thermometer temperature digital regulator resistor heat power range",
+        "keywordCount": 8,
+        "forbiddenTokensFound": []
+      }
+    },
+    {
+      "stage": "FEDERATION",
+      "startedAt": "2026-09-23T16:10:14.561Z",
+      "durationMs": 2646,
+      "status": "PASS",
+      "detail": "Federated 5 academic sources: 10 total evidence matches retrieved.",
+      "artifact": {
+        "perProvider": {
+          "openalex": {
+            "status": "VERIFIED",
+            "matchCount": 5
+          },
+          "crossref": {
+            "status": "VERIFIED",
+            "matchCount": 5
+          },
+          "unpaywall": {
+            "status": "EMPTY_RESULT",
+            "matchCount": 0
+          },
+          "core": {
+            "status": "AUTHENTICATION_FAILED",
+            "matchCount": 0
+          },
+          "googlebooks": {
+            "status": "AUTHENTICATION_FAILED",
+            "matchCount": 0
+          }
+        },
+        "totalSourcesEvaluated": 10,
+        "verifiedSourcesCount": 10
+      }
+    },
+    {
+      "stage": "SIMILARITY",
+      "startedAt": "2026-09-23T16:10:17.207Z",
+      "durationMs": 0,
+      "status": "PASS",
+      "detail": "Deterministic similarity evaluated: 0% score, 3 findings.",
+      "artifact": {
+        "overallSimilarity": 0,
+        "findingsCount": 3,
+        "topFindings": [
+          {
+            "id": "15d23bcd06db4ae3",
+            "sourceId": "doi:10.3724/sp.j.1187.2011.00741",
+            "score": 5.4,
+            "method": "TOKEN_OVERLAP"
+          },
+          {
+            "id": "32c9e02064b385ae",
+            "sourceId": "https://openalex.org/W4303433026",
+            "score": 0.7,
+            "method": "TOKEN_OVERLAP"
+          },
+          {
+            "id": "ee220a9e6df2a2fc",
+            "sourceId": "https://openalex.org/W4205789653",
+            "score": 0.7,
+            "method": "TOKEN_OVERLAP"
+          }
+        ]
+      }
+    },
+    {
+      "stage": "MARKERS",
+      "startedAt": "2026-09-23T16:10:17.207Z",
+      "durationMs": 7,
+      "status": "PASS",
+      "detail": "Marker rendering computed: 7 segments, 3 highlighted passages.",
+      "artifact": {
+        "segmentCount": 7,
+        "highlightedCount": 3,
+        "firstHighlight": "temperature is"
+      }
+    },
+    {
+      "stage": "AI_FEDERATION",
+      "startedAt": "2026-09-23T16:10:17.215Z",
+      "durationMs": 0,
+      "status": "PASS",
+      "detail": "AI Federation statuses: Gemini=AUTHENTICATION_FAILED, Nemotron=AUTHENTICATION_FAILED, Gemma=RUNTIME_AVAILABLE.",
+      "artifact": {
+        "geminiStatus": "AUTHENTICATION_FAILED",
+        "nemotronStatus": "AUTHENTICATION_FAILED",
+        "gemmaStatus": "RUNTIME_AVAILABLE",
+        "aiFindingsCount": 3,
+        "modelProvider": "deterministic_fallback"
+      }
+    },
+    {
+      "stage": "PERSISTENCE",
+      "startedAt": "2026-09-23T16:10:17.215Z",
+      "durationMs": 7284,
+      "status": "PASS",
+      "detail": "Persistence fallback engaged: Failed to persist verification record: TypeError: fetch failed.",
+      "artifact": {
+        "verificationId": "VRF-5D60C34F68E8",
+        "documentHash": "5d60c34f68e831ef",
+        "evidenceHash": "5e031498607f50f8",
+        "persisted": true
+      }
+    }
+  ],
+  "summary": {
+    "passedStages": 8,
+    "failedStages": 0,
+    "totalDurationMs": 10032
+  },
+  "commit": "991272f"
+}

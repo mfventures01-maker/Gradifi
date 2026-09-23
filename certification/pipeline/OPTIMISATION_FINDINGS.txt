@@ -1,0 +1,69 @@
+HOEOS PIPELINE OPTIMISATION FINDINGS AUDIT RECORD
+================================================================
+Timestamp: 2026-09-23T16:10:24.505Z
+Target: Full Pipeline (Ingestion to Persistence)
+Audit ID: HOEOS-PIPELINE-OPT-2026-09-23
+Canonical Commit: 991272f
+
+---
+STAGE: INGESTION
+SEVERITY: LOW
+OBSERVATION: Universal ingestion service extracts DOCX XML directly but does not maintain an in-memory document hash cache for repeated ingestion of the same file.
+EVIDENCE: src/services/verify/universalIngestionService.ts:60-120
+RECOMMENDATION: Cache extracted text by input buffer SHA-256 to avoid redundant decompressions during interactive re-analysis.
+OWNER: next-repair
+---
+
+---
+STAGE: QUERY_BUILD
+SEVERITY: LOW
+OBSERVATION: Query builder generates optimal 8-keyword academic search queries, successfully filtering structural section headers.
+EVIDENCE: src/services/verify/queryBuilder.ts:40-95
+RECOMMENDATION: Add optional domain-specific acronym expansion (e.g. LM35 -> precision temperature sensor) for specialized technical subfields.
+OWNER: none
+---
+
+---
+STAGE: FEDERATION
+SEVERITY: MEDIUM
+OBSERVATION: Core and Google Books providers execute with strict rate limiters and queues. Core 429/500 handlers execute retries synchronously within the provider worker loop.
+EVIDENCE: src/services/verify/federation/rateLimiter.ts:50-130
+RECOMMENDATION: Persist queue state across server plugin restarts so in-flight requests retain token budget buckets.
+OWNER: next-repair
+---
+
+---
+STAGE: SIMILARITY
+SEVERITY: LOW
+OBSERVATION: Deterministic similarity engine evaluates exact phrase and n-gram overlap in 100% pure TypeScript without external side-effects.
+EVIDENCE: src/services/verify/deterministicEngine.ts:108-200
+RECOMMENDATION: Offsets generated from candidates with journal suffix in snippets can be pre-indexed during normalization for instant exact match slicing.
+OWNER: none
+---
+
+---
+STAGE: MARKERS
+SEVERITY: LOW
+OBSERVATION: Marker rendering applies deterministic colors and tooltips in a single render pass without virtualization overhead.
+EVIDENCE: src/components/verify/highlightUtils.ts:130-220
+RECOMMENDATION: Keep single-pass render architecture for texts up to 100KB for maximum DOM simplicity and instantaneous tooltip responsiveness.
+OWNER: none
+---
+
+---
+STAGE: AI_FEDERATION
+SEVERITY: MEDIUM
+OBSERVATION: Nemotron handler now cleanly strips <think> blocks and extracts JSON arrays. When upstream router gives 502/503, deterministic fallback is safely returned.
+EVIDENCE: src/services/verify/server/nemotronServerHandler.ts:97-110
+RECOMMENDATION: Add single immediate retry on upstream HTTP 503 from NVIDIA inference router before activating deterministic fallback.
+OWNER: next-repair
+---
+
+---
+STAGE: PERSISTENCE
+SEVERITY: LOW
+OBSERVATION: Persistence layer enforces strict SHA-256 evidence integrity and handles concurrent duplicate records idempotently.
+EVIDENCE: src/services/verify/verificationPersistenceService.ts:150-210
+RECOMMENDATION: Ensure Supabase client reconnection backoff runs asynchronously in background without blocking presentation pipeline.
+OWNER: none
+---
