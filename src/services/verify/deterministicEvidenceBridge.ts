@@ -90,7 +90,7 @@ export class DeterministicEvidenceBridge {
     }
 
     // Stage 4: Content Validation (G5.7)
-    const validationResult: ContentValidationResult = contentValidationService.validateRetrievedContent(
+    const validationResult: ContentValidationResult = await contentValidationService.validateRetrievedContent(
       retrievalResult,
       { docTitle: metadataResult.title }
     );

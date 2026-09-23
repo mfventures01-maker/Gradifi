@@ -13,10 +13,10 @@ export class ContentValidationService {
    * Validates retrieved raw bytes and converts valid content into a CanonicalAnalysisDocument.
    * HOEOS G5.7 Boundary: Validation & Normalization ONLY (does not promote to verified evidence match).
    */
-  validateRetrievedContent(
+  async validateRetrievedContent(
     retrieval: SourceRetrievalResult,
     options?: { docTitle?: string }
-  ): ContentValidationResult {
+  ): Promise<ContentValidationResult> {
     const validatedAt = new Date().toISOString();
 
     if (!retrieval || retrieval.status !== 'SOURCE_RETRIEVED' || !retrieval.contentBuffer) {
@@ -55,7 +55,7 @@ export class ContentValidationService {
     // Attempt text extraction via canonical PDF extractor engine
     let extractedText = '';
     try {
-      extractedText = extractTextFromPdfStream(buffer);
+      extractedText = await extractTextFromPdfStream(buffer);
     } catch (err: any) {
       return {
         status: 'CONTENT_MALFORMED',

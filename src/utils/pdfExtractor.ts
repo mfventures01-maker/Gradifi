@@ -5,6 +5,14 @@
  */
 
 import { createWorker } from 'tesseract.js';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+    import.meta.url
+  ).toString();
+}
 
 export interface ExtractedDocument {
   filename: string;
@@ -114,8 +122,47 @@ export function validatePdfExtractedTextQuality(text: string): boolean {
 
 /**
  * Extracts raw text from PDF bytes via text stream extraction.
+ * In browser environments, uses PDF.js page.getTextContent() to parse FlateDecode streams.
+ * Falls back to regex stream extraction for Node.js or if PDF.js extraction fails.
  */
-export function extractTextFromPdfStream(arrayBuffer: ArrayBuffer): string {
+export async function extractTextFromPdfStream(arrayBuffer: ArrayBuffer): Promise<string> {
+  if (typeof window !== 'undefined') {
+    try {
+      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+          'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+          import.meta.url
+        ).toString();
+      }
+
+      const data = new Uint8Array(arrayBuffer.slice(0));
+      const loadingTask = pdfjsLib.getDocument({ data, useSystemFonts: true });
+      const pdfDoc = await loadingTask.promise;
+      const textParts: string[] = [];
+
+      const maxPages = Math.min(pdfDoc.numPages, 25);
+      for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+        const page = await pdfDoc.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str || '')
+          .join(' ');
+        if (pageText.trim()) {
+          textParts.push(pageText.trim());
+        }
+      }
+
+      const combined = textParts.join('\n\n').trim();
+      const isValid = validatePdfExtractedTextQuality(combined);
+      console.log('[BROWSER_STREAM_EXTRACTOR_RESULT] combined.length:', combined.length, 'isValid:', isValid, 'preview:', JSON.stringify(combined.substring(0, 200)));
+      if (combined.length >= 50 && isValid) {
+        return combined;
+      }
+    } catch (err: any) {
+      console.warn('PDF.js text extraction failed, falling back to regex:', err);
+    }
+  }
+
   try {
     const decoder = new TextDecoder('utf-8');
     const rawContent = decoder.decode(new Uint8Array(arrayBuffer));
@@ -190,15 +237,6 @@ export function extractJpegImagesFromPdf(arrayBuffer: ArrayBuffer): Uint8Array[]
   return images;
 }
 
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
-
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
-    import.meta.url
-  ).toString();
-}
-
 /**
  * Renders PDF pages to PNG raster image payloads (image/png) for OCR processing.
  * Works in both browser environment (HTMLCanvasElement) and Node.js environment (@napi-rs/canvas).
@@ -206,6 +244,12 @@ if (typeof window !== 'undefined') {
 export async function renderPdfPagesToRasterImages(arrayBuffer: ArrayBuffer): Promise<Uint8Array[]> {
   const images: Uint8Array[] = [];
   try {
+    if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+        import.meta.url
+      ).toString();
+    }
     const data = new Uint8Array(arrayBuffer);
     const loadingTask = pdfjsLib.getDocument({ data, useSystemFonts: true });
     const pdfDoc = await loadingTask.promise;
@@ -299,7 +343,7 @@ export async function extractDocumentText(
   const arrayBuffer = await file.arrayBuffer();
 
   // Method 1: Fast PDF stream text extraction for text-native PDFs
-  const streamText = extractTextFromPdfStream(arrayBuffer);
+  const streamText = await extractTextFromPdfStream(arrayBuffer);
   if (streamText.length >= 50 && validatePdfExtractedTextQuality(streamText)) {
     onProgress?.(100, 'PDF text extraction complete');
     return {
