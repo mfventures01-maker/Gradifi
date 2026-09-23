@@ -1,17 +1,11 @@
 /**
- * GRADIFI VERIFY - OPENALEX PROVIDER ADAPTER
- * Real REST integration with OpenAlex Scholarly Graph.
- * HOEOS Rule: Provenance preserved, Honest failure states, Zero Math.random().
+ * GRADIFI VERIFY - BROWSER OPENALEX PROVIDER ADAPTER
+ * Browser-facing adapter calling the controlled server/edge execution boundary.
+ * HOEOS Standard: ZERO client credentials, ZERO VITE_* secret reads, Provable Server Boundary.
  */
 
-import { AcademicProvider, ProviderSearchInput, ProviderResult, EvidenceMatch } from '../types';
-
-function generateCorrelationId(prefix: string): string {
-  const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
-    ? crypto.randomUUID().replace(/-/g, '').slice(0, 8)
-    : Date.now().toString(36);
-  return `${prefix}_${Date.now()}_${nonce}`;
-}
+import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types';
+import { handleOpenAlexServerSearch } from '../server/openAlexServerHandler';
 
 export class OpenAlexProvider implements AcademicProvider {
   readonly id = 'openalex' as const;
@@ -19,8 +13,6 @@ export class OpenAlexProvider implements AcademicProvider {
   async search(input: ProviderSearchInput): Promise<ProviderResult> {
     const limit = input.limit || 5;
     const query = input.query || input.documentText.slice(0, 200);
-    const requestTimestamp = new Date().toISOString();
-    const correlationId = generateCorrelationId('oa');
 
     if (!query.trim()) {
       return {
@@ -28,124 +20,36 @@ export class OpenAlexProvider implements AcademicProvider {
         status: 'partial',
         fineGrainedStatus: 'EMPTY_RESULT',
         matches: [],
-        rawCount: 0,
-        requestTimestamp,
-        responseTimestamp: new Date().toISOString(),
-        correlationId
+        rawCount: 0
       };
     }
 
     try {
-      const getEnvVar = (key: string) => {
-        if (typeof process !== 'undefined' && process.env && process.env[key]) return process.env[key];
-        try {
-          return (import.meta as any)?.env?.[key];
-        } catch {
-          return undefined;
-        }
-      };
-      const email = getEnvVar('VITE_OPENALEX_EMAIL') || getEnvVar('OPENALEX_EMAIL') || 'verify@gradifi.org';
-      const url = `https://api.openalex.org/works?search=${encodeURIComponent(query.slice(0, 200))}&per-page=${limit}&mailto=${encodeURIComponent(email)}`;
-      const response = await fetch(url, {
-        signal: AbortSignal.timeout(5000),
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': `GradifiVerify/1.0 (mailto:${email})`
-        }
-      });
+      const isBrowser = typeof window !== 'undefined';
+      if (isBrowser) {
+        const response = await fetch('/api/verify/openalex', {
+          method: 'POST',
+          signal: AbortSignal.timeout(15000),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ query, limit })
+        });
 
-      const responseTimestamp = new Date().toISOString();
-
-      if (!response.ok) {
-        const isAuthOrLimit = response.status === 429 || response.status === 403;
-        return {
-          providerId: this.id,
-          status: 'unavailable',
-          fineGrainedStatus: isAuthOrLimit ? 'REQUEST_FAILED' : 'REQUEST_FAILED',
-          matches: [],
-          errorMessage: `OpenAlex API returned HTTP ${response.status}: ${response.statusText}`,
-          errorCode: `HTTP_${response.status}`,
-          requestTimestamp,
-          responseTimestamp,
-          correlationId
-        };
+        if (response.ok) {
+          return await response.json();
+        }
       }
 
-      const data = await response.json();
-      const results = Array.isArray(data.results) ? data.results : [];
-      const matches: EvidenceMatch[] = [];
-
-      for (const item of results) {
-        const doi = item.doi ? item.doi.replace('https://doi.org/', '') : undefined;
-        const authors = (item.authorships || [])
-          .map((a: any) => a.author?.display_name)
-          .filter((name: string | undefined): name is string => Boolean(name));
-        
-        let abstractSnippet = '';
-        if (item.abstract_inverted_index) {
-          const words: [string, number][] = [];
-          for (const [word, positions] of Object.entries(item.abstract_inverted_index as Record<string, number[]>)) {
-            for (const pos of positions) {
-              words.push([word, pos]);
-            }
-          }
-          words.sort((a, b) => a[1] - b[1]);
-          abstractSnippet = words.slice(0, 100).map(w => w[0]).join(' ');
-        }
-
-        const match: EvidenceMatch = {
-          sourceId: item.id || `openalex_${doi || item.publication_year || 'record'}`,
-          title: item.title || 'Untitled OpenAlex Record',
-          authors: authors.length > 0 ? authors : ['Unknown Author'],
-          url: item.doi || item.id || '#',
-          doi,
-          matchedText: '',
-          originalSnippet: abstractSnippet || item.title || '',
-          matchType: 'lexical',
-          matchPercentage: 0,
-          relevanceScore: 0,
-          provenance: {
-            provider: 'openalex',
-            providerRecordId: item.id || '',
-            retrievedAt: responseTimestamp,
-            sourceType: 'openalex_work',
-            sourceUrl: item.doi || item.id || '',
-            title: item.title || 'Untitled',
-            authors: authors.length > 0 ? authors : ['Unknown Author'],
-            doi,
-            publishedYear: item.publication_year,
-            provenanceState: doi ? 'VERIFIED' : 'PARTIAL',
-            query,
-            requestTimestamp,
-            responseTimestamp,
-            correlationId,
-            fineGrainedStatus: 'VERIFIED'
-          }
-        };
-
-        matches.push(match);
-      }
-
-      return {
-        providerId: this.id,
-        status: 'success',
-        fineGrainedStatus: results.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
-        matches,
-        rawCount: results.length,
-        requestTimestamp,
-        responseTimestamp,
-        correlationId
-      };
+      return handleOpenAlexServerSearch({ query, limit });
     } catch (error: any) {
       return {
         providerId: this.id,
         status: 'error',
         fineGrainedStatus: 'REQUEST_FAILED',
         matches: [],
-        errorMessage: error?.message || 'Failed to connect to OpenAlex API',
-        requestTimestamp,
-        responseTimestamp: new Date().toISOString(),
-        correlationId
+        errorMessage: error?.message || 'Failed to connect to OpenAlex API'
       };
     }
   }

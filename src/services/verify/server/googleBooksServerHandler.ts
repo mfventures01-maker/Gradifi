@@ -5,6 +5,7 @@
  */
 
 import { ProviderResult, EvidenceMatch } from '../types';
+import { enqueue } from '../federation/requestQueue';
 
 export interface GoogleBooksServerRequestPayload {
   query?: string;
@@ -58,44 +59,49 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
     };
   }
 
+  const fetchUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${limit}&key=${encodeURIComponent(apiKey)}`;
+
   try {
-    const fetchUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${limit}&key=${encodeURIComponent(apiKey)}`;
+    return await enqueue<ProviderResult>({
+      providerId: 'googlebooks',
+      correlationId,
+      url: fetchUrl,
+      fn: async () => {
+        let response = await fetch(fetchUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'GradifiVerify/1.0 (https://gradifi.org)'
+          }
+        });
 
-    let response = await fetch(fetchUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'GradifiVerify/1.0 (https://gradifi.org)'
-      }
-    });
-
-    if (!response.ok && (response.status === 429 || response.status >= 500)) {
-      await new Promise(r => setTimeout(r, 600));
-      response = await fetch(fetchUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'GradifiVerify/1.0 (https://gradifi.org)'
+        if (!response.ok && (response.status === 429 || response.status >= 500)) {
+          await new Promise(r => setTimeout(r, 600));
+          response = await fetch(fetchUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'GradifiVerify/1.0 (https://gradifi.org)'
+            }
+          });
         }
-      });
-    }
 
-    const responseTimestamp = new Date().toISOString();
+        const responseTimestamp = new Date().toISOString();
 
-    if (!response.ok) {
-      const isAuthError = response.status === 401 || response.status === 403;
-      return {
-        providerId: 'googlebooks',
-        status: isAuthError ? 'error' : 'unavailable',
-        fineGrainedStatus: isAuthError ? 'AUTHENTICATION_FAILED' : 'REQUEST_FAILED',
-        matches: [],
-        errorMessage: `Google Books API returned HTTP ${response.status}: ${response.statusText}`,
-        errorCode: `HTTP_${response.status}`,
-        requestTimestamp,
-        responseTimestamp,
-        correlationId
-      };
-    }
+        if (!response.ok) {
+          const isAuthError = response.status === 401 || response.status === 403;
+          return {
+            providerId: 'googlebooks',
+            status: isAuthError ? 'error' : 'unavailable',
+            fineGrainedStatus: isAuthError ? 'AUTHENTICATION_FAILED' : 'REQUEST_FAILED',
+            matches: [],
+            errorMessage: `Google Books API returned HTTP ${response.status}: ${response.statusText}`,
+            errorCode: `HTTP_${response.status}`,
+            requestTimestamp,
+            responseTimestamp,
+            correlationId
+          };
+        }
 
     const data = await response.json();
 
@@ -188,16 +194,18 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
       matches.push(match);
     }
 
-    return {
-      providerId: 'googlebooks',
-      status: 'success',
-      fineGrainedStatus: items.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
-      matches,
-      rawCount: items.length,
-      requestTimestamp,
-      responseTimestamp,
-      correlationId
-    };
+        return {
+          providerId: 'googlebooks',
+          status: 'success',
+          fineGrainedStatus: items.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
+          matches,
+          rawCount: items.length,
+          requestTimestamp,
+          responseTimestamp,
+          correlationId
+        };
+      }
+    });
   } catch (error: any) {
     const responseTimestamp = new Date().toISOString();
     return {

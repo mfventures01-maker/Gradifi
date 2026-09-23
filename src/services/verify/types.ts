@@ -115,6 +115,13 @@ export interface AcademicProvider {
   search(input: ProviderSearchInput): Promise<ProviderResult>;
 }
 
+export interface RateLimiterConfig {
+  providerId: string;
+  maxTokens: number;
+  refillRate: number;
+  minIntervalMs: number;
+}
+
 export interface ProviderQuota {
   providerId: SourceType;
   maxTokens: number;

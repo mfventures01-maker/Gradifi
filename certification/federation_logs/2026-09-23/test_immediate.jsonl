@@ -1,0 +1,2 @@
+{"timestamp":"2026-09-23T12:44:01.760Z","correlationId":"corr_test_1","providerId":"test_immediate","url":"https://test_immediate.api/","attempt":1,"durationMs":1,"outcome":"SUCCESS","matchesReturned":1,"fineGrainedStatus":"VERIFIED"}
+{"timestamp":"2026-09-23T13:04:49.166Z","correlationId":"corr_test_1","providerId":"test_immediate","url":"https://test_immediate.api/","attempt":1,"durationMs":0,"outcome":"SUCCESS","matchesReturned":1,"fineGrainedStatus":"VERIFIED"}

@@ -5,6 +5,7 @@
  */
 
 import { ProviderResult, EvidenceMatch } from '../types';
+import { enqueue } from '../federation/requestQueue';
 
 export interface CoreServerRequestPayload {
   query?: string;
@@ -58,92 +59,99 @@ export async function handleCoreServerSearch(payload: CoreServerRequestPayload):
     };
   }
 
+  const fetchUrl = `https://api.core.ac.uk/v3/search/works?q=${encodeURIComponent(query)}&limit=${limit}`;
+
   try {
-    const fetchUrl = `https://api.core.ac.uk/v3/search/works?q=${encodeURIComponent(query)}&limit=${limit}`;
+    return await enqueue<ProviderResult>({
+      providerId: 'core',
+      correlationId,
+      url: fetchUrl,
+      fn: async () => {
+        const response = await fetch(fetchUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          }
+        });
 
-    const response = await fetch(fetchUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      }
-    });
+        const responseTimestamp = new Date().toISOString();
 
-    const responseTimestamp = new Date().toISOString();
+        if (!response.ok) {
+          const isAuthError = response.status === 401 || response.status === 403;
+          return {
+            providerId: 'core',
+            status: isAuthError ? 'error' : 'unavailable',
+            fineGrainedStatus: isAuthError ? 'AUTHENTICATION_FAILED' : 'REQUEST_FAILED',
+            matches: [],
+            errorMessage: `CORE API returned HTTP ${response.status}: ${response.statusText}`,
+            errorCode: `HTTP_${response.status}`,
+            requestTimestamp,
+            responseTimestamp,
+            correlationId
+          };
+        }
 
-    if (!response.ok) {
-      const isAuthError = response.status === 401 || response.status === 403;
-      return {
-        providerId: 'core',
-        status: isAuthError ? 'error' : 'unavailable',
-        fineGrainedStatus: isAuthError ? 'AUTHENTICATION_FAILED' : 'REQUEST_FAILED',
-        matches: [],
-        errorMessage: `CORE API returned HTTP ${response.status}: ${response.statusText}`,
-        errorCode: `HTTP_${response.status}`,
-        requestTimestamp,
-        responseTimestamp,
-        correlationId
-      };
-    }
+        const data = await response.json();
+        const results = Array.isArray(data?.results) ? data.results : [];
+        const matches: EvidenceMatch[] = [];
 
-    const data = await response.json();
-    const results = Array.isArray(data?.results) ? data.results : [];
-    const matches: EvidenceMatch[] = [];
+        for (const item of results) {
+          const doi = typeof item.doi === 'string' ? item.doi.trim() : undefined;
+          const title = typeof item.title === 'string' ? item.title.trim() : 'Untitled CORE Work';
+          const authors = Array.isArray(item.authors)
+            ? item.authors.map((a: any) => (typeof a === 'string' ? a : a?.name)).filter((n: any): n is string => typeof n === 'string' && n.length > 0)
+            : [];
+          
+          const downloadUrl = item.downloadUrl || item.links?.[0]?.url || (doi ? `https://doi.org/${doi}` : '#');
+          const abstractSnippet = typeof item.abstract === 'string' ? item.abstract : title;
 
-    for (const item of results) {
-      const doi = typeof item.doi === 'string' ? item.doi.trim() : undefined;
-      const title = typeof item.title === 'string' ? item.title.trim() : 'Untitled CORE Work';
-      const authors = Array.isArray(item.authors)
-        ? item.authors.map((a: any) => (typeof a === 'string' ? a : a?.name)).filter((n: any): n is string => typeof n === 'string' && n.length > 0)
-        : [];
-      
-      const downloadUrl = item.downloadUrl || item.links?.[0]?.url || (doi ? `https://doi.org/${doi}` : '#');
-      const abstractSnippet = typeof item.abstract === 'string' ? item.abstract : title;
+          const match: EvidenceMatch = {
+            sourceId: item.id ? `core:${item.id}` : `core_${doi || 'record'}`,
+            title,
+            authors: authors.length > 0 ? authors : ['Unknown Author'],
+            url: downloadUrl,
+            doi,
+            matchedText: '',
+            originalSnippet: abstractSnippet.slice(0, 300),
+            matchType: 'exact',
+            matchPercentage: 0,
+            relevanceScore: 0,
+            provenance: {
+              provider: 'core',
+              providerRecordId: item.id ? String(item.id) : '',
+              retrievedAt: responseTimestamp,
+              sourceType: 'core_repository_work',
+              sourceUrl: downloadUrl,
+              title,
+              authors: authors.length > 0 ? authors : ['Unknown Author'],
+              doi,
+              publishedYear: typeof item.yearPublished === 'number' ? item.yearPublished : undefined,
+              provenanceState: doi ? 'VERIFIED' : 'PARTIAL',
+              query,
+              requestTimestamp,
+              responseTimestamp,
+              correlationId,
+              fineGrainedStatus: 'VERIFIED'
+            }
+          };
 
-      const match: EvidenceMatch = {
-        sourceId: item.id ? `core:${item.id}` : `core_${doi || 'record'}`,
-        title,
-        authors: authors.length > 0 ? authors : ['Unknown Author'],
-        url: downloadUrl,
-        doi,
-        matchedText: '',
-        originalSnippet: abstractSnippet.slice(0, 300),
-        matchType: 'exact',
-        matchPercentage: 0,
-        relevanceScore: 0,
-        provenance: {
-          provider: 'core',
-          providerRecordId: item.id ? String(item.id) : '',
-          retrievedAt: responseTimestamp,
-          sourceType: 'core_repository_work',
-          sourceUrl: downloadUrl,
-          title,
-          authors: authors.length > 0 ? authors : ['Unknown Author'],
-          doi,
-          publishedYear: typeof item.yearPublished === 'number' ? item.yearPublished : undefined,
-          provenanceState: doi ? 'VERIFIED' : 'PARTIAL',
-          query,
+          matches.push(match);
+        }
+
+        return {
+          providerId: 'core',
+          status: 'success',
+          fineGrainedStatus: results.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
+          matches,
+          rawCount: results.length,
           requestTimestamp,
           responseTimestamp,
-          correlationId,
-          fineGrainedStatus: 'VERIFIED'
-        }
-      };
-
-      matches.push(match);
-    }
-
-    return {
-      providerId: 'core',
-      status: 'success',
-      fineGrainedStatus: results.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
-      matches,
-      rawCount: results.length,
-      requestTimestamp,
-      responseTimestamp,
-      correlationId
-    };
+          correlationId
+        };
+      }
+    });
   } catch (error: any) {
     const responseTimestamp = new Date().toISOString();
     return {

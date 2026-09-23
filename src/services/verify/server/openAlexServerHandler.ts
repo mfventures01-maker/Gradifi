@@ -41,25 +41,36 @@ export async function handleOpenAlexServerSearch(payload: OpenAlexServerRequestP
   const query = rawQuery.slice(0, 200);
   const limit = Math.max(1, Math.min(10, typeof payload?.limit === 'number' ? payload.limit : 5));
   const email = process.env.VITE_OPENALEX_EMAIL || process.env.OPENALEX_EMAIL || 'verify@gradifi.org';
+  const apiKey = process.env.OPENALEX_API_KEY || process.env.VITE_OPENALEX_API_KEY;
 
   try {
-    const fetchUrl = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per-page=${limit}&mailto=${encodeURIComponent(email)}`;
+    const fetchUrl = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per-page=${limit}&mailto=${encodeURIComponent(email)}${apiKey ? `&api_key=${encodeURIComponent(apiKey)}` : ''}`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+      'User-Agent': `GradifiVerify/1.0 (mailto:${email})`
+    };
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+    }
 
     const response = await fetch(fetchUrl, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': `GradifiVerify/1.0 (mailto:${email})`
-      }
+      headers,
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
 
     const responseTimestamp = new Date().toISOString();
 
     if (!response.ok) {
       return {
         providerId: 'openalex',
-        status: 'unavailable',
-        fineGrainedStatus: 'REQUEST_FAILED',
+        status: response.status === 429 ? 'unavailable' : 'unavailable',
+        fineGrainedStatus: response.status === 429 ? 'RATE_LIMITED' : 'REQUEST_FAILED',
         matches: [],
         errorMessage: `OpenAlex API returned HTTP ${response.status}: ${response.statusText}`,
         errorCode: `HTTP_${response.status}`,

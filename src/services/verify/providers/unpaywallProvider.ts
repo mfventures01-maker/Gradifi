@@ -5,6 +5,7 @@
  */
 
 import { AcademicProvider, ProviderSearchInput, ProviderResult, EvidenceMatch, UnpaywallMetadataResult, UnpaywallOALocation } from '../types';
+import { handleUnpaywallServerSearch } from '../server/unpaywallServerHandler';
 
 function generateCorrelationId(prefix: string): string {
   const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
@@ -116,6 +117,7 @@ export class UnpaywallProvider implements AcademicProvider {
   }
 
   async search(input: ProviderSearchInput): Promise<ProviderResult> {
+    const limit = input.limit || 5;
     const query = input.query || input.documentText;
     const requestTimestamp = new Date().toISOString();
     const correlationId = generateCorrelationId('unp');
@@ -139,88 +141,24 @@ export class UnpaywallProvider implements AcademicProvider {
     const doi = doiMatch[0].replace(/[.;()]+$/, '');
 
     try {
-      const getEnvVar = (key: string) => {
-        if (typeof process !== 'undefined' && process.env && process.env[key]) return process.env[key];
-        try {
-          return (import.meta as any)?.env?.[key];
-        } catch {
-          return undefined;
-        }
-      };
-      const email = getEnvVar('VITE_UNPAYWALL_EMAIL') || getEnvVar('UNPAYWALL_EMAIL') || 'verify@gradifi.org';
-      const url = `https://api.unpaywall.org/v2/${encodeURIComponent(doi)}?email=${encodeURIComponent(email)}`;
-      
-      const response = await fetch(url, {
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
+      const isBrowser = typeof window !== 'undefined';
+      if (isBrowser) {
+        const response = await fetch('/api/verify/unpaywall', {
+          method: 'POST',
+          signal: AbortSignal.timeout(10000),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ query: doi, limit })
+        });
 
-      const responseTimestamp = new Date().toISOString();
-
-      if (!response.ok) {
-        return {
-          providerId: this.id,
-          status: response.status === 404 ? 'partial' : 'unavailable',
-          fineGrainedStatus: response.status === 404 ? 'EMPTY_RESULT' : 'REQUEST_FAILED',
-          matches: [],
-          errorMessage: `Unpaywall returned HTTP ${response.status}: ${response.statusText}`,
-          errorCode: `HTTP_${response.status}`,
-          requestTimestamp,
-          responseTimestamp,
-          correlationId
-        };
+        if (response.ok) {
+          return await response.json();
+        }
       }
 
-      const item = await response.json();
-      const title = item.title || 'Untitled Unpaywall Record';
-      const authors = (item.z_authors || [])
-        .map((a: any) => `${a.given || ''} ${a.family || ''}`.trim())
-        .filter((name: string) => name.length > 0);
-      
-      const bestLocation = item.best_oa_location || {};
-      const pdfUrl = bestLocation.url_for_pdf || bestLocation.url || item.doi_url;
-
-      const match: EvidenceMatch = {
-        sourceId: `unpaywall:${doi}`,
-        title,
-        authors: authors.length > 0 ? authors : ['Unknown Author'],
-        url: pdfUrl || item.doi_url || `https://doi.org/${doi}`,
-        doi,
-        matchedText: '',
-        originalSnippet: bestLocation.evidence ? `Open Access Evidence: ${bestLocation.evidence}` : title,
-        matchType: 'citation',
-        matchPercentage: 0,
-        relevanceScore: 0,
-        provenance: {
-          provider: 'unpaywall',
-          providerRecordId: doi,
-          retrievedAt: responseTimestamp,
-          sourceType: 'unpaywall_oa_record',
-          sourceUrl: pdfUrl || item.doi_url || '',
-          title,
-          authors: authors.length > 0 ? authors : ['Unknown Author'],
-          doi,
-          publishedYear: item.year,
-          provenanceState: 'UNVERIFIED',
-          query,
-          requestTimestamp,
-          responseTimestamp,
-          correlationId,
-          fineGrainedStatus: 'EMPTY_RESULT'
-        }
-      };
-
-      return {
-        providerId: this.id,
-        status: 'success',
-        fineGrainedStatus: 'VERIFIED',
-        matches: [match],
-        rawCount: 1,
-        requestTimestamp,
-        responseTimestamp,
-        correlationId
-      };
+      return handleUnpaywallServerSearch({ query: doi, limit });
     } catch (error: any) {
       return {
         providerId: this.id,

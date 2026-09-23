@@ -1,0 +1,4 @@
+{"timestamp":"2026-09-23T12:44:01.772Z","correlationId":"corr_test_2","providerId":"test_429","url":"https://test_429.api/","attempt":1,"durationMs":0,"outcome":"RETRY","errorCode":"HTTP_429","errorMessage":"Rate limit exceeded","matchesReturned":0}
+{"timestamp":"2026-09-23T12:44:02.775Z","correlationId":"corr_test_2","providerId":"test_429","url":"https://test_429.api/","attempt":2,"durationMs":1001,"outcome":"SUCCESS","matchesReturned":1,"fineGrainedStatus":"VERIFIED"}
+{"timestamp":"2026-09-23T13:04:49.178Z","correlationId":"corr_test_2","providerId":"test_429","url":"https://test_429.api/","attempt":1,"durationMs":1,"outcome":"RETRY","errorCode":"HTTP_429","errorMessage":"Rate limit exceeded","matchesReturned":0}
+{"timestamp":"2026-09-23T13:04:50.185Z","correlationId":"corr_test_2","providerId":"test_429","url":"https://test_429.api/","attempt":2,"durationMs":1003,"outcome":"SUCCESS","matchesReturned":1,"fineGrainedStatus":"VERIFIED"}

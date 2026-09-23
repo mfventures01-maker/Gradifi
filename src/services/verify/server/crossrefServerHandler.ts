@@ -5,6 +5,7 @@
  */
 
 import { ProviderResult, EvidenceMatch } from '../types';
+import { enqueue } from '../federation/requestQueue';
 
 export interface CrossrefServerRequestPayload {
   query?: string;
@@ -41,94 +42,100 @@ export async function handleCrossrefServerSearch(payload: CrossrefServerRequestP
   const query = rawQuery.slice(0, 200);
   const limit = Math.max(1, Math.min(10, typeof payload?.limit === 'number' ? payload.limit : 5));
   const email = process.env.VITE_CROSSREF_EMAIL || process.env.CROSSREF_EMAIL || 'verify@gradifi.org';
+  const fetchUrl = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=${limit}&mailto=${encodeURIComponent(email)}`;
 
   try {
-    const fetchUrl = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=${limit}&mailto=${encodeURIComponent(email)}`;
+    return await enqueue<ProviderResult>({
+      providerId: 'crossref',
+      correlationId,
+      url: fetchUrl,
+      fn: async () => {
+        const response = await fetch(fetchUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': `GradifiVerify/1.0 (mailto:${email})`
+          }
+        });
 
-    const response = await fetch(fetchUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': `GradifiVerify/1.0 (mailto:${email})`
-      }
-    });
+        const responseTimestamp = new Date().toISOString();
 
-    const responseTimestamp = new Date().toISOString();
+        if (!response.ok) {
+          return {
+            providerId: 'crossref',
+            status: response.status === 429 ? 'unavailable' : 'unavailable',
+            fineGrainedStatus: response.status === 429 ? 'RATE_LIMITED' : 'REQUEST_FAILED',
+            matches: [],
+            errorMessage: `Crossref API returned HTTP ${response.status}: ${response.statusText}`,
+            errorCode: `HTTP_${response.status}`,
+            requestTimestamp,
+            responseTimestamp,
+            correlationId
+          };
+        }
 
-    if (!response.ok) {
-      return {
-        providerId: 'crossref',
-        status: 'unavailable',
-        fineGrainedStatus: 'REQUEST_FAILED',
-        matches: [],
-        errorMessage: `Crossref API returned HTTP ${response.status}: ${response.statusText}`,
-        errorCode: `HTTP_${response.status}`,
-        requestTimestamp,
-        responseTimestamp,
-        correlationId
-      };
-    }
+        const data = await response.json();
+        const items = data.message?.items || [];
+        const matches: EvidenceMatch[] = [];
 
-    const data = await response.json();
-    const items = data.message?.items || [];
-    const matches: EvidenceMatch[] = [];
+        for (const item of items) {
+          const doi = item.DOI;
+          const title = item.title?.[0] || 'Untitled Crossref Record';
+          const authors = (item.author || [])
+            .map((a: any) => `${a.given || ''} ${a.family || ''}`.trim())
+            .filter((name: string) => name.length > 0);
+          const containerTitle = item['container-title']?.[0] || '';
+          const publishedYear = item.published?.['date-parts']?.[0]?.[0];
+          const isbn = Array.isArray(item.ISBN) ? item.ISBN[0] : undefined;
 
-    for (const item of items) {
-      const doi = item.DOI;
-      const title = item.title?.[0] || 'Untitled Crossref Record';
-      const authors = (item.author || [])
-        .map((a: any) => `${a.given || ''} ${a.family || ''}`.trim())
-        .filter((name: string) => name.length > 0);
-      const containerTitle = item['container-title']?.[0] || '';
-      const publishedYear = item.published?.['date-parts']?.[0]?.[0];
-      const isbn = Array.isArray(item.ISBN) ? item.ISBN[0] : undefined;
+          const match: EvidenceMatch = {
+            sourceId: doi ? `doi:${doi}` : `crossref_${item.created?.timestamp || 'record'}`,
+            title,
+            authors: authors.length > 0 ? authors : ['Unknown Author'],
+            url: doi ? `https://doi.org/${doi}` : item.URL || '#',
+            doi,
+            isbn,
+            matchedText: '',
+            originalSnippet: containerTitle ? `${title} (${containerTitle})` : title,
+            matchType: 'citation',
+            matchPercentage: 0,
+            relevanceScore: 0,
+            provenance: {
+              provider: 'crossref',
+              providerRecordId: doi || item.score?.toString() || '',
+              retrievedAt: responseTimestamp,
+              sourceType: item.type || 'crossref_work',
+              sourceUrl: doi ? `https://doi.org/${doi}` : item.URL || '',
+              title,
+              authors: authors.length > 0 ? authors : ['Unknown Author'],
+              doi,
+              isbn,
+              publishedYear,
+              publisher: item.publisher,
+              provenanceState: 'VERIFIED',
+              query,
+              requestTimestamp,
+              responseTimestamp,
+              correlationId,
+              fineGrainedStatus: 'VERIFIED'
+            }
+          };
 
-      const match: EvidenceMatch = {
-        sourceId: doi ? `doi:${doi}` : `crossref_${item.created?.timestamp || 'record'}`,
-        title,
-        authors: authors.length > 0 ? authors : ['Unknown Author'],
-        url: doi ? `https://doi.org/${doi}` : item.URL || '#',
-        doi,
-        isbn,
-        matchedText: '',
-        originalSnippet: containerTitle ? `${title} (${containerTitle})` : title,
-        matchType: 'citation',
-        matchPercentage: 0,
-        relevanceScore: 0,
-        provenance: {
-          provider: 'crossref',
-          providerRecordId: doi || item.score?.toString() || '',
-          retrievedAt: responseTimestamp,
-          sourceType: item.type || 'crossref_work',
-          sourceUrl: doi ? `https://doi.org/${doi}` : item.URL || '',
-          title,
-          authors: authors.length > 0 ? authors : ['Unknown Author'],
-          doi,
-          isbn,
-          publishedYear,
-          publisher: item.publisher,
-          provenanceState: 'VERIFIED',
-          query,
+          matches.push(match);
+        }
+
+        return {
+          providerId: 'crossref',
+          status: 'success',
+          fineGrainedStatus: matches.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
+          matches,
+          rawCount: items.length,
           requestTimestamp,
           responseTimestamp,
-          correlationId,
-          fineGrainedStatus: 'VERIFIED'
-        }
-      };
-
-      matches.push(match);
-    }
-
-    return {
-      providerId: 'crossref',
-      status: 'success',
-      fineGrainedStatus: matches.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
-      matches,
-      rawCount: items.length,
-      requestTimestamp,
-      responseTimestamp,
-      correlationId
-    };
+          correlationId
+        };
+      }
+    });
   } catch (error: any) {
     const responseTimestamp = new Date().toISOString();
     return {

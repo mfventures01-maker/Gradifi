@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-09-23T13:05:37.499Z",
+  "document": "DIGITAL THERMOMETER thesis",
+  "wallClockMs": 2019,
+  "verifiedProviderCount": 4,
+  "providers": {
+    "core": {
+      "status": "success",
+      "fineGrainedStatus": "VERIFIED",
+      "matchCount": 5,
+      "rawCount": 5
+    },
+    "crossref": {
+      "status": "success",
+      "fineGrainedStatus": "VERIFIED",
+      "matchCount": 5,
+      "rawCount": 5
+    },
+    "googlebooks": {
+      "status": "success",
+      "fineGrainedStatus": "VERIFIED",
+      "matchCount": 2,
+      "rawCount": 2
+    },
+    "openalex": {
+      "status": "success",
+      "fineGrainedStatus": "VERIFIED",
+      "matchCount": 5,
+      "rawCount": 5
+    },
+    "unpaywall": {
+      "status": "partial",
+      "fineGrainedStatus": "EMPTY_RESULT",
+      "matchCount": 0,
+      "rawCount": 0
+    }
+  }
+}
