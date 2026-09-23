@@ -22,6 +22,7 @@ import { CoreProvider } from './providers/coreProvider';
 import { GoogleBooksProvider } from './providers/googleBooksProvider';
 import { AIFederationService, AIFederationResult } from './aiFederation';
 import { computeHash } from './documentNormalizer';
+import { buildProviderQuery, extractDocumentDoi } from './queryBuilder';
 
 // --- CONTRACT TYPES ---
 
@@ -461,18 +462,20 @@ export class FederationOrchestrator {
     const runId = `FED-ORCH-${startTime}`;
     const limit = options?.searchLimit || 5;
 
-    // Detect DOI / ISBN from document text for targeted pools
+    // Extract body keyword query and DOI / ISBN from document text
+    const constructedQuery = buildProviderQuery(documentText, 8) || documentText.slice(0, 200);
+    const documentDoi = extractDocumentDoi(documentText);
     const doiMatch = documentText.match(/10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i);
     const isbnMatch = documentText.match(/97[89][- ]?\d{1,5}[- ]?\d{1,7}[- ]?\d{1,7}[- ]?[\dX]/i);
 
-    const doiQuery = doiMatch ? doiMatch[0].replace(/[.;()]+$/, '') : documentText.slice(0, 200);
-    const isbnQuery = isbnMatch ? `isbn:${isbnMatch[0]}` : documentText.slice(0, 200);
+    const doiQuery = documentDoi || (doiMatch ? doiMatch[0].replace(/[.;()]+$/, '') : constructedQuery);
+    const isbnQuery = isbnMatch ? `isbn:${isbnMatch[0]}` : constructedQuery;
 
     // DISCOVERY POOL & ACQUISITION POOLS (Parallel execution via Promise.allSettled)
     const providerTasks = [
-      this.executeProviderTask('crossref', documentText.slice(0, 200), documentText, limit),
-      this.executeProviderTask('openalex', documentText.slice(0, 200), documentText, limit),
-      this.executeProviderTask('core', documentText.slice(0, 200), documentText, limit),
+      this.executeProviderTask('crossref', constructedQuery, documentText, limit),
+      this.executeProviderTask('openalex', constructedQuery, documentText, limit),
+      this.executeProviderTask('core', constructedQuery, documentText, limit),
       this.executeProviderTask('unpaywall', doiQuery, documentText, limit),
       this.executeProviderTask('googlebooks', isbnQuery, documentText, limit)
     ];

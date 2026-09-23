@@ -28,6 +28,7 @@ import { UnpaywallProvider } from './providers/unpaywallProvider';
 import { CoreProvider } from './providers/coreProvider';
 import { GoogleBooksProvider } from './providers/googleBooksProvider';
 import { AIFederationService } from './aiFederation';
+import { buildProviderQuery, extractDocumentDoi } from './queryBuilder';
 
 export class VerifyCoreService {
   private openAlex = new OpenAlexProvider();
@@ -59,6 +60,15 @@ export class VerifyCoreService {
 
     const documentText = canonicalDoc.rawText;
 
+    // Derive deterministic body keywords & explicit identifiers
+    const constructedQuery = buildProviderQuery(documentText, 8) || canonicalDoc.title || documentText.slice(0, 200);
+    const documentDoi = extractDocumentDoi(documentText);
+    const doiMatch = documentText.match(/10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i);
+    const isbnMatch = documentText.match(/97[89][- ]?\d{1,5}[- ]?\d{1,7}[- ]?\d{1,7}[- ]?[\dX]/i);
+
+    const doiQuery = documentDoi || (doiMatch ? doiMatch[0].replace(/[.;()]+$/, '') : constructedQuery);
+    const isbnQuery = isbnMatch ? `isbn:${isbnMatch[0]}` : constructedQuery;
+
     const providerStatuses: Record<string, ProviderStatus> = {
       openalex: 'unavailable',
       crossref: 'unavailable',
@@ -79,11 +89,11 @@ export class VerifyCoreService {
 
     // Execute all 5 academic providers independently in parallel
     const [openAlexRes, crossrefRes, unpaywallRes, coreRes, googleBooksRes] = await Promise.allSettled([
-      this.openAlex.search({ query: documentText, documentText, limit }),
-      this.crossref.search({ query: documentText, documentText, limit }),
-      this.unpaywall.search({ query: documentText, documentText, limit }),
-      this.core.search({ query: documentText, documentText, limit }),
-      this.googleBooks.search({ query: documentText, documentText, limit })
+      this.openAlex.search({ query: constructedQuery, documentText, limit }),
+      this.crossref.search({ query: constructedQuery, documentText, limit }),
+      this.unpaywall.search({ query: doiQuery, documentText, limit }),
+      this.core.search({ query: constructedQuery, documentText, limit }),
+      this.googleBooks.search({ query: isbnQuery, documentText, limit })
     ]);
 
     // Process OpenAlex
@@ -177,7 +187,8 @@ export class VerifyCoreService {
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
-        overallStatus: fineGrainedStatuses.openalex
+        overallStatus: fineGrainedStatuses.openalex,
+        query: constructedQuery
       },
       {
         provider: 'crossref',
@@ -188,7 +199,8 @@ export class VerifyCoreService {
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
-        overallStatus: fineGrainedStatuses.crossref
+        overallStatus: fineGrainedStatuses.crossref,
+        query: constructedQuery
       },
       {
         provider: 'unpaywall',
@@ -199,7 +211,8 @@ export class VerifyCoreService {
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
-        overallStatus: fineGrainedStatuses.unpaywall
+        overallStatus: fineGrainedStatuses.unpaywall,
+        query: doiQuery
       },
       {
         provider: 'core',
@@ -210,7 +223,8 @@ export class VerifyCoreService {
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
-        overallStatus: fineGrainedStatuses.core
+        overallStatus: fineGrainedStatuses.core,
+        query: constructedQuery
       },
       {
         provider: 'googlebooks',
@@ -221,7 +235,8 @@ export class VerifyCoreService {
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
-        overallStatus: fineGrainedStatuses.googlebooks
+        overallStatus: fineGrainedStatuses.googlebooks,
+        query: isbnQuery
       },
       {
         provider: 'gemini',
@@ -318,7 +333,8 @@ export class VerifyCoreService {
       timestamp: new Date().toISOString(),
       canonicalDocument: canonicalDoc,
       similarityAnalysis,
-      plagiarismEvidence
+      plagiarismEvidence,
+      constructedQuery
     };
   }
 

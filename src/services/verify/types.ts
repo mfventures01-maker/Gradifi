@@ -125,6 +125,7 @@ export interface VerificationMatrixEntry {
   federationStatus: 'VERIFIED' | 'FAILED';
   aiInterpretationStatus: 'VERIFIED_INFERENCE' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED' | 'N/A';
   overallStatus: FineGrainedProviderStatus;
+  query?: string;
 }
 
 export interface EvidenceEngineResult {
@@ -147,6 +148,7 @@ export interface EvidenceEngineResult {
   canonicalDocument?: CanonicalAnalysisDocument;
   similarityAnalysis?: SimilarityAnalysisResult;
   plagiarismEvidence?: PlagiarismEvidenceResult;
+  constructedQuery?: string;
 }
 
 /**

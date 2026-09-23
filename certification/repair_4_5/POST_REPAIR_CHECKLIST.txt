@@ -1,0 +1,14 @@
+REPAIR 4 — STATE COLLAPSE
+  no EMPTY shown when REQUEST_FAILED:   PASS
+  no EMPTY shown when RATE_LIMITED:     PASS
+  VERIFIED still shown when matches>0:  PASS
+  EMPTY shown when 200 and zero matches:PASS
+  FAILED shown when request threw:      PASS
+  FineGrainedProviderStatus extended:   PASS
+
+REPAIR 5 — QUERY CONSTRUCTION
+  relevant Crossref hits (>=3/5):       PASS
+  no headings in query:                 PASS
+  query builder deterministic:          PASS
+  query builder has unit tests:         PASS
+  constructed query visible in result:  PASS
