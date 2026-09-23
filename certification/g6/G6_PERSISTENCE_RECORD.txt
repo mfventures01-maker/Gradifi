@@ -1,0 +1,39 @@
+﻿# G6 PERSISTENCE - CERTIFICATION RECORD
+# Certification ID: G6-CERT-PERSIST-2026-09-23
+# Classification: RUNTIME PASS
+# Status: FROZEN
+
+[ENVIRONMENT]
+Mode:              vite dev (port 5174)
+Supabase project:  ehkmfnaqkdgkjmdxxbwj.supabase.co
+Credentials:       .env.local (gitignored, never committed)
+
+[PIPELINE]
+01 UPLOAD          M.ENG Project (SEFAES) (1).pdf, 40.6 KB
+02 EXTRACT         Method: pdf_stream_extractor, 41524 chars
+03 NORMALIZE       PROVENANCE: NORMALIZED
+04 VERIFY          5 verified sources, similarity 0%, policy G3-POLICY-v1
+05 FEDERATE        Crossref VERIFIED, Nemotron VERIFIED,
+                   OpenAlex 429 (rate-limited, non-blocking),
+                   GoogleBooks/Unpaywall/CORE EMPTY,
+                   Gemini AUTHENTICATION_FAILED,
+                   Gemma RUNTIME_UNAVAILABLE
+06 RESULT          Verification ID: VRF-5391CDE4B345
+07 RECEIPT         Timestamp: Wed, 23 Sep 2026 01:09:36 GMT
+                   Hash: 5391cde4b345c5e2...
+                   Engine: 1.0.0-hoeos.run1
+                   Policy: 2026.09-academic-evidence
+
+[PERSISTENCE]
+Table:             public_verification_records
+API route:         POST /api/verify/persist -> 200 OK
+Record row:        persisted
+
+[VERIFICATION]
+Provider matrix:   Crossref VERIFIED, Nemotron VERIFIED,
+                   5 verified sources returned,
+                   1 TOKEN_OVERLAP finding at 4.4%,
+                   provenance DETERMINISTIC
+
+[VERDICT]
+G6 PERSISTENCE = RUNTIME PASS
