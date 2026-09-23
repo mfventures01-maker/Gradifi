@@ -115,6 +115,34 @@ export interface AcademicProvider {
   search(input: ProviderSearchInput): Promise<ProviderResult>;
 }
 
+export interface ProviderQuota {
+  providerId: SourceType;
+  maxTokens: number;
+  refillRate: number;
+  minIntervalMs: number;
+}
+
+export interface RateLimiterState {
+  tokens: number;
+  lastRefillMs: number;
+  lastAcquireMs?: number;
+}
+
+export interface FederationCallLog {
+  timestamp: string;
+  correlationId: string;
+  providerId: string;
+  url: string;
+  httpStatus?: number;
+  attempt: number;
+  durationMs: number;
+  outcome: 'SUCCESS' | 'RETRY' | 'FAILED' | 'TIMEOUT';
+  errorCode?: string;
+  errorMessage?: string;
+  matchesReturned?: number;
+  fineGrainedStatus?: string;
+}
+
 export interface VerificationMatrixEntry {
   provider: SourceType;
   credentialStatus: 'VERIFIED' | 'AUTHENTICATION_FAILED' | 'NOT_TESTED' | 'NOT_APPLICABLE';
