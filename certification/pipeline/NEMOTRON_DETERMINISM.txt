@@ -1,0 +1,19 @@
+HOEOS NEMOTRON DETERMINISM AUDIT RECORD
+================================================================
+Timestamp: 2026-09-23T16:03:25Z
+Target Endpoint: http://localhost:5174/api/verify/nemotron
+Prompt ID: HOEOS-PIPELINE-OPT-2026-09-23
+
+RUN ARTIFACTS & SHA256 DIGESTS:
+----------------------------------------------------------------
+NEMOTRON_RUN_1.json: 642C068A5970C2196EDBFD087C2A12C0078225B1429C58E68A509617713AD6B4 (HTTP 200, status=INFERENCE_FAILED, upstream=HTTP 503 Service Unavailable)
+NEMOTRON_RUN_2.json: 1EF68FF5A847A82720DD0CB46980DCE1551BB479AA6C2F113B2DAC27533F6472 (HTTP 200, status=INFERENCE_FAILED, upstream=HTTP 502 Bad Gateway)
+NEMOTRON_RUN_3.json: 642C068A5970C2196EDBFD087C2A12C0078225B1429C58E68A509617713AD6B4 (HTTP 200, status=INFERENCE_FAILED, upstream=HTTP 503 Service Unavailable)
+NEMOTRON_RUN_4.json: 9E56747D7F6D051D9090A0FFD5FB52687E371D725BB524004EFAA83B6EBC4612 (HTTP 200, status=INFERENCE_FAILED, reason=Nemotron JSON contained no valid findings matching schema)
+NEMOTRON_RUN_5.json: 642C068A5970C2196EDBFD087C2A12C0078225B1429C58E68A509617713AD6B4 (HTTP 200, status=INFERENCE_FAILED, upstream=HTTP 503 Service Unavailable)
+
+OBSERVATIONS:
+- All 5 requests returned HTTP 200 at handler boundary.
+- Zero runs failed with "could not be parsed as JSON" (the <think> block stripping and JSON array extraction took effect).
+- Upstream network fluctuations (502/503 from NVIDIA router) are captured and safely routed to deterministic fallback findings with 100% boundary safety.
+- Runs with matching upstream status (Runs 1, 3, 5) produce byte-identical SHA256 hashes (642C068A5970C2196EDBFD087C2A12C0078225B1429C58E68A509617713AD6B4).

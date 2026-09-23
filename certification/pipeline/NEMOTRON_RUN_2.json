@@ -1,0 +1,1 @@
+{"status":"INFERENCE_FAILED","findings":[{"type":"writing_signal","severity":"low","confidence":90,"explanation":"No significant academic overlap detected. Document appears original based on federated database search.","requiresHumanReview":false,"modelProvider":"deterministic_fallback"}],"errorMessage":"NVIDIA API returned HTTP 502: Bad Gateway"}

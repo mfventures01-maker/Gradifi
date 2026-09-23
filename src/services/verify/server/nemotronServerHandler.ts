@@ -94,8 +94,16 @@ Do NOT wrap in markdown backticks. Do NOT include any intro or outro text. Outpu
       };
     }
 
-    // Strip optional markdown code block backticks if present
-    const cleanedJson = content.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+    // Strip the Nemotron <think> reasoning block before JSON extraction.
+    // Handles both complete and truncated (missing </think>) cases.
+    let cleanedContent = content.trim();
+    cleanedContent = cleanedContent.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    cleanedContent = cleanedContent.replace(/<think>[\s\S]*$/gi, '').trim();
+    cleanedContent = cleanedContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+
+    // Extract the JSON array explicitly.
+    const arrayMatch = cleanedContent.match(/\[[\s\S]*\]/);
+    const cleanedJson = arrayMatch ? arrayMatch[0] : cleanedContent;
 
     let parsed: any;
     try {
