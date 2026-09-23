@@ -1,0 +1,18 @@
+D1 — PDF DOWNLOAD
+  file downloads:                   PASS
+  valid PDF:                        PASS
+  contains receipt fields:          PASS
+  no print dialog:                  PASS
+
+D2 — PERSIST ROUTE
+  HTTP status on duplicate:         200
+  body contains ALREADY_PERSISTED:  YES
+  first persist returns 200:        YES
+  tsc unchanged:                    YES
+
+D3 — MARKERS
+  diagnostic captured:              YES
+  highlights visible:               1
+  colour matches method:            YES
+  tooltip works:                    YES
+  tests still 8/8:                  YES

@@ -1,0 +1,6 @@
+Downloaded Filename: VRF-B63738FB51C2.pdf
+File Size (bytes): 6986
+File Path: C:\Projects\Gradifi\certification\demo_final\VRF-B63738FB51C2.pdf
+Valid PDF Header Check: VALID_PDF
+Timestamp: 2026-09-23T23:31:18.662Z
+Verification Method: Playwright download event interception without print dialog

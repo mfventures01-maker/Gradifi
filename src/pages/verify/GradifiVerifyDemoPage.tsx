@@ -45,6 +45,7 @@ import { getStatusStyle } from '../../services/verify/statusColorMapping';
 import { extractDocumentText, ExtractedDocument, validateDocumentFile, formatFileSize } from '../../utils/pdfExtractor';
 import { generateQRCodeSVG } from '../../utils/qrGenerator';
 import { generateVerificationReportPDF } from '../../utils/pdfReportGenerator';
+import { jsPDF } from 'jspdf';
 import { buildCanonicalAnalysisDocument } from '../../services/verify/documentNormalizer';
 
 export type DemoStep = 'upload' | 'extraction' | 'normalization' | 'federation' | 'result';
@@ -255,15 +256,36 @@ Distributed machine learning frameworks require mathematical determinism to guar
   };
 
   // Download PDF verification report
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = () => {
     if (!result || !normalizedDoc) return;
-    await generateVerificationReportPDF(publicResult || result, {
-      verificationId,
-      documentName: extractedDoc?.filename || 'submitted_document.pdf',
-      documentTitle: normalizedDoc.title,
-      documentAuthors: normalizedDoc.authors,
-      normalizedMetadata: normalizedDoc
-    });
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text('GRADIFI VERIFICATION REPORT', 14, 20);
+
+    doc.setFontSize(11);
+    doc.text(`Verification ID: ${verificationId}`, 14, 30);
+    doc.text(`Timestamp: ${result.timestamp || new Date().toISOString()}`, 14, 36);
+    doc.text(`Hash: ${result.evidenceHash || result.documentHash}`, 14, 42);
+    doc.text(`Overall Similarity: ${result.overallSimilarity}%`, 14, 48);
+
+    doc.text('Academic Evidence Sources', 14, 60);
+    let y = 68;
+    const sources = result.verifiedSources || [];
+    for (const source of sources.slice(0, 15)) {
+      const line = `${source.title || 'Untitled'} — ${source.doi || source.isbn || 'no id'}`;
+      doc.text(line, 14, y);
+      y += 6;
+      if (y > 280) {
+        doc.addPage();
+        y = 20;
+      }
+    }
+
+    const filename = verificationId.startsWith('VRF-')
+      ? `${verificationId}.pdf`
+      : `VRF-${verificationId}.pdf`;
+    doc.save(filename);
   };
 
   // Derive Google Books matches for evidence panel and hub consistency
