@@ -1,0 +1,24 @@
+PRE-REPAIR OBSERVATIONS (VRF-5D60C34F68E8)
+Document: DIGITAL THERMOMETER real.docx
+Timestamp: 2026-09-23T09:19:54.088Z
+
+1. DEFECT 4: STATE COLLAPSE IN VERIFICATION MATRIX
+Observed matrix rows:
+- OPENALEX: Credential=VERIFIED, Request=FAILED, Response=EMPTY, Canonical Color Status=Request Failed
+- UNPAYWALL: Credential=NOT_APPLICABLE, Request=FAILED, Response=EMPTY, Canonical Color Status=Empty Result
+- CORE: Credential=VERIFIED, Request=FAILED, Response=EMPTY, Canonical Color Status=Empty Result
+
+Providers showing "EMPTY" when request failed:
+- UNPAYWALL: Request is FAILED but Canonical Color Status collapses to "Empty Result"
+- CORE: Request is FAILED but Canonical Color Status collapses to "Empty Result"
+- OPENALEX: Response column shows "EMPTY" instead of distinguishing request failure
+
+2. DEFECT 5: TOPICALLY IRRELEVANT CROSSREF RESULTS
+Observed Crossref / academic hits returned from document headings:
+- CHAPTER ONE INTRODUCTION TO THE BUSINESS OF OPERA IN SEVENTEENTH‐CENTURY VENICE: PEOPLE AND FINANCES (doi:10.1093/acprof:oso/9780195154160.003.0001)
+- Chapter One Carbuncles and All: The Difficult Life of a Difficult Man (doi:10.1515/9783111065540-006)
+- When things get difficult: hard class, hard times (doi:10.4135/9781036235260.n9)
+- When Partnerships Get Difficult (doi:10.4135/9781526402080.n8)
+- Cutting government expenditures in LDCs: Which sectors get less resources during difficult times (doi:10.5089/9781616353582.022.a011)
+
+All 5 Crossref results are completely irrelevant to thermometers, temperature measurement, sensors, or microcontroller circuits because the search query was formed from heading fragments containing "CHAPTER ONE" and "difficult".

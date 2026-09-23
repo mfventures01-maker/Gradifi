@@ -850,7 +850,25 @@ Distributed machine learning frameworks require mathematical determinism to guar
                       <tbody className="divide-y divide-slate-800/60 font-medium">
                         {result.matrix.map(entry => {
                           const overallStatus = entry.provider === 'gemma' ? gemmaStatus : entry.overallStatus;
-                          const style = getStatusStyle(overallStatus);
+                          const style = (() => {
+                            if (overallStatus === 'RATE_LIMITED') {
+                              return {
+                                badgeBgClass: 'bg-amber-500/10 border-amber-500/30',
+                                badgeTextClass: 'text-amber-400',
+                                dotBgClass: 'bg-amber-400',
+                                label: 'Rate Limited'
+                              };
+                            }
+                            if (overallStatus === 'EMPTY_RESULT') {
+                              return {
+                                badgeBgClass: 'bg-slate-500/10 border-slate-500/30',
+                                badgeTextClass: 'text-slate-400',
+                                dotBgClass: 'bg-slate-400',
+                                label: 'Empty Result'
+                              };
+                            }
+                            return getStatusStyle(overallStatus);
+                          })();
                           return (
                             <tr key={entry.provider} className="hover:bg-slate-800/30 transition-colors">
                               <td className="py-2.5 px-3 font-bold text-slate-200 uppercase">{entry.provider}</td>

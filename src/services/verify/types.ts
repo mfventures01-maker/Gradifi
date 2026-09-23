@@ -22,6 +22,7 @@ export type FineGrainedProviderStatus =
   | 'REQUEST_FAILED'
   | 'SCHEMA_FAILED'
   | 'EMPTY_RESULT'
+  | 'RATE_LIMITED'
   | 'INFERENCE_VERIFIED'
   | 'INFERENCE_FAILED'
   | 'RUNTIME_AVAILABLE'

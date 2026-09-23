@@ -145,14 +145,35 @@ export class VerifyCoreService {
     // Run AI Federation (Nemotron, Gemma, Gemini)
     const aiResult = await this.aiFederation.executeFederation(documentText, engineOutput.verifiedMatches);
 
+    // Derive fine-grained matrix status helper
+    const deriveMatrixStatuses = (fineGrainedStatus: FineGrainedProviderStatus) => {
+      const realRequestStatus: 'VERIFIED' | 'FAILED' | 'BLOCKED' =
+        fineGrainedStatus === 'VERIFIED' || fineGrainedStatus === 'EMPTY_RESULT' || fineGrainedStatus === 'PARTIALLY_VERIFIED'
+          ? 'VERIFIED'
+          : 'FAILED';
+      const responseStatus: 'VERIFIED' | 'EMPTY' | 'FAILED' =
+        fineGrainedStatus === 'VERIFIED' || fineGrainedStatus === 'PARTIALLY_VERIFIED'
+          ? 'VERIFIED'
+          : fineGrainedStatus === 'EMPTY_RESULT'
+            ? 'EMPTY'
+            : 'FAILED';
+      return { realRequestStatus, responseStatus };
+    };
+
+    const oaStatuses = deriveMatrixStatuses(fineGrainedStatuses.openalex);
+    const crStatuses = deriveMatrixStatuses(fineGrainedStatuses.crossref);
+    const unStatuses = deriveMatrixStatuses(fineGrainedStatuses.unpaywall);
+    const coreStatuses = deriveMatrixStatuses(fineGrainedStatuses.core);
+    const gbStatuses = deriveMatrixStatuses(fineGrainedStatuses.googlebooks);
+
     // Build Verification Matrix
     const matrix: VerificationMatrixEntry[] = [
       {
         provider: 'openalex',
-        credentialStatus: 'VERIFIED',
-        realRequestStatus: fineGrainedStatuses.openalex === 'VERIFIED' ? 'VERIFIED' : 'FAILED',
-        responseStatus: fineGrainedStatuses.openalex === 'VERIFIED' ? 'VERIFIED' : 'EMPTY',
-        schemaStatus: 'VERIFIED',
+        credentialStatus: fineGrainedStatuses.openalex === 'AUTHENTICATION_FAILED' ? 'AUTHENTICATION_FAILED' : 'VERIFIED',
+        realRequestStatus: oaStatuses.realRequestStatus,
+        responseStatus: oaStatuses.responseStatus,
+        schemaStatus: fineGrainedStatuses.openalex === 'SCHEMA_FAILED' ? 'FAILED' : 'VERIFIED',
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
@@ -160,10 +181,10 @@ export class VerifyCoreService {
       },
       {
         provider: 'crossref',
-        credentialStatus: 'VERIFIED',
-        realRequestStatus: fineGrainedStatuses.crossref === 'VERIFIED' ? 'VERIFIED' : 'FAILED',
-        responseStatus: fineGrainedStatuses.crossref === 'VERIFIED' ? 'VERIFIED' : 'EMPTY',
-        schemaStatus: 'VERIFIED',
+        credentialStatus: fineGrainedStatuses.crossref === 'AUTHENTICATION_FAILED' ? 'AUTHENTICATION_FAILED' : 'VERIFIED',
+        realRequestStatus: crStatuses.realRequestStatus,
+        responseStatus: crStatuses.responseStatus,
+        schemaStatus: fineGrainedStatuses.crossref === 'SCHEMA_FAILED' ? 'FAILED' : 'VERIFIED',
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
@@ -172,9 +193,9 @@ export class VerifyCoreService {
       {
         provider: 'unpaywall',
         credentialStatus: 'NOT_APPLICABLE',
-        realRequestStatus: fineGrainedStatuses.unpaywall === 'VERIFIED' ? 'VERIFIED' : 'FAILED',
-        responseStatus: fineGrainedStatuses.unpaywall === 'VERIFIED' ? 'VERIFIED' : 'EMPTY',
-        schemaStatus: 'VERIFIED',
+        realRequestStatus: unStatuses.realRequestStatus,
+        responseStatus: unStatuses.responseStatus,
+        schemaStatus: fineGrainedStatuses.unpaywall === 'SCHEMA_FAILED' ? 'FAILED' : 'VERIFIED',
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
@@ -183,9 +204,9 @@ export class VerifyCoreService {
       {
         provider: 'core',
         credentialStatus: fineGrainedStatuses.core === 'AUTHENTICATION_FAILED' ? 'AUTHENTICATION_FAILED' : 'VERIFIED',
-        realRequestStatus: fineGrainedStatuses.core === 'VERIFIED' ? 'VERIFIED' : 'FAILED',
-        responseStatus: fineGrainedStatuses.core === 'VERIFIED' ? 'VERIFIED' : 'EMPTY',
-        schemaStatus: 'VERIFIED',
+        realRequestStatus: coreStatuses.realRequestStatus,
+        responseStatus: coreStatuses.responseStatus,
+        schemaStatus: fineGrainedStatuses.core === 'SCHEMA_FAILED' ? 'FAILED' : 'VERIFIED',
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
@@ -194,9 +215,9 @@ export class VerifyCoreService {
       {
         provider: 'googlebooks',
         credentialStatus: fineGrainedStatuses.googlebooks === 'AUTHENTICATION_FAILED' ? 'AUTHENTICATION_FAILED' : 'VERIFIED',
-        realRequestStatus: fineGrainedStatuses.googlebooks === 'VERIFIED' ? 'VERIFIED' : 'FAILED',
-        responseStatus: fineGrainedStatuses.googlebooks === 'VERIFIED' ? 'VERIFIED' : 'EMPTY',
-        schemaStatus: 'VERIFIED',
+        realRequestStatus: gbStatuses.realRequestStatus,
+        responseStatus: gbStatuses.responseStatus,
+        schemaStatus: fineGrainedStatuses.googlebooks === 'SCHEMA_FAILED' ? 'FAILED' : 'VERIFIED',
         provenanceStatus: 'VERIFIED',
         federationStatus: 'VERIFIED',
         aiInterpretationStatus: 'N/A',
