@@ -65,7 +65,7 @@ async function runG57Tests() {
     correlationId: 'test_g57_001'
   };
 
-  const res1 = contentValidationService.validateRetrievedContent(validRetrieval, { docTitle: 'Quantum Paper' });
+  const res1 = await contentValidationService.validateRetrievedContent(validRetrieval, { docTitle: 'Quantum Paper' });
 
   assert(res1.status === 'CONTENT_VALID', 'Status is CONTENT_VALID');
   assert(Boolean(res1.documentHash), 'documentHash generated');
@@ -86,7 +86,7 @@ async function runG57Tests() {
     correlationId: 'test_g57_002'
   };
 
-  const res2 = contentValidationService.validateRetrievedContent(emptyRetrieval);
+  const res2 = await contentValidationService.validateRetrievedContent(emptyRetrieval);
 
   assert(res2.status === 'CONTENT_EMPTY', 'Status is CONTENT_EMPTY');
   assert(typeof res2.canonicalDocument === 'undefined', 'canonicalDocument is undefined for empty content');
@@ -103,7 +103,7 @@ async function runG57Tests() {
     correlationId: 'test_g57_003'
   };
 
-  const res3 = contentValidationService.validateRetrievedContent(htmlRetrieval);
+  const res3 = await contentValidationService.validateRetrievedContent(htmlRetrieval);
 
   assert(res3.status === 'CONTENT_UNSUPPORTED', 'Status is CONTENT_UNSUPPORTED for HTML');
   assert(res3.errorMessage?.includes('webpage HTML') === true, 'errorMessage explains HTML landing page unsupported');
@@ -120,7 +120,7 @@ async function runG57Tests() {
     correlationId: 'test_g57_004'
   };
 
-  const res4 = contentValidationService.validateRetrievedContent(malformedRetrieval);
+  const res4 = await contentValidationService.validateRetrievedContent(malformedRetrieval);
 
   assert(res4.status === 'CONTENT_MALFORMED', 'Status is CONTENT_MALFORMED for stream without text');
   assert(Boolean(res4.errorMessage), 'errorMessage populated');
@@ -135,7 +135,7 @@ async function runG57Tests() {
     correlationId: 'test_g57_005'
   };
 
-  const res5 = contentValidationService.validateRetrievedContent(failedRetrieval);
+  const res5 = await contentValidationService.validateRetrievedContent(failedRetrieval);
 
   assert(res5.status === 'CONTENT_VALIDATION_FAILED', 'Status is CONTENT_VALIDATION_FAILED when retrieval failed');
 

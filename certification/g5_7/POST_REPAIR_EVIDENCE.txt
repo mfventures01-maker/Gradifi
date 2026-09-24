@@ -1,0 +1,12 @@
+POST-REPAIR EVIDENCE — G5.7 CONTENT VALIDATION
+Test file:    tests/contentValidation.test.ts
+Pre-repair:   3 PASSED, 11 FAILED
+Post-repair:  14 PASSED, 0 FAILED
+Root cause:   five missing await keywords
+Edits:        five (one per service call)
+src/ changes: none (verified)
+Artifacts:
+  certification/g5_7/contentValidation.test.prerepair.ts
+  certification/g5_7/g5_7_failure_output.txt
+  certification/g5_7/g5_7_postfix_output.txt
+Classification: RESOLVED — CATEGORY A (test harness defect)
