@@ -34,7 +34,7 @@ export class OpenAlexProvider implements AcademicProvider {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ query, limit })
+          body: JSON.stringify({ query, limit, documentText: input.documentText })
         });
 
         if (response.ok) {
@@ -42,7 +42,7 @@ export class OpenAlexProvider implements AcademicProvider {
         }
       }
 
-      return handleOpenAlexServerSearch({ query, limit });
+      return handleOpenAlexServerSearch({ query, limit, documentText: input.documentText });
     } catch (error: any) {
       return {
         providerId: this.id,

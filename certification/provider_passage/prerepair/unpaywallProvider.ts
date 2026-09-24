@@ -150,7 +150,7 @@ export class UnpaywallProvider implements AcademicProvider {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ query: doi, limit, documentText: input.documentText })
+          body: JSON.stringify({ query: doi, limit })
         });
 
         if (response.ok) {
@@ -158,7 +158,7 @@ export class UnpaywallProvider implements AcademicProvider {
         }
       }
 
-      return handleUnpaywallServerSearch({ query: doi, limit, documentText: input.documentText });
+      return handleUnpaywallServerSearch({ query: doi, limit });
     } catch (error: any) {
       return {
         providerId: this.id,

@@ -1,14 +1,14 @@
 /**
- * GRADIFI VERIFY - BROWSER CORE PROVIDER ADAPTER
+ * GRADIFI VERIFY - BROWSER GOOGLE BOOKS PROVIDER ADAPTER
  * Browser-facing adapter calling the controlled server/edge execution boundary.
  * HOEOS Standard: ZERO client credentials, ZERO VITE_* secret reads, Provable Server Boundary.
  */
 
 import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types';
-import { handleCoreServerSearch } from '../server/coreServerHandler';
+import { handleGoogleBooksServerSearch } from '../server/googleBooksServerHandler';
 
-export class CoreProvider implements AcademicProvider {
-  readonly id = 'core' as const;
+export class GoogleBooksProvider implements AcademicProvider {
+  readonly id = 'googlebooks' as const;
 
   async search(input: ProviderSearchInput): Promise<ProviderResult> {
     const limit = input.limit || 5;
@@ -18,6 +18,7 @@ export class CoreProvider implements AcademicProvider {
       return {
         providerId: this.id,
         status: 'partial',
+        fineGrainedStatus: 'EMPTY_RESULT',
         matches: [],
         rawCount: 0
       };
@@ -27,21 +28,21 @@ export class CoreProvider implements AcademicProvider {
       const isBrowser = typeof window !== 'undefined';
 
       if (isBrowser) {
-        // Controlled server/edge boundary call in browser environment
-        const response = await fetch('/api/verify/core', {
+        const response = await fetch('/api/verify/googlebooks', {
           method: 'POST',
           signal: AbortSignal.timeout(5000),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ query, limit, documentText: input.documentText })
+          body: JSON.stringify({ query, limit })
         });
 
         if (!response.ok) {
           return {
             providerId: this.id,
             status: 'unavailable',
+            fineGrainedStatus: response.status === 401 || response.status === 403 ? 'AUTHENTICATION_FAILED' : 'REQUEST_FAILED',
             matches: [],
             errorMessage: `Server endpoint returned HTTP ${response.status}: ${response.statusText}`
           };
@@ -50,15 +51,15 @@ export class CoreProvider implements AcademicProvider {
         const data: ProviderResult = await response.json();
         return data;
       } else {
-        // Direct server execution boundary in Node/Test environment
-        return handleCoreServerSearch({ query, limit, documentText: input.documentText });
+        return handleGoogleBooksServerSearch({ query, limit });
       }
     } catch (error: any) {
       return {
         providerId: this.id,
         status: 'error',
+        fineGrainedStatus: 'REQUEST_FAILED',
         matches: [],
-        errorMessage: error?.message || 'Failed to communicate with Verify CORE server boundary'
+        errorMessage: error?.message || 'Failed to communicate with Verify Google Books server boundary'
       };
     }
   }

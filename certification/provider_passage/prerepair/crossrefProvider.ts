@@ -34,7 +34,7 @@ export class CrossrefProvider implements AcademicProvider {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ query, limit, documentText: input.documentText })
+          body: JSON.stringify({ query, limit })
         });
 
         if (response.ok) {
@@ -42,7 +42,7 @@ export class CrossrefProvider implements AcademicProvider {
         }
       }
 
-      return handleCrossrefServerSearch({ query, limit, documentText: input.documentText });
+      return handleCrossrefServerSearch({ query, limit });
     } catch (error: any) {
       return {
         providerId: this.id,

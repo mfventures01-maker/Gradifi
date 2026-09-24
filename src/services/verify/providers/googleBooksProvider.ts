@@ -35,7 +35,7 @@ export class GoogleBooksProvider implements AcademicProvider {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ query, limit })
+          body: JSON.stringify({ query, limit, documentText: input.documentText })
         });
 
         if (!response.ok) {
@@ -51,7 +51,7 @@ export class GoogleBooksProvider implements AcademicProvider {
         const data: ProviderResult = await response.json();
         return data;
       } else {
-        return handleGoogleBooksServerSearch({ query, limit });
+        return handleGoogleBooksServerSearch({ query, limit, documentText: input.documentText });
       }
     } catch (error: any) {
       return {

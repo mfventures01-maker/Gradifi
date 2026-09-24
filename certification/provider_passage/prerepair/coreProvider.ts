@@ -35,7 +35,7 @@ export class CoreProvider implements AcademicProvider {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ query, limit, documentText: input.documentText })
+          body: JSON.stringify({ query, limit })
         });
 
         if (!response.ok) {
@@ -51,7 +51,7 @@ export class CoreProvider implements AcademicProvider {
         return data;
       } else {
         // Direct server execution boundary in Node/Test environment
-        return handleCoreServerSearch({ query, limit, documentText: input.documentText });
+        return handleCoreServerSearch({ query, limit });
       }
     } catch (error: any) {
       return {

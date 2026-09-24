@@ -1,0 +1,8 @@
+POST-FIX EVIDENCE
+OVERLAP_DEMO_DOC.txt Length: 1713
+Verification: VRF-FA097692445C
+Written at:   2026-09-24T18:08:50.3901+00:00
+Sources:                  5
+Sources with matchedText: 2
+Findings:                 2
+Classification: RESOLVED

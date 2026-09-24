@@ -1,14 +1,14 @@
 /**
- * GRADIFI VERIFY - BROWSER CROSSREF PROVIDER ADAPTER
+ * GRADIFI VERIFY - BROWSER OPENALEX PROVIDER ADAPTER
  * Browser-facing adapter calling the controlled server/edge execution boundary.
  * HOEOS Standard: ZERO client credentials, ZERO VITE_* secret reads, Provable Server Boundary.
  */
 
 import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types';
-import { handleCrossrefServerSearch } from '../server/crossrefServerHandler';
+import { handleOpenAlexServerSearch } from '../server/openAlexServerHandler';
 
-export class CrossrefProvider implements AcademicProvider {
-  readonly id = 'crossref' as const;
+export class OpenAlexProvider implements AcademicProvider {
+  readonly id = 'openalex' as const;
 
   async search(input: ProviderSearchInput): Promise<ProviderResult> {
     const limit = input.limit || 5;
@@ -27,14 +27,14 @@ export class CrossrefProvider implements AcademicProvider {
     try {
       const isBrowser = typeof window !== 'undefined';
       if (isBrowser) {
-        const response = await fetch('/api/verify/crossref', {
+        const response = await fetch('/api/verify/openalex', {
           method: 'POST',
-          signal: AbortSignal.timeout(10000),
+          signal: AbortSignal.timeout(15000),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ query, limit, documentText: input.documentText })
+          body: JSON.stringify({ query, limit })
         });
 
         if (response.ok) {
@@ -42,14 +42,14 @@ export class CrossrefProvider implements AcademicProvider {
         }
       }
 
-      return handleCrossrefServerSearch({ query, limit, documentText: input.documentText });
+      return handleOpenAlexServerSearch({ query, limit });
     } catch (error: any) {
       return {
         providerId: this.id,
         status: 'error',
         fineGrainedStatus: 'REQUEST_FAILED',
         matches: [],
-        errorMessage: error?.message || 'Failed to connect to Crossref API'
+        errorMessage: error?.message || 'Failed to connect to OpenAlex API'
       };
     }
   }
