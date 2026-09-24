@@ -148,7 +148,7 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
 
     const updatedMatch: EvidenceMatch = {
       ...candidate,
-      matchedText: exactMatch.matchedText || (calculatedPercentage > 0 ? snippet.slice(0, 100) : ''),
+      matchedText: exactMatch.matchedText || '',
       matchType: exactMatch.length > 20 ? 'exact' : (calculatedPercentage > 20 ? 'lexical' : 'citation'),
       matchPercentage: calculatedPercentage,
       relevanceScore,
@@ -344,32 +344,50 @@ export function extractSimilarityFindingsFromEvidenceMatches(
 
   for (const match of matches) {
     if (match.matchPercentage <= 0) continue;
-    const snippet = match.matchedText || match.originalSnippet || match.title;
-    if (!snippet) continue;
+    // Prefer the student-side passage if the federation layer provided one.
+    // Fall back to the source-side snippet only for lookup purposes; it is
+    // never used as `sourceSegment`.
+    const lookupSnippet = match.matchedText || match.originalSnippet || match.title;
+    if (!lookupSnippet) continue;
 
     const normDoc = normalizeText(documentText);
-    const normSnippet = normalizeText(snippet);
+    const normSnippet = normalizeText(lookupSnippet);
+    if (!normSnippet) continue;
+
+    const srcIdx = normDoc.indexOf(normSnippet);
+
+    // Only emit a finding if the student's document actually contains the
+    // matched snippet. Otherwise the marker layer cannot render it and the
+    // correction panel would reference text the student never wrote.
+    if (srcIdx === -1) continue;
 
     let matchMethod: SimilarityMatchMethod = 'TOKEN_OVERLAP';
-    if (match.matchType === 'exact' || (normSnippet.length >= 12 && normDoc.includes(normSnippet))) {
+    if (
+      match.matchType === 'exact' ||
+      (normSnippet.length >= 12 && normDoc.includes(normSnippet))
+    ) {
       matchMethod = 'EXACT_PHRASE';
-    } else if (match.matchType === 'lexical' || calculateNGramOverlap(documentText, snippet, 3) > 20) {
+    } else if (
+      match.matchType === 'lexical' ||
+      calculateNGramOverlap(documentText, lookupSnippet, 3) > 20
+    ) {
       matchMethod = 'NGRAM';
     }
 
-    const srcIdx = normDoc.indexOf(normSnippet);
-    const findingId = computeHash(`${documentHash}:${match.sourceId}:${matchMethod}:${match.matchPercentage}:${snippet.slice(0, 20)}`);
+    const findingId = computeHash(
+      `${documentHash}:${match.sourceId}:${matchMethod}:${match.matchPercentage}:${lookupSnippet.slice(0, 20)}`
+    );
 
     findings.push({
       findingId,
       sourceDocumentId: documentHash,
       matchedDocumentId: match.sourceId,
-      sourceSegment: match.matchedText || snippet.slice(0, 150),
-      matchedSegment: snippet.slice(0, 150),
+      sourceSegment: documentText.slice(srcIdx, srcIdx + lookupSnippet.length),
+      matchedSegment: lookupSnippet.slice(0, 150),
       similarityScore: match.matchPercentage,
       matchMethod,
-      sourceStart: srcIdx !== -1 ? srcIdx : undefined,
-      sourceEnd: srcIdx !== -1 ? srcIdx + snippet.length : undefined,
+      sourceStart: srcIdx,
+      sourceEnd: srcIdx + lookupSnippet.length,
       provenance: 'DETERMINISTIC'
     });
   }

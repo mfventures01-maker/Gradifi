@@ -1,0 +1,5 @@
+﻿
+src\services\verify\deterministicEngine.ts:151:      matchedText: exactMatch.matchedText || (calculatedPercentage > 0 
+? snippet.slice(0, 100) : ''),
+
+
