@@ -112,6 +112,12 @@ export async function handleCoreServerSearch(payload: CoreServerRequestPayload):
           const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
           const passage = extractStudentPassage(studentText, originalSnippet);
           const matchedText = passage ? passage.text : '';
+          const matchPercentage = (passage && studentText.length > 0)
+            ? Math.round((passage.text.length / studentText.length) * 100)
+            : 0;
+          const matchType = passage
+            ? (passage.text === originalSnippet ? 'exact' : 'lexical')
+            : 'exact';
 
           const match: EvidenceMatch = {
             sourceId: item.id ? `core:${item.id}` : `core_${doi || 'record'}`,
@@ -123,9 +129,9 @@ export async function handleCoreServerSearch(payload: CoreServerRequestPayload):
             matchedTextStart: passage?.start,
             matchedTextEnd: passage?.end,
             originalSnippet,
-            matchType: 'exact',
-            matchPercentage: 0,
-            relevanceScore: 0,
+            matchType,
+            matchPercentage,
+            relevanceScore: 0,   // not yet populated — see HOEOS-RELEVANCE
             provenance: {
               provider: 'core',
               providerRecordId: item.id ? String(item.id) : '',

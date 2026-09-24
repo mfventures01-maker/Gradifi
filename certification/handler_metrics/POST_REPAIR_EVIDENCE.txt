@@ -1,0 +1,11 @@
+POST-REPAIR EVIDENCE — HANDLER METRICS
+Verification: VRF-FA097692445C
+Written at:   2026-09-24T18:55:11.103934+00:00
+Sources:                  6
+Findings:                 2
+
+Per-source metrics:
+  doi:10.1145/235968.233323 | type=lexical | pct=5 | rel=0
+  doi:10.1007/978-1-4302-0550-0_10 | type=lexical | pct=4 | rel=0
+
+Classification: RESOLVED

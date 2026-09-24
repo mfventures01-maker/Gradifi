@@ -108,12 +108,6 @@ export async function handleOpenAlexServerSearch(payload: OpenAlexServerRequestP
       const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
       const passage = extractStudentPassage(studentText, originalSnippet);
       const matchedText = passage ? passage.text : '';
-      const matchPercentage = (passage && studentText.length > 0)
-        ? Math.round((passage.text.length / studentText.length) * 100)
-        : 0;
-      const matchType = passage
-        ? (passage.text === originalSnippet ? 'exact' : 'lexical')
-        : 'semantic';
 
       const match: EvidenceMatch = {
         sourceId: item.id || `openalex_${doi || item.publication_year || 'record'}`,
@@ -125,9 +119,9 @@ export async function handleOpenAlexServerSearch(payload: OpenAlexServerRequestP
         matchedTextStart: passage?.start,
         matchedTextEnd: passage?.end,
         originalSnippet,
-        matchType,
-        matchPercentage,
-        relevanceScore: 0,   // not yet populated — see HOEOS-RELEVANCE
+        matchType: 'semantic',
+        matchPercentage: 0,
+        relevanceScore: 0,
         provenance: {
           provider: 'openalex',
           providerRecordId: item.id || '',

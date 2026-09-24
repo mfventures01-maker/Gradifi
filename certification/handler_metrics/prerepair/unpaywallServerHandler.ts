@@ -90,12 +90,6 @@ export async function handleUnpaywallServerSearch(payload: UnpaywallServerReques
         const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
         const passage = extractStudentPassage(studentText, originalSnippet);
         const matchedText = passage ? passage.text : '';
-        const matchPercentage = (passage && studentText.length > 0)
-          ? Math.round((passage.text.length / studentText.length) * 100)
-          : 0;
-        const matchType = passage
-          ? (passage.text === originalSnippet ? 'exact' : 'lexical')
-          : 'citation';
 
         const match: EvidenceMatch = {
           sourceId: `unpaywall:${doi}`,
@@ -107,9 +101,9 @@ export async function handleUnpaywallServerSearch(payload: UnpaywallServerReques
           matchedTextStart: passage?.start,
           matchedTextEnd: passage?.end,
           originalSnippet,
-          matchType,
-          matchPercentage,
-          relevanceScore: 0,   // not yet populated — see HOEOS-RELEVANCE
+          matchType: 'citation',
+          matchPercentage: 0,
+          relevanceScore: 0,
           provenance: {
             provider: 'unpaywall',
             providerRecordId: doi,

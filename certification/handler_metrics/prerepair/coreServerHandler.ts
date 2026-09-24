@@ -1,6 +1,6 @@
 /**
- * GRADIFI VERIFY - SERVER-SIDE CROSSREF API HANDLER
- * Provable server/edge execution path for Crossref metadata retrieval.
+ * GRADIFI VERIFY - SERVER-SIDE CORE API HANDLER
+ * Provable server/edge execution path for CORE metadata retrieval.
  * HOEOS Standard: Server-Only Credentials, Strict Input Boundary, Zero Secret Leakage.
  */
 
@@ -8,7 +8,7 @@ import { ProviderResult, EvidenceMatch } from '../types';
 import { enqueue } from '../federation/requestQueue';
 import { extractStudentPassage } from './passageExtractor';
 
-export interface CrossrefServerRequestPayload {
+export interface CoreServerRequestPayload {
   query?: string;
   documentText?: string;
   limit?: number;
@@ -21,15 +21,15 @@ function generateCorrelationId(prefix: string): string {
   return `${prefix}_${Date.now()}_${nonce}`;
 }
 
-export async function handleCrossrefServerSearch(payload: CrossrefServerRequestPayload): Promise<ProviderResult> {
+export async function handleCoreServerSearch(payload: CoreServerRequestPayload): Promise<ProviderResult> {
   const requestTimestamp = new Date().toISOString();
-  const correlationId = generateCorrelationId('cr');
+  const correlationId = generateCorrelationId('core');
 
   const rawQuery = typeof payload?.query === 'string' ? payload.query.trim() : '';
   if (!rawQuery) {
     const responseTimestamp = new Date().toISOString();
     return {
-      providerId: 'crossref',
+      providerId: 'core',
       status: 'partial',
       fineGrainedStatus: 'EMPTY_RESULT',
       matches: [],
@@ -43,32 +43,51 @@ export async function handleCrossrefServerSearch(payload: CrossrefServerRequestP
 
   const query = rawQuery.slice(0, 200);
   const limit = Math.max(1, Math.min(10, typeof payload?.limit === 'number' ? payload.limit : 5));
-  const email = process.env.VITE_CROSSREF_EMAIL || process.env.CROSSREF_EMAIL || 'verify@gradifi.org';
-  const fetchUrl = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=${limit}&mailto=${encodeURIComponent(email)}`;
+
+  const apiKey = process.env.CORE_API_KEY;
+
+  if (!apiKey) {
+    const responseTimestamp = new Date().toISOString();
+    return {
+      providerId: 'core',
+      status: 'unavailable',
+      fineGrainedStatus: 'AUTHENTICATION_FAILED',
+      matches: [],
+      errorMessage: 'CORE_API_KEY server configuration is unavailable',
+      errorCode: 'MISSING_SERVER_KEY',
+      requestTimestamp,
+      responseTimestamp,
+      correlationId
+    };
+  }
+
+  const fetchUrl = `https://api.core.ac.uk/v3/search/works?q=${encodeURIComponent(query)}&limit=${limit}`;
 
   try {
     return await enqueue<ProviderResult>({
-      providerId: 'crossref',
+      providerId: 'core',
       correlationId,
       url: fetchUrl,
       fn: async () => {
         const response = await fetch(fetchUrl, {
           method: 'GET',
           headers: {
+            'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'User-Agent': `GradifiVerify/1.0 (mailto:${email})`
+            'Authorization': `Bearer ${apiKey}`
           }
         });
 
         const responseTimestamp = new Date().toISOString();
 
         if (!response.ok) {
+          const isAuthError = response.status === 401 || response.status === 403;
           return {
-            providerId: 'crossref',
-            status: response.status === 429 ? 'unavailable' : 'unavailable',
-            fineGrainedStatus: response.status === 429 ? 'RATE_LIMITED' : 'REQUEST_FAILED',
+            providerId: 'core',
+            status: isAuthError ? 'error' : 'unavailable',
+            fineGrainedStatus: isAuthError ? 'AUTHENTICATION_FAILED' : 'REQUEST_FAILED',
             matches: [],
-            errorMessage: `Crossref API returned HTTP ${response.status}: ${response.statusText}`,
+            errorMessage: `CORE API returned HTTP ${response.status}: ${response.statusText}`,
             errorCode: `HTTP_${response.status}`,
             requestTimestamp,
             responseTimestamp,
@@ -77,56 +96,47 @@ export async function handleCrossrefServerSearch(payload: CrossrefServerRequestP
         }
 
         const data = await response.json();
-        const items = data.message?.items || [];
+        const results = Array.isArray(data?.results) ? data.results : [];
         const matches: EvidenceMatch[] = [];
 
-        for (const item of items) {
-          const doi = item.DOI;
-          const title = item.title?.[0] || 'Untitled Crossref Record';
-          const authors = (item.author || [])
-            .map((a: any) => `${a.given || ''} ${a.family || ''}`.trim())
-            .filter((name: string) => name.length > 0);
-          const containerTitle = item['container-title']?.[0] || '';
-          const publishedYear = item.published?.['date-parts']?.[0]?.[0];
-          const isbn = Array.isArray(item.ISBN) ? item.ISBN[0] : undefined;
-          const originalSnippet = containerTitle ? `${title} (${containerTitle})` : title;
+        for (const item of results) {
+          const doi = typeof item.doi === 'string' ? item.doi.trim() : undefined;
+          const title = typeof item.title === 'string' ? item.title.trim() : 'Untitled CORE Work';
+          const authors = Array.isArray(item.authors)
+            ? item.authors.map((a: any) => (typeof a === 'string' ? a : a?.name)).filter((n: any): n is string => typeof n === 'string' && n.length > 0)
+            : [];
+          
+          const downloadUrl = item.downloadUrl || item.links?.[0]?.url || (doi ? `https://doi.org/${doi}` : '#');
+          const abstractSnippet = typeof item.abstract === 'string' ? item.abstract : title;
+          const originalSnippet = abstractSnippet.slice(0, 300);
           const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
           const passage = extractStudentPassage(studentText, originalSnippet);
           const matchedText = passage ? passage.text : '';
-          const matchPercentage = (passage && studentText.length > 0)
-            ? Math.round((passage.text.length / studentText.length) * 100)
-            : 0;
-          const matchType = passage
-            ? (passage.text === originalSnippet ? 'exact' : 'lexical')
-            : 'citation';
 
           const match: EvidenceMatch = {
-            sourceId: doi ? `doi:${doi}` : `crossref_${item.created?.timestamp || 'record'}`,
+            sourceId: item.id ? `core:${item.id}` : `core_${doi || 'record'}`,
             title,
             authors: authors.length > 0 ? authors : ['Unknown Author'],
-            url: doi ? `https://doi.org/${doi}` : item.URL || '#',
+            url: downloadUrl,
             doi,
-            isbn,
             matchedText,
             matchedTextStart: passage?.start,
             matchedTextEnd: passage?.end,
             originalSnippet,
-            matchType,
-            matchPercentage,
-            relevanceScore: 0,   // not yet populated — see HOEOS-RELEVANCE
+            matchType: 'exact',
+            matchPercentage: 0,
+            relevanceScore: 0,
             provenance: {
-              provider: 'crossref',
-              providerRecordId: doi || item.score?.toString() || '',
+              provider: 'core',
+              providerRecordId: item.id ? String(item.id) : '',
               retrievedAt: responseTimestamp,
-              sourceType: item.type || 'crossref_work',
-              sourceUrl: doi ? `https://doi.org/${doi}` : item.URL || '',
+              sourceType: 'core_repository_work',
+              sourceUrl: downloadUrl,
               title,
               authors: authors.length > 0 ? authors : ['Unknown Author'],
               doi,
-              isbn,
-              publishedYear,
-              publisher: item.publisher,
-              provenanceState: 'VERIFIED',
+              publishedYear: typeof item.yearPublished === 'number' ? item.yearPublished : undefined,
+              provenanceState: doi ? 'VERIFIED' : 'PARTIAL',
               query,
               requestTimestamp,
               responseTimestamp,
@@ -139,11 +149,11 @@ export async function handleCrossrefServerSearch(payload: CrossrefServerRequestP
         }
 
         return {
-          providerId: 'crossref',
+          providerId: 'core',
           status: 'success',
-          fineGrainedStatus: matches.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
+          fineGrainedStatus: results.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
           matches,
-          rawCount: items.length,
+          rawCount: results.length,
           requestTimestamp,
           responseTimestamp,
           correlationId
@@ -153,11 +163,11 @@ export async function handleCrossrefServerSearch(payload: CrossrefServerRequestP
   } catch (error: any) {
     const responseTimestamp = new Date().toISOString();
     return {
-      providerId: 'crossref',
+      providerId: 'core',
       status: 'error',
       fineGrainedStatus: 'REQUEST_FAILED',
       matches: [],
-      errorMessage: error?.message || 'Failed to execute Crossref API request',
+      errorMessage: error?.message || 'Failed to execute CORE API request',
       errorCode: 'FETCH_ERROR',
       requestTimestamp,
       responseTimestamp,
