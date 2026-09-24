@@ -78,6 +78,8 @@ export interface EvidenceMatch {
   doi?: string;
   isbn?: string;
   matchedText: string;
+  matchedTextStart?: number;
+  matchedTextEnd?: number;
   originalSnippet: string;
   matchType: 'exact' | 'lexical' | 'semantic' | 'citation';
   matchPercentage: number;
