@@ -1,0 +1,15 @@
+PROVIDER PASSAGE COMPUTATION
+  helper created:               YES
+  helper tests pass:            5/5
+  core handler updated:         YES
+  crossref handler updated:     YES
+  googlebooks handler updated:  YES
+  openalex handler updated:     YES
+  unpaywall handler updated:    YES
+  EvidenceMatch type extended:  YES
+  tsc baseline maintained:      YES
+  marker tests pass:            8/8
+  pipeline tests pass:          6/6
+  correction tests pass:        8/8
+  runtime findings count:       0
+  runtime renderable count:     0

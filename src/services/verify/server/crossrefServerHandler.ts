@@ -6,9 +6,11 @@
 
 import { ProviderResult, EvidenceMatch } from '../types';
 import { enqueue } from '../federation/requestQueue';
+import { extractStudentPassage } from './passageExtractor';
 
 export interface CrossrefServerRequestPayload {
   query?: string;
+  documentText?: string;
   limit?: number;
 }
 
@@ -87,6 +89,10 @@ export async function handleCrossrefServerSearch(payload: CrossrefServerRequestP
           const containerTitle = item['container-title']?.[0] || '';
           const publishedYear = item.published?.['date-parts']?.[0]?.[0];
           const isbn = Array.isArray(item.ISBN) ? item.ISBN[0] : undefined;
+          const originalSnippet = containerTitle ? `${title} (${containerTitle})` : title;
+          const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
+          const passage = extractStudentPassage(studentText, originalSnippet);
+          const matchedText = passage ? passage.text : '';
 
           const match: EvidenceMatch = {
             sourceId: doi ? `doi:${doi}` : `crossref_${item.created?.timestamp || 'record'}`,
@@ -95,8 +101,10 @@ export async function handleCrossrefServerSearch(payload: CrossrefServerRequestP
             url: doi ? `https://doi.org/${doi}` : item.URL || '#',
             doi,
             isbn,
-            matchedText: '',
-            originalSnippet: containerTitle ? `${title} (${containerTitle})` : title,
+            matchedText,
+            matchedTextStart: passage?.start,
+            matchedTextEnd: passage?.end,
+            originalSnippet,
             matchType: 'citation',
             matchPercentage: 0,
             relevanceScore: 0,

@@ -6,9 +6,11 @@
 
 import { ProviderResult, EvidenceMatch } from '../types';
 import { enqueue } from '../federation/requestQueue';
+import { extractStudentPassage } from './passageExtractor';
 
 export interface CoreServerRequestPayload {
   query?: string;
+  documentText?: string;
   limit?: number;
 }
 
@@ -106,6 +108,10 @@ export async function handleCoreServerSearch(payload: CoreServerRequestPayload):
           
           const downloadUrl = item.downloadUrl || item.links?.[0]?.url || (doi ? `https://doi.org/${doi}` : '#');
           const abstractSnippet = typeof item.abstract === 'string' ? item.abstract : title;
+          const originalSnippet = abstractSnippet.slice(0, 300);
+          const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
+          const passage = extractStudentPassage(studentText, originalSnippet);
+          const matchedText = passage ? passage.text : '';
 
           const match: EvidenceMatch = {
             sourceId: item.id ? `core:${item.id}` : `core_${doi || 'record'}`,
@@ -113,8 +119,10 @@ export async function handleCoreServerSearch(payload: CoreServerRequestPayload):
             authors: authors.length > 0 ? authors : ['Unknown Author'],
             url: downloadUrl,
             doi,
-            matchedText: '',
-            originalSnippet: abstractSnippet.slice(0, 300),
+            matchedText,
+            matchedTextStart: passage?.start,
+            matchedTextEnd: passage?.end,
+            originalSnippet,
             matchType: 'exact',
             matchPercentage: 0,
             relevanceScore: 0,

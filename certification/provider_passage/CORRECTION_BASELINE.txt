@@ -1,0 +1,14 @@
+================================================================
+HOEOS CORRECTION PANEL & CITATION FORMATTER TEST SUITE
+================================================================
+PASS — Test 1 — Empty findings: formatter returns no cards
+PASS — Test 2 — One finding with VERIFIED source: one card
+PASS — Test 3 — One finding with PARTIAL source: no card
+PASS — Test 4 — APA format correct for a known EvidenceMatch
+PASS — Test 5 — MLA format correct for the same match
+PASS — Test 6 — Determinism: same match + same format -> identical string
+PASS — Test 7 — Citation with missing DOI uses ISBN in output
+PASS — Test 8 — Citation with no authors uses "Author metadata unavailable"
+================================================================
+TOTAL: 8 PASS / 0 FAIL
+================================================================

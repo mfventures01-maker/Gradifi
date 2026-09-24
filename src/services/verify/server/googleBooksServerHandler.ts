@@ -6,9 +6,11 @@
 
 import { ProviderResult, EvidenceMatch } from '../types';
 import { enqueue } from '../federation/requestQueue';
+import { extractStudentPassage } from './passageExtractor';
 
 export interface GoogleBooksServerRequestPayload {
   query?: string;
+  documentText?: string;
   limit?: number;
 }
 
@@ -146,6 +148,11 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
         }
       }
 
+      const originalSnippet = snippet.slice(0, 300);
+      const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
+      const passage = extractStudentPassage(studentText, originalSnippet);
+      const matchedText = passage ? passage.text : '';
+
       const match: EvidenceMatch = {
         sourceId: `gb:${id}`,
         title,
@@ -153,8 +160,10 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
         url: infoLink,
         doi,
         isbn,
-        matchedText: '',
-        originalSnippet: snippet.slice(0, 300),
+        matchedText,
+        matchedTextStart: passage?.start,
+        matchedTextEnd: passage?.end,
+        originalSnippet,
         matchType: 'citation',
         matchPercentage: 0,
         relevanceScore: 0,

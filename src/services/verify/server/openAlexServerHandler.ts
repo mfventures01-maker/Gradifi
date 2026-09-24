@@ -5,9 +5,11 @@
  */
 
 import { ProviderResult, EvidenceMatch } from '../types';
+import { extractStudentPassage } from './passageExtractor';
 
 export interface OpenAlexServerRequestPayload {
   query?: string;
+  documentText?: string;
   limit?: number;
 }
 
@@ -102,14 +104,21 @@ export async function handleOpenAlexServerSearch(payload: OpenAlexServerRequestP
         abstractSnippet = words.slice(0, 100).map(w => w[0]).join(' ');
       }
 
+      const originalSnippet = abstractSnippet || item.title || '';
+      const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
+      const passage = extractStudentPassage(studentText, originalSnippet);
+      const matchedText = passage ? passage.text : '';
+
       const match: EvidenceMatch = {
         sourceId: item.id || `openalex_${doi || item.publication_year || 'record'}`,
         title: item.title || 'Untitled OpenAlex Record',
         authors: authors.length > 0 ? authors : ['Unknown Author'],
         url: item.doi || item.id || '#',
         doi,
-        matchedText: '',
-        originalSnippet: abstractSnippet || item.title || '',
+        matchedText,
+        matchedTextStart: passage?.start,
+        matchedTextEnd: passage?.end,
+        originalSnippet,
         matchType: 'semantic',
         matchPercentage: 0,
         relevanceScore: 0,

@@ -1,0 +1,14 @@
+================================================================
+HOEOS DETERMINISTIC MARKER RENDERING TEST SUITE
+================================================================
+PASS — Test 1 — Empty findings
+PASS — Test 2 — One finding at start
+PASS — Test 3 — Two non-overlapping findings
+PASS — Test 4 — Two overlapping findings
+PASS — Test 5 — Colour class by method
+PASS — Test 6 — filterVerifiedFindings drops PARTIAL
+PASS — Test 7 — Out-of-bounds finding is discarded
+PASS — Test 8 — Determinism across shuffled findings
+================================================================
+TOTAL: 8 PASS / 0 FAIL
+================================================================

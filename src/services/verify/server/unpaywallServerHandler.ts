@@ -6,9 +6,11 @@
 
 import { ProviderResult, EvidenceMatch } from '../types';
 import { enqueue } from '../federation/requestQueue';
+import { extractStudentPassage } from './passageExtractor';
 
 export interface UnpaywallServerRequestPayload {
   query?: string;
+  documentText?: string;
   limit?: number;
 }
 
@@ -84,14 +86,21 @@ export async function handleUnpaywallServerSearch(payload: UnpaywallServerReques
         const bestLocation = item.best_oa_location || {};
         const pdfUrl = bestLocation.url_for_pdf || bestLocation.url || item.doi_url || `https://doi.org/${doi}`;
 
+        const originalSnippet = bestLocation.evidence ? `Open Access Evidence: ${bestLocation.evidence}` : title;
+        const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
+        const passage = extractStudentPassage(studentText, originalSnippet);
+        const matchedText = passage ? passage.text : '';
+
         const match: EvidenceMatch = {
           sourceId: `unpaywall:${doi}`,
           title,
           authors: authors.length > 0 ? authors : ['Unknown Author'],
           url: pdfUrl,
           doi,
-          matchedText: '',
-          originalSnippet: bestLocation.evidence ? `Open Access Evidence: ${bestLocation.evidence}` : title,
+          matchedText,
+          matchedTextStart: passage?.start,
+          matchedTextEnd: passage?.end,
+          originalSnippet,
           matchType: 'citation',
           matchPercentage: 0,
           relevanceScore: 0,
