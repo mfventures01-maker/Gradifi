@@ -1,0 +1,23 @@
+Phase 1 — G5_COMPOSITE regeneration
+Repair ID:                HOEOS-FORENSIC-COMPOSITE-VERCEL-2026-09-25
+Date:                     2026-09-25
+
+Files covered:            18  (providers + handlers + matchedTextHighlightingService)
+Composite value:          0E1EED362231A7FE02CEFB6C1DDE6AA8FA0EDAD155E75B549A7E514F9F337E8A
+Composite reproducible:   yes
+  Run A:                  0E1EED362231A7FE02CEFB6C1DDE6AA8FA0EDAD155E75B549A7E514F9F337E8A
+  Run B:                  0E1EED362231A7FE02CEFB6C1DDE6AA8FA0EDAD155E75B549A7E514F9F337E8A
+
+Artifact composite value: 8F47753FFF84817B0187E55FA6ACD1FF11B0573DA8622105F79054FA3D2556B5
+Artifact reproducible:    yes
+
+Files written:
+  certification/g5/G5_COMPOSITE.txt
+  certification/g5/G5_ARTIFACT_COMPOSITE.txt
+  certification/g5_regeneration/01_file_list.txt
+  certification/g5_regeneration/02_composite_run_a.txt
+  certification/g5_regeneration/02_composite_run_b.txt
+  certification/g5_regeneration/03_reproducibility_check.txt
+  certification/g5_regeneration/POST_REPAIR_EVIDENCE.txt
+
+Classification: CATEGORY B — CERTIFICATION ARTIFACT DEFECT. RESOLVED.

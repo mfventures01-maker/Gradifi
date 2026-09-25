@@ -1,0 +1,21 @@
+G5_ARTIFACT_COMPOSITE: 8F47753FFF84817B0187E55FA6ACD1FF11B0573DA8622105F79054FA3D2556B5
+Computed:               2026-09-25T12:39:50Z
+Command:
+$files = Get-ChildItem "certification\g5" -Recurse -File |
+         Where-Object { $_.Name -ne "G5_ARTIFACT_COMPOSITE.txt" } |
+         Select-Object -ExpandProperty FullName |
+         Sort-Object
+
+$lines = $files | ForEach-Object {
+  $hash = (Get-FileHash $_ -Algorithm SHA256).Hash
+  "$($_ -replace '/', '\') = $hash"
+}
+
+$joined = $lines -join "`n"
+$sha = [System.Security.Cryptography.SHA256]::Create()
+$bytes = [Text.Encoding]::UTF8.GetBytes($joined)
+$artifactComposite = [System.BitConverter]::ToString(
+  $sha.ComputeHash($bytes)
+).Replace("-", "")
+
+Write-Host "G5_ARTIFACT_COMPOSITE: $artifactComposite"
