@@ -1,0 +1,6 @@
+﻿=== V3 HTTP END-TO-END PROBE ===
+HTTP Status: 200 OK
+providerId: semanticscholar
+status: success
+fineGrainedStatus: VERIFIED
+matches returned: 3

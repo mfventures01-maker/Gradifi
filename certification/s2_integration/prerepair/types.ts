@@ -9,7 +9,6 @@ export type SourceType =
   | 'unpaywall'
   | 'core'
   | 'googlebooks'
-  | 'semanticscholar'
   | 'nemotron'
   | 'gemma'
   | 'gemini';

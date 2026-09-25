@@ -1,0 +1,19 @@
+﻿Γùç injected env (18) from .env.local // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+Γùç injected env (0) from .env // tip: Γîÿ override existing { override: true }
+=== V2 HANDLER DIRECT INVOCATION ===
+providerId: semanticscholar
+status: success
+fineGrainedStatus: VERIFIED
+matches returned: 3
+
+First match sample:
+  sourceId: s2:07912741c6c96e6ad5b2c2d6c6c3b2de5c8a271b
+  title: Advances and Open Problems in Federated Learning
+  authors: P. Kairouz, H. B. McMahan, Brendan Avent, A. Bellet, M. Bennis, A. Bhagoji, Kallista A. Bonawitz, Zachary B. Charles, Graham Cormode, Rachel Cummings, Rafael G. L. D'Oliveira, Hubert Eichner, Salim El Rouayheb, David Evans, Josh Gardner, Zachary Garrett, A. Gasc├│n, Badih Ghazi, Phillip B. Gibbons, M. Gruteser, Z. Harchaoui, Chaoyang He, Lie He, Zhouyuan Huo, Ben Hutchinson, Justin Hsu, Martin Jaggi, T. Javidi, Gauri Joshi, M. Khodak, Jakub Konecn├╜, A. Korolova, F. Koushanfar, O. Koyejo, Tancr├¿de Lepoint, Yang Liu, Prateek Mittal, M. Mohri, R. Nock, Ayfer ├ûzg├╝r, R. Pagh, Hang Qi, Daniel Ramage, R. Raskar, Mariana Raykova, D. Song, Weikang Song, Sebastian U. Stich, Ziteng Sun, A. Suresh, Florian Tram├¿r, Praneeth Vepakomma, Jianyu Wang, Li Xiong, Zheng Xu, Qiang Yang, Felix X. Yu, Han Yu, Sen Zhao
+  doi: 10.1561/2200000083
+  url: https://arxiv.org/pdf/1912.04977
+  matchedText: machine learning setting where many clients collaboratively train a model under the
+  matchType: lexical
+  matchPercentage: 43
+  provenanceState: VERIFIED
+  fineGrainedStatus: VERIFIED

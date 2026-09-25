@@ -1,0 +1,30 @@
+﻿Γùç injected env (18) from .env.local // tip: Γîÿ enable debugging { debug: true }
+Γùç injected env (0) from .env // tip: Γîü auth for agents [www.vestauth.com]
+=== V5 DOCUMENT TEXT FORWARDING PARITY TEST ===
+
+Total sources returned: 3
+
+Source 1: s2:07912741c6c96e6ad5b2c2d6c6c3b2de5c8a271b
+  Title: Advances and Open Problems in Federated Learning
+  matchedText non-empty: true
+  matchedText snippet: "machine learning setting where many clients collaboratively train a model under the..."
+  matchType: lexical
+  matchPercentage: 43%
+
+Source 2: s2:fc7b1823bd8b59a590d0bc33bd7a145518fd71c5
+  Title: SCAFFOLD: Stochastic Controlled Averaging for Federated Learning
+  matchedText non-empty: false
+  matchedText snippet: "..."
+  matchType: lexical
+  matchPercentage: 0%
+
+Source 3: s2:49bdeb07b045dd77f0bfe2b44436608770235a23
+  Title: Federated Learning: Challenges, Methods, and Future Directions
+  matchedText non-empty: false
+  matchedText snippet: "..."
+  matchType: lexical
+  matchPercentage: 0%
+
+Sources with non-empty matchedText: 1/3
+
+Result: PASS (Input-forwarding parity verified)

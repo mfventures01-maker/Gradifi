@@ -1,0 +1,25 @@
+Repair ID:            HOEOS-S2-PROVIDER-2026-09-25
+Date:                 2026-09-25
+
+Files created:        src/services/verify/server/semanticScholarServerHandler.ts
+                      src/services/verify/providers/semanticScholarProvider.ts
+Files edited:         src/services/verify/server/verifyServerPlugin.ts
+                      src/services/verify/types.ts
+Dependency:           none new
+Env var:              SEMANTIC_SCHOLAR_API_KEY present
+
+V1 direct probe:      HTTP 200 OK, total=6091994
+V2 handler direct:    providerId=semanticscholar, fineGrainedStatus=VERIFIED, matches=3
+V3 HTTP probe:        HTTP 200 OK, matches=3
+V4 predictability:    DETERMINISTIC, per-run statuses: [VERIFIED, VERIFIED, VERIFIED, VERIFIED, VERIFIED], 429s observed: 0
+V5 forwarding:        1/3 sources with non-empty matchedText (43% match)
+V6 tsc + build:       exit 0 / vite build clean
+V7 scope:             only permitted provider files touched
+
+Thresholds:
+  T1 Predictability:  PASS (DETERMINISTIC)
+  T2 Reliability:     PASS (5/5 VERIFIED)
+  T3 Rate-limit:      PASS (0 429s observed in 5 runs)
+  T4 Forwarding:      PASS (matchedText populated via extractStudentPassage)
+
+Classification: NEW PROVIDER ADDITION — RESOLVED

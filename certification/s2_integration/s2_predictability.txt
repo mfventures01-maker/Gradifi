@@ -1,0 +1,25 @@
+﻿Γùç injected env (18) from .env.local // tip: Γîÿ enable debugging { debug: true }
+Γùç injected env (0) from .env // tip: Γîÿ enable debugging { debug: true }
+=== V4 SEMANTIC SCHOLAR PREDICTABILITY TEST ===
+QUERY: "federated learning" | RUNS: 5 | DELAY: 2000ms
+
+  run 1/5... VERIFIED (3 ids)
+  run 2/5... VERIFIED (3 ids)
+  run 3/5... VERIFIED (3 ids)
+  run 4/5... VERIFIED (3 ids)
+  run 5/5... VERIFIED (3 ids)
+
+Per-run result sets:
+  run 1: VERIFIED | [s2:07912741c6c96e6ad5b2c2d6c6c3b2de5c8a271b, s2:49bdeb07b045dd77f0bfe2b44436608770235a23, s2:fc7b1823bd8b59a590d0bc33bd7a145518fd71c5]
+  run 2: VERIFIED | [s2:07912741c6c96e6ad5b2c2d6c6c3b2de5c8a271b, s2:49bdeb07b045dd77f0bfe2b44436608770235a23, s2:fc7b1823bd8b59a590d0bc33bd7a145518fd71c5]
+  run 3: VERIFIED | [s2:07912741c6c96e6ad5b2c2d6c6c3b2de5c8a271b, s2:49bdeb07b045dd77f0bfe2b44436608770235a23, s2:fc7b1823bd8b59a590d0bc33bd7a145518fd71c5]
+  run 4: VERIFIED | [s2:07912741c6c96e6ad5b2c2d6c6c3b2de5c8a271b, s2:49bdeb07b045dd77f0bfe2b44436608770235a23, s2:fc7b1823bd8b59a590d0bc33bd7a145518fd71c5]
+  run 5: VERIFIED | [s2:07912741c6c96e6ad5b2c2d6c6c3b2de5c8a271b, s2:49bdeb07b045dd77f0bfe2b44436608770235a23, s2:fc7b1823bd8b59a590d0bc33bd7a145518fd71c5]
+
+Distinct IDs across all runs: 3
+IDs present in every run:     3
+HTTP 429 / RATE_LIMITED count: 0
+Classification:               DETERMINISTIC
+Reliability (VERIFIED runs):   5/5
+
+Result: PASS

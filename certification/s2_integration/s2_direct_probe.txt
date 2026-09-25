@@ -1,0 +1,348 @@
+﻿Γùç injected env (18) from .env.local // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+Γùç injected env (0) from .env // tip: Γîÿ suppress logs { quiet: true }
+Testing key presence: PRESENT
+HTTP Status: 200 OK
+Response: {
+  "total": 6091994,
+  "offset": 0,
+  "next": 3,
+  "data": [
+    {
+      "paperId": "07912741c6c96e6ad5b2c2d6c6c3b2de5c8a271b",
+      "externalIds": {
+        "MAG": "3111681398",
+        "DBLP": "journals/corr/abs-1912-04977",
+        "ArXiv": "1912.04977",
+        "DOI": "10.1561/2200000083",
+        "CorpusId": 209202606
+      },
+      "title": "Advances and Open Problems in Federated Learning",
+      "year": 2019,
+      "openAccessPdf": {
+        "url": "https://arxiv.org/pdf/1912.04977",
+        "status": "GREEN",
+        "license": null,
+        "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.04977, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+      },
+      "authors": [
+        {
+          "authorId": "3115341",
+          "name": "P. Kairouz"
+        },
+        {
+          "authorId": "145057514",
+          "name": "H. B. McMahan"
+        },
+        {
+          "authorId": "15519668",
+          "name": "Brendan Avent"
+        },
+        {
+          "authorId": "1702915",
+          "name": "A. Bellet"
+        },
+        {
+          "authorId": "1702172",
+          "name": "M. Bennis"
+        },
+        {
+          "authorId": "10754103",
+          "name": "A. Bhagoji"
+        },
+        {
+          "authorId": null,
+          "name": "Kallista A. Bonawitz"
+        },
+        {
+          "authorId": "143676545",
+          "name": "Zachary B. Charles"
+        },
+        {
+          "authorId": "1709589",
+          "name": "Graham Cormode"
+        },
+        {
+          "authorId": "49326047",
+          "name": "Rachel Cummings"
+        },
+        {
+          "authorId": "1410457573",
+          "name": "Rafael G. L. D'Oliveira"
+        },
+        {
+          "authorId": null,
+          "name": "Hubert Eichner"
+        },
+        {
+          "authorId": null,
+          "name": "Salim El Rouayheb"
+        },
+        {
+          "authorId": "2282921454",
+          "name": "David Evans"
+        },
+        {
+          "authorId": "33685819",
+          "name": "Josh Gardner"
+        },
+        {
+          "authorId": "40449749",
+          "name": "Zachary Garrett"
+        },
+        {
+          "authorId": "145511365",
+          "name": "A. Gasc├│n"
+        },
+        {
+          "authorId": "2529354",
+          "name": "Badih Ghazi"
+        },
+        {
+          "authorId": "1974678",
+          "name": "Phillip B. Gibbons"
+        },
+        {
+          "authorId": "1708469",
+          "name": "M. Gruteser"
+        },
+        {
+          "authorId": "1753355",
+          "name": "Z. Harchaoui"
+        },
+        {
+          "authorId": "31927890",
+          "name": "Chaoyang He"
+        },
+        {
+          "authorId": "51222147",
+          "name": "Lie He"
+        },
+        {
+          "authorId": "3382735",
+          "name": "Zhouyuan Huo"
+        },
+        {
+          "authorId": "2044655623",
+          "name": "Ben Hutchinson"
+        },
+        {
+          "authorId": "39756252",
+          "name": "Justin Hsu"
+        },
+        {
+          "authorId": "2456863",
+          "name": "Martin Jaggi"
+        },
+        {
+          "authorId": "47197693",
+          "name": "T. Javidi"
+        },
+        {
+          "authorId": "144225970",
+          "name": "Gauri Joshi"
+        },
+        {
+          "authorId": "10398264",
+          "name": "M. Khodak"
+        },
+        {
+          "authorId": "32139366",
+          "name": "Jakub Konecn├╜"
+        },
+        {
+          "authorId": "2823893",
+          "name": "A. Korolova"
+        },
+        {
+          "authorId": "3018662",
+          "name": "F. Koushanfar"
+        },
+        {
+          "authorId": "143812875",
+          "name": "O. Koyejo"
+        },
+        {
+          "authorId": "1792616",
+          "name": "Tancr├¿de Lepoint"
+        },
+        {
+          "authorId": "1614034792",
+          "name": "Yang Liu"
+        },
+        {
+          "authorId": "143615345",
+          "name": "Prateek Mittal"
+        },
+        {
+          "authorId": "81080659",
+          "name": "M. Mohri"
+        },
+        {
+          "authorId": "1718786",
+          "name": "R. Nock"
+        },
+        {
+          "authorId": "145326369",
+          "name": "Ayfer ├ûzg├╝r"
+        },
+        {
+          "authorId": "1801719",
+          "name": "R. Pagh"
+        },
+        {
+          "authorId": "2072589474",
+          "name": "Hang Qi"
+        },
+        {
+          "authorId": "1878835",
+          "name": "Daniel Ramage"
+        },
+        {
+          "authorId": "145711633",
+          "name": "R. Raskar"
+        },
+        {
+          "authorId": "1702744",
+          "name": "Mariana Raykova"
+        },
+        {
+          "authorId": "143711382",
+          "name": "D. Song"
+        },
+        {
+          "authorId": "2118727912",
+          "name": "Weikang Song"
+        },
+        {
+          "authorId": "2127057",
+          "name": "Sebastian U. Stich"
+        },
+        {
+          "authorId": "8908922",
+          "name": "Ziteng Sun"
+        },
+        {
+          "authorId": "9486035",
+          "name": "A. Suresh"
+        },
+        {
+          "authorId": "2444919",
+          "name": "Florian Tram├¿r"
+        },
+        {
+          "authorId": "2927870",
+          "name": "Praneeth Vepakomma"
+        },
+        {
+          "authorId": "30880777",
+          "name": "Jianyu Wang"
+        },
+        {
+          "authorId": "2291135512",
+          "name": "Li Xiong"
+        },
+        {
+          "authorId": "144897102",
+          "name": "Zheng Xu"
+        },
+        {
+          "authorId": "153096457",
+          "name": "Qiang Yang"
+        },
+        {
+          "authorId": "1815972",
+          "name": "Felix X. Yu"
+        },
+        {
+          "authorId": "2110984588",
+          "name": "Han Yu"
+        },
+        {
+          "authorId": "2376230149",
+          "name": "Sen Zhao"
+        }
+      ],
+      "abstract": "Federated learning (FL) is a machine learning setting where many clients (e.g. mobile devices or whole organizations) collaboratively train a model under the orchestration of a central server (e.g. service provider), while keeping the training data decentralized. FL embodies the principles of focused data collection and minimization, and can mitigate many of the systemic privacy risks and costs resulting from traditional, centralized machine learning and data science approaches. Motivated by the explosive growth in FL research, this paper discusses recent advances and presents an extensive collection of open problems and challenges."
+    },
+    {
+      "paperId": "fc7b1823bd8b59a590d0bc33bd7a145518fd71c5",
+      "externalIds": {
+        "MAG": "3006555759",
+        "DBLP": "conf/icml/KarimireddyKMRS20",
+        "CorpusId": 214069261
+      },
+      "title": "SCAFFOLD: Stochastic Controlled Averaging for Federated Learning",
+      "year": 2019,
+      "openAccessPdf": {
+        "url": "",
+        "status": null,
+        "license": null,
+        "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at http://proceedings.mlr.press/v119/karimireddy20a/karimireddy20a-supp.pdf, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+      },
+      "authors": [
+        {
+          "authorId": "40911632",
+          "name": "Sai Praneeth Karimireddy"
+        },
+        {
+          "authorId": "144055676",
+          "name": "Satyen Kale"
+        },
+        {
+          "authorId": "81080659",
+          "name": "M. Mohri"
+        },
+        {
+          "authorId": "1981186",
+          "name": "Sashank J. Reddi"
+        },
+        {
+          "authorId": "2127057",
+          "name": "Sebastian U. Stich"
+        },
+        {
+          "authorId": "9486035",
+          "name": "A. Suresh"
+        }
+      ],
+      "abstract": null
+    },
+    {
+      "paperId": "49bdeb07b045dd77f0bfe2b44436608770235a23",
+      "externalIds": {
+        "MAG": "3021654819",
+        "DBLP": "journals/spm/LiSTS20",
+        "ArXiv": "1908.07873",
+        "DOI": "10.1109/MSP.2020.2975749",
+        "CorpusId": 201126242
+      },
+      "title": "Federated Learning: Challenges, Methods, and Future Directions",
+      "year": 2019,
+      "openAccessPdf": {
+        "url": "https://arxiv.org/pdf/1908.07873",
+        "status": "GREEN",
+        "license": null,
+        "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.07873, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+      },
+      "authors": [
+        {
+          "authorId": "145530218",
+          "name": "Tian Li"
+        },
+        {
+          "authorId": "2894821",
+          "name": "Anit Kumar Sahu"
+        },
+        {
+          "authorId": "145532827",
+          "name": "Ameet Talwalkar"
+        },
+        {
+          "authorId": "145260024",
+          "name": "Virginia Smith"
+        }
+      ],
+      "abstract": "Federated learning involves training statistical models over remote devices or siloed data centers, such as mobile phones or hospitals, while keeping data localized. Training in heterogeneous and potentially massive networks introduces novel challenges that require a fundamental departure from standard approaches for large-scale machine learning, distributed optimization, and privacy-preserving data analysis. In this article, we discuss the unique characteristics and challenges of federated learning, provide a broad overview of current approaches, and outline several directions of future work that are relevant to a wide range of research communities."
+    }
+  ]
+}

@@ -18,7 +18,6 @@ import { handleCrossrefServerSearch } from './crossrefServerHandler';
 import { handleGoogleBooksServerSearch } from './googleBooksServerHandler';
 import { handleOpenAlexServerSearch } from './openAlexServerHandler';
 import { handleUnpaywallServerSearch } from './unpaywallServerHandler';
-import { handleSemanticScholarServerSearch } from './semanticScholarServerHandler';
 import { handleGeminiServerReasoning } from './geminiServerHandler';
 import { handleNemotronServerReasoning } from './nemotronServerHandler';
 import { handleGemmaServerReasoning } from './gemmaServerHandler';
@@ -118,7 +117,6 @@ export function verifyServerPlugin(): Plugin {
       server.middlewares.use('/api/verify/googlebooks', createSearchMiddleware('googlebooks', handleGoogleBooksServerSearch));
       server.middlewares.use('/api/verify/openalex', createSearchMiddleware('openalex', handleOpenAlexServerSearch));
       server.middlewares.use('/api/verify/unpaywall', createSearchMiddleware('unpaywall', handleUnpaywallServerSearch));
-      server.middlewares.use('/api/verify/semanticscholar', createSearchMiddleware('semanticscholar', handleSemanticScholarServerSearch));
 
       server.middlewares.use('/api/verify/gemini', async (req, res) => {
         if (req.method !== 'POST') {
