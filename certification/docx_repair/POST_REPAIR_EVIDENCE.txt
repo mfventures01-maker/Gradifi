@@ -1,0 +1,18 @@
+POST-REPAIR EVIDENCE — DOCX INGESTION
+Repair ID:           HOEOS-DOCX-INGESTION-2026-09-25
+Date:                2026-09-25
+
+Pre-repair:
+  scratch/test_office_zip_adapter.ts  ->  INVALID_PACKAGE ("The uploaded file is not a valid DOCX package.")
+  officeZipAdapter.ts:104             ->  hand-rolled PKZIP parser (failed on flags 0x808 streaming data descriptors)
+
+Post-repair:
+  scratch/test_office_zip_adapter.ts  ->  success=true
+  joystick DOCX character count       ->  57364 chars (8372 words)
+  thermometer DOCX                    ->  success=true, 73161 chars (11747 words)
+  browser upload                      ->  stage 01 green
+
+Library:  fflate (added to direct dependencies in package.json)
+Files:    src/services/verify/ingestionAdapters/officeZipAdapter.ts, package.json
+
+Classification: RESOLVED — CATEGORY C (Implementation Defect)

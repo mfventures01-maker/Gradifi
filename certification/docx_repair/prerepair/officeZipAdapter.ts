@@ -6,8 +6,6 @@
 import { AdapterExtractionResult } from './pdfAdapter';
 import { ocrService } from '../../ocrService';
 
-import { unzipSync, strFromU8 } from 'fflate';
-
 /**
  * Extracts binary media file payloads from a PKZIP archive matching a path filter.
  */
@@ -15,21 +13,85 @@ export async function unzipPackageMediaFiles(
   zipInput: Uint8Array | ArrayBuffer,
   pathFilter: (fileName: string) => boolean
 ): Promise<Array<{ fileName: string; bytes: Uint8Array }>> {
+  const results: Array<{ fileName: string; bytes: Uint8Array }> = [];
   try {
     const zipBytes = zipInput instanceof Uint8Array ? zipInput : new Uint8Array(zipInput);
-    if (zipBytes.length < 30) return [];
+    if (zipBytes.length < 30) return results;
 
-    const files = unzipSync(zipBytes);
-    const results: Array<{ fileName: string; bytes: Uint8Array }> = [];
-    for (const [name, bytes] of Object.entries(files)) {
-      if (pathFilter(name)) {
-        results.push({ fileName: name, bytes });
+    let pos = 0;
+    while (pos + 30 <= zipBytes.length) {
+      if (zipBytes[pos] === 0x50 && zipBytes[pos + 1] === 0x4b && zipBytes[pos + 2] === 0x03 && zipBytes[pos + 3] === 0x04) {
+        const compMethod = zipBytes[pos + 8] | (zipBytes[pos + 9] << 8);
+        const compSize = zipBytes[pos + 18] | (zipBytes[pos + 19] << 8) | (zipBytes[pos + 20] << 16) | (zipBytes[pos + 21] << 24);
+        const uncompSize = zipBytes[pos + 22] | (zipBytes[pos + 23] << 8) | (zipBytes[pos + 24] << 16) | (zipBytes[pos + 25] << 24);
+        const nameLen = zipBytes[pos + 26] | (zipBytes[pos + 27] << 8);
+        const extraLen = zipBytes[pos + 28] | (zipBytes[pos + 29] << 8);
+
+        const nameBytes = zipBytes.subarray(pos + 30, pos + 30 + nameLen);
+        const fileName = new TextDecoder('utf-8').decode(nameBytes).replace(/\\/g, '/');
+        const dataStart = pos + 30 + nameLen + extraLen;
+        const payloadSize = compSize > 0 ? compSize : uncompSize;
+
+        if (pathFilter(fileName)) {
+          const compressedBytes = zipBytes.subarray(dataStart, dataStart + payloadSize);
+          let decompressed: Uint8Array | null = null;
+
+          if (compMethod === 0) {
+            decompressed = compressedBytes;
+          } else if (compMethod === 8) {
+            decompressed = await decompressDeflate(compressedBytes);
+          }
+
+          if (decompressed) {
+            results.push({ fileName, bytes: decompressed });
+          }
+        }
+
+        pos = dataStart + payloadSize;
+      } else {
+        pos++;
       }
     }
-    return results;
   } catch (e) {
     console.warn('ZIP media extraction failed:', e);
-    return [];
+  }
+  return results;
+}
+
+/**
+ * Decompresses raw Deflate bytes synchronously (in Node) or via DecompressionStream (in Browser).
+ */
+async function decompressDeflate(bytes: Uint8Array): Promise<Uint8Array | null> {
+  // 1. Web Browser DecompressionStream API (Standard Web API)
+  if (typeof DecompressionStream !== 'undefined' && typeof Response !== 'undefined' && typeof Blob !== 'undefined') {
+    try {
+      const input = new Blob([bytes]).stream();
+      const output = input.pipeThrough(new DecompressionStream('deflate-raw'));
+      const buffer = await new Response(output).arrayBuffer();
+      return new Uint8Array(buffer);
+    } catch {
+      try {
+        const input = new Blob([bytes]).stream();
+        const output = input.pipeThrough(new DecompressionStream('deflate'));
+        const buffer = await new Response(output).arrayBuffer();
+        return new Uint8Array(buffer);
+      } catch {}
+    }
+  }
+
+  // 2. Node.js environment fallback
+  try {
+    const zlib = await import('node:zlib');
+    const buf = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    return new Uint8Array(zlib.inflateRawSync(buf));
+  } catch {
+    try {
+      const zlib = await import('node:zlib');
+      const buf = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      return new Uint8Array(zlib.inflateSync(buf));
+    } catch {
+      return null;
+    }
   }
 }
 
@@ -44,21 +106,55 @@ export async function unzipPackageTextFile(zipInput: Uint8Array | ArrayBuffer, t
     const zipBytes = zipInput instanceof Uint8Array ? zipInput : new Uint8Array(zipInput);
     if (zipBytes.length < 30) return null;
 
-    const targetNorm = targetPath.toLowerCase().replace(/\\/g, '/');
-    const files = unzipSync(zipBytes);
+    let pos = 0;
+    let totalUncompressedBytes = 0;
 
-    const matchKey = Object.keys(files).find(k => {
-      const kNorm = k.toLowerCase().replace(/\\/g, '/');
-      return kNorm === targetNorm || kNorm.endsWith('/' + targetNorm);
-    });
+    while (pos + 30 <= zipBytes.length) {
+      if (zipBytes[pos] === 0x50 && zipBytes[pos + 1] === 0x4b && zipBytes[pos + 2] === 0x03 && zipBytes[pos + 3] === 0x04) {
+        const compMethod = zipBytes[pos + 8] | (zipBytes[pos + 9] << 8);
+        const compSize = zipBytes[pos + 18] | (zipBytes[pos + 19] << 8) | (zipBytes[pos + 20] << 16) | (zipBytes[pos + 21] << 24);
+        const uncompSize = zipBytes[pos + 22] | (zipBytes[pos + 23] << 8) | (zipBytes[pos + 24] << 16) | (zipBytes[pos + 25] << 24);
+        const nameLen = zipBytes[pos + 26] | (zipBytes[pos + 27] << 8);
+        const extraLen = zipBytes[pos + 28] | (zipBytes[pos + 29] << 8);
 
-    if (!matchKey) return null;
+        totalUncompressedBytes += (uncompSize > 0 ? uncompSize : compSize);
+        if (totalUncompressedBytes > MAX_UNCOMPRESSED_ZIP_BYTES) {
+          console.warn('ZIP decompression bomb payload limit exceeded (100MB).');
+          return null;
+        }
 
-    return strFromU8(files[matchKey]);
+        const nameBytes = zipBytes.subarray(pos + 30, pos + 30 + nameLen);
+        const fileName = new TextDecoder('utf-8').decode(nameBytes).replace(/\\/g, '/');
+        const dataStart = pos + 30 + nameLen + extraLen;
+
+        const targetNorm = targetPath.toLowerCase().replace(/\\/g, '/');
+        const fileNorm = fileName.toLowerCase();
+
+        if (fileNorm === targetNorm || fileNorm.endsWith('/' + targetNorm)) {
+          const payloadSize = compSize > 0 ? compSize : uncompSize;
+          const compressedBytes = zipBytes.subarray(dataStart, dataStart + payloadSize);
+          let decompressed: Uint8Array | null = null;
+
+          if (compMethod === 0) {
+            decompressed = compressedBytes;
+          } else if (compMethod === 8) {
+            decompressed = await decompressDeflate(compressedBytes);
+          }
+
+          if (decompressed) {
+            return new TextDecoder('utf-8', { fatal: false }).decode(decompressed);
+          }
+        }
+
+        pos = dataStart + (compSize > 0 ? compSize : uncompSize);
+      } else {
+        pos++;
+      }
+    }
   } catch (e) {
     console.warn('ZIP extraction failed:', e);
-    return null;
   }
+  return null;
 }
 
 /**
