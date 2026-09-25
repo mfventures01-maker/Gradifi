@@ -1,0 +1,16 @@
+﻿node.exe : ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å Supabase... fallback mode.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Extracted text length: 73161
+run 1: documentHash=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4 -> VRF-A372B06ACD0E
+run 2: documentHash=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4 -> VRF-A372B06ACD0E
+run 3: documentHash=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4 -> VRF-A372B06ACD0E
+run 4: documentHash=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4 -> VRF-A372B06ACD0E
+run 5: documentHash=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4 -> VRF-A372B06ACD0E
+
+verification_id stable: VRF-A372B06ACD0E
+Result: PASS (5/5 identical derivation)

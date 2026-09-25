@@ -1,0 +1,19 @@
+﻿=== HOEOS INGESTION DETERMINISM TEST ===
+
+=== DIGITAL THERMOMETER real.docx ===
+  run 1: chars=73161 words=11747 sha=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4
+  run 2: chars=73161 words=11747 sha=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4
+  run 3: chars=73161 words=11747 sha=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4
+  run 4: chars=73161 words=11747 sha=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4
+  run 5: chars=73161 words=11747 sha=a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4
+Classification: DETERMINISTIC
+
+=== Design and Construction of a Joystick-Controlled Industrial automation System.docx ===
+  run 1: chars=57364 words=8372 sha=1ae2a7cf6ca3538d9cb43da716d34211d8d605501494f2acab436b152cebb97c
+  run 2: chars=57364 words=8372 sha=1ae2a7cf6ca3538d9cb43da716d34211d8d605501494f2acab436b152cebb97c
+  run 3: chars=57364 words=8372 sha=1ae2a7cf6ca3538d9cb43da716d34211d8d605501494f2acab436b152cebb97c
+  run 4: chars=57364 words=8372 sha=1ae2a7cf6ca3538d9cb43da716d34211d8d605501494f2acab436b152cebb97c
+  run 5: chars=57364 words=8372 sha=1ae2a7cf6ca3538d9cb43da716d34211d8d605501494f2acab436b152cebb97c
+Classification: DETERMINISTIC
+
+SUMMARY: 2/2 files DETERMINISTIC

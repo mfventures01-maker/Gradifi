@@ -69,10 +69,16 @@ export async function handleOpenAlexServerSearch(payload: OpenAlexServerRequestP
     const responseTimestamp = new Date().toISOString();
 
     if (!response.ok) {
+      const isAuthError = response.status === 401 || response.status === 403;
+      const isRateLimited = response.status === 429;
       return {
         providerId: 'openalex',
-        status: response.status === 429 ? 'unavailable' : 'unavailable',
-        fineGrainedStatus: response.status === 429 ? 'RATE_LIMITED' : 'REQUEST_FAILED',
+        status: isRateLimited || isAuthError ? 'unavailable' : 'error',
+        fineGrainedStatus: isAuthError
+          ? 'AUTHENTICATION_FAILED'
+          : isRateLimited
+            ? 'RATE_LIMITED'
+            : 'REQUEST_FAILED',
         matches: [],
         errorMessage: `OpenAlex API returned HTTP ${response.status}: ${response.statusText}`,
         errorCode: `HTTP_${response.status}`,

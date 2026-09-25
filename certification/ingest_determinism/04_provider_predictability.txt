@@ -1,0 +1,55 @@
+﻿
+========================================
+PROVIDER: /api/verify/core
+QUERY:    "federated learning"
+RUNS:     5
+========================================
+  run 1/5... VERIFIED (5 ids)
+  run 2/5... VERIFIED (5 ids)
+  run 3/5... VERIFIED (5 ids)
+  run 4/5... VERIFIED (5 ids)
+  run 5/5... REQUEST_FAILED (0 ids)
+
+  Per-run result sets:
+    run 1: VERIFIED | [10.1300/j136v12n03_01, core:21632236, core:298308263, core:310088880, core:333140981]
+    run 2: VERIFIED | [10.1300/j136v12n03_01, core:21632236, core:298308263, core:310088880, core:333140981]
+    run 3: VERIFIED | [10.1300/j136v12n03_01, core:21632236, core:298308263, core:310088880, core:333140981]
+    run 4: VERIFIED | [10.1300/j136v12n03_01, core:21632236, core:298308263, core:310088880, core:333140981]
+    run 5: REQUEST_FAILED | []
+
+  Distinct IDs across all runs: 5
+  IDs present in every run:     0
+  Classification:               UNPREDICTABLE
+
+  IDs in some but not all runs:
+    10.1300/j136v12n03_01  ->  runs 1, 2, 3, 4
+    core:21632236  ->  runs 1, 2, 3, 4
+    core:298308263  ->  runs 1, 2, 3, 4
+    core:310088880  ->  runs 1, 2, 3, 4
+    core:333140981  ->  runs 1, 2, 3, 4
+
+========================================
+PROVIDER: /api/verify/openalex
+QUERY:    "federated learning"
+RUNS:     5
+========================================
+  run 1/5... VERIFIED (5 ids)
+  run 2/5... VERIFIED (5 ids)
+  run 3/5... VERIFIED (5 ids)
+  run 4/5... VERIFIED (5 ids)
+  run 5/5... VERIFIED (5 ids)
+
+  Per-run result sets:
+    run 1: VERIFIED | [10.1016/j.knosys.2021.106775, 10.1038/s41746-020-00323-1, 10.1109/msp.2020.2975749, 10.1561/2200000083, 10.48550/arxiv.1610.05492]
+    run 2: VERIFIED | [10.1016/j.knosys.2021.106775, 10.1038/s41746-020-00323-1, 10.1109/msp.2020.2975749, 10.1561/2200000083, 10.48550/arxiv.1610.05492]
+    run 3: VERIFIED | [10.1016/j.knosys.2021.106775, 10.1038/s41746-020-00323-1, 10.1109/msp.2020.2975749, 10.1561/2200000083, 10.48550/arxiv.1610.05492]
+    run 4: VERIFIED | [10.1016/j.knosys.2021.106775, 10.1038/s41746-020-00323-1, 10.1109/msp.2020.2975749, 10.1561/2200000083, 10.48550/arxiv.1610.05492]
+    run 5: VERIFIED | [10.1016/j.knosys.2021.106775, 10.1038/s41746-020-00323-1, 10.1109/msp.2020.2975749, 10.1561/2200000083, 10.48550/arxiv.1610.05492]
+
+  Distinct IDs across all runs: 5
+  IDs present in every run:     5
+  Classification:               DETERMINISTIC
+
+========================================
+DONE
+========================================

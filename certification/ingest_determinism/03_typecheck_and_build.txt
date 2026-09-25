@@ -1,0 +1,45 @@
+﻿
+> gradifi@0.0.0 build
+> vite build
+
+node.exe : ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å Supabase... fallback mode.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γùç injected env (18) from .env.local // tip: Γîÿ override existing { override: true }
+Γùç injected env (0) from .env // tip: Γîÿ custom filepath { path: '/custom/path/.env' }
+[36mvite v6.4.3 [32mbuilding for production...[36m[39m
+transforming...
+[33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by 
+"C:/Projects/Gradifi/src/services/verify/federation/providerLogger.ts". See 
+https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by 
+"C:/Projects/Gradifi/src/services/verify/federation/providerLogger.ts". See 
+https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[32mΓ£ô[39m 2186 modules transformed.
+rendering chunks...
+[33m[plugin vite:reporter] 
+(!) C:/Projects/Gradifi/node_modules/@supabase/supabase-js/dist/index.mjs is dynamically imported by 
+C:/Projects/Gradifi/src/services/verify/verificationPersistenceService.ts but also statically imported by 
+C:/Projects/Gradifi/src/lib/supabase.ts, dynamic import will not move module into another chunk.
+[39m
+computing gzip size...
+[2mdist/[22m[32mindex.html                                  [39m[1m[2m    0.79 kB[22m[1m[22m[2m Γöé gzip:   0.38 kB[22m
+[2mdist/[22m[32massets/pdf.worker.min-BmVo14Nb.mjs          [39m[1m[2m1,317.03 kB[22m[1m[22m
+[2mdist/[22m[35massets/index-CWCd5A5a.css                   [39m[1m[2m   85.45 kB[22m[1m[22m[2m Γöé gzip:  12.92 kB[22m
+[2mdist/[22m[36massets/__vite-browser-external-BIHI7g3E.js  [39m[1m[2m    0.03 kB[22m[1m[22m[2m Γöé gzip:   0.05 kB[22m
+[2mdist/[22m[36massets/purify.es-DBIK8olT.js                [39m[1m[2m   29.40 kB[22m[1m[22m[2m Γöé gzip:  11.31 kB[22m
+[2mdist/[22m[36massets/index.es-CA2AYsPC.js                 [39m[1m[2m  159.72 kB[22m[1m[22m[2m Γöé gzip:  53.54 kB[22m
+[2mdist/[22m[36massets/html2canvas.esm-QH1iLAAe.js          [39m[1m[2m  202.38 kB[22m[1m[22m[2m Γöé gzip:  48.04 kB[22m
+[2mdist/[22m[36massets/index-DN3ua9Z9.js                    [39m[1m[2m  394.21 kB[22m[1m[22m[2m Γöé gzip:  70.08 kB[22m
+[2mdist/[22m[36massets/index-DLhqNO5X.js                    [39m[1m[33m1,924.67 kB[39m[22m[2m Γöé gzip: 557.12 kB[22m
+[33m
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: 
+https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[32mΓ£ô built in 51.07s[39m

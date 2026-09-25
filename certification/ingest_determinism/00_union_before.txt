@@ -1,0 +1,17 @@
+/**
+ * PRE-REPAIR SNAPSHOT: FineGrainedProviderStatus declaration in src/services/verify/types.ts
+ */
+
+export type FineGrainedProviderStatus =
+  | 'VERIFIED'
+  | 'PARTIALLY_VERIFIED'
+  | 'AUTHENTICATION_FAILED'
+  | 'REQUEST_FAILED'
+  | 'SCHEMA_FAILED'
+  | 'EMPTY_RESULT'
+  | 'RATE_LIMITED'
+  | 'INFERENCE_VERIFIED'
+  | 'INFERENCE_FAILED'
+  | 'RUNTIME_AVAILABLE'
+  | 'RUNTIME_UNAVAILABLE'
+  | 'NOT_TESTED';

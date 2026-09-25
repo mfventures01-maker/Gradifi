@@ -1,0 +1,38 @@
+Repair ID:            HOEOS-TYPES-INGEST-DETERMINISM-2026-09-25
+Date:                 2026-09-25
+
+DEFECT A — RATE_LIMITED
+  Union location:     src/services/verify/types.ts (line 25)
+  Union shape:        FineGrainedProviderStatus literal union
+  Edit:               'RATE_LIMITED' verified present in FineGrainedProviderStatus union
+  Handler edit:       src/services/verify/server/openAlexServerHandler.ts 429 -> RATE_LIMITED & 401/403 -> AUTHENTICATION_FAILED branch added
+  OpenAlex predictability after edit:  DETERMINISTIC (5/5 identical runs)
+  tsc --noEmit:       clean (0 errors)
+
+DEFECT B — INGESTION DETERMINISM
+  Thermometer DOCX:
+    chars per run:    73161 x 5
+    sha256 per run:   a372b06acd0ef209dc51bba7396b0e3bca46661f878a3c664a62ce1f7f031ca4
+    classification:   DETERMINISTIC
+  Joystick DOCX:
+    chars per run:    57364 x 5
+    sha256 per run:   1ae2a7cf6ca3538d9cb43da716d34211d8d605501494f2acab436b152cebb97c
+    classification:   DETERMINISTIC
+  verification_id stability:
+    derived VRF id:   VRF-A372B06ACD0E
+    five runs:        5/5 identical derivations
+
+Files edited:         src/services/verify/server/openAlexServerHandler.ts
+Files created:        scratch/test_ingestion_determinism.ts
+                      scratch/test_verification_id_stability.ts
+                      certification/ingest_determinism/00_union_before.txt
+                      certification/ingest_determinism/01_ingestion_determinism.txt
+                      certification/ingest_determinism/02_verification_id_stability.txt
+                      certification/ingest_determinism/03_typecheck_and_build.txt
+                      certification/ingest_determinism/04_provider_predictability.txt
+                      certification/ingest_determinism/05_scope.txt
+                      certification/ingest_determinism/POST_REPAIR_EVIDENCE.txt
+
+Classification:
+  DEFECT A: RESOLVED — CATEGORY A (type-system correctness)
+  DEFECT B: RESOLVED — CATEGORY C (determinism verified)
