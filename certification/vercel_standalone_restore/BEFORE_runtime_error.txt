@@ -1,0 +1,9 @@
+﻿node.exe : Resolving deployment "gradifi.vercel.app"
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Resolving deplo...ifi.vercel.app":String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Fetching project "prj_mZXIfu1OYbxUmJPGFGeBITSrV6FD"
+Fetching logs...

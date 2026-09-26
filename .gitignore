@@ -20,5 +20,3 @@ supabase/.temp/
 
 eng.traineddata
 *.traineddata
-
-api/_lib/

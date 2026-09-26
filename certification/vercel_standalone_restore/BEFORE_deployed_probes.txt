@@ -1,0 +1,9 @@
+﻿core -> 500
+crossref -> 500
+googlebooks -> 500
+openalex -> 500
+unpaywall -> 500
+nemotron -> ERR
+gemini -> 500
+gemma -> 500
+semanticscholar -> 500

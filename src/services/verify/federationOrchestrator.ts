@@ -98,7 +98,8 @@ const PROVIDER_TIMEOUTS_MS: Record<SourceType, number> = {
   googlebooks: 8000,
   nemotron: 30000,
   gemma: 5000,
-  gemini: 15000
+  gemini: 15000,
+  semanticscholar: 8000
 };
 
 // --- CIRCUIT BREAKER STATE MACHINE (Phase H) ---
