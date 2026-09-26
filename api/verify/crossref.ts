@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleCrossrefServerSearch } from '../../src/services/verify/server/crossrefServerHandler';
+import { handleCrossrefServerSearch } from '../../src/services/verify/server/crossrefServerHandler.js';
 
 export default async function handler(
   req: VercelRequest,

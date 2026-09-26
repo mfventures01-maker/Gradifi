@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleNemotronServerReasoning } from '../../src/services/verify/server/nemotronServerHandler';
+import { handleNemotronServerReasoning } from '../../src/services/verify/server/nemotronServerHandler.js';
 
 export default async function handler(
   req: VercelRequest,

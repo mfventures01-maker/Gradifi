@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleOpenAlexServerSearch } from '../../src/services/verify/server/openAlexServerHandler';
+import { handleOpenAlexServerSearch } from '../../src/services/verify/server/openAlexServerHandler.js';
 
 export default async function handler(
   req: VercelRequest,
