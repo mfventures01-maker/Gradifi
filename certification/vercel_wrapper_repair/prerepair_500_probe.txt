@@ -1,0 +1,7 @@
+﻿Invoke-WebRequest : A server error has occurred FUNCTION_INVOCATION_FAILED cpt1::zwzpn-1790409767894-9643d38482d5
+At line:5 char:3
++   Invoke-WebRequest -Uri "https://gradifi.vercel.app/api/verify/core" ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc 
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand

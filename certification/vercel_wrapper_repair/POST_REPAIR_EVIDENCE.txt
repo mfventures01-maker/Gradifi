@@ -1,0 +1,38 @@
+Repair ID:          HOEOS-WRAPPER-RESTORATION-2026-09-26
+Commit:             84a919d
+Date:               2026-09-26
+
+Pre-repair:
+  Total api/ bytes:        2804498
+  File count:              11
+  Sample first line:       `// src/services/verify/federation/providerQuotas.ts`
+  Production core route:   HTTP 500
+
+Post-repair:
+  Total api/ bytes:        6309
+  Largest file:            semanticscholar.ts (592 bytes)
+  Smallest file:           _probe.ts (556 bytes)
+  Files with src import:   11 / 11
+  Files with bundler header: 0 / 11
+  tsc --noEmit:            clean on api/*.ts wrappers
+  npm run build:           clean (built in 1m 8s)
+  Preview core route:      HTTP 200
+  Preview all ten routes:  10 of 10 return 200
+  Preview _probe route:    HTTP 200
+  Preview GET guard:       HTTP 405
+
+Files replaced:
+  api/_probe.ts
+  api/verify/core.ts
+  api/verify/crossref.ts
+  api/verify/googlebooks.ts
+  api/verify/openalex.ts
+  api/verify/unpaywall.ts
+  api/verify/nemotron.ts
+  api/verify/gemini.ts
+  api/verify/gemma.ts
+  api/verify/persist.ts
+  api/verify/semanticscholar.ts
+
+Classification:     CATEGORY C — implementation defect
+                    RESOLVED

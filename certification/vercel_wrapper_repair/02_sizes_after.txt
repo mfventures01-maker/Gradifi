@@ -1,0 +1,16 @@
+﻿
+FullName                                          Length
+--------                                          ------
+C:\Projects\Gradifi\api\_probe.ts                    556
+C:\Projects\Gradifi\api\verify\core.ts               559
+C:\Projects\Gradifi\api\verify\crossref.ts           571
+C:\Projects\Gradifi\api\verify\gemini.ts             571
+C:\Projects\Gradifi\api\verify\gemma.ts              568
+C:\Projects\Gradifi\api\verify\googlebooks.ts        580
+C:\Projects\Gradifi\api\verify\nemotron.ts           577
+C:\Projects\Gradifi\api\verify\openalex.ts           571
+C:\Projects\Gradifi\api\verify\persist.ts            582
+C:\Projects\Gradifi\api\verify\semanticscholar.ts    592
+C:\Projects\Gradifi\api\verify\unpaywall.ts          574
+
+
