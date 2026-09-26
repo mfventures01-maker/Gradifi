@@ -4,7 +4,20 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "src/**"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/verify/(.*)",
+      "destination": "/api/verify/$1"
+    },
+    {
+      "source": "/api/_probe",
+      "destination": "/api/_probe"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
