@@ -1,0 +1,104 @@
+﻿ M certification/federation_logs/2026-09-23/core.jsonl
+ M certification/federation_logs/2026-09-23/crossref.jsonl
+ M certification/federation_logs/2026-09-23/googlebooks.jsonl
+ M certification/federation_logs/2026-09-23/integration_run_summary.json
+ M certification/federation_logs/2026-09-23/test_429.jsonl
+ M certification/federation_logs/2026-09-23/test_500.jsonl
+ M certification/federation_logs/2026-09-23/test_budget.jsonl
+ M certification/federation_logs/2026-09-23/test_immediate.jsonl
+ M certification/vercel_api_lib/03_typecheck.txt
+ M certification/vercel_api_lib/04_build.txt
+ M certification/vercel_api_lib/08_git_status.txt
+ M certification/vercel_logger_build_repair/06_deployed_probes.txt
+ M package-lock.json
+ M scratch/test_fflate.ts
+ M scripts/copy-api-deps.js
+?? A42R_FORENSIC_CERTIFICATION_REPORT.md
+?? FOCUSED_REPAIR_HOEOS_CERTIFICATION_REPORT.md
+?? FOUR_GATES_CERTIFICATION_REPORT.md
+?? G3_VR_001_CERTIFICATION_REPORT.md
+?? G4_FORENSIC_CERTIFICATION_REPORT.md
+?? HOEOS_G1_ENGINE_CERTIFICATION_REPORT.md
+?? HOEOS_G1_ENGINE_IMPLEMENTATION_REPORT.md
+?? certification/federation_logs/2026-09-23/unpaywall.jsonl
+?? certification/federation_logs/2026-09-24/
+?? certification/federation_logs/2026-09-25/
+?? certification/forensic/
+?? certification/g1_browser_fix/stream_extractor_preview_result.png
+?? certification/g1_browser_fix/stream_extractor_prod_result.png
+?? certification/g1_browser_fix/stream_extractor_verification_log.json
+?? certification/g1_extension/G1_EXTENSION_COMPOSITE.txt
+?? certification/mirror_archive_2026-09-23T08-48-35Z/
+?? certification/provider_passage/OVERLAP_DEMO_DOC.txt
+?? certification/provider_passage/PASSAGE_DEMO_PRE_FIX.txt
+?? certification/provider_predictability/
+?? certification/repairs/
+?? certification/vercel_forensics/
+?? certification/vercel_logger_build_repair/verification/
+?? certification/vercel_repair/
+?? certification/vercel_wrapper_repair/05_preview_probes.txt
+?? e2e/four-gates-g4-browser.spec.ts
+?? scratch/bundle_api.ps1
+?? scratch/capture_post_repair.ts
+?? scratch/capture_pre_repair.ts
+?? scratch/check_docx_identity.ts
+?? scratch/check_syntax.ps1
+?? scratch/clean_old_verification.ts
+?? scratch/compute_g5_artifact_composite.ps1
+?? scratch/compute_g5_composite.ps1
+?? scratch/e2e_g1_g2_g3_format_runner.ts
+?? scratch/fix_nemotron_parser.js
+?? scratch/freeze_before.cjs
+?? scratch/freeze_before.js
+?? scratch/g1_extension/
+?? scratch/g1_ocr/
+?? scratch/gen_evidence.cjs
+?? scratch/gen_evidence.js
+?? scratch/generate_scanned_fixture.ts
+?? scratch/minimal_test.docx
+?? scratch/missing_gate_test.ps1
+?? scratch/p2_prerepair.ps1
+?? scratch/persist_passage_verification.ts
+?? scratch/phase10_comparison.cjs
+?? scratch/phase1_evidence.cjs
+?? scratch/phase8_audit.cjs
+?? scratch/phase9_after_freeze.cjs
+?? scratch/probe_routes.ps1
+?? scratch/query_supabase.ps1
+?? scratch/run_post_fix_demo_verification.ts
+?? scratch/run_post_fix_verification_pipeline.ts
+?? scratch/run_post_repair_verify.ts
+?? scratch/temp_test_files/
+?? scratch/test-passage-extractor.ts
+?? scratch/test-passage.ts
+?? scratch/test_all_providers.ts
+?? scratch/test_browser_acceptance.ts
+?? scratch/test_crossref_direct.ts
+?? scratch/test_crossref_query.ts
+?? scratch/test_crossref_query_diff.ts
+?? scratch/test_extract_document_text.ts
+?? scratch/test_g5_acceptance.ts
+?? scratch/test_handler_metrics.ts
+?? scratch/test_http_endpoints.ts
+?? scratch/test_ingest_direct.ts
+?? scratch/test_missing_gate_proof.ps1
+?? scratch/test_openalex_diagnostic.ts
+?? scratch/test_pdf_stream_browser.ts
+?? scratch/test_pdfjs_direct.ts
+?? scratch/test_pdfjs_extract_direct.ts
+?? scratch/test_post_fix_core.ts
+?? scratch/test_prod_acceptance.ts
+?? scratch/test_provider_predictability.ts
+?? scratch/test_quality_validation.ts
+?? scratch/test_query_builder.ts
+?? scratch/test_query_builder_prototype.ts
+?? scratch/verify_browser_pdf.ts
+?? scratch/verify_browser_runtime.ts
+?? scratch/verify_g5_reproducibility.ps1
+?? tests/g1_certification.test.ts
+?? tests/g1_format_matrix.test.ts
+?? tests/g1_ocr_branch_forensic.test.ts
+?? tests/g1_ocr_complete_forensic_runtime.test.ts
+?? tests/hoeos/a4_2/
+?? tests/hoeos/four_gates/
+?? tests/hoeos/g4/

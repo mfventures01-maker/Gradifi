@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleUnpaywallServerSearch } from '../../src/services/verify/server/unpaywallServerHandler';
+import { handleUnpaywallServerSearch } from '../_lib/services/verify/server/unpaywallServerHandler';
 
 export default async function handler(
   req: VercelRequest,

@@ -1,0 +1,23 @@
+﻿
+FullName                                                                            Length
+--------                                                                            ------
+C:\Projects\Gradifi\api\_lib\services\verify\federation\federationScheduler.ts        4431
+C:\Projects\Gradifi\api\_lib\services\verify\federation\providerLogger.ts             2975
+C:\Projects\Gradifi\api\_lib\services\verify\federation\providerQuotas.ts             1462
+C:\Projects\Gradifi\api\_lib\services\verify\federation\rateLimiter.ts                3994
+C:\Projects\Gradifi\api\_lib\services\verify\federation\requestQueue.ts              10023
+C:\Projects\Gradifi\api\_lib\services\verify\server\coreServerHandler.ts              6794
+C:\Projects\Gradifi\api\_lib\services\verify\server\crossrefServerHandler.ts          6383
+C:\Projects\Gradifi\api\_lib\services\verify\server\geminiServerHandler.ts            7541
+C:\Projects\Gradifi\api\_lib\services\verify\server\gemmaServerHandler.ts             5569
+C:\Projects\Gradifi\api\_lib\services\verify\server\googleBooksServerHandler.ts       8502
+C:\Projects\Gradifi\api\_lib\services\verify\server\nemotronServerHandler.ts          7114
+C:\Projects\Gradifi\api\_lib\services\verify\server\openAlexServerHandler.ts          6762
+C:\Projects\Gradifi\api\_lib\services\verify\server\passageExtractor.ts               4206
+C:\Projects\Gradifi\api\_lib\services\verify\server\persistenceServerHandler.ts       3521
+C:\Projects\Gradifi\api\_lib\services\verify\server\semanticScholarServerHandler.ts   7042
+C:\Projects\Gradifi\api\_lib\services\verify\server\unpaywallServerHandler.ts         5880
+C:\Projects\Gradifi\api\_lib\services\verify\server\verifyServerPlugin.ts             8288
+C:\Projects\Gradifi\api\_lib\services\verify\types.ts                                13285
+
+

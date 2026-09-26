@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleSemanticScholarServerSearch } from '../../src/services/verify/server/semanticScholarServerHandler';
+import { handleSemanticScholarServerSearch } from '../_lib/services/verify/server/semanticScholarServerHandler';
 
 export default async function handler(
   req: VercelRequest,

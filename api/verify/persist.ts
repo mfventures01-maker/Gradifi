@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handlePersistenceServerRequest } from '../../src/services/verify/server/persistenceServerHandler';
+import { handlePersistenceServerRequest } from '../_lib/services/verify/server/persistenceServerHandler';
 
 export default async function handler(
   req: VercelRequest,

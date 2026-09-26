@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/copy-api-deps.js",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit"

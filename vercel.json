@@ -4,11 +4,6 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
-  "functions": {
-    "api/**/*.ts": {
-      "includeFiles": "src/**"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/verify/(.*)",

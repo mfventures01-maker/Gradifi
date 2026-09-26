@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleGoogleBooksServerSearch } from '../../src/services/verify/server/googleBooksServerHandler';
+import { handleGoogleBooksServerSearch } from '../_lib/services/verify/server/googleBooksServerHandler';
 
 export default async function handler(
   req: VercelRequest,
