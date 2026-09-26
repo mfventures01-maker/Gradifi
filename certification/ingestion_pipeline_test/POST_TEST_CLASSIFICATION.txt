@@ -1,0 +1,33 @@
+﻿INGESTION DETERMINISM — POST-TEST CLASSIFICATION
+Test date:     2026-09-26T09:06:14Z
+Script:        scratch/test_ingestion_pipeline.ts
+Raw artifact:  certification/ingestion_pipeline_test/ingestion_determinism_2026-09-26T09-06-14Z.txt
+
+[SUMMARY]
+  DETERMINISTIC: 8
+  UNSTABLE:      0
+  NO_FIXTURE:    3
+  THREW:         0
+
+[CERTIFIED FORMATS — 8]
+  DOCX   thermometer          chars=73161    sha=a372b06acd0ef209  x5
+  DOCX   joystick             chars=57364    sha=1ae2a7cf6ca3538d  x5
+  DOCX   dark activated       chars=174353   sha=ce110c2d3dcaa424  x5
+  TXT    overlap demo         chars=1711     sha=6010c56ca7ee5f4a  x5
+  MD     manifest             chars=1491     sha=a1f35eaa4b2b9710  x5
+  PDF    CARSS registry       chars=59       sha=b2bbab7e67824e37  x5
+  PPTX   presentation         chars=369      sha=044fe0ddc2e8dc04  x5
+  XLSX   QA discrepancy       chars=2405     sha=1aaed14b852cadb3  x5
+
+[UNMEASURED FORMATS — 3]
+  EPUB   no fixture on disk
+  ODT    no fixture on disk
+  RTF    no fixture on disk
+
+[THRESHOLDS]
+  T1 Predictability (5/5 identical SHA-256)  PASS for 8 formats
+  T2 Reliability   (5/5 non-throwing)         PASS for 8 formats
+
+[CLASSIFICATION]
+  Ingestion determinism RESOLVED for the 8 formats with
+  fixtures. Coverage gap documented for EPUB, ODT, RTF.
