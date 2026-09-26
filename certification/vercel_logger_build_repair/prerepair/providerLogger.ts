@@ -44,52 +44,31 @@ export function sanitizeErrorMessage(msg?: string): string | undefined {
 /**
  * Logs a provider call record to the file system (in Node/Vite Server context) or in-memory registry.
  */
-export async function logProviderCall(
-  log: FederationCallLog
-): Promise<void> {
+export async function logProviderCall(log: FederationCallLog): Promise<void> {
   const sanitized: FederationCallLog = {
     ...log,
     url: sanitizeUrl(log.url),
     errorMessage: sanitizeErrorMessage(log.errorMessage)
   };
 
-  // Node.js server context only
-  if (typeof process === 'undefined' ||
-      !process.versions?.node) {
-    return;
-  }
-
-  try {
-    const fs = await import('fs');
-    const path = await import('path');
-
-    // Vercel serverless: filesystem is read-only
-    // except /tmp
-    const baseDir = process.env.VERCEL
-      ? '/tmp/gradifi-logs'
-      : path.resolve('certification/federation_logs');
-
-    const dateFolder = sanitized.timestamp.slice(0, 10);
-    const logDir = path.join(baseDir, dateFolder);
-
+  // Node.js server context: append to certification/federation_logs/YYYY-MM-DD/<providerId>.jsonl
+  if (typeof process !== 'undefined' && process.versions?.node) {
     try {
+      const fs = await import('fs');
+      const path = await import('path');
+
+      const dateFolder = sanitized.timestamp.slice(0, 10); // YYYY-MM-DD
+      const logDir = path.resolve('certification/federation_logs', dateFolder);
+
       if (!fs.existsSync(logDir)) {
         fs.mkdirSync(logDir, { recursive: true });
       }
-      const logFilePath = path.join(
-        logDir,
-        `${sanitized.providerId.toLowerCase()}.jsonl`
-      );
+
+      const logFilePath = path.join(logDir, `${sanitized.providerId.toLowerCase()}.jsonl`);
       const line = JSON.stringify(sanitized) + '\n';
       fs.appendFileSync(logFilePath, line, 'utf8');
-    } catch (writeErr) {
-      // Filesystem write failures do not propagate
-      console.warn(
-        '[providerLogger] disk log unavailable:',
-        writeErr
-      );
+    } catch (err) {
+      console.warn('[providerLogger] Failed to write disk log:', err);
     }
-  } catch (importErr) {
-    // fs/path unavailable (browser); nothing to do
   }
 }

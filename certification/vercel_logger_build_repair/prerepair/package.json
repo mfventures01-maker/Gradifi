@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:api": "esbuild api/_probe.ts --outdir=api --bundle --platform=node --format=esm --target=node18 --external:@vercel/node && esbuild api/verify/*.ts --outdir=api/verify --bundle --platform=node --format=esm --target=node18 --external:@vercel/node",
+    "build": "npm run build:api && vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit"
   },

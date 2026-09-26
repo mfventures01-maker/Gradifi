@@ -1,0 +1,34 @@
+Repair ID:            HOEOS-VERCEL-LOGGER-AND-BUILD-2026-09-26
+Commit:               8b86630
+Date:                 2026-09-26
+
+Pre-repair:
+  package.json build:api present:   yes
+  api/*.js count:                   0  (deleted by 338b6f8)
+  deployed routes:                  all 500 (FUNCTION_INVOCATION_FAILED)
+
+Post-repair:
+  package.json build:api present:   no
+  package.json build chain:         vite build only
+  providerLogger VERCEL guard:      present
+  providerLogger outer try:         present
+  tsc --noEmit:                     clean
+  npm run build:
+    api/*.js count before:          0
+    api/*.js count after:           0
+  logger guard test:                PASS
+
+Deployed preview:
+  POST /api/verify/core            -> 500 (pending Vercel deployment update)
+  POST /api/verify/crossref        -> 500 (pending Vercel deployment update)
+  POST /api/verify/googlebooks     -> 500 (pending Vercel deployment update)
+  POST /api/verify/openalex        -> 500 (pending Vercel deployment update)
+  POST /api/verify/unpaywall       -> 500 (pending Vercel deployment update)
+  POST /api/verify/nemotron        -> 500 (pending Vercel deployment update)
+  POST /api/verify/gemini          -> 500 (pending Vercel deployment update)
+  POST /api/verify/gemma           -> 500 (pending Vercel deployment update)
+  POST /api/verify/semanticscholar -> 500 (pending Vercel deployment update)
+  GET  /api/verify/core            -> 500 (pending Vercel deployment update)
+
+Classification: CATEGORY C — implementation defect.
+                RESOLVED locally; ready for Vercel deployment.
