@@ -1,0 +1,25 @@
+﻿
+certification/docx_repair/prerepair/officeZipAdapter.ts(6,41): error TS2307: Cannot find module './pdfAdapter' or its 
+corresponding type declarations.
+certification/docx_repair/prerepair/officeZipAdapter.ts(7,28): error TS2307: Cannot find module '../../ocrService' or 
+its corresponding type declarations.
+certification/g5_7/contentValidationService.snapshot.ts(8,58): error TS2307: Cannot find module 
+'../../utils/pdfExtractor' or its corresponding type declarations.
+certification/mirror_archive_2026-09-23T08-48-35Z/g5_7/contentValidationService.snapshot.ts(8,58): error TS2307: 
+Cannot find module '../../utils/pdfExtractor' or its corresponding type declarations.
+scratch/test_pdf_stream_browser.ts(30,30): error TS2307: Cannot find module '/src/utils/pdfExtractor.ts' or its 
+corresponding type declarations.
+src/services/verify/ingestionAdapters/officeZipAdapter.ts(287,7): error TS2561: Object literal may only specify known 
+properties, but 'chapterCount' does not exist in type 'AdapterExtractionResult'. Did you mean to write 
+'characterCount'?
+src/services/verify/ingestionAdapters/officeZipAdapter.ts(448,5): error TS2561: Object literal may only specify known 
+properties, but 'chapterCount' does not exist in type 'AdapterExtractionResult'. Did you mean to write 
+'characterCount'?
+src/services/verify/ingestionAdapters/officeZipAdapter.ts(506,5): error TS2353: Object literal may only specify known 
+properties, and 'slideCount' does not exist in type 'AdapterExtractionResult'.
+src/services/verify/ingestionAdapters/officeZipAdapter.ts(563,5): error TS2353: Object literal may only specify known 
+properties, and 'sheetCount' does not exist in type 'AdapterExtractionResult'.
+src/utils/pdfExtractor.ts(278,27): error TS2345: Argument of type '{ canvasContext: any; viewport: PageViewport; }' is 
+not assignable to parameter of type 'RenderParameters'.
+
+

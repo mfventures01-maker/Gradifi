@@ -275,7 +275,7 @@ export async function renderPdfPagesToRasterImages(arrayBuffer: ArrayBuffer): Pr
           context.fillStyle = 'white';
           context.fillRect(0, 0, viewport.width, viewport.height);
         }
-        await page.render({ canvasContext: context as any, viewport }).promise;
+        await page.render({ canvas: canvas as any, canvasContext: context as any, viewport }).promise;
 
         let imageBytes: Uint8Array;
         if (typeof canvas.toBuffer === 'function') {

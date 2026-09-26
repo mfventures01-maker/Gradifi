@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GRADIFI VERIFY - UNIVERSAL INGESTION PDF ADAPTER
  * Delegates to certified pdfExtractor.ts without modifying it.
  * Enforces strict OCR-required failure boundary when text extraction yields 0 words.
@@ -12,6 +12,9 @@ export interface AdapterExtractionResult {
   wordCount: number;
   characterCount: number;
   pageCount?: number;
+  chapterCount?: number;
+  slideCount?: number;
+  sheetCount?: number;
   extractionMethod: string;
   ocrUsed: boolean;
   ocrStatus: 'NOT_REQUIRED' | 'NOT_AVAILABLE' | 'USED' | 'FAILED';

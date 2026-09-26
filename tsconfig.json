@@ -22,5 +22,28 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "src/vite-env.d.ts",
+    "src/services/verify/**/*",
+    "src/utils/**/*",
+    "src/lib/**/*",
+    "api/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "certification",
+    "scratch",
+    "tests",
+    "supabase",
+    "evidence",
+    "src/services/gemmaService.ts",
+    "src/services/nemotronService.ts",
+    "src/pages/cbt",
+    "src/pages/grading",
+    "src/pages/onboarding",
+    "src/services/authService.ts",
+    "src/services/summarizerService.ts"
+  ]
 }
