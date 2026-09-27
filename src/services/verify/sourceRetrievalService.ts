@@ -4,7 +4,7 @@
  * Zero secret leakage, Honest HTTP/Content-Type responses, Zero Math.random().
  */
 
-import { OALocationResolutionResult, SourceRetrievalResult, SourceRetrievalStatus, UnpaywallOALocation } from './types';
+import { OALocationResolutionResult, SourceRetrievalResult, SourceRetrievalStatus, UnpaywallOALocation } from './types.js';
 
 function generateCorrelationId(prefix: string): string {
   const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')

@@ -3,8 +3,8 @@
  * HOEOS Phase 1 Standard: Provider-Agnostic Canonical Boundary, Zero Secret/Diagnostic Leakage.
  */
 
-import { EvidenceEngineResult, EvidenceMatch, AIFinding, PlagiarismRiskLevel } from './types';
-import { enforceAiInterpretationFirewall } from './aiOutputFirewallService';
+import { EvidenceEngineResult, EvidenceMatch, AIFinding, PlagiarismRiskLevel } from './types.js';
+import { enforceAiInterpretationFirewall } from './aiOutputFirewallService.js';
 
 export interface PublicDocumentMetadata {
   title: string;

@@ -13,16 +13,16 @@ import path from 'path';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dotenv.config();
 
-import { handleCoreServerSearch } from './coreServerHandler';
-import { handleCrossrefServerSearch } from './crossrefServerHandler';
-import { handleGoogleBooksServerSearch } from './googleBooksServerHandler';
-import { handleOpenAlexServerSearch } from './openAlexServerHandler';
-import { handleUnpaywallServerSearch } from './unpaywallServerHandler';
-import { handleSemanticScholarServerSearch } from './semanticScholarServerHandler';
-import { handleGeminiServerReasoning } from './geminiServerHandler';
-import { handleNemotronServerReasoning } from './nemotronServerHandler';
-import { handleGemmaServerReasoning } from './gemmaServerHandler';
-import { handlePersistenceServerRequest } from './persistenceServerHandler';
+import { handleCoreServerSearch } from './coreServerHandler.js';
+import { handleCrossrefServerSearch } from './crossrefServerHandler.js';
+import { handleGoogleBooksServerSearch } from './googleBooksServerHandler.js';
+import { handleOpenAlexServerSearch } from './openAlexServerHandler.js';
+import { handleUnpaywallServerSearch } from './unpaywallServerHandler.js';
+import { handleSemanticScholarServerSearch } from './semanticScholarServerHandler.js';
+import { handleGeminiServerReasoning } from './geminiServerHandler.js';
+import { handleNemotronServerReasoning } from './nemotronServerHandler.js';
+import { handleGemmaServerReasoning } from './gemmaServerHandler.js';
+import { handlePersistenceServerRequest } from './persistenceServerHandler.js';
 
 function createSearchMiddleware(providerId: string, handler: (payload: any) => Promise<any>) {
   return async (req: any, res: any) => {

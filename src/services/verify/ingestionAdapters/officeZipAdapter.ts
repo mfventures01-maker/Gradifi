@@ -3,8 +3,8 @@
  * Deterministically extracts XML content streams from DOCX, ODT, EPUB, PPTX, and XLSX packages.
  */
 
-import { AdapterExtractionResult } from './pdfAdapter';
-import { ocrService } from '../../ocrService';
+import { AdapterExtractionResult } from './pdfAdapter.js';
+import { ocrService } from '../../ocrService.js';
 
 import { unzipSync, strFromU8 } from 'fflate';
 

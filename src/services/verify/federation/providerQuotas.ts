@@ -4,7 +4,7 @@
  * Single source of truth for federation concurrency & throughput parameters.
  */
 
-import { SourceType, ProviderQuota } from '../types';
+import { SourceType, ProviderQuota } from '../types.js';
 
 export const PROVIDER_QUOTAS: Record<string, ProviderQuota> = {
   core: {

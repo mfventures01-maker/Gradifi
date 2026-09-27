@@ -3,7 +3,7 @@
  * Deterministically strips RTF control syntax and extracts readable text paragraphs.
  */
 
-import { AdapterExtractionResult } from './pdfAdapter';
+import { AdapterExtractionResult } from './pdfAdapter.js';
 
 export function extractRtfAdapter(rtfContent: string): AdapterExtractionResult {
   if (!rtfContent || !rtfContent.trim()) {

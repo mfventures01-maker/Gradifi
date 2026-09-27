@@ -4,8 +4,8 @@
  * Zero AI dependency, Strict deterministic identity hierarchy.
  */
 
-import { UnpaywallMetadataResult, ContentValidationResult, IdentityCorrespondenceResult, IdentityCorrespondenceStatus } from './types';
-import { normalizeText, tokenize } from './documentNormalizer';
+import { UnpaywallMetadataResult, ContentValidationResult, IdentityCorrespondenceResult, IdentityCorrespondenceStatus } from './types.js';
+import { normalizeText, tokenize } from './documentNormalizer.js';
 
 function cleanDoi(doi?: string): string {
   if (!doi || typeof doi !== 'string') return '';

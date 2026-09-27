@@ -3,7 +3,7 @@
  * Deterministically strips tags, script, style, and comments from HTML documents.
  */
 
-import { AdapterExtractionResult } from './pdfAdapter';
+import { AdapterExtractionResult } from './pdfAdapter.js';
 
 export function extractHtmlAdapter(htmlContent: string): AdapterExtractionResult {
   if (!htmlContent || !htmlContent.trim()) {

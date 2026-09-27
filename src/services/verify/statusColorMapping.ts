@@ -5,7 +5,7 @@
  * HOEOS Standard: Truthful visual state representation, ZERO false green indicators.
  */
 
-import { FineGrainedProviderStatus } from './types';
+import { FineGrainedProviderStatus } from './types.js';
 
 export interface StatusStyle {
   colorName: 'green' | 'amber' | 'neutral' | 'red';

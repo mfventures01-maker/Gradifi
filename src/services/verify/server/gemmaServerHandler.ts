@@ -4,8 +4,8 @@
  * HOEOS Standard: Local Edge Boundary, Strict Input Boundary, Structured JSON Schema.
  */
 
-import { AIFinding, EvidenceMatch } from '../types';
-import { validateAIFindingSchema, generateDeterministicFallbackFindings } from './geminiServerHandler';
+import { AIFinding, EvidenceMatch } from '../types.js';
+import { validateAIFindingSchema, generateDeterministicFallbackFindings } from './geminiServerHandler.js';
 
 export interface GemmaServerRequestPayload {
   documentText: string;

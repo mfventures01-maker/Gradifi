@@ -4,10 +4,10 @@
  * HOEOS Standard: ZERO client credentials, ZERO secret leakage, Honest AI Status Reporting.
  */
 
-import { AIFinding, EvidenceMatch } from './types';
-import { handleGeminiServerReasoning, generateDeterministicFallbackFindings, validateAIFindingSchema } from './server/geminiServerHandler';
-import { handleNemotronServerReasoning } from './server/nemotronServerHandler';
-import { handleGemmaServerReasoning } from './server/gemmaServerHandler';
+import { AIFinding, EvidenceMatch } from './types.js';
+import { handleGeminiServerReasoning, generateDeterministicFallbackFindings, validateAIFindingSchema } from './server/geminiServerHandler.js';
+import { handleNemotronServerReasoning } from './server/nemotronServerHandler.js';
+import { handleGemmaServerReasoning } from './server/gemmaServerHandler.js';
 
 export interface AIFederationResult {
   localAiStatus: 'RUNTIME_AVAILABLE' | 'RUNTIME_UNAVAILABLE';

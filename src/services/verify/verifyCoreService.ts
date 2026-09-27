@@ -18,17 +18,17 @@ import {
   SimilarityFinding,
   PlagiarismEvidenceResult,
   PlagiarismEvidenceFinding
-} from './types';
-import { analyzeDocumentEvidence, evaluateDocumentSimilarity, extractSimilarityFindingsFromEvidenceMatches } from './deterministicEngine';
-import { buildCanonicalAnalysisDocument } from './documentNormalizer';
-import { evaluatePlagiarismEvidence } from './plagiarismPolicy';
-import { OpenAlexProvider } from './providers/openAlexProvider';
-import { CrossrefProvider } from './providers/crossrefProvider';
-import { UnpaywallProvider } from './providers/unpaywallProvider';
-import { CoreProvider } from './providers/coreProvider';
-import { GoogleBooksProvider } from './providers/googleBooksProvider';
-import { AIFederationService } from './aiFederation';
-import { buildProviderQuery, extractDocumentDoi } from './queryBuilder';
+} from './types.js';
+import { analyzeDocumentEvidence, evaluateDocumentSimilarity, extractSimilarityFindingsFromEvidenceMatches } from './deterministicEngine.js';
+import { buildCanonicalAnalysisDocument } from './documentNormalizer.js';
+import { evaluatePlagiarismEvidence } from './plagiarismPolicy.js';
+import { OpenAlexProvider } from './providers/openAlexProvider.js';
+import { CrossrefProvider } from './providers/crossrefProvider.js';
+import { UnpaywallProvider } from './providers/unpaywallProvider.js';
+import { CoreProvider } from './providers/coreProvider.js';
+import { GoogleBooksProvider } from './providers/googleBooksProvider.js';
+import { AIFederationService } from './aiFederation.js';
+import { buildProviderQuery, extractDocumentDoi } from './queryBuilder.js';
 
 export class VerifyCoreService {
   private openAlex = new OpenAlexProvider();

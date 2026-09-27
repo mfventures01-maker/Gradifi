@@ -4,7 +4,7 @@
  * Truthfully returns UNSUPPORTED_FORMAT for binary OLE2 structures requiring DOCX/PPTX/XLSX conversion.
  */
 
-import { AdapterExtractionResult } from './pdfAdapter';
+import { AdapterExtractionResult } from './pdfAdapter.js';
 
 export function extractLegacyBinaryAdapter(format: 'doc' | 'ppt' | 'xls', filename: string): AdapterExtractionResult {
   const targetExt = format === 'doc' ? 'DOCX' : (format === 'ppt' ? 'PPTX' : 'XLSX');

@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleGeminiServerReasoning } from '../../src/services/verify/server/geminiServerHandler.js';
+import { handleGeminiServerReasoning } from '../../runtime/src/services/verify/server/geminiServerHandler.js';
 
 export default async function handler(
   req: VercelRequest,

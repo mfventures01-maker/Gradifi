@@ -3,7 +3,7 @@
  * Handles CSV, JSON, and XML documents with strict security & deterministic ordering.
  */
 
-import { AdapterExtractionResult } from './pdfAdapter';
+import { AdapterExtractionResult } from './pdfAdapter.js';
 
 export function extractCsvAdapter(csvContent: string): AdapterExtractionResult {
   if (!csvContent || !csvContent.trim()) {

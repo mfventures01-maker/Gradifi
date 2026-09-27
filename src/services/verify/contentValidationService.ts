@@ -4,9 +4,9 @@
  * Reuses canonical pdfExtractor engine and canonical document normalization.
  */
 
-import { SourceRetrievalResult, ContentValidationResult, ContentValidationStatus, CanonicalAnalysisDocument } from './types';
-import { extractTextFromPdfStream, formatFileSize } from '../../utils/pdfExtractor';
-import { buildCanonicalAnalysisDocument } from './documentNormalizer';
+import { SourceRetrievalResult, ContentValidationResult, ContentValidationStatus, CanonicalAnalysisDocument } from './types.js';
+import { extractTextFromPdfStream, formatFileSize } from '../../utils/pdfExtractor.js';
+import { buildCanonicalAnalysisDocument } from './documentNormalizer.js';
 
 export class ContentValidationService {
   /**

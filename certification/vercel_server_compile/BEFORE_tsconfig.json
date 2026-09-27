@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "module": "ESNext",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": [
+    "src/vite-env.d.ts",
+    "src/services/verify/**/*",
+    "src/utils/**/*",
+    "src/lib/**/*",
+    "api/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "certification",
+    "scratch",
+    "tests",
+    "supabase",
+    "evidence",
+    "src/services/gemmaService.ts",
+    "src/services/nemotronService.ts",
+    "src/pages/cbt",
+    "src/pages/grading",
+    "src/pages/onboarding",
+    "src/services/authService.ts",
+    "src/services/summarizerService.ts"
+  ]
+}

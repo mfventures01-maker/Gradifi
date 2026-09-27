@@ -11,8 +11,8 @@
  * 5. All formatting and citation outputs are 100% deterministic (zero Math.random, Date.now, or UUIDs).
  */
 
-import { PublicVerificationResult, PublicAcademicSource, PublicBookSource, PublicCitation, generateCitations } from './publicVerificationResult';
-import { MatchedEvidenceSpan } from './matchedTextHighlightingService';
+import { PublicVerificationResult, PublicAcademicSource, PublicBookSource, PublicCitation, generateCitations } from './publicVerificationResult.js';
+import { MatchedEvidenceSpan } from './matchedTextHighlightingService.js';
 
 export interface FormattedSourcePresentation {
   sourceId: string;

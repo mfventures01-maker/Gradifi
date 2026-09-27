@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleGemmaServerReasoning } from '../../src/services/verify/server/gemmaServerHandler.js';
+import { handleGemmaServerReasoning } from '../../runtime/src/services/verify/server/gemmaServerHandler.js';
 
 export default async function handler(
   req: VercelRequest,

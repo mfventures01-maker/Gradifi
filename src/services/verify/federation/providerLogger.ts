@@ -4,7 +4,7 @@
  * HOEOS Standard: Complete Auditing, Zero API Secret Leakage, Provenance Trail.
  */
 
-import { FederationCallLog } from '../types';
+import { FederationCallLog } from '../types.js';
 
 /**
  * Sanitizes URLs by stripping sensitive query parameters (keys, tokens, secrets).

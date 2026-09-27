@@ -4,8 +4,8 @@
  * HOEOS Standard: Strict Upstream Concurrency & Quota Enforcement.
  */
 
-import { RateLimiterConfig } from '../types';
-import { getProviderQuota } from './providerQuotas';
+import { RateLimiterConfig } from '../types.js';
+import { getProviderQuota } from './providerQuotas.js';
 
 export interface RateLimiterConfigInternal {
   providerId: string;

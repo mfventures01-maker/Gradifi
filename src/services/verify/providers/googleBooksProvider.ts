@@ -4,8 +4,8 @@
  * HOEOS Standard: ZERO client credentials, ZERO VITE_* secret reads, Provable Server Boundary.
  */
 
-import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types';
-import { handleGoogleBooksServerSearch } from '../server/googleBooksServerHandler';
+import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types.js';
+import { handleGoogleBooksServerSearch } from '../server/googleBooksServerHandler.js';
 
 export class GoogleBooksProvider implements AcademicProvider {
   readonly id = 'googlebooks' as const;

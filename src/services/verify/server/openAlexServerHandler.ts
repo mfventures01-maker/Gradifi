@@ -4,8 +4,8 @@
  * HOEOS Standard: Server-Only Credentials, Strict Input Boundary, Zero Secret Leakage.
  */
 
-import { ProviderResult, EvidenceMatch } from '../types';
-import { extractStudentPassage } from './passageExtractor';
+import { ProviderResult, EvidenceMatch } from '../types.js';
+import { extractStudentPassage } from './passageExtractor.js';
 
 export interface OpenAlexServerRequestPayload {
   query?: string;

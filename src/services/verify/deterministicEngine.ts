@@ -4,8 +4,8 @@
  * HOEOS Standard: ZERO Math.random(). Reproducible evidence calculation.
  */
 
-import { EvidenceMatch, ProvenanceState, CanonicalAnalysisDocument, SimilarityAnalysisResult, SimilarityFinding, SimilarityMatchMethod } from './types';
-import { normalizeText, tokenize, segmentSentences, generateNGrams, computeHash } from './documentNormalizer';
+import { EvidenceMatch, ProvenanceState, CanonicalAnalysisDocument, SimilarityAnalysisResult, SimilarityFinding, SimilarityMatchMethod } from './types.js';
+import { normalizeText, tokenize, segmentSentences, generateNGrams, computeHash } from './documentNormalizer.js';
 
 export interface DeterministicAnalysisInput {
   documentText: string;

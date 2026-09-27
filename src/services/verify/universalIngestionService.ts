@@ -3,16 +3,16 @@
  * HOEOS Phase 2 Standard: 17-Format Detection, Deterministic Adapters & Canonical Convergence.
  */
 
-import { CanonicalAnalysisDocument } from './types';
-import { buildCanonicalAnalysisDocument } from './documentNormalizer';
-import { extractPdfAdapter } from './ingestionAdapters/pdfAdapter';
-import { extractTextAdapter } from './ingestionAdapters/textAdapter';
-import { extractHtmlAdapter } from './ingestionAdapters/htmlAdapter';
-import { extractRtfAdapter } from './ingestionAdapters/rtfAdapter';
-import { extractCsvAdapter, extractJsonAdapter, extractXmlAdapter } from './ingestionAdapters/structuredAdapter';
-import { extractDocxText, extractOdtText, extractEpubText, extractPptxText, extractXlsxText } from './ingestionAdapters/officeZipAdapter';
-import { extractLegacyBinaryAdapter } from './ingestionAdapters/legacyBinaryAdapter';
-import { MAX_FILE_SIZE_BYTES } from '../../utils/pdfExtractor';
+import { CanonicalAnalysisDocument } from './types.js';
+import { buildCanonicalAnalysisDocument } from './documentNormalizer.js';
+import { extractPdfAdapter } from './ingestionAdapters/pdfAdapter.js';
+import { extractTextAdapter } from './ingestionAdapters/textAdapter.js';
+import { extractHtmlAdapter } from './ingestionAdapters/htmlAdapter.js';
+import { extractRtfAdapter } from './ingestionAdapters/rtfAdapter.js';
+import { extractCsvAdapter, extractJsonAdapter, extractXmlAdapter } from './ingestionAdapters/structuredAdapter.js';
+import { extractDocxText, extractOdtText, extractEpubText, extractPptxText, extractXlsxText } from './ingestionAdapters/officeZipAdapter.js';
+import { extractLegacyBinaryAdapter } from './ingestionAdapters/legacyBinaryAdapter.js';
+import { MAX_FILE_SIZE_BYTES } from '../../utils/pdfExtractor.js';
 
 export type SupportedFormat =
   | 'pdf'

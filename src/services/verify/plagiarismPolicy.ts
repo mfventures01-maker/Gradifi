@@ -9,8 +9,8 @@ import {
   PlagiarismEvidenceResult,
   PlagiarismEvidenceFinding,
   PlagiarismRiskLevel
-} from './types';
-import { computeHash } from './documentNormalizer';
+} from './types.js';
+import { computeHash } from './documentNormalizer.js';
 
 export const PLAGIARISM_POLICY_VERSION = 'G3-POLICY-v1';
 

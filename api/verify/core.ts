@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleCoreServerSearch } from '../../src/services/verify/server/coreServerHandler.js';
+import { handleCoreServerSearch } from '../../runtime/src/services/verify/server/coreServerHandler.js';
 
 export default async function handler(
   req: VercelRequest,

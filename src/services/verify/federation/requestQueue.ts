@@ -4,9 +4,9 @@
  * HOEOS Standard: Concurrency Isolation, Fault Containment, Quota Protection.
  */
 
-import { getRateLimiter } from './rateLimiter';
-import { logProviderCall } from './providerLogger';
-import { ProviderResult } from '../types';
+import { getRateLimiter } from './rateLimiter.js';
+import { logProviderCall } from './providerLogger.js';
+import { ProviderResult } from '../types.js';
 
 export interface QueuedRequest<T> {
   providerId: string;

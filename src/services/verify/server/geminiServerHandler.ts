@@ -4,7 +4,7 @@
  * HOEOS Standard: Structured JSON Schema, Source ID Boundary Enforcement, Server Credentials Only.
  */
 
-import { AIFinding, EvidenceMatch } from '../types';
+import { AIFinding, EvidenceMatch } from '../types.js';
 
 export interface GeminiServerRequestPayload {
   documentText: string;

@@ -4,13 +4,13 @@
  * HOEOS Standard: Strict Determinism, Alphabetical Key Order, Independent Provider Concurrency.
  */
 
-import { ProviderResult, EvidenceMatch } from '../types';
-import { OpenAlexProvider } from '../providers/openAlexProvider';
-import { CrossrefProvider } from '../providers/crossrefProvider';
-import { UnpaywallProvider } from '../providers/unpaywallProvider';
-import { CoreProvider } from '../providers/coreProvider';
-import { GoogleBooksProvider } from '../providers/googleBooksProvider';
-import { buildProviderQuery, extractDocumentDoi } from '../queryBuilder';
+import { ProviderResult, EvidenceMatch } from '../types.js';
+import { OpenAlexProvider } from '../providers/openAlexProvider.js';
+import { CrossrefProvider } from '../providers/crossrefProvider.js';
+import { UnpaywallProvider } from '../providers/unpaywallProvider.js';
+import { CoreProvider } from '../providers/coreProvider.js';
+import { GoogleBooksProvider } from '../providers/googleBooksProvider.js';
+import { buildProviderQuery, extractDocumentDoi } from '../queryBuilder.js';
 
 const openAlex = new OpenAlexProvider();
 const crossref = new CrossrefProvider();

@@ -74,7 +74,7 @@ export function computeHash(text: string): string {
   return `${hex1}${hex2}`;
 }
 
-import { CanonicalAnalysisDocument, DocumentSourceMetadata, DocumentStats, DocumentOriginType } from './types';
+import { CanonicalAnalysisDocument, DocumentSourceMetadata, DocumentStats, DocumentOriginType } from './types.js';
 
 export interface BuildCanonicalOptions {
   rawText: string;

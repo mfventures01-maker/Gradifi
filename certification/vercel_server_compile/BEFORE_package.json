@@ -4,16 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "clean:runtime": "rimraf runtime",
-    "build:server": "npm run clean:runtime && tsc -p tsconfig.server.json",
-    "typecheck:client": "tsc -p tsconfig.json --noEmit",
-    "typecheck:server": "tsc -p tsconfig.server.json --noEmit",
-    "typecheck": "npm run typecheck:client && npm run typecheck:server",
     "dev": "vite",
-    "build": "npm run build:server && vite build",
-    "vercel-build": "npm run build:server && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "lint": "tsc -p tsconfig.json --noEmit"
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -45,7 +39,6 @@
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.0",
     "jsqr": "^1.4.0",
-    "rimraf": "^6.1.3",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2"

@@ -4,8 +4,8 @@
  * HOEOS Rule: Provenance preserved, Honest failure states, Zero Math.random().
  */
 
-import { AcademicProvider, ProviderSearchInput, ProviderResult, EvidenceMatch, UnpaywallMetadataResult, UnpaywallOALocation } from '../types';
-import { handleUnpaywallServerSearch } from '../server/unpaywallServerHandler';
+import { AcademicProvider, ProviderSearchInput, ProviderResult, EvidenceMatch, UnpaywallMetadataResult, UnpaywallOALocation } from '../types.js';
+import { handleUnpaywallServerSearch } from '../server/unpaywallServerHandler.js';
 
 function generateCorrelationId(prefix: string): string {
   const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')

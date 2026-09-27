@@ -4,8 +4,8 @@
  * HOEOS Standard: ZERO client credentials, ZERO VITE_* secret reads, Provable Server Boundary.
  */
 
-import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types';
-import { handleSemanticScholarServerSearch } from '../server/semanticScholarServerHandler';
+import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types.js';
+import { handleSemanticScholarServerSearch } from '../server/semanticScholarServerHandler.js';
 
 export class SemanticScholarProvider implements AcademicProvider {
   readonly id = 'semanticscholar' as const;

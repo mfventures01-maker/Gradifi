@@ -9,8 +9,8 @@
  * 3. AI outputs Sit downstream and MUST NEVER write backward into G5, G3, P3, P4, or P5.
  */
 
-import { AIFinding, EvidenceMatch } from './types';
-import { PublicAIInterpretation, normalizeAiConfidence, sanitizeAiExplanation } from './publicVerificationResult';
+import { AIFinding, EvidenceMatch } from './types.js';
+import { PublicAIInterpretation, normalizeAiConfidence, sanitizeAiExplanation } from './publicVerificationResult.js';
 
 export const FORBIDDEN_AI_AUTHORITY_FIELDS = [
   'similarity',

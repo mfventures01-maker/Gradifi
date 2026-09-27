@@ -4,8 +4,8 @@
  * HOEOS Standard: ZERO client credentials, ZERO VITE_* secret reads, Provable Server Boundary.
  */
 
-import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types';
-import { handleCoreServerSearch } from '../server/coreServerHandler';
+import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types.js';
+import { handleCoreServerSearch } from '../server/coreServerHandler.js';
 
 export class CoreProvider implements AcademicProvider {
   readonly id = 'core' as const;

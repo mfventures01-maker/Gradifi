@@ -4,8 +4,8 @@
  * HOEOS Standard: Server-Only Credentials, Strict Input Boundary, Zero Secret Leakage.
  */
 
-import { AIFinding, EvidenceMatch } from '../types';
-import { validateAIFindingSchema, generateDeterministicFallbackFindings } from './geminiServerHandler';
+import { AIFinding, EvidenceMatch } from '../types.js';
+import { validateAIFindingSchema, generateDeterministicFallbackFindings } from './geminiServerHandler.js';
 
 export interface NemotronServerRequestPayload {
   documentText: string;

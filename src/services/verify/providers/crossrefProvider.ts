@@ -4,8 +4,8 @@
  * HOEOS Standard: ZERO client credentials, ZERO VITE_* secret reads, Provable Server Boundary.
  */
 
-import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types';
-import { handleCrossrefServerSearch } from '../server/crossrefServerHandler';
+import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types.js';
+import { handleCrossrefServerSearch } from '../server/crossrefServerHandler.js';
 
 export class CrossrefProvider implements AcademicProvider {
   readonly id = 'crossref' as const;

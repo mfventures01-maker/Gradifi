@@ -4,7 +4,7 @@
  * Enforces strict OCR-required failure boundary when text extraction yields 0 words.
  */
 
-import { extractDocumentText, MAX_FILE_SIZE_BYTES, validatePdfExtractedTextQuality } from '../../../utils/pdfExtractor';
+import { extractDocumentText, MAX_FILE_SIZE_BYTES, validatePdfExtractedTextQuality } from '../../../utils/pdfExtractor.js';
 
 export interface AdapterExtractionResult {
   success: boolean;

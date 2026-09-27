@@ -3,8 +3,8 @@
  * HOEOS G6.2 Standard: Trusted Write Path, Idempotent Record Persistence & Conflict Protection.
  */
 
-import { EvidenceEngineResult, AnalysisResultEnvelope } from './types';
-import { supabase } from '../../lib/supabase';
+import { EvidenceEngineResult, AnalysisResultEnvelope } from './types.js';
+import { supabase } from '../../lib/supabase.js';
 
 export interface PublicVerificationRecord {
   id?: string;

@@ -4,7 +4,7 @@
  * Zero URL manufacturing, Zero Math.random(), Deterministic location selection.
  */
 
-import { UnpaywallMetadataResult, UnpaywallOALocation, OALocationResolutionResult } from './types';
+import { UnpaywallMetadataResult, UnpaywallOALocation, OALocationResolutionResult } from './types.js';
 
 function generateCorrelationId(prefix: string): string {
   const nonce = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')

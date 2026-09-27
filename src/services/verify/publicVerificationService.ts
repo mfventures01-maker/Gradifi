@@ -3,8 +3,8 @@
  * HOEOS G6.3 Standard: Public Resolution, Format Validation, Hash Grounding & Integrity Checks.
  */
 
-import { supabase } from '../../lib/supabase';
-import { PublicVerificationRecord, VerificationPersistenceService } from './verificationPersistenceService';
+import { supabase } from '../../lib/supabase.js';
+import { PublicVerificationRecord, VerificationPersistenceService } from './verificationPersistenceService.js';
 
 export type PublicResolutionStatus =
   | 'VALID'

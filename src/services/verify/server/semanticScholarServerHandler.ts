@@ -4,9 +4,9 @@
  * HOEOS Standard: Server-Only Credentials, Strict Input Boundary, Zero Secret Leakage.
  */
 
-import { ProviderResult, EvidenceMatch } from '../types';
-import { enqueue } from '../federation/requestQueue';
-import { extractStudentPassage } from './passageExtractor';
+import { ProviderResult, EvidenceMatch } from '../types.js';
+import { enqueue } from '../federation/requestQueue.js';
+import { extractStudentPassage } from './passageExtractor.js';
 
 export interface SemanticScholarServerRequestPayload {
   query?: string;

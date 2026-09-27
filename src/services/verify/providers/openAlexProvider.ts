@@ -4,8 +4,8 @@
  * HOEOS Standard: ZERO client credentials, ZERO VITE_* secret reads, Provable Server Boundary.
  */
 
-import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types';
-import { handleOpenAlexServerSearch } from '../server/openAlexServerHandler';
+import { AcademicProvider, ProviderSearchInput, ProviderResult } from '../types.js';
+import { handleOpenAlexServerSearch } from '../server/openAlexServerHandler.js';
 
 export class OpenAlexProvider implements AcademicProvider {
   readonly id = 'openalex' as const;

@@ -4,11 +4,11 @@
  * HOEOS Standard: Absolute Determinism, Provenance Transparency, Zero Secret Leakage.
  */
 
-import { buildCanonicalAnalysisDocument } from './documentNormalizer';
-import { buildProviderQuery } from './queryBuilder';
-import { verifyCoreService } from './verifyCoreService';
-import { applyHighlights, filterVerifiedFindings } from '../../components/verify/highlightUtils';
-import { verificationPersistenceService } from './verificationPersistenceService';
+import { buildCanonicalAnalysisDocument } from './documentNormalizer.js';
+import { buildProviderQuery } from './queryBuilder.js';
+import { verifyCoreService } from './verifyCoreService.js';
+import { applyHighlights, filterVerifiedFindings } from '../../components/verify/highlightUtils.js';
+import { verificationPersistenceService } from './verificationPersistenceService.js';
 
 export type StageName =
   | 'INGESTION'

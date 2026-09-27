@@ -14,15 +14,15 @@ import {
   EvidenceMatch,
   ProviderProvenance,
   CanonicalAnalysisDocument
-} from './types';
-import { OpenAlexProvider } from './providers/openAlexProvider';
-import { CrossrefProvider } from './providers/crossrefProvider';
-import { UnpaywallProvider } from './providers/unpaywallProvider';
-import { CoreProvider } from './providers/coreProvider';
-import { GoogleBooksProvider } from './providers/googleBooksProvider';
-import { AIFederationService, AIFederationResult } from './aiFederation';
-import { computeHash } from './documentNormalizer';
-import { buildProviderQuery, extractDocumentDoi } from './queryBuilder';
+} from './types.js';
+import { OpenAlexProvider } from './providers/openAlexProvider.js';
+import { CrossrefProvider } from './providers/crossrefProvider.js';
+import { UnpaywallProvider } from './providers/unpaywallProvider.js';
+import { CoreProvider } from './providers/coreProvider.js';
+import { GoogleBooksProvider } from './providers/googleBooksProvider.js';
+import { AIFederationService, AIFederationResult } from './aiFederation.js';
+import { computeHash } from './documentNormalizer.js';
+import { buildProviderQuery, extractDocumentDoi } from './queryBuilder.js';
 
 // --- CONTRACT TYPES ---
 

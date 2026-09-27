@@ -15,13 +15,13 @@ import {
   EvidenceMatch,
   EvidenceEngineResult,
   CanonicalAnalysisDocument
-} from './types';
-import { UnpaywallProvider } from './providers/unpaywallProvider';
-import { unpaywallOAResolver } from './unpaywallOAResolver';
-import { sourceRetrievalService } from './sourceRetrievalService';
-import { contentValidationService } from './contentValidationService';
-import { identityCorrespondenceService } from './identityCorrespondenceService';
-import { analyzeDocumentEvidence } from './deterministicEngine';
+} from './types.js';
+import { UnpaywallProvider } from './providers/unpaywallProvider.js';
+import { unpaywallOAResolver } from './unpaywallOAResolver.js';
+import { sourceRetrievalService } from './sourceRetrievalService.js';
+import { contentValidationService } from './contentValidationService.js';
+import { identityCorrespondenceService } from './identityCorrespondenceService.js';
+import { analyzeDocumentEvidence } from './deterministicEngine.js';
 
 export interface BridgeExecuteOptions {
   fetchImpl?: typeof fetch;

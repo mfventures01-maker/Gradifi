@@ -200,7 +200,7 @@ export async function extractTextFromPdfStream(arrayBuffer: ArrayBuffer): Promis
   return '';
 }
 
-import { ocrService } from '../services/ocrService';
+import { ocrService } from '../services/ocrService.js';
 
 /**
  * Helper to extract JPEG image streams (/Filter /DCTDecode) from raw PDF bytes.

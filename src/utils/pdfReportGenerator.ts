@@ -4,9 +4,9 @@
  * HOEOS Standard: Truthful evidence, clear boundary separation, printable format.
  */
 
-import { EvidenceEngineResult } from '../services/verify/types';
-import { toPublicVerificationResult, PublicVerificationResult } from '../services/verify/publicVerificationResult';
-import { generateQRCodeSVG } from './qrGenerator';
+import { EvidenceEngineResult } from '../services/verify/types.js';
+import { toPublicVerificationResult, PublicVerificationResult } from '../services/verify/publicVerificationResult.js';
+import { generateQRCodeSVG } from './qrGenerator.js';
 
 export interface PDFReportMetadata {
   verificationId: string;

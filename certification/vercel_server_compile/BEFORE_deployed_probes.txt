@@ -1,0 +1,9 @@
+﻿core -> ERR
+crossref -> ERR
+googlebooks -> ERR
+openalex -> ERR
+unpaywall -> ERR
+nemotron -> ERR
+gemini -> ERR
+gemma -> ERR
+semanticscholar -> ERR

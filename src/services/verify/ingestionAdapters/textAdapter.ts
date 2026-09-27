@@ -3,7 +3,7 @@
  * Handles deterministic text & markdown extraction.
  */
 
-import { AdapterExtractionResult } from './pdfAdapter';
+import { AdapterExtractionResult } from './pdfAdapter.js';
 
 export function extractTextAdapter(rawContent: string, format: 'txt' | 'md'): AdapterExtractionResult {
   if (!rawContent || !rawContent.trim()) {

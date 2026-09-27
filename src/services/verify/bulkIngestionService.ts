@@ -3,9 +3,9 @@
  * HOEOS G5.2 / G5.3 Standard: Deterministic Bulk Contract, Per-File Failure Isolation, Canonical Identity.
  */
 
-import { BulkIngestionBatch, BulkIngestionItem, IngestionStatus } from './types';
-import { buildCanonicalAnalysisDocument } from './documentNormalizer';
-import { extractDocumentText, validateDocumentFile, formatFileSize } from '../../utils/pdfExtractor';
+import { BulkIngestionBatch, BulkIngestionItem, IngestionStatus } from './types.js';
+import { buildCanonicalAnalysisDocument } from './documentNormalizer.js';
+import { extractDocumentText, validateDocumentFile, formatFileSize } from '../../utils/pdfExtractor.js';
 
 export class BulkIngestionService {
   /**

@@ -5,8 +5,8 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { VerificationPersistenceService, PublicVerificationRecord } from '../verificationPersistenceService';
-import { EvidenceEngineResult, AnalysisResultEnvelope } from '../types';
+import { VerificationPersistenceService, PublicVerificationRecord } from '../verificationPersistenceService.js';
+import { EvidenceEngineResult, AnalysisResultEnvelope } from '../types.js';
 
 export interface PersistenceServerRequestPayload {
   result: EvidenceEngineResult;

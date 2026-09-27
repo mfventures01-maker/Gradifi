@@ -6,8 +6,8 @@
  * Terminology Standard: "Matched text", "Similarity evidence", "Evidence span" (NEVER "PLAGIARIZED")
  */
 
-import { EvidenceMatch, SimilarityFinding } from './types';
-import { findTextSpans, verifyOffsetSlice } from './canonicalTextOffsetService';
+import { EvidenceMatch, SimilarityFinding } from './types.js';
+import { findTextSpans, verifyOffsetSlice } from './canonicalTextOffsetService.js';
 
 export interface MatchedEvidenceSpan {
   spanId: string;
