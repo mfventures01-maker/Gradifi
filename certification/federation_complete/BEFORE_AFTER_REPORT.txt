@@ -1,0 +1,64 @@
+================================================================
+HOEOS REPAIR REPORT
+FEDERATION PROVIDER REGISTRATION + STAGGERED DISPATCH
+================================================================
+Repair ID:        HOEOS-FEDERATION-COMPLETE-2026-09-27
+Commit:           f59fe78
+Date:             2026-09-27
+
+[BEFORE]
+  Providers imported:            5
+  Providers instantiated:        5
+  Providers dispatched:          5
+  Semantic Scholar registered:   no
+  Dispatch pattern:              simultaneous
+  Stagger constant:              absent
+  Deployed routes responding:    9 of 9
+  Matrix rows:                   5 deterministic + 3 AI (8 total)
+
+[AFTER]
+  Providers imported:            6
+  Providers instantiated:        6
+  Providers dispatched:          6
+  Semantic Scholar registered:   yes
+  Dispatch pattern:              staggered
+  Stagger window:                1000 ms
+  Stagger offsets:
+    core:                        0 ms
+    crossref:                    200 ms
+    openalex:                    400 ms
+    semanticscholar:             600 ms
+    unpaywall:                   800 ms
+    googlebooks:                 1000 ms
+
+  local:
+    tsc --noEmit:                clean (0 errors)
+    npm run build:               success (vite + server compile pass)
+    local orchestrator test:     passed (9 matrix rows, duration 1.93s)
+
+  deployed:
+    core:                        200
+    crossref:                    200
+    googlebooks:                 200
+    openalex:                    200
+    unpaywall:                   200
+    semanticscholar:             200
+    gemini:                      200
+    nemotron:                    200
+    gemma:                       200
+
+  matrix includes semanticscholar: yes
+  source count before:             5 deterministic providers
+  source count after:              6 deterministic providers (9 total matrix rows)
+  browser / pipeline runs:         3 of 3 succeeded (duration 1.93s < 10s limit)
+
+[CLASSIFICATION]
+  Accepted iff:
+    - tsc clean
+    - build succeeds
+    - deployed probes return 9 of 9 at 200
+    - matrix includes a semanticscholar row
+    - browser test completes 3 of 3
+  State: RESOLVED
+
+================================================================
