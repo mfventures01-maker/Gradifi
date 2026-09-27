@@ -44,9 +44,24 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
   const query = rawQuery.slice(0, 200);
   const limit = Math.max(1, Math.min(10, typeof payload?.limit === 'number' ? payload.limit : 5));
 
-  const apiKey = process.env.GOOGLE_BOOKS_API_KEY || process.env.GOOGLE_BOOKS_KEY;
-  const keyParam = apiKey ? `&key=${encodeURIComponent(apiKey)}` : '';
-  const fetchUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${limit}${keyParam}`;
+  const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
+
+  if (!apiKey) {
+    const responseTimestamp = new Date().toISOString();
+    return {
+      providerId: 'googlebooks',
+      status: 'unavailable',
+      fineGrainedStatus: 'AUTHENTICATION_FAILED',
+      matches: [],
+      errorMessage: 'GOOGLE_BOOKS_API_KEY server configuration is unavailable',
+      errorCode: 'MISSING_SERVER_KEY',
+      requestTimestamp,
+      responseTimestamp,
+      correlationId
+    };
+  }
+
+  const fetchUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${limit}&key=${encodeURIComponent(apiKey)}`;
 
   try {
     return await enqueue<ProviderResult>({
@@ -77,11 +92,10 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
 
         if (!response.ok) {
           const isAuthError = response.status === 401 || response.status === 403;
-          const isRateLimit = response.status === 429;
           return {
             providerId: 'googlebooks',
-            status: isRateLimit ? 'unavailable' : (isAuthError ? 'error' : 'unavailable'),
-            fineGrainedStatus: isRateLimit ? 'RATE_LIMITED' : (isAuthError ? 'AUTHENTICATION_FAILED' : 'REQUEST_FAILED'),
+            status: isAuthError ? 'error' : 'unavailable',
+            fineGrainedStatus: isAuthError ? 'AUTHENTICATION_FAILED' : 'REQUEST_FAILED',
             matches: [],
             errorMessage: `Google Books API returned HTTP ${response.status}: ${response.statusText}`,
             errorCode: `HTTP_${response.status}`,

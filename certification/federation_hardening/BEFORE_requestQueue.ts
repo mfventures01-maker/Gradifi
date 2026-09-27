@@ -75,17 +75,16 @@ function isRetryableResult(res: any): boolean {
   const provRes = res as ProviderResult;
 
   if (provRes.fineGrainedStatus === 'AUTHENTICATION_FAILED') return false;
-  if (provRes.fineGrainedStatus === 'RATE_LIMITED') return false;
   if (provRes.status === 'success' || provRes.fineGrainedStatus === 'EMPTY_RESULT' || provRes.fineGrainedStatus === 'VERIFIED') return false;
 
   const code = provRes.errorCode || '';
   const msg = provRes.errorMessage || '';
 
-  if (code.includes('500') || code.includes('502') || code.includes('503') || code.includes('504') || code === 'FETCH_ERROR' || code === 'TIMEOUT') {
+  if (code === 'HTTP_429' || code.includes('500') || code.includes('502') || code.includes('503') || code.includes('504') || code === 'FETCH_ERROR' || code === 'TIMEOUT') {
     return true;
   }
 
-  if (msg.includes('500') || msg.includes('502') || msg.includes('503') || msg.includes('504') || msg.includes('fetch failed') || msg.includes('timeout')) {
+  if (msg.includes('429') || msg.includes('500') || msg.includes('502') || msg.includes('503') || msg.includes('504') || msg.includes('fetch failed') || msg.includes('timeout')) {
     return true;
   }
 

@@ -48,30 +48,6 @@ import { generateVerificationReportPDF } from '../../utils/pdfReportGenerator';
 import { jsPDF } from 'jspdf';
 import { buildCanonicalAnalysisDocument } from '../../services/verify/documentNormalizer';
 
-const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
-  core: 'CORE',
-  crossref: 'Crossref',
-  openalex: 'OpenAlex',
-  unpaywall: 'Unpaywall',
-  googlebooks: 'Google Books',
-  semanticscholar: 'Semantic Scholar',
-  gemini: 'Gemini',
-  nemotron: 'Nemotron',
-  gemma: 'Gemma'
-};
-
-const STATUS_DISPLAY_LABELS: Record<string, string> = {
-  VERIFIED: 'Verified',
-  EMPTY_RESULT: 'No matches',
-  RATE_LIMITED: 'Rate limited',
-  AUTHENTICATION_FAILED: 'Unavailable',
-  REQUEST_FAILED: 'Unreachable',
-  NETWORK_ERROR: 'Network error',
-  TIMEOUT: 'Timed out',
-  NOT_TESTED: 'Not tested',
-  PROVIDER_UNAVAILABLE: 'Unavailable'
-};
-
 export type DemoStep = 'upload' | 'extraction' | 'normalization' | 'federation' | 'result';
 
 export interface NormalizedDocMetadata {
@@ -940,17 +916,16 @@ Distributed machine learning frameworks require mathematical determinism to guar
                             }
                             return getStatusStyle(overallStatus);
                           })();
-                          const displayLabel = STATUS_DISPLAY_LABELS[overallStatus] ?? style.label;
                           return (
                             <tr key={entry.provider} className="hover:bg-slate-800/30 transition-colors">
-                              <td className="py-2.5 px-3 font-bold text-slate-200">{PROVIDER_DISPLAY_NAMES[entry.provider] ?? entry.provider}</td>
+                              <td className="py-2.5 px-3 font-bold text-slate-200 uppercase">{entry.provider}</td>
                               <td className="py-2.5 px-3 text-slate-400">{entry.credentialStatus}</td>
                               <td className="py-2.5 px-3 text-slate-400">{entry.realRequestStatus}</td>
                               <td className="py-2.5 px-3 text-slate-400">{entry.responseStatus}</td>
                               <td className="py-2.5 px-3">
                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-bold ${style.badgeBgClass} ${style.badgeTextClass}`}>
                                   <span className={`w-1.5 h-1.5 rounded-full ${style.dotBgClass}`} />
-                                  {displayLabel}
+                                  {style.label}
                                 </span>
                               </td>
                             </tr>
