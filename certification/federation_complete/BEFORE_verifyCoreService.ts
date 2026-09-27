@@ -27,31 +27,8 @@ import { CrossrefProvider } from './providers/crossrefProvider.js';
 import { UnpaywallProvider } from './providers/unpaywallProvider.js';
 import { CoreProvider } from './providers/coreProvider.js';
 import { GoogleBooksProvider } from './providers/googleBooksProvider.js';
-import { SemanticScholarProvider } from './providers/semanticScholarProvider.js';
 import { AIFederationService } from './aiFederation.js';
 import { buildProviderQuery, extractDocumentDoi } from './queryBuilder.js';
-
-const PROVIDER_STAGGER_MS: Record<string, number> = {
-  core: 0,
-  crossref: 200,
-  openalex: 400,
-  semanticscholar: 600,
-  unpaywall: 800,
-  googlebooks: 1000
-};
-
-function dispatchWithStagger<T>(
-  providerId: string,
-  dispatch: () => Promise<T>
-): Promise<T> {
-  const delay = PROVIDER_STAGGER_MS[providerId] ?? 0;
-  if (delay === 0) return dispatch();
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      dispatch().then(resolve, reject);
-    }, delay);
-  });
-}
 
 export class VerifyCoreService {
   private openAlex = new OpenAlexProvider();
@@ -59,7 +36,6 @@ export class VerifyCoreService {
   private unpaywall = new UnpaywallProvider();
   private core = new CoreProvider();
   private googleBooks = new GoogleBooksProvider();
-  private semanticScholar = new SemanticScholarProvider();
   private aiFederation = new AIFederationService();
 
   /**
@@ -98,8 +74,7 @@ export class VerifyCoreService {
       crossref: 'unavailable',
       unpaywall: 'unavailable',
       core: 'unavailable',
-      googlebooks: 'unavailable',
-      semanticscholar: 'unavailable'
+      googlebooks: 'unavailable'
     };
 
     const fineGrainedStatuses: Record<string, FineGrainedProviderStatus> = {
@@ -107,27 +82,18 @@ export class VerifyCoreService {
       crossref: 'NOT_TESTED',
       unpaywall: 'NOT_TESTED',
       core: 'NOT_TESTED',
-      googlebooks: 'NOT_TESTED',
-      semanticscholar: 'NOT_TESTED'
+      googlebooks: 'NOT_TESTED'
     };
 
     const rawMatches: EvidenceMatch[] = [];
 
-    // Execute all 6 academic providers independently in parallel with staggered offsets
-    const [
-      openAlexRes,
-      crossrefRes,
-      unpaywallRes,
-      coreRes,
-      googleBooksRes,
-      semanticScholarRes
-    ] = await Promise.allSettled([
-      dispatchWithStagger('openalex', () => this.openAlex.search({ query: constructedQuery, documentText, limit })),
-      dispatchWithStagger('crossref', () => this.crossref.search({ query: constructedQuery, documentText, limit })),
-      dispatchWithStagger('unpaywall', () => this.unpaywall.search({ query: doiQuery, documentText, limit })),
-      dispatchWithStagger('core', () => this.core.search({ query: constructedQuery, documentText, limit })),
-      dispatchWithStagger('googlebooks', () => this.googleBooks.search({ query: isbnQuery, documentText, limit })),
-      dispatchWithStagger('semanticscholar', () => this.semanticScholar.search({ query: constructedQuery, documentText, limit }))
+    // Execute all 5 academic providers independently in parallel
+    const [openAlexRes, crossrefRes, unpaywallRes, coreRes, googleBooksRes] = await Promise.allSettled([
+      this.openAlex.search({ query: constructedQuery, documentText, limit }),
+      this.crossref.search({ query: constructedQuery, documentText, limit }),
+      this.unpaywall.search({ query: doiQuery, documentText, limit }),
+      this.core.search({ query: constructedQuery, documentText, limit }),
+      this.googleBooks.search({ query: isbnQuery, documentText, limit })
     ]);
 
     // Process OpenAlex
@@ -180,16 +146,6 @@ export class VerifyCoreService {
       fineGrainedStatuses['googlebooks'] = 'REQUEST_FAILED';
     }
 
-    // Process Semantic Scholar
-    if (semanticScholarRes.status === 'fulfilled') {
-      providerStatuses['semanticscholar'] = semanticScholarRes.value.status;
-      fineGrainedStatuses['semanticscholar'] = semanticScholarRes.value.fineGrainedStatus || (semanticScholarRes.value.matches.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT');
-      rawMatches.push(...semanticScholarRes.value.matches);
-    } else {
-      providerStatuses['semanticscholar'] = 'error';
-      fineGrainedStatuses['semanticscholar'] = 'REQUEST_FAILED';
-    }
-
     // Run Pure Deterministic Evidence Engine
     const engineOutput = analyzeDocumentEvidence({
       documentText,
@@ -219,7 +175,6 @@ export class VerifyCoreService {
     const unStatuses = deriveMatrixStatuses(fineGrainedStatuses.unpaywall);
     const coreStatuses = deriveMatrixStatuses(fineGrainedStatuses.core);
     const gbStatuses = deriveMatrixStatuses(fineGrainedStatuses.googlebooks);
-    const ssStatuses = deriveMatrixStatuses(fineGrainedStatuses.semanticscholar);
 
     // Build Verification Matrix
     const matrix: VerificationMatrixEntry[] = [
@@ -282,18 +237,6 @@ export class VerifyCoreService {
         aiInterpretationStatus: 'N/A',
         overallStatus: fineGrainedStatuses.googlebooks,
         query: isbnQuery
-      },
-      {
-        provider: 'semanticscholar',
-        credentialStatus: fineGrainedStatuses.semanticscholar === 'AUTHENTICATION_FAILED' ? 'AUTHENTICATION_FAILED' : 'VERIFIED',
-        realRequestStatus: ssStatuses.realRequestStatus,
-        responseStatus: ssStatuses.responseStatus,
-        schemaStatus: fineGrainedStatuses.semanticscholar === 'SCHEMA_FAILED' ? 'FAILED' : 'VERIFIED',
-        provenanceStatus: 'VERIFIED',
-        federationStatus: 'VERIFIED',
-        aiInterpretationStatus: 'N/A',
-        overallStatus: fineGrainedStatuses.semanticscholar,
-        query: constructedQuery
       },
       {
         provider: 'gemini',

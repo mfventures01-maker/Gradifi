@@ -1,0 +1,10 @@
+﻿
+LineNumber Line                                              
+---------- ----                                              
+        34   private openAlex = new OpenAlexProvider();      
+        35   private crossref = new CrossrefProvider();      
+        36   private unpaywall = new UnpaywallProvider();    
+        37   private core = new CoreProvider();              
+        38   private googleBooks = new GoogleBooksProvider();
+
+

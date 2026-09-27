@@ -1,0 +1,6 @@
+﻿
+LineNumber Line                                                                                                    
+---------- ----                                                                                                    
+        91     const [openAlexRes, crossrefRes, unpaywallRes, coreRes, googleBooksRes] = await Promise.allSettled([
+
+
