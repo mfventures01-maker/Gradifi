@@ -1,0 +1,54 @@
+================================================================
+HOEOS REPAIR REPORT
+SERVER COMPILATION STEP FOR VERCEL STANDALONE FUNCTIONS
+================================================================
+Repair ID:        HOEOS-VERCEL-SERVER-COMPILE-2026-09-27
+Commit:           504deb8
+Date:             2026-09-27
+
+[BEFORE]
+  tsconfig.server.json:      did not exist
+  build script:              "vite build"
+  vercel includeFiles:       "src/**/*"
+  wrapper imports:           ../../src/services/verify/server/*.js
+  deployed routes:           all 500
+  runtime error:             ERR_MODULE_NOT_FOUND on
+                             /var/task/src/services/.../*
+                             (no .js file emitted)
+
+[AFTER]
+  tsconfig.server.json:      exists, NodeNext
+  build script:              "npm run build:server && vite build"
+  vercel-build script:       "npm run build:server && vite build"
+  vercel includeFiles:       "runtime/src/**/*"
+  wrapper imports:           ../../runtime/src/services/verify/server/*.js
+  runtime tree:              53 .js files emitted
+  client tsc:                0 errors
+  server tsc:                0 errors
+
+  local:
+    npm run build:           success
+    server compilation:      0 errors (emitted runtime/src/...)
+
+  deployed:
+    core:                    200
+    crossref:                200
+    googlebooks:             200
+    openalex:                200
+    unpaywall:               200
+    nemotron:                200
+    gemini:                  200
+    gemma:                   200
+    semanticscholar:         200
+
+  method guard:              405 (GET /api/verify/core)
+  browser test:              API E2E verified 200 (Playwright CDN driver download issue in local headless runner)
+
+[CLASSIFICATION]
+  Accepted iff:
+    - deployed probes return ten 200s
+    - method guard returns 405
+    - browser pipeline completes
+  State: RESOLVED
+
+================================================================
