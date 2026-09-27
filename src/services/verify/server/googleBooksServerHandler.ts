@@ -44,9 +44,11 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
   const query = rawQuery.slice(0, 200);
   const limit = Math.max(1, Math.min(10, typeof payload?.limit === 'number' ? payload.limit : 5));
 
-  const apiKey = process.env.GOOGLE_BOOKS_API_KEY || process.env.GOOGLE_BOOKS_KEY;
+  const rawApiKey = process.env.GOOGLE_BOOKS_API_KEY || process.env.GOOGLE_BOOKS_KEY || '';
+  const apiKey = (rawApiKey && !/placeholder|your_key|FIXME/i.test(rawApiKey)) ? rawApiKey.trim() : '';
   const keyParam = apiKey ? `&key=${encodeURIComponent(apiKey)}` : '';
   const fetchUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${limit}${keyParam}`;
+  const noKeyUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${limit}`;
 
   try {
     return await enqueue<ProviderResult>({
@@ -61,6 +63,17 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
             'User-Agent': 'GradifiVerify/1.0 (https://gradifi.org)'
           }
         });
+
+        // If key parameter caused HTTP 400 Bad Request (invalid/restricted API key), fallback to public query without key
+        if (!response.ok && response.status === 400 && keyParam) {
+          response = await fetch(noKeyUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'GradifiVerify/1.0 (https://gradifi.org)'
+            }
+          });
+        }
 
         if (!response.ok && (response.status === 429 || response.status >= 500)) {
           await new Promise(r => setTimeout(r, 600));

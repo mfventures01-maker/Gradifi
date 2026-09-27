@@ -1,0 +1,3 @@
+﻿core -> success / VERIFIED / 3 / 15701ms
+googlebooks -> unavailable / REQUEST_FAILED / 0 / 1418ms
+semanticscholar -> success / VERIFIED / 3 / 2671ms
