@@ -22,3 +22,13 @@ eng.traineddata
 *.traineddata
 
 runtime/
+
+# HOEOS transient forensic / scratch outputs
+scratch/
+tests/hoeos/
+tests/_g2_run*.json
+tests/n5-runtime-*.ts
+tests/*-runtime-*.ts
+certification/*/runtime/
+certification/*/tmp/
+certification/*/scratch/
