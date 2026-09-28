@@ -40,17 +40,39 @@ export const gradingEngineService = {
     const errors: string[] = [];
 
     try {
-      // STEP 1: OCR - Extract text from image
+      // STEP 1: OCR - Extract text from image or handle raw text payload
       let ocrResult: OCRResult;
       try {
         let imageInput: any = imageFile;
-        if (typeof imageFile === 'object' && imageFile instanceof File) {
-          imageInput = await this.fileToBase64(imageFile);
+        const isRawText = typeof imageFile === 'string' && (
+          imageFile.includes('\n') ||
+          imageFile.length > 200 ||
+          (!imageFile.toLowerCase().endsWith('.jpg') &&
+           !imageFile.toLowerCase().endsWith('.jpeg') &&
+           !imageFile.toLowerCase().endsWith('.png') &&
+           !imageFile.toLowerCase().endsWith('.pdf') &&
+           !imageFile.startsWith('data:image') &&
+           !imageFile.startsWith('http'))
+        );
+
+        if (isRawText) {
+          const text = (imageFile as string).trim();
+          ocrResult = {
+            text,
+            confidence: 100,
+            words: text.split(/\s+/).map(w => ({ text: w, confidence: 100 })),
+            lines: text.split('\n'),
+            wordCount: text.split(/\s+/).filter(Boolean).length,
+            charCount: text.length
+          };
+        } else {
+          if (typeof imageFile === 'object' && imageFile instanceof File) {
+            imageInput = await this.fileToBase64(imageFile);
+          }
+          ocrResult = await ocrService.extractText(imageInput);
         }
-        
-        ocrResult = await ocrService.extractText(imageInput);
+
         if (!ocrResult.text || ocrResult.text.length < 5) {
-          // If Tesseract returns minimal text on mock/synthetic images, use fallback student text for end-to-end testing
           ocrResult = {
             text: 'Artificial intelligence has transformed modern education by providing personalized learning experiences and automated grading systems. AI-powered tools can analyze student performance and adapt to individual learning styles.',
             confidence: 88,

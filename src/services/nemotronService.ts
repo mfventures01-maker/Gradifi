@@ -76,11 +76,18 @@ Model: Mock Nemotron (fallback mode)
 
       const response = await this.analyze(prompt);
       
-      // Parse response or use mock
+      // Deterministic calculation from input text hash to eliminate non-repeatable Math.random
+      let textHashSum = 0;
+      for (let i = 0; i < text.length; i++) {
+        textHashSum += text.charCodeAt(i);
+      }
+      const deterministicOffsetScore = textHashSum % 12;
+      const deterministicOffsetConf = (textHashSum * 7) % 10;
+
       return {
-        score: 78 + Math.floor(Math.random() * 12),
+        score: 78 + deterministicOffsetScore,
         feedback: 'The work demonstrates a solid understanding of the subject matter. Arguments are well-structured and supported with evidence. There is room for improvement in the depth of analysis and specificity of examples.',
-        confidence: 82 + Math.floor(Math.random() * 10),
+        confidence: 82 + deterministicOffsetConf,
         strengths: ['Clear thesis', 'Good structure', 'Relevant evidence'],
         improvements: ['More specific examples', 'Deeper analysis'],
         processingTime: Date.now() - startTime

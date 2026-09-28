@@ -214,7 +214,25 @@ export const CorrectionPanel: React.FC<CorrectionPanelProps> = ({
                 </div>
                 <div>
                   <span className="text-slate-500 font-bold uppercase text-[10px] block">DOI / ISBN</span>
-                  <span className="font-mono text-blue-400">{identifier}</span>
+                  {(() => {
+                    const rawDoi = match?.doi || match?.provenance?.doi;
+                    if (rawDoi && typeof rawDoi === 'string') {
+                      const cleanDoi = rawDoi.trim().replace(/^https?:\/\/(dx\.)?doi\.org\//i, '');
+                      const doiLink = `https://doi.org/${cleanDoi}`;
+                      return (
+                        <a
+                          href={doiLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-mono text-emerald-400 hover:text-emerald-300 font-bold underline inline-flex items-center gap-1 transition-colors"
+                        >
+                          <span>DOI: {cleanDoi}</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      );
+                    }
+                    return <span className="font-mono text-slate-400">{identifier}</span>;
+                  })()}
                 </div>
               </div>
 

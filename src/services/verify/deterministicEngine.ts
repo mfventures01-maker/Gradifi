@@ -174,8 +174,9 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
   let totalMatchedTokens = 0;
   for (const m of uniqueMatches) {
     if (m.matchPercentage > 10) {
-      const matchTokenCount = tokenize(m.matchedText).length;
-      totalMatchedTokens += matchTokenCount;
+      const textToTokenize = m.matchedText || m.originalSnippet || '';
+      const tokenCount = tokenize(textToTokenize).length;
+      totalMatchedTokens += Math.round(tokenCount * (m.matchPercentage / 100));
     }
   }
 
@@ -354,11 +355,27 @@ export function extractSimilarityFindingsFromEvidenceMatches(
     const normSnippet = normalizeText(lookupSnippet);
     if (!normSnippet) continue;
 
-    const srcIdx = normDoc.indexOf(normSnippet);
+    let srcIdx = normDoc.indexOf(normSnippet);
+    let matchedPassageText = lookupSnippet;
+
+    if (srcIdx === -1) {
+      // Fallback: Check sentences within lookupSnippet
+      const sentences = segmentSentences(lookupSnippet);
+      for (const sent of sentences) {
+        const normSent = normalizeText(sent);
+        if (normSent.length >= 12) {
+          const idx = normDoc.indexOf(normSent);
+          if (idx !== -1) {
+            srcIdx = idx;
+            matchedPassageText = sent;
+            break;
+          }
+        }
+      }
+    }
 
     // Only emit a finding if the student's document actually contains the
-    // matched snippet. Otherwise the marker layer cannot render it and the
-    // correction panel would reference text the student never wrote.
+    // matched snippet or a sentence within it.
     if (srcIdx === -1) continue;
 
     let matchMethod: SimilarityMatchMethod = 'TOKEN_OVERLAP';
