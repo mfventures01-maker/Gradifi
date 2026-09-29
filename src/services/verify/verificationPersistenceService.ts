@@ -35,13 +35,22 @@ export class VerificationValidationError extends Error {
 
 export class VerificationPersistenceService {
   /**
-   * Generates the deterministic canonical verification ID from a document hash.
+   * Generates the deterministic canonical verification ID from document and evidence hashes.
+   *
+   * The ID incorporates the evidence hash so that:
+   * - Two runs with identical evidence produce the same ID (idempotency preserved).
+   * - Two runs with different evidence produce different IDs (no collision).
+   *
+   * Format: VRF-{8 chars of document hash}{4 chars of evidence hash}
+   * Total: 12 chars after the VRF- prefix.
    */
-  static deriveVerificationId(documentHash: string): string {
+  static deriveVerificationId(documentHash: string, evidenceHash?: string): string {
     if (!documentHash || documentHash.length < 12) {
       throw new VerificationValidationError('Invalid documentHash for verification ID derivation');
     }
-    return `VRF-${documentHash.slice(0, 12).toUpperCase()}`;
+    const docPart = documentHash.slice(0, 8).toUpperCase();
+    const evPart = evidenceHash ? evidenceHash.slice(0, 4).toUpperCase() : '';
+    return `VRF-${docPart}${evPart}`;
   }
 
   /**
@@ -64,7 +73,7 @@ export class VerificationPersistenceService {
       throw new VerificationValidationError('Invalid overallSimilarity in verification result');
     }
 
-    const expectedId = this.deriveVerificationId(result.documentHash);
+    const expectedId = this.deriveVerificationId(result.documentHash, result.evidenceHash);
 
     if (providedVerificationId && providedVerificationId !== expectedId) {
       throw new VerificationValidationError(

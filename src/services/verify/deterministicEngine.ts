@@ -134,7 +134,7 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
     // Deterministic match percentage formula
     const exactBonus = exactMatch.length > 20 ? 30 : (exactMatch.length > 10 ? 15 : 0);
     const calculatedPercentage = Math.min(100, Math.round((ngramOverlap * 0.7 + exactBonus) * 10) / 10);
-    
+
     // Deterministic relevance score
     const relevanceScore = Math.min(100, Math.round((ngramOverlap * 0.8 + (candidate.doi ? 20 : 10)) * 10) / 10);
 
@@ -173,7 +173,7 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
   // Calculate overall document similarity deterministically
   let totalMatchedTokens = 0;
   for (const m of uniqueMatches) {
-    if (m.matchPercentage > 10) {
+    if (m.matchPercentage > 0) {
       const textToTokenize = m.matchedText || m.originalSnippet || '';
       const tokenCount = tokenize(textToTokenize).length;
       totalMatchedTokens += Math.round(tokenCount * (m.matchPercentage / 100));
@@ -345,9 +345,7 @@ export function extractSimilarityFindingsFromEvidenceMatches(
 
   for (const match of matches) {
     if (match.matchPercentage <= 0) continue;
-    // Prefer the student-side passage if the federation layer provided one.
-    // Fall back to the source-side snippet only for lookup purposes; it is
-    // never used as `sourceSegment`.
+
     const lookupSnippet = match.matchedText || match.originalSnippet || match.title;
     if (!lookupSnippet) continue;
 
@@ -357,9 +355,20 @@ export function extractSimilarityFindingsFromEvidenceMatches(
 
     let srcIdx = normDoc.indexOf(normSnippet);
     let matchedPassageText = lookupSnippet;
+    let sourceSegmentText = '';
+    let matchMethod: SimilarityMatchMethod = 'TOKEN_OVERLAP';
 
-    if (srcIdx === -1) {
-      // Fallback: Check sentences within lookupSnippet
+    if (srcIdx !== -1) {
+      sourceSegmentText = lookupSnippet;
+      if (
+        match.matchType === 'exact' ||
+        (normSnippet.length >= 12 && normDoc.includes(normSnippet))
+      ) {
+        matchMethod = 'EXACT_PHRASE';
+      } else {
+        matchMethod = 'NGRAM';
+      }
+    } else {
       const sentences = segmentSentences(lookupSnippet);
       for (const sent of sentences) {
         const normSent = normalizeText(sent);
@@ -368,27 +377,33 @@ export function extractSimilarityFindingsFromEvidenceMatches(
           if (idx !== -1) {
             srcIdx = idx;
             matchedPassageText = sent;
+            sourceSegmentText = sent;
+            matchMethod = 'NGRAM';
             break;
           }
         }
       }
     }
 
-    // Only emit a finding if the student's document actually contains the
-    // matched snippet or a sentence within it.
-    if (srcIdx === -1) continue;
-
-    let matchMethod: SimilarityMatchMethod = 'TOKEN_OVERLAP';
-    if (
-      match.matchType === 'exact' ||
-      (normSnippet.length >= 12 && normDoc.includes(normSnippet))
-    ) {
-      matchMethod = 'EXACT_PHRASE';
-    } else if (
-      match.matchType === 'lexical' ||
-      calculateNGramOverlap(documentText, lookupSnippet, 3) > 20
-    ) {
-      matchMethod = 'NGRAM';
+    // KEYWORD FALLBACK: emit a finding for every non-zero matchPercentage,
+    // even when no verbatim passage was found. This gives the correction
+    // panel something to render when the source shares only keywords.
+    if (srcIdx === -1) {
+      findings.push({
+        findingId: computeHash(
+          `${documentHash}:${match.sourceId}:LEXICAL:${match.matchPercentage}`
+        ),
+        sourceDocumentId: documentHash,
+        matchedDocumentId: match.sourceId,
+        sourceSegment: (match.originalSnippet || lookupSnippet).slice(0, 200),
+        matchedSegment: '',
+        similarityScore: match.matchPercentage,
+        matchMethod: 'TOKEN_OVERLAP',
+        sourceStart: undefined,
+        sourceEnd: undefined,
+        provenance: 'DETERMINISTIC'
+      });
+      continue;
     }
 
     const findingId = computeHash(
@@ -399,7 +414,7 @@ export function extractSimilarityFindingsFromEvidenceMatches(
       findingId,
       sourceDocumentId: documentHash,
       matchedDocumentId: match.sourceId,
-      sourceSegment: documentText.slice(srcIdx, srcIdx + lookupSnippet.length),
+      sourceSegment: sourceSegmentText || matchedPassageText,
       matchedSegment: lookupSnippet.slice(0, 150),
       similarityScore: match.matchPercentage,
       matchMethod,
@@ -417,4 +432,3 @@ export function extractSimilarityFindingsFromEvidenceMatches(
 
   return findings;
 }
-

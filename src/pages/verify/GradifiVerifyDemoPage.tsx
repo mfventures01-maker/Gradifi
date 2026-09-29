@@ -250,7 +250,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
 
     try {
       const res = await verifyCoreService.executeVerifyRun(documentText);
-      let vid = `VRF-${res.documentHash.slice(0, 12).toUpperCase()}`;
+      let vid = `VRF-${res.documentHash.slice(0, 8).toUpperCase()}${(res.evidenceHash || '').slice(0, 4).toUpperCase()}`;
       try {
         const { record } = await verificationPersistenceService.persistVerificationRecord(res);
         if (record?.verification_id) {
