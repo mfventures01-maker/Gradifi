@@ -132,6 +132,13 @@ export const GradifiVerifyDemoPage: React.FC = () => {
             setVerificationId(res.record.verification_id);
           }
         })
+        .catch((err: any) => {
+          setPublicResolution({
+            status: 'RESOLUTION_ERROR',
+            verificationId: routeParamId.trim().toUpperCase(),
+            errorMessage: err?.message || 'An unexpected error occurred during public verification resolution.'
+          });
+        })
         .finally(() => setResolvingPublic(false));
     } else {
       setPublicResolution(null);
@@ -332,6 +339,305 @@ Distributed machine learning frameworks require mathematical determinism to guar
       (result as any).gemmaStatus === 'INFERENCE_VERIFIED'
     )
   );
+
+  // HOEOS G7 PUBLIC VERIFICATION RENDER BRANCH
+  if (routeParamId && routeParamId.trim().length > 0) {
+    if (resolvingPublic) {
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 sm:p-12 flex flex-col items-center justify-center">
+          <div className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-8 shadow-2xl text-center space-y-4">
+            <div className="inline-flex p-3 bg-blue-500/10 border border-blue-500/20 rounded-2xl text-blue-400 animate-spin">
+              <RefreshCw className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-bold text-white tracking-tight">Resolving Verification Record</h2>
+            <p className="text-xs text-slate-400 font-mono">
+              Target ID: <span className="text-blue-400 font-bold">{routeParamId.trim().toUpperCase()}</span>
+            </p>
+            <p className="text-xs text-slate-500">
+              Querying authoritative public system of record and verifying cryptographic hash grounding...
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (publicResolution && publicResolution.status === 'VALID' && publicResolution.record) {
+      const rec = publicResolution.record;
+      const envelope = rec.evidence_envelope || {};
+      const envResult = envelope.result || {};
+      const sources: any[] = envResult.verifiedSources || envelope.verifiedSources || [];
+      const findings: any[] = envResult.similarityAnalysis?.findings || envelope.findings || [];
+
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-6 md:p-8 selection:bg-blue-600 selection:text-white">
+          <div className="max-w-4xl mx-auto space-y-6">
+            
+            {/* Navigation Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+              <div>
+                <button
+                  onClick={() => navigate('/verify')}
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 font-medium mb-2 cursor-pointer transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Open Verification Workbench
+                </button>
+                <div className="flex items-center gap-3">
+                  <span className="p-2 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl shadow-lg shadow-emerald-500/20">
+                    <ShieldCheck className="w-6 h-6 text-white" />
+                  </span>
+                  <div>
+                    <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                      PUBLIC VERIFICATION RECEIPT
+                    </h1>
+                    <p className="text-xs text-slate-400">
+                      Authoritative Certificate Retrieved from Public System of Record
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black tracking-wide bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-xs">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  INTEGRITY: VALID
+                </span>
+              </div>
+            </div>
+
+            {/* Authoritative Receipt Card */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-slate-800/80">
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Verification ID</span>
+                    <span className="text-xl sm:text-2xl font-mono font-black text-white tracking-tight break-all">
+                      {rec.verification_id}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Document SHA-256 Hash</span>
+                    <span className="text-xs font-mono font-bold text-slate-300 break-all bg-slate-950/60 p-2 rounded-lg border border-slate-800/60 block">
+                      {rec.document_hash}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Evidence Snapshot Hash</span>
+                    <span className="text-xs font-mono font-bold text-slate-300 break-all bg-slate-950/60 p-2 rounded-lg border border-slate-800/60 block">
+                      {rec.evidence_hash}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-slate-950/50 border border-slate-800/80 rounded-xl p-4">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Overall Similarity</span>
+                      <span className="text-2xl font-black text-white tracking-tight">
+                        {typeof rec.overall_similarity === 'number' ? rec.overall_similarity.toFixed(1) : rec.overall_similarity}%
+                      </span>
+                    </div>
+
+                    <div className="bg-slate-950/50 border border-slate-800/80 rounded-xl p-4">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Sources Found</span>
+                      <span className="text-2xl font-black text-white tracking-tight">
+                        {rec.total_sources_found}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-950/50 border border-slate-800/80 rounded-xl p-4 space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Engine Version:</span>
+                      <span className="font-mono font-bold text-slate-300">{rec.engine_version}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Policy Version:</span>
+                      <span className="font-mono font-bold text-slate-300">{rec.policy_version}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Persisted At:</span>
+                      <span className="font-mono font-bold text-slate-300">
+                        {rec.created_at ? new Date(rec.created_at).toUTCString() : (envelope.persistedAt || 'Recorded')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Scannable Verification QR Presentation */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-4 bg-slate-950/40 border border-slate-800/60 rounded-xl">
+                <div className="flex items-center gap-4">
+                  {qrSvgHtml ? (
+                    <div
+                      className="shrink-0 p-2 bg-white rounded-xl shadow-lg"
+                      dangerouslySetInnerHTML={{ __html: qrSvgHtml }}
+                    />
+                  ) : (
+                    <div className="p-3 bg-slate-800 rounded-xl">
+                      <QrCode className="w-10 h-10 text-slate-400" />
+                    </div>
+                  )}
+                  <div className="space-y-1">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-emerald-400" /> Cryptographically Grounded Receipt
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Independent parties can verify this identity against the immutable system of record.
+                    </div>
+                    <div className="text-[10px] font-mono text-slate-500 break-all">
+                      {window.location.origin}/verify/{rec.verification_id}
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => window.print()}
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-700 transition-all cursor-pointer shrink-0"
+                >
+                  <Download className="w-4 h-4 text-emerald-400" /> Print Certificate
+                </button>
+              </div>
+
+              {/* Authoritative Verified Evidence Sources */}
+              {sources.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-blue-400" /> Authoritative Verified Evidence Sources ({sources.length})
+                  </h3>
+                  <div className="divide-y divide-slate-800/60 border border-slate-800/80 rounded-xl overflow-hidden bg-slate-950/30">
+                    {sources.map((src: any, idx: number) => (
+                      <div key={idx} className="p-3.5 space-y-1.5 text-xs hover:bg-slate-800/20 transition-colors">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-slate-200">
+                            {src.title || src.provenance?.title || `Source #${idx + 1}`}
+                          </span>
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0">
+                            {src.sourceId || src.provider || 'ACADEMIC_SOURCE'}
+                          </span>
+                        </div>
+                        {src.authors && Array.isArray(src.authors) && (
+                          <div className="text-slate-400 text-[11px]">
+                            {src.authors.join(', ')} {src.year ? `(${src.year})` : ''}
+                          </div>
+                        )}
+                        {(src.matchedText || src.originalSnippet) && (
+                          <div className="text-[11px] font-mono text-slate-300 bg-slate-950/80 p-2 rounded border border-slate-800/60 line-clamp-2">
+                            "{src.matchedText || src.originalSnippet}"
+                          </div>
+                        )}
+                        {src.url && (
+                          <a
+                            href={src.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 hover:underline pt-1"
+                          >
+                            <ExternalLink className="w-3 h-3" /> View Source Evidence
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Authoritative Findings */}
+              {findings.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <Search className="w-4 h-4 text-indigo-400" /> Evidence Engine Findings ({findings.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {findings.map((f: any, idx: number) => (
+                      <div key={idx} className="p-3 bg-slate-950/50 border border-slate-800/80 rounded-xl text-xs space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-200">{f.findingType || 'Academic Match Finding'}</span>
+                          <span className="font-mono text-[10px] text-slate-400">Score: {f.confidence || f.similarity || '100%'}</span>
+                        </div>
+                        <p className="text-slate-400 text-[11px]">{f.description || f.snippet || f.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+
+    // Failure / Rejection Branch
+    const failureStatus = publicResolution?.status || 'RESOLUTION_ERROR';
+    const failureMsg = publicResolution?.errorMessage || 'The requested verification record could not be verified against authoritative storage.';
+
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 sm:p-12 flex flex-col items-center justify-center">
+        <div className="max-w-lg w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-8 shadow-2xl space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400">
+              <XCircle className="w-8 h-8 text-rose-400" />
+            </span>
+            <div>
+              <h2 className="text-xl font-bold text-white tracking-tight">Public Verification Failed</h2>
+              <div className="mt-1">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-mono font-bold bg-rose-500/10 border-rose-500/30 text-rose-400">
+                  STATUS: {failureStatus}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3 bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 text-xs font-mono">
+            <div>
+              <span className="text-slate-500 uppercase text-[10px] block font-bold">Target Verification ID</span>
+              <span className="text-slate-200 font-bold break-all">{routeParamId.trim().toUpperCase()}</span>
+            </div>
+            <div>
+              <span className="text-slate-500 uppercase text-[10px] block font-bold">Failure Diagnostics</span>
+              <span className="text-rose-300 font-sans text-xs block mt-0.5">{failureMsg}</span>
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-400 leading-relaxed">
+            The verification ID could not be certified. This may be caused by an invalid ID format, a record that has not been committed to authoritative storage, or cryptographic hash mismatch.
+          </p>
+
+          <div className="pt-2 flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={() => {
+                setResolvingPublic(true);
+                publicVerificationService.resolveVerification(routeParamId)
+                  .then(setPublicResolution)
+                  .catch((err: any) => {
+                    setPublicResolution({
+                      status: 'RESOLUTION_ERROR',
+                      verificationId: routeParamId.trim().toUpperCase(),
+                      errorMessage: err?.message || 'Resolution error occurred.'
+                    });
+                  })
+                  .finally(() => setResolvingPublic(false));
+              }}
+              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-lg shadow-blue-600/20"
+            >
+              <RefreshCw className="w-4 h-4" /> Retry Resolution
+            </button>
+            <button
+              onClick={() => navigate('/verify')}
+              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" /> Go to Verification Hub
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-6 md:p-8 selection:bg-blue-600 selection:text-white">

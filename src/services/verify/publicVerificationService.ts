@@ -90,7 +90,7 @@ export class PublicVerificationService {
         };
       }
 
-      const expectedDerivedId = VerificationPersistenceService.deriveVerificationId(data.document_hash);
+      const expectedDerivedId = VerificationPersistenceService.deriveVerificationId(data.document_hash, data.evidence_hash);
       if (expectedDerivedId !== cleanId) {
         return {
           status: 'INTEGRITY_FAILED',
