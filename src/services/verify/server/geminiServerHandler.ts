@@ -96,19 +96,87 @@ export async function handleGeminiServerReasoning(payload: GeminiServerRequestPa
   const matches = Array.isArray(payload?.matches) ? payload.matches : [];
   const validSourceIds = new Set(matches.map(m => m.sourceId));
 
+  const serviceAccountJson = process.env.GEMINI_SERVICE_ACCOUNT_JSON;
   const apiKey = process.env.GEMINI_API_KEY;
 
-  if (!apiKey || apiKey.includes('MY_GEMINI') || apiKey.startsWith('AQ.')) {
+  function parseServiceAccountJson(raw: string): Record<string, unknown> | null {
+    if (!raw || typeof raw !== 'string') return null;
+    let text = raw.trim();
+
+    // 1. If wrapped in outer quotes, strip them
+    if ((text.startsWith('"') && text.endsWith('"')) || (text.startsWith("'") && text.endsWith("'"))) {
+      text = text.slice(1, -1).trim();
+    }
+
+    // 2. Direct JSON parse attempt
+    try {
+      return JSON.parse(text);
+    } catch {}
+
+    // 3. Base64 decode attempt if not starting with {
+    if (!text.startsWith('{')) {
+      try {
+        const decoded = Buffer.from(text, 'base64').toString('utf8');
+        if (decoded.trim().startsWith('{')) {
+          return JSON.parse(decoded);
+        }
+      } catch {}
+    }
+
+    // 4. Handle escaped quotes and newlines (e.g. from Vercel secrets CLI)
+    try {
+      const unescaped = text
+        .replace(/\\"/g, '"')
+        .replace(/\\n/g, '\n')
+        .replace(/\\\\/g, '\\');
+      return JSON.parse(unescaped);
+    } catch {}
+
+    return null;
+  }
+
+  let credentials: Record<string, unknown> | null = null;
+  if (serviceAccountJson && !serviceAccountJson.includes('MY_GEMINI')) {
+    credentials = parseServiceAccountJson(serviceAccountJson);
+    if (!credentials && !apiKey) {
+      return {
+        status: 'AUTHENTICATION_FAILED',
+        findings: generateDeterministicFallbackFindings(documentText, matches),
+        errorMessage: 'GEMINI_SERVICE_ACCOUNT_JSON is not valid JSON'
+      };
+    }
+  }
+
+  if (!credentials && (!apiKey || apiKey.includes('MY_GEMINI') || apiKey.startsWith('AQ.'))) {
     return {
       status: 'AUTHENTICATION_FAILED',
       findings: generateDeterministicFallbackFindings(documentText, matches),
-      errorMessage: 'GEMINI_API_KEY server configuration is invalid or unconfigured'
+      errorMessage: 'GEMINI_SERVICE_ACCOUNT_JSON and GEMINI_API_KEY are unconfigured or invalid'
     };
   }
 
   try {
     const { GoogleGenAI, Type } = await import('@google/genai');
-    const ai = new GoogleGenAI({ apiKey });
+    let ai: any;
+
+    if (credentials && credentials.project_id) {
+      ai = new GoogleGenAI({
+        enterprise: true,
+        project: credentials.project_id as string,
+        location: 'global',
+        googleAuthOptions: {
+          credentials,
+        },
+      });
+    } else if (apiKey) {
+      ai = new GoogleGenAI({ apiKey });
+    } else {
+      return {
+        status: 'AUTHENTICATION_FAILED',
+        findings: generateDeterministicFallbackFindings(documentText, matches),
+        errorMessage: 'Failed to construct Gemini client from configured credentials'
+      };
+    }
 
     const evidenceSummary = matches.slice(0, 5).map(m => ({
       sourceId: m.sourceId,
