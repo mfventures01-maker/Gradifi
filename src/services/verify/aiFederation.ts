@@ -4,16 +4,16 @@
  * HOEOS Standard: ZERO client credentials, ZERO secret leakage, Honest AI Status Reporting.
  */
 
-import { AIFinding, EvidenceMatch } from './types.js';
+import { AIFinding, EvidenceMatch, ProviderTruthStatus } from './types.js';
 import { handleGeminiServerReasoning, generateDeterministicFallbackFindings, validateAIFindingSchema } from './server/geminiServerHandler.js';
 import { handleNemotronServerReasoning } from './server/nemotronServerHandler.js';
 import { handleGemmaServerReasoning } from './server/gemmaServerHandler.js';
 
 export interface AIFederationResult {
   localAiStatus: 'RUNTIME_AVAILABLE' | 'RUNTIME_UNAVAILABLE';
-  gemmaStatus?: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
-  nemotronStatus: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
-  geminiStatus: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
+  gemmaStatus?: ProviderTruthStatus | 'INFERENCE_VERIFIED';
+  nemotronStatus: ProviderTruthStatus | 'INFERENCE_VERIFIED';
+  geminiStatus: ProviderTruthStatus | 'INFERENCE_VERIFIED';
   findings: AIFinding[];
 }
 
@@ -46,7 +46,7 @@ export class AIFederationService {
    * Dispatches local Ollama / Gemma reasoning through the server boundary.
    */
   async runGemmaReasoning(documentText: string, matches: EvidenceMatch[], model = 'gemma4:31b'): Promise<{
-    status: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
+    status: ProviderTruthStatus | 'INFERENCE_VERIFIED';
     findings: AIFinding[];
   }> {
     try {
@@ -90,9 +90,12 @@ export class AIFederationService {
    * Dispatches Nemotron reasoning through the server boundary.
    * Browser code contains ZERO secret API keys.
    */
-  async runNemotronReasoning(documentText: string, matches: EvidenceMatch[]): Promise<{
-    status: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
+  async runNemotronReasoning(documentText: string, matches: EvidenceMatch[], allowFallback = false): Promise<{
+    status: ProviderTruthStatus;
     findings: AIFinding[];
+    fallback_used?: boolean;
+    fallbackUsed?: boolean;
+    fallbackReason?: string;
   }> {
     try {
       const isBrowser = typeof window !== 'undefined';
@@ -105,28 +108,44 @@ export class AIFederationService {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ documentText, matches })
+          body: JSON.stringify({ documentText, matches, allowFallback })
         });
 
         if (!response.ok) {
+          const status: ProviderTruthStatus = response.status === 401 || response.status === 403
+            ? 'AUTHENTICATION_FAILED'
+            : (response.status === 504 ? 'TIMEOUT' : 'INFERENCE_FAILED');
           return {
-            status: response.status === 401 || response.status === 403 ? 'AUTHENTICATION_FAILED' : 'INFERENCE_FAILED',
-            findings: []
+            status,
+            findings: allowFallback ? generateDeterministicFallbackFindings(documentText, matches) : [],
+            fallback_used: allowFallback,
+            fallbackUsed: allowFallback,
+            fallbackReason: `HTTP ${response.status}: ${response.statusText}`
           };
         }
 
         const data = await response.json();
         return {
           status: data.status || 'INFERENCE_FAILED',
-          findings: Array.isArray(data.findings) ? data.findings : []
+          findings: Array.isArray(data.findings) ? data.findings : [],
+          fallback_used: Boolean(data.fallback_used ?? data.fallbackUsed),
+          fallbackUsed: Boolean(data.fallbackUsed ?? data.fallback_used),
+          fallbackReason: data.fallbackReason
         };
       } else {
-        return handleNemotronServerReasoning({ documentText, matches });
+        return handleNemotronServerReasoning({ documentText, matches, allowFallback });
       }
-    } catch {
+    } catch (err: any) {
+      const msg = err?.message || String(err);
+      const isTimeout = err?.name === 'TimeoutError' || err?.name === 'AbortError' || msg.includes('timeout') || msg.includes('timed out');
+      const isNetwork = msg.includes('fetch failed') || msg.includes('ENOTFOUND') || msg.includes('network');
+      const status: ProviderTruthStatus = isTimeout ? 'TIMEOUT' : (isNetwork ? 'NETWORK_ERROR' : 'INFERENCE_FAILED');
       return {
-        status: 'INFERENCE_FAILED',
-        findings: []
+        status,
+        findings: allowFallback ? generateDeterministicFallbackFindings(documentText, matches) : [],
+        fallback_used: allowFallback,
+        fallbackUsed: allowFallback,
+        fallbackReason: msg
       };
     }
   }
@@ -134,9 +153,12 @@ export class AIFederationService {
   /**
    * Dispatches Gemini evidence reasoning to controlled server/edge execution boundary.
    */
-  async runGeminiReasoning(documentText: string, matches: EvidenceMatch[]): Promise<{
-    status: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
+  async runGeminiReasoning(documentText: string, matches: EvidenceMatch[], allowFallback = false): Promise<{
+    status: ProviderTruthStatus;
     findings: AIFinding[];
+    fallback_used?: boolean;
+    fallbackUsed?: boolean;
+    fallbackReason?: string;
   }> {
     try {
       const isBrowser = typeof window !== 'undefined';
@@ -149,28 +171,44 @@ export class AIFederationService {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ documentText, matches })
+          body: JSON.stringify({ documentText, matches, allowFallback })
         });
 
         if (!response.ok) {
+          const status: ProviderTruthStatus = response.status === 401 || response.status === 403
+            ? 'AUTHENTICATION_FAILED'
+            : (response.status === 504 ? 'TIMEOUT' : 'INFERENCE_FAILED');
           return {
-            status: response.status === 401 || response.status === 403 ? 'AUTHENTICATION_FAILED' : 'INFERENCE_FAILED',
-            findings: generateDeterministicFallbackFindings(documentText, matches)
+            status,
+            findings: allowFallback ? generateDeterministicFallbackFindings(documentText, matches) : [],
+            fallback_used: allowFallback,
+            fallbackUsed: allowFallback,
+            fallbackReason: `HTTP ${response.status}: ${response.statusText}`
           };
         }
 
         const data = await response.json();
         return {
           status: data.status || 'RUNTIME_UNAVAILABLE',
-          findings: Array.isArray(data.findings) ? data.findings : generateDeterministicFallbackFindings(documentText, matches)
+          findings: Array.isArray(data.findings) ? data.findings : (allowFallback ? generateDeterministicFallbackFindings(documentText, matches) : []),
+          fallback_used: Boolean(data.fallback_used ?? data.fallbackUsed),
+          fallbackUsed: Boolean(data.fallbackUsed ?? data.fallback_used),
+          fallbackReason: data.fallbackReason
         };
       } else {
-        return handleGeminiServerReasoning({ documentText, matches });
+        return handleGeminiServerReasoning({ documentText, matches, allowFallback });
       }
-    } catch {
+    } catch (err: any) {
+      const msg = err?.message || String(err);
+      const isTimeout = err?.name === 'TimeoutError' || err?.name === 'AbortError' || msg.includes('timeout') || msg.includes('timed out');
+      const isNetwork = msg.includes('fetch failed') || msg.includes('ENOTFOUND') || msg.includes('network');
+      const status: ProviderTruthStatus = isTimeout ? 'TIMEOUT' : (isNetwork ? 'NETWORK_ERROR' : 'INFERENCE_FAILED');
       return {
-        status: 'INFERENCE_FAILED',
-        findings: generateDeterministicFallbackFindings(documentText, matches)
+        status,
+        findings: allowFallback ? generateDeterministicFallbackFindings(documentText, matches) : [],
+        fallback_used: allowFallback,
+        fallbackUsed: allowFallback,
+        fallbackReason: msg
       };
     }
   }
@@ -198,7 +236,13 @@ export class AIFederationService {
       findings.push(...geminiResult.findings);
     }
 
-    if (findings.length === 0) {
+    const anySuccessfulProvider =
+      geminiResult.status === 'VERIFIED' ||
+      geminiResult.status === 'EMPTY_RESULT' ||
+      nemotronResult.status === 'VERIFIED' ||
+      nemotronResult.status === 'EMPTY_RESULT';
+
+    if (findings.length === 0 && !anySuccessfulProvider) {
       findings.push(...generateDeterministicFallbackFindings(documentText, matches));
     }
 

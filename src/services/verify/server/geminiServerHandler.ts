@@ -1,48 +1,59 @@
 /**
  * GRADIFI VERIFY - SERVER-SIDE GEMINI REASONING HANDLER
  * Provable server/edge execution path for Gemini Evidence Reasoning.
- * HOEOS Standard: Structured JSON Schema, Source ID Boundary Enforcement, Server Credentials Only.
+ * HOEOS Standard: Structured JSON Schema, Source ID Boundary Enforcement, Explicit Provider Truth States.
  */
 
-import { AIFinding, EvidenceMatch } from '../types.js';
+import { AIFinding, EvidenceMatch, ProviderTruthStatus } from '../types.js';
 
 export interface GeminiServerRequestPayload {
   documentText: string;
   matches: EvidenceMatch[];
+  allowFallback?: boolean;
 }
 
 export interface GeminiServerResponse {
-  status: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
+  status: ProviderTruthStatus;
   findings: AIFinding[];
+  fallback_used: boolean;
+  fallbackUsed: boolean;
+  fallbackReason?: string;
   errorMessage?: string;
+  modelProvider?: string;
 }
 
 export function validateAIFindingSchema(raw: any): AIFinding | null {
-  if (!raw || typeof raw !== 'object') return null;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
 
   const validTypes = ['exact_overlap', 'lexical_overlap', 'semantic_overlap', 'citation_issue', 'writing_signal'];
   const validSeverities = ['low', 'moderate', 'high'];
 
-  const type = validTypes.includes(raw.type) ? raw.type : 'lexical_overlap';
-  const severity = validSeverities.includes(raw.severity) ? raw.severity : 'moderate';
-  const confidence = typeof raw.confidence === 'number' && !isNaN(raw.confidence)
-    ? Math.max(0, Math.min(100, Math.round(raw.confidence)))
-    : 80;
+  if (!validTypes.includes(raw.type)) {
+    return null;
+  }
+
+  if (!validSeverities.includes(raw.severity)) {
+    return null;
+  }
 
   if (typeof raw.explanation !== 'string' || !raw.explanation.trim()) {
     return null;
   }
 
+  const confidence = typeof raw.confidence === 'number' && !isNaN(raw.confidence)
+    ? Math.max(0, Math.min(100, Math.round(raw.confidence)))
+    : 80;
+
   return {
-    type: type as AIFinding['type'],
-    severity: severity as AIFinding['severity'],
+    type: raw.type as AIFinding['type'],
+    severity: raw.severity as AIFinding['severity'],
     confidence,
     studentPassage: typeof raw.studentPassage === 'string' && raw.studentPassage.trim() ? raw.studentPassage.trim() : undefined,
     sourcePassage: typeof raw.sourcePassage === 'string' && raw.sourcePassage.trim() ? raw.sourcePassage.trim() : undefined,
     explanation: raw.explanation.trim(),
     sourceId: typeof raw.sourceId === 'string' && raw.sourceId.trim() ? raw.sourceId.trim() : undefined,
     requiresHumanReview: Boolean(raw.requiresHumanReview),
-    modelProvider: 'gemini'
+    modelProvider: typeof raw.modelProvider === 'string' ? raw.modelProvider : 'gemini'
   };
 }
 
@@ -95,25 +106,32 @@ export async function handleGeminiServerReasoning(payload: GeminiServerRequestPa
   const documentText = typeof payload?.documentText === 'string' ? payload.documentText : '';
   const matches = Array.isArray(payload?.matches) ? payload.matches : [];
   const validSourceIds = new Set(matches.map(m => m.sourceId));
+  const allowFallback = Boolean(payload?.allowFallback);
 
-  const rawValue = process.env.GEMINI_SERVICE_ACCOUNT_JSON;
+  const buildFailure = (status: ProviderTruthStatus, message: string): GeminiServerResponse => ({
+    status,
+    findings: allowFallback ? generateDeterministicFallbackFindings(documentText, matches) : [],
+    fallback_used: allowFallback,
+    fallbackUsed: allowFallback,
+    fallbackReason: allowFallback ? message : undefined,
+    errorMessage: message,
+    modelProvider: allowFallback ? 'deterministic_fallback' : 'gemini'
+  });
 
-  if (!rawValue || rawValue.includes('MY_GEMINI')) {
-    return {
-      status: 'AUTHENTICATION_FAILED',
-      findings: generateDeterministicFallbackFindings(documentText, matches),
-      errorMessage: 'GEMINI_SERVICE_ACCOUNT_JSON server configuration is invalid or unconfigured'
-    };
+  // Single-credential resolution: GEMINI_SERVICE_ACCOUNT_JSON only.
+  // The value may be raw JSON or base64-encoded JSON.
+  const rawServiceAccount = process.env.GEMINI_SERVICE_ACCOUNT_JSON;
+
+  if (!rawServiceAccount || rawServiceAccount.includes('MY_GEMINI')) {
+    return buildFailure('AUTHENTICATION_FAILED', 'GEMINI_SERVICE_ACCOUNT_JSON is not configured');
   }
 
-  // The value may be raw JSON or base64-encoded JSON.
-  // Base64 is the transport form that survives Vercel CLI paste.
-  let jsonText = rawValue.trim();
+  let jsonText = rawServiceAccount.trim();
   if (!jsonText.startsWith('{')) {
     try {
       jsonText = Buffer.from(jsonText, 'base64').toString('utf-8');
     } catch {
-      // fall through — JSON.parse below will produce the error
+      return buildFailure('AUTHENTICATION_FAILED', 'GEMINI_SERVICE_ACCOUNT_JSON could not be base64-decoded');
     }
   }
 
@@ -121,11 +139,7 @@ export async function handleGeminiServerReasoning(payload: GeminiServerRequestPa
   try {
     credentials = JSON.parse(jsonText);
   } catch {
-    return {
-      status: 'AUTHENTICATION_FAILED',
-      findings: generateDeterministicFallbackFindings(documentText, matches),
-      errorMessage: 'GEMINI_SERVICE_ACCOUNT_JSON is not valid JSON'
-    };
+    return buildFailure('AUTHENTICATION_FAILED', 'GEMINI_SERVICE_ACCOUNT_JSON is not valid JSON');
   }
 
   try {
@@ -161,7 +175,7 @@ ${JSON.stringify(evidenceSummary, null, 2)}
 INSTRUCTIONS:
 1. Synthesize findings strictly based on provided evidence matches.
 2. You MUST NOT invent any source ID that is not listed in the provided VERIFIED EVIDENCE MATCHES.
-3. Return JSON array of findings adhering strictly to schema.
+3. Return JSON array of findings adhering strictly to schema. If no overlap, return empty JSON array [].
 `;
 
     const responseSchema = {
@@ -198,38 +212,78 @@ INSTRUCTIONS:
     });
 
     const responseText = response.text || '';
-    const parsed = JSON.parse(responseText);
-
-    if (!Array.isArray(parsed)) {
+    if (!responseText.trim()) {
       return {
-        status: 'INFERENCE_FAILED',
-        findings: generateDeterministicFallbackFindings(documentText, matches),
-        errorMessage: 'Gemini API returned non-array JSON'
+        status: 'EMPTY_RESULT',
+        findings: [],
+        fallback_used: false,
+        fallbackUsed: false,
+        modelProvider: 'gemini'
       };
     }
 
-    const validatedFindings: AIFinding[] = [];
+    let parsed: any;
+    try {
+      let cleaned = responseText.trim();
+      cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+      parsed = JSON.parse(cleaned);
+    } catch {
+      return buildFailure('INFERENCE_FAILED', 'Gemini response could not be parsed as JSON');
+    }
 
+    if (!Array.isArray(parsed)) {
+      return buildFailure('INFERENCE_FAILED', 'Gemini API returned non-array JSON');
+    }
+
+    if (parsed.length === 0) {
+      return {
+        status: 'EMPTY_RESULT',
+        findings: [],
+        fallback_used: false,
+        fallbackUsed: false,
+        modelProvider: 'gemini'
+      };
+    }
+
+    let hasSchemaError = false;
+    const validatedFindings: AIFinding[] = [];
     for (const item of parsed) {
       const validated = validateAIFindingSchema(item);
       if (validated) {
         if (validated.sourceId && !validSourceIds.has(validated.sourceId)) {
           validated.sourceId = undefined;
         }
+        validated.modelProvider = 'gemini';
         validatedFindings.push(validated);
+      } else {
+        hasSchemaError = true;
       }
     }
 
+    if (hasSchemaError || validatedFindings.length === 0) {
+      return buildFailure('SCHEMA_INVALID', 'Gemini response contained no structurally valid findings matching schema');
+    }
+
     return {
-      status: 'INFERENCE_VERIFIED',
-      findings: validatedFindings.length > 0 ? validatedFindings : generateDeterministicFallbackFindings(documentText, matches)
+      status: 'VERIFIED',
+      findings: validatedFindings,
+      fallback_used: false,
+      fallbackUsed: false,
+      modelProvider: 'gemini'
     };
   } catch (error: any) {
-    const isAuthError = error?.message?.includes('API key not valid') || error?.message?.includes('401') || error?.message?.includes('403');
-    return {
-      status: isAuthError ? 'AUTHENTICATION_FAILED' : 'INFERENCE_FAILED',
-      findings: generateDeterministicFallbackFindings(documentText, matches),
-      errorMessage: error?.message || 'Gemini server reasoning failed'
-    };
+    const msg = error?.message || String(error);
+    const status = error?.status || error?.statusCode || error?.response?.status;
+    const isAuthError = status === 401 || status === 403 || msg.includes('API key not valid') || msg.includes('401') || msg.includes('403') || msg.includes('UNAUTHENTICATED') || msg.includes('PERMISSION_DENIED');
+    const isTimeout = status === 504 || error?.name === 'TimeoutError' || error?.name === 'AbortError' || msg.includes('timeout') || msg.includes('timed out') || msg.includes('504');
+    const isNetwork = msg.includes('fetch failed') || msg.includes('ENOTFOUND') || msg.includes('ECONNREFUSED') || msg.includes('network') || msg.includes('NetworkError');
+    const isUnavailable = status === 503 || status === 429 || msg.includes('503') || msg.includes('UNAVAILABLE') || msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED');
+
+    if (isAuthError) return buildFailure('AUTHENTICATION_FAILED', msg);
+    if (isTimeout) return buildFailure('TIMEOUT', msg);
+    if (isNetwork) return buildFailure('NETWORK_ERROR', msg);
+    if (isUnavailable) return buildFailure('RUNTIME_UNAVAILABLE', msg);
+
+    return buildFailure('INFERENCE_FAILED', msg || 'Gemini server reasoning failed');
   }
 }

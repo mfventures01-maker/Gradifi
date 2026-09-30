@@ -4,18 +4,23 @@
  * HOEOS Standard: Server-Only Credentials, Strict Input Boundary, Zero Secret Leakage.
  */
 
-import { AIFinding, EvidenceMatch } from '../types.js';
+import { AIFinding, EvidenceMatch, ProviderTruthStatus } from '../types.js';
 import { validateAIFindingSchema, generateDeterministicFallbackFindings } from './geminiServerHandler.js';
 
 export interface NemotronServerRequestPayload {
   documentText: string;
   matches: EvidenceMatch[];
+  allowFallback?: boolean;
 }
 
 export interface NemotronServerResponse {
-  status: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
+  status: ProviderTruthStatus;
   findings: AIFinding[];
+  fallback_used: boolean;
+  fallbackUsed: boolean;
+  fallbackReason?: string;
   errorMessage?: string;
+  modelProvider?: string;
 }
 
 const RETRIABLE_STATUSES = new Set([429, 502, 503, 504]);
@@ -54,15 +59,22 @@ export async function handleNemotronServerReasoning(payload: NemotronServerReque
   const documentText = typeof payload?.documentText === 'string' ? payload.documentText : '';
   const matches = Array.isArray(payload?.matches) ? payload.matches : [];
   const validSourceIds = new Set(matches.map(m => m.sourceId));
+  const allowFallback = Boolean(payload?.allowFallback);
+
+  const buildFailure = (status: ProviderTruthStatus, message: string): NemotronServerResponse => ({
+    status,
+    findings: allowFallback ? generateDeterministicFallbackFindings(documentText, matches) : [],
+    fallback_used: allowFallback,
+    fallbackUsed: allowFallback,
+    fallbackReason: allowFallback ? message : undefined,
+    errorMessage: message,
+    modelProvider: allowFallback ? 'deterministic_fallback' : 'nemotron'
+  });
 
   const nvidiaKey = process.env.NVIDIA_API_KEY;
 
   if (!nvidiaKey || nvidiaKey.includes('YOUR_')) {
-    return {
-      status: 'AUTHENTICATION_FAILED',
-      findings: generateDeterministicFallbackFindings(documentText, matches),
-      errorMessage: 'NVIDIA_API_KEY server configuration is unavailable'
-    };
+    return buildFailure('AUTHENTICATION_FAILED', 'NVIDIA_API_KEY server configuration is unavailable');
   }
 
   try {
@@ -110,33 +122,52 @@ Do NOT wrap in markdown backticks. Do NOT include any intro or outro text. Outpu
           })
         }
       );
-    } catch (err) {
-      return {
-        status: 'INFERENCE_FAILED',
-        findings: generateDeterministicFallbackFindings(
-          documentText, matches
-        ),
-        errorMessage: `NVIDIA API unreachable after ${MAX_ATTEMPTS} attempts`
-      };
+    } catch (err: any) {
+      const msg = err?.message || String(err);
+      const isTimeout = err?.name === 'TimeoutError' || err?.name === 'AbortError' || msg.includes('timeout') || msg.includes('timed out') || msg.includes('504');
+      const isNetwork = msg.includes('fetch failed') || msg.includes('ENOTFOUND') || msg.includes('ECONNREFUSED') || msg.includes('network') || msg.includes('NetworkError');
+      const isUnavailable = msg.includes('503') || msg.includes('502') || msg.includes('429');
+
+      if (isTimeout) return buildFailure('TIMEOUT', `NVIDIA API timed out: ${msg}`);
+      if (isNetwork) return buildFailure('NETWORK_ERROR', `NVIDIA API network error: ${msg}`);
+      if (isUnavailable) return buildFailure('RUNTIME_UNAVAILABLE', `NVIDIA API unavailable: ${msg}`);
+
+      return buildFailure('INFERENCE_FAILED', `NVIDIA API unreachable after ${MAX_ATTEMPTS} attempts: ${msg}`);
     }
 
     if (!response.ok) {
       const isAuthError = response.status === 401 || response.status === 403;
-      return {
-        status: isAuthError ? 'AUTHENTICATION_FAILED' : 'INFERENCE_FAILED',
-        findings: generateDeterministicFallbackFindings(documentText, matches),
-        errorMessage: `NVIDIA API returned HTTP ${response.status}: ${response.statusText}`
-      };
+      const isUnavailable = response.status === 429 || response.status === 503 || response.status === 502;
+      const isTimeout = response.status === 504;
+
+      if (isAuthError) {
+        return buildFailure('AUTHENTICATION_FAILED', `NVIDIA API returned HTTP ${response.status}: ${response.statusText}`);
+      }
+      if (isUnavailable) {
+        return buildFailure('RUNTIME_UNAVAILABLE', `NVIDIA API returned HTTP ${response.status}: ${response.statusText}`);
+      }
+      if (isTimeout) {
+        return buildFailure('TIMEOUT', `NVIDIA API returned HTTP ${response.status}: ${response.statusText}`);
+      }
+      return buildFailure('INFERENCE_FAILED', `NVIDIA API returned HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    let data: any;
+    try {
+      data = await response.json();
+    } catch {
+      return buildFailure('INFERENCE_FAILED', 'Nemotron response could not be parsed as JSON');
+    }
+
     const content = data.choices?.[0]?.message?.content || '';
 
     if (!content.trim()) {
       return {
-        status: 'INFERENCE_FAILED',
-        findings: generateDeterministicFallbackFindings(documentText, matches),
-        errorMessage: 'Nemotron returned empty content'
+        status: 'EMPTY_RESULT',
+        findings: [],
+        fallback_used: false,
+        fallbackUsed: false,
+        modelProvider: 'nemotron'
       };
     }
 
@@ -147,7 +178,7 @@ Do NOT wrap in markdown backticks. Do NOT include any intro or outro text. Outpu
     cleanedContent = cleanedContent.replace(/<think>[\s\S]*$/gi, '').trim();
     cleanedContent = cleanedContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
 
-    // Extract the JSON array explicitly.
+    // Extract the JSON array explicitly if present.
     const arrayMatch = cleanedContent.match(/\[[\s\S]*\]/);
     const cleanedJson = arrayMatch ? arrayMatch[0] : cleanedContent;
 
@@ -155,21 +186,24 @@ Do NOT wrap in markdown backticks. Do NOT include any intro or outro text. Outpu
     try {
       parsed = JSON.parse(cleanedJson);
     } catch {
-      return {
-        status: 'INFERENCE_FAILED',
-        findings: generateDeterministicFallbackFindings(documentText, matches),
-        errorMessage: 'Nemotron response could not be parsed as JSON'
-      };
+      return buildFailure('INFERENCE_FAILED', 'Nemotron response could not be parsed as JSON');
     }
 
     if (!Array.isArray(parsed)) {
+      return buildFailure('INFERENCE_FAILED', 'Nemotron response was not a JSON array');
+    }
+
+    if (parsed.length === 0) {
       return {
-        status: 'INFERENCE_FAILED',
-        findings: generateDeterministicFallbackFindings(documentText, matches),
-        errorMessage: 'Nemotron response was not a JSON array'
+        status: 'EMPTY_RESULT',
+        findings: [],
+        fallback_used: false,
+        fallbackUsed: false,
+        modelProvider: 'nemotron'
       };
     }
 
+    let hasSchemaError = false;
     const validatedFindings: AIFinding[] = [];
     for (const item of parsed) {
       const validated = validateAIFindingSchema(item);
@@ -179,26 +213,35 @@ Do NOT wrap in markdown backticks. Do NOT include any intro or outro text. Outpu
         }
         validated.modelProvider = 'nemotron';
         validatedFindings.push(validated);
+      } else {
+        hasSchemaError = true;
       }
     }
 
-    if (validatedFindings.length === 0) {
-      return {
-        status: 'INFERENCE_FAILED',
-        findings: generateDeterministicFallbackFindings(documentText, matches),
-        errorMessage: 'Nemotron JSON contained no valid findings matching schema'
-      };
+    if (hasSchemaError || validatedFindings.length === 0) {
+      return buildFailure('SCHEMA_INVALID', 'Nemotron JSON contained no valid findings matching schema');
     }
 
     return {
-      status: 'INFERENCE_VERIFIED',
-      findings: validatedFindings
+      status: 'VERIFIED',
+      findings: validatedFindings,
+      fallback_used: false,
+      fallbackUsed: false,
+      modelProvider: 'nemotron'
     };
   } catch (error: any) {
-    return {
-      status: 'INFERENCE_FAILED',
-      findings: generateDeterministicFallbackFindings(documentText, matches),
-      errorMessage: error?.message || 'Nemotron server reasoning failed'
-    };
+    const msg = error?.message || String(error);
+    const status = error?.status || error?.statusCode || error?.response?.status;
+    const isAuthError = status === 401 || status === 403 || msg.includes('401') || msg.includes('403') || msg.includes('Unauthorized') || msg.includes('Forbidden') || msg.includes('AUTHENTICATION_FAILED');
+    const isTimeout = status === 504 || error?.name === 'TimeoutError' || error?.name === 'AbortError' || msg.includes('timeout') || msg.includes('timed out') || msg.includes('504');
+    const isNetwork = msg.includes('fetch failed') || msg.includes('ENOTFOUND') || msg.includes('ECONNREFUSED') || msg.includes('network') || msg.includes('NetworkError');
+    const isUnavailable = status === 503 || status === 502 || status === 429 || msg.includes('503') || msg.includes('502') || msg.includes('429');
+
+    if (isAuthError) return buildFailure('AUTHENTICATION_FAILED', msg);
+    if (isTimeout) return buildFailure('TIMEOUT', msg);
+    if (isNetwork) return buildFailure('NETWORK_ERROR', msg);
+    if (isUnavailable) return buildFailure('RUNTIME_UNAVAILABLE', msg);
+
+    return buildFailure('INFERENCE_FAILED', msg || 'Nemotron server reasoning failed');
   }
 }

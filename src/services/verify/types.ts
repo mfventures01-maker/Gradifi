@@ -16,16 +16,29 @@ export type SourceType =
 
 export type ProviderStatus = 'success' | 'partial' | 'unavailable' | 'error';
 
+export type ProviderTruthStatus =
+  | 'VERIFIED'
+  | 'EMPTY_RESULT'
+  | 'AUTHENTICATION_FAILED'
+  | 'TIMEOUT'
+  | 'NETWORK_ERROR'
+  | 'RUNTIME_UNAVAILABLE'
+  | 'INFERENCE_FAILED'
+  | 'SCHEMA_INVALID';
+
 export type FineGrainedProviderStatus =
   | 'VERIFIED'
   | 'PARTIALLY_VERIFIED'
   | 'AUTHENTICATION_FAILED'
   | 'REQUEST_FAILED'
   | 'SCHEMA_FAILED'
+  | 'SCHEMA_INVALID'
   | 'EMPTY_RESULT'
   | 'RATE_LIMITED'
   | 'INFERENCE_VERIFIED'
   | 'INFERENCE_FAILED'
+  | 'TIMEOUT'
+  | 'NETWORK_ERROR'
   | 'RUNTIME_AVAILABLE'
   | 'RUNTIME_UNAVAILABLE'
   | 'NOT_TESTED';
@@ -179,8 +192,8 @@ export interface EvidenceEngineResult {
   fineGrainedStatuses: Record<string, FineGrainedProviderStatus>;
   matrix: VerificationMatrixEntry[];
   localAiStatus: 'RUNTIME_AVAILABLE' | 'RUNTIME_UNAVAILABLE';
-  nemotronStatus: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
-  geminiStatus: 'INFERENCE_VERIFIED' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED';
+  nemotronStatus: ProviderTruthStatus | 'INFERENCE_VERIFIED';
+  geminiStatus: ProviderTruthStatus | 'INFERENCE_VERIFIED';
   processingTimeMs: number;
   timestamp: string;
   canonicalDocument?: CanonicalAnalysisDocument;
