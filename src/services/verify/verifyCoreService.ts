@@ -354,7 +354,8 @@ export class VerifyCoreService {
     const similarityFindings = extractSimilarityFindingsFromEvidenceMatches(
       documentText,
       canonicalDoc.documentId,
-      engineOutput.verifiedMatches
+      engineOutput.verifiedMatches,
+      engineOutput.aggregation
     );
 
     const similarityAnalysis: SimilarityAnalysisResult = {
@@ -377,6 +378,9 @@ export class VerifyCoreService {
       engineVersion: engineOutput.engineVersion,
       policyVersion: engineOutput.policyVersion,
       overallSimilarity: engineOutput.overallSimilarity,
+      uniqueMatchedCoverage: engineOutput.uniqueMatchedCoverage,
+      highestSourceMatch: engineOutput.highestSourceMatch,
+      aggregation: engineOutput.aggregation,
       totalSourcesFound: engineOutput.verifiedMatches.length,
       verifiedSources: engineOutput.verifiedMatches,
       findings: aiResult.findings,

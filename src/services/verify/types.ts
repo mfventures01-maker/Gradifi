@@ -187,6 +187,158 @@ export interface EvidenceEngineResult {
   similarityAnalysis?: SimilarityAnalysisResult;
   plagiarismEvidence?: PlagiarismEvidenceResult;
   constructedQuery?: string;
+  aggregation?: GlobalSimilarityAggregation;
+  uniqueMatchedCoverage?: number;
+  highestSourceMatch?: number;
+}
+
+/**
+ * GRADIFI HOEOS SIMILARITY ENGINE - HIERARCHICAL SEGMENTATION CONTRACT
+ */
+export interface DocumentPhrase {
+  phraseId: string; // e.g. "PHR-001"
+  sentenceId: string; // e.g. "SEN-001"
+  paragraphId: string; // e.g. "PAR-001"
+  text: string;
+  normalizedText: string;
+  nGramSize: number; // e.g. 3, 5, 7
+  startChar: number;
+  endChar: number;
+  tokenIndex: number;
+}
+
+export interface DocumentSentence {
+  sentenceId: string; // e.g. "SEN-001"
+  paragraphId: string; // e.g. "PAR-001"
+  index: number;
+  text: string;
+  normalizedText: string;
+  startChar: number;
+  endChar: number;
+  tokenCount: number;
+  phrases: DocumentPhrase[];
+}
+
+export interface DocumentParagraph {
+  paragraphId: string; // e.g. "PAR-001"
+  index: number;
+  text: string;
+  normalizedText: string;
+  startChar: number;
+  endChar: number;
+  tokenCount: number;
+  sentences: DocumentSentence[];
+}
+
+export interface SegmentedDocument {
+  documentId: string; // e.g. "DOC-001"
+  rawText: string;
+  normalizedText: string;
+  paragraphs: DocumentParagraph[];
+  totalSentences: number;
+  totalPhrases: number;
+  totalTokens: number;
+}
+
+/**
+ * GRADIFI HOEOS SIMILARITY ENGINE - EVIDENCE & FLAGGING CONTRACTS
+ */
+export type PhraseMatchFlag = 'EXACT_PHRASE_MATCH' | 'HIGH_PHRASE_OVERLAP' | 'SIGNIFICANT_PHRASE_OVERLAP';
+
+export interface PhraseMatchEvidence {
+  phraseId: string;
+  sourceId: string;
+  submittedPhrase: string;
+  sourcePhrase: string;
+  normalizedPhrase: string;
+  documentLocation: {
+    startChar: number;
+    endChar: number;
+    sentenceId: string;
+    paragraphId: string;
+  };
+  sourceLocation: {
+    startChar?: number;
+    endChar?: number;
+  };
+  tokenCount: number;
+  characterCount: number;
+  matchPercentage: number;
+  flag: PhraseMatchFlag;
+  algorithmVersion: string;
+}
+
+export type SentenceMatchFlag = 'HIGH_SIMILARITY_SENTENCE' | 'MODERATE_SIMILARITY_SENTENCE' | 'LOW_SIMILARITY_SENTENCE' | 'NO_MATCH';
+
+export interface SentenceMatchEvidence {
+  level: 'sentence';
+  documentUnitId: string; // e.g. "SEN-001"
+  paragraphId: string; // e.g. "PAR-001"
+  sourceId: string;
+  studentText: string;
+  sourceText: string;
+  similarityPercentage: number;
+  matchType: 'exact_match' | 'lexical_overlap' | 'ngram_overlap';
+  algorithmVersion: string;
+  documentLocation: {
+    startChar: number;
+    endChar: number;
+  };
+  matchedPhrases: PhraseMatchEvidence[];
+  flag: SentenceMatchFlag;
+}
+
+export type ParagraphMatchFlag = 'HIGH_SIMILARITY_PARAGRAPH' | 'MODERATE_SIMILARITY_PARAGRAPH' | 'LOW_SIMILARITY_PARAGRAPH' | 'NO_MATCH';
+
+export interface ParagraphMatchEvidence {
+  level: 'paragraph';
+  documentUnitId: string; // e.g. "PAR-001"
+  sourceId: string;
+  submittedParagraph: string;
+  sourcePassage: string;
+  similarityPercentage: number;
+  coveragePercentage: number;
+  matchedSentences: SentenceMatchEvidence[];
+  matchedPhrases: PhraseMatchEvidence[];
+  flag: ParagraphMatchFlag;
+  algorithmVersion: string;
+}
+
+export interface SourceSimilarityReport {
+  sourceId: string;
+  title: string;
+  authors: string[];
+  url?: string;
+  doi?: string;
+  documentCoverage: number; // % of document tokens covered by this source
+  paragraphMatches: number;
+  sentenceMatches: number;
+  phraseMatches: number;
+  highestSentenceMatch: number;
+  highestPhraseMatch: number;
+  aggregateSourceScore: number;
+  paragraphEvidence: ParagraphMatchEvidence[];
+  sentenceEvidence: SentenceMatchEvidence[];
+  phraseEvidence: PhraseMatchEvidence[];
+}
+
+export interface GlobalSimilarityAggregation {
+  totalDocumentTokens: number;
+  totalUniqueMatchedTokens: number;
+  totalDocumentOverlap: number; // Unique Matched Coverage %
+  highestSourceMatch: number;
+  totalSourceMatches: number;
+  totalParagraphMatches: number;
+  totalSentenceMatches: number;
+  totalPhraseMatches: number;
+  sourceReports: SourceSimilarityReport[];
+  paragraphFlags: ParagraphMatchEvidence[];
+  sentenceFlags: SentenceMatchEvidence[];
+  phraseFlags: PhraseMatchEvidence[];
+  engineVersion: string;
+  normalizationVersion: string;
+  evidenceHash: string;
+  documentHash: string;
 }
 
 /**

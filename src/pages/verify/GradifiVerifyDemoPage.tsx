@@ -668,6 +668,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
 
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={handleLoadSample}
               className="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-slate-200 hover:text-white flex items-center gap-2 cursor-pointer transition-all"
             >
@@ -809,6 +810,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
 
               {/* Verify Action Button */}
               <button
+                type="button"
                 onClick={handleExecuteVerification}
                 disabled={verifying || !documentText.trim()}
                 className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
@@ -1093,10 +1095,11 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                       <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                        <Hash className="w-4 h-4 text-emerald-400" /> 5. Similarity Analysis
+                        <Hash className="w-4 h-4 text-emerald-400" /> 5. Similarity & Plagiarism Evidence
                       </h3>
                       {(() => {
-                        const cat = getSimilarityCategory(result.overallSimilarity);
+                        const score = result.aggregation?.totalDocumentOverlap ?? result.overallSimilarity;
+                        const cat = getSimilarityCategory(score);
                         return (
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${cat.colorClass}`}>
                             {cat.label}
@@ -1105,35 +1108,98 @@ Distributed machine learning frameworks require mathematical determinism to guar
                       })()}
                     </div>
 
-                    <div className="text-center py-3 bg-slate-950/60 rounded-xl border border-slate-800">
-                      <div className="text-3xl font-black text-white">{result.overallSimilarity}%</div>
-                      <div className="text-[11px] font-bold text-slate-400 uppercase mt-0.5">Overall Deterministic Overlap</div>
+                    {/* Dual Authority Metrics: Unique Matched Coverage vs Highest Source Match */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="text-center py-2.5 bg-slate-950/60 rounded-xl border border-slate-800">
+                        <div className="text-2xl font-black text-white">
+                          {(result.aggregation?.totalDocumentOverlap ?? result.overallSimilarity).toFixed(1)}%
+                        </div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mt-0.5">
+                          Unique Matched Coverage
+                        </div>
+                      </div>
+                      <div className="text-center py-2.5 bg-slate-950/60 rounded-xl border border-slate-800">
+                        <div className="text-2xl font-black text-emerald-400">
+                          {(result.aggregation?.highestSourceMatch ?? result.overallSimilarity).toFixed(1)}%
+                        </div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mt-0.5">
+                          Highest Source Match
+                        </div>
+                      </div>
                     </div>
 
+                    {/* Multi-Tier Quantitative Counts */}
+                    <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                      <div className="bg-slate-950/40 border border-slate-800/80 rounded-lg p-1.5">
+                        <div className="font-bold text-slate-200">
+                          {result.aggregation?.totalSourceMatches ?? result.verifiedSources.length}
+                        </div>
+                        <div className="text-[9px] text-slate-400 uppercase">Sources</div>
+                      </div>
+                      <div className="bg-slate-950/40 border border-slate-800/80 rounded-lg p-1.5">
+                        <div className="font-bold text-amber-400">
+                          {result.aggregation?.totalParagraphMatches ?? 0}
+                        </div>
+                        <div className="text-[9px] text-slate-400 uppercase">Paragraphs</div>
+                      </div>
+                      <div className="bg-slate-950/40 border border-slate-800/80 rounded-lg p-1.5">
+                        <div className="font-bold text-sky-400">
+                          {result.aggregation?.totalSentenceMatches ?? 0}
+                        </div>
+                        <div className="text-[9px] text-slate-400 uppercase">Sentences</div>
+                      </div>
+                      <div className="bg-slate-950/40 border border-slate-800/80 rounded-lg p-1.5">
+                        <div className="font-bold text-purple-400">
+                          {result.aggregation?.totalPhraseMatches ?? 0}
+                        </div>
+                        <div className="text-[9px] text-slate-400 uppercase">Phrases</div>
+                      </div>
+                    </div>
+
+                    {/* Expandable Hierarchical Evidence Tree */}
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                        <span className="text-slate-400 font-semibold">Deterministic Findings:</span>
-                        <span className="font-bold text-slate-200">
-                          {result.similarityAnalysis?.findings.length || 0} Explainable Matches
+                        <span className="text-slate-400 font-semibold">Evidence Breakdown (Source → Unit):</span>
+                        <span className="font-mono text-[10px] text-slate-400">
+                          {result.aggregation?.sourceReports?.length ?? 0} Matched Sources
                         </span>
                       </div>
 
-                      {result.similarityAnalysis?.findings && result.similarityAnalysis.findings.length > 0 ? (
-                        <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
-                          {result.similarityAnalysis.findings.slice(0, 3).map((finding, idx) => (
-                            <div key={finding.findingId || idx} className="p-2.5 bg-slate-950/60 border border-slate-800 rounded-lg space-y-1 text-[11px]">
-                              <div className="flex items-center justify-between">
-                                <span className="font-mono text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.5 rounded">
-                                  {finding.matchMethod}
+                      {result.aggregation?.sourceReports && result.aggregation.sourceReports.length > 0 ? (
+                        <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                          {result.aggregation.sourceReports.map((src, sIdx) => (
+                            <details key={src.sourceId || sIdx} className="bg-slate-950/60 border border-slate-800 rounded-lg p-2 group text-[11px]">
+                              <summary className="cursor-pointer font-bold text-slate-200 flex items-center justify-between hover:text-emerald-400">
+                                <span className="truncate max-w-[200px]">
+                                  {src.title}
                                 </span>
-                                <span className="font-bold text-slate-300">
-                                  Score: {finding.similarityScore}%
+                                <span className="font-mono text-[10px] text-emerald-400">
+                                  {src.documentCoverage.toFixed(1)}% Cov | {src.highestSentenceMatch.toFixed(1)}% Max
                                 </span>
+                              </summary>
+                              
+                              <div className="mt-2 pt-2 border-t border-slate-800 space-y-2 pl-2">
+                                <div className="text-[10px] text-slate-400 flex justify-between">
+                                  <span>ID: {src.sourceId}</span>
+                                  <span>P: {src.paragraphMatches} | S: {src.sentenceMatches} | Phr: {src.phraseMatches}</span>
+                                </div>
+
+                                {src.sentenceEvidence.slice(0, 3).map((sent, sentIdx) => (
+                                  <div key={sent.documentUnitId || sentIdx} className="bg-slate-900/80 border border-slate-800/60 rounded p-1.5 space-y-1">
+                                    <div className="flex justify-between items-center text-[10px]">
+                                      <span className="font-mono text-sky-400 font-bold">{sent.documentUnitId}</span>
+                                      <span className="font-bold text-slate-300">{sent.similarityPercentage.toFixed(1)}% ({sent.matchType})</span>
+                                    </div>
+                                    <div className="text-slate-300 text-[10px] italic">
+                                      "{sent.studentText}"
+                                    </div>
+                                    <div className="text-slate-400 text-[9px]">
+                                      Source: "{sent.sourceText.slice(0, 90)}..."
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
-                              <div className="text-slate-300 font-mono text-[10px] truncate">
-                                "{finding.sourceSegment}"
-                              </div>
-                            </div>
+                            </details>
                           ))}
                         </div>
                       ) : (
@@ -1142,10 +1208,10 @@ Distributed machine learning frameworks require mathematical determinism to guar
                         </div>
                       )}
 
-                      <div className="flex justify-between items-center py-1 border-t border-slate-800/60 pt-2">
+                      <div className="flex justify-between items-center py-1 border-t border-slate-800/60 pt-2 text-[10px]">
                         <span className="text-slate-400">Provenance Authority:</span>
-                        <span className="font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md text-[10px]">
-                          DETERMINISTIC
+                        <span className="font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md">
+                          DETERMINISTIC SIM-V1
                         </span>
                       </div>
                     </div>
