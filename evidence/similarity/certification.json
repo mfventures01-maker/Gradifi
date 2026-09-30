@@ -1,0 +1,126 @@
+{
+  "engineVersion": "SIM-V1",
+  "normalizationVersion": "NORM-V1",
+  "certificationMatrix": [
+    {
+      "gate": "SIM-01",
+      "requirement": "Existing engine mapped",
+      "status": "PASS",
+      "evidence": "Forensic call graph documented in HOEOS_SIMILARITY_FORENSIC_REPORT.md"
+    },
+    {
+      "gate": "SIM-02",
+      "requirement": "Canonical normalization",
+      "status": "PASS",
+      "evidence": "NORM-V1 Unicode NFKD whitespace-invariant normalization verified"
+    },
+    {
+      "gate": "SIM-03",
+      "requirement": "Deterministic segmentation",
+      "status": "PASS",
+      "evidence": "DOC-XXX, PAR-XXX, SEN-XXX, PHR-XXX stable IDs generated deterministically"
+    },
+    {
+      "gate": "SIM-04",
+      "requirement": "Phrase detection",
+      "status": "PASS",
+      "evidence": "Sliding n-grams N=3,5,7 with EXACT/HIGH/SIGNIFICANT classifications"
+    },
+    {
+      "gate": "SIM-05",
+      "requirement": "Sentence matching",
+      "status": "PASS",
+      "evidence": "Exact containment + n-gram overlap with traceable source passage preservation"
+    },
+    {
+      "gate": "SIM-06",
+      "requirement": "Paragraph matching",
+      "status": "PASS",
+      "evidence": "Mathematically derived from underlying sentence and phrase match ratios"
+    },
+    {
+      "gate": "SIM-07",
+      "requirement": "Source aggregation",
+      "status": "PASS",
+      "evidence": "SourceSimilarityReport computes document coverage, paragraph/sentence/phrase counts"
+    },
+    {
+      "gate": "SIM-08",
+      "requirement": "Global aggregation",
+      "status": "PASS",
+      "evidence": "Global non-overlapping unique document token coverage eliminates double-counting"
+    },
+    {
+      "gate": "SIM-09",
+      "requirement": "Duplicate prevention",
+      "status": "PASS",
+      "evidence": "deduplicateSources canonicalizes by DOI & Title; token sets prevent inflation"
+    },
+    {
+      "gate": "SIM-10",
+      "requirement": "Concrete evidence flags",
+      "status": "PASS",
+      "evidence": "PARAGRAPH, SENTENCE, and PHRASE deterministic thresholds versioned SIM-V1"
+    },
+    {
+      "gate": "SIM-11",
+      "requirement": "AI subordination",
+      "status": "PASS",
+      "evidence": "AI federation is subordinate; unevidenced claims tagged [AI_SUGGESTION_WITHOUT_DETERMINISTIC_EVIDENCE]"
+    },
+    {
+      "gate": "SIM-12",
+      "requirement": "Provider failure isolation",
+      "status": "PASS",
+      "evidence": "Simulated AI failures maintain 100% invariant deterministic similarity"
+    },
+    {
+      "gate": "SIM-13",
+      "requirement": "N=10 runtime battery",
+      "status": "PASS",
+      "evidence": "evidence/similarity/runtime-battery.json confirms zero drift across 10 runs"
+    },
+    {
+      "gate": "SIM-14",
+      "requirement": "Repeatability",
+      "status": "PASS",
+      "evidence": "evidence/similarity/repeatability.json confirms RUN 1 === RUN 5 across Cases A-J"
+    },
+    {
+      "gate": "SIM-15",
+      "requirement": "Predictability",
+      "status": "PASS",
+      "evidence": "evidence/similarity/predictability.json verifies whitespace, duplicate, empty invariance"
+    },
+    {
+      "gate": "SIM-16",
+      "requirement": "Persistence integrity",
+      "status": "PASS",
+      "evidence": "evidence/similarity/persistence.json confirms hash derivation & envelope preservation"
+    },
+    {
+      "gate": "SIM-17",
+      "requirement": "Browser certification",
+      "status": "PASS",
+      "evidence": "Playwright test verifies UI multi-metric breakdown and hierarchical expansion"
+    },
+    {
+      "gate": "SIM-18",
+      "requirement": "DevTools certification",
+      "status": "PASS",
+      "evidence": "DevTools network/console evidence generated in browser certification test"
+    },
+    {
+      "gate": "SIM-19",
+      "requirement": "Failure injection",
+      "status": "PASS",
+      "evidence": "evidence/similarity/failure-injection.json certifies provider failure immunity"
+    },
+    {
+      "gate": "SIM-20",
+      "requirement": "Public receipt reproducibility",
+      "status": "PASS",
+      "evidence": "Authoritative derived verification ID matches public verification table"
+    }
+  ]
+}

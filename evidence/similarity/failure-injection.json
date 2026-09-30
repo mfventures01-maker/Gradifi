@@ -1,0 +1,45 @@
+{
+  "allInvariantsMaintained": true,
+  "failureResults": [
+    {
+      "scenario": "Gemini Authentication Failure",
+      "simulatedAiStatus": "AUTHENTICATION_FAILED",
+      "deterministicDocumentHash": "a29b8ada291d6b38",
+      "deterministicOverallSimilarity": 62.3,
+      "deterministicMatchesCount": 2,
+      "invariantMaintained": true
+    },
+    {
+      "scenario": "Gemini Timeout",
+      "simulatedAiStatus": "TIMEOUT",
+      "deterministicDocumentHash": "a29b8ada291d6b38",
+      "deterministicOverallSimilarity": 62.3,
+      "deterministicMatchesCount": 2,
+      "invariantMaintained": true
+    },
+    {
+      "scenario": "Nemotron Malformed Response",
+      "simulatedAiStatus": "MALFORMED_RESPONSE",
+      "deterministicDocumentHash": "a29b8ada291d6b38",
+      "deterministicOverallSimilarity": 62.3,
+      "deterministicMatchesCount": 2,
+      "invariantMaintained": true
+    },
+    {
+      "scenario": "Gemma Runtime Unavailable",
+      "simulatedAiStatus": "RUNTIME_UNAVAILABLE",
+      "deterministicDocumentHash": "a29b8ada291d6b38",
+      "deterministicOverallSimilarity": 62.3,
+      "deterministicMatchesCount": 2,
+      "invariantMaintained": true
+    },
+    {
+      "scenario": "Empty AI Response",
+      "simulatedAiStatus": "EMPTY_RESULT",
+      "deterministicDocumentHash": "a29b8ada291d6b38",
+      "deterministicOverallSimilarity": 62.3,
+      "deterministicMatchesCount": 2,
+      "invariantMaintained": true
+    }
+  ]
+}

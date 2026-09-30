@@ -1,0 +1,139 @@
+{
+  "persistenceValid": true,
+  "verificationId": "VRF-A29B8ADAE918",
+  "record": {
+    "verification_id": "VRF-A29B8ADAE918",
+    "document_hash": "a29b8ada291d6b38",
+    "evidence_hash": "e918db77d59ec321",
+    "engine_version": "SIM-V1",
+    "policy_version": "2026.09-academic-evidence",
+    "overall_similarity": 62.3,
+    "total_sources_found": 3,
+    "evidence_envelope": {
+      "result": {
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "e918db77d59ec321",
+        "engineVersion": "SIM-V1",
+        "policyVersion": "2026.09-academic-evidence",
+        "overallSimilarity": 62.3,
+        "totalSourcesFound": 3,
+        "verifiedSources": [
+          {
+            "sourceId": "src-002",
+            "title": "Deterministic Verification Frameworks",
+            "authors": [
+              "Dr. J. Smith",
+              "Prof. M. Johnson"
+            ],
+            "url": "https://doi.org/10.1145/3383555.3383582",
+            "doi": "10.1145/3383555.3383582",
+            "matchedText": "Verification engines must operate deterministically to prevent opaque scoring and false accusations.",
+            "originalSnippet": "Verification engines must operate deterministically to prevent opaque scoring and false accusations. Reproducibility and mathematical auditability guarantee that evidence is traceable.",
+            "matchType": "exact",
+            "matchPercentage": 76.4,
+            "relevanceScore": 70.5,
+            "provenance": {
+              "provider": "crossref",
+              "providerRecordId": "src-002",
+              "retrievedAt": "2026-09-29T12:00:00.000Z",
+              "sourceType": "journal-article",
+              "sourceUrl": "https://doi.org/10.1145/3383555.3383582",
+              "title": "Deterministic Verification Frameworks",
+              "authors": [
+                "Dr. J. Smith",
+                "Prof. M. Johnson"
+              ],
+              "doi": "10.1145/3383555.3383582",
+              "provenanceState": "VERIFIED"
+            }
+          },
+          {
+            "sourceId": "src-001",
+            "title": "AI in Educational Assessment",
+            "authors": [
+              "Dr. J. Smith",
+              "Prof. M. Johnson"
+            ],
+            "url": "https://doi.org/10.1016/j.cedpsych.2024.1021",
+            "doi": "10.1016/j.cedpsych.2024.1021",
+            "matchedText": "Machine learning models enable automated grading and instant feedback for complex student assignments.",
+            "originalSnippet": "Machine learning models enable automated grading and instant feedback for complex student assignments. Academic integrity remains paramount.",
+            "matchType": "exact",
+            "matchPercentage": 68.5,
+            "relevanceScore": 60.7,
+            "provenance": {
+              "provider": "crossref",
+              "providerRecordId": "src-001",
+              "retrievedAt": "2026-09-29T12:00:00.000Z",
+              "sourceType": "journal-article",
+              "sourceUrl": "https://doi.org/10.1016/j.cedpsych.2024.1021",
+              "title": "AI in Educational Assessment",
+              "authors": [
+                "Dr. J. Smith",
+                "Prof. M. Johnson"
+              ],
+              "doi": "10.1016/j.cedpsych.2024.1021",
+              "provenanceState": "VERIFIED"
+            }
+          },
+          {
+            "sourceId": "src-003",
+            "title": "Unrelated Quantum Physics",
+            "authors": [
+              "Dr. J. Smith",
+              "Prof. M. Johnson"
+            ],
+            "url": "https://doi.org/10.1103/PhysRevA.100.012345",
+            "doi": "10.1103/PhysRevA.100.012345",
+            "matchedText": "Quantum computing algorithms differ fundamentally from classical computing paradigms in parallel state processing.",
+            "originalSnippet": "Quantum computing algorithms differ fundamentally from classical computing paradigms in parallel state processing.",
+            "matchType": "citation",
+            "matchPercentage": 1.5,
+            "relevanceScore": 1.3,
+            "provenance": {
+              "provider": "crossref",
+              "providerRecordId": "src-003",
+              "retrievedAt": "2026-09-29T12:00:00.000Z",
+              "sourceType": "journal-article",
+              "sourceUrl": "https://doi.org/10.1103/PhysRevA.100.012345",
+              "title": "Unrelated Quantum Physics",
+              "authors": [
+                "Dr. J. Smith",
+                "Prof. M. Johnson"
+              ],
+              "doi": "10.1103/PhysRevA.100.012345",
+              "provenanceState": "VERIFIED"
+            }
+          }
+        ],
+        "findings": [],
+        "providerStatuses": {
+          "crossref": "success",
+          "openalex": "unavailable",
+          "unpaywall": "unavailable",
+          "core": "unavailable",
+          "googlebooks": "unavailable",
+          "semanticscholar": "unavailable",
+          "nemotron": "unavailable",
+          "gemma": "unavailable",
+          "gemini": "unavailable"
+        },
+        "fineGrainedStatuses": {
+          "crossref": "VERIFIED",
+          "openalex": "NOT_TESTED",
+          "unpaywall": "NOT_TESTED",
+          "core": "NOT_TESTED",
+          "googlebooks": "NOT_TESTED",
+          "semanticscholar": "NOT_TESTED"
+        },
+        "matrix": [],
+        "localAiStatus": "RUNTIME_UNAVAILABLE",
+        "nemotronStatus": "RUNTIME_UNAVAILABLE",
+        "geminiStatus": "AUTHENTICATION_FAILED",
+        "processingTimeMs": 45,
+        "timestamp": "2026-09-30T09:30:39.418Z"
+      },
+      "persistedAt": "2026-09-30T09:30:39.419Z"
+    }
+  }
+}

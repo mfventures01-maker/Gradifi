@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-09-30T09:31:45.202Z",
+  "url": "https://gradifi.vercel.app/verify",
+  "hasSimilarityHeading": true,
+  "hasAuthorityIndicator": true,
+  "multiMetricDisplay": {
+    "uniqueMatchedCoverageVisible": true,
+    "highestSourceMatchVisible": true,
+    "paragraphsCountVisible": true,
+    "sentencesCountVisible": true,
+    "phrasesCountVisible": true
+  },
+  "networkLogs": [
+    {
+      "url": "https://gradifi.vercel.app/verify",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/unpaywall",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/crossref",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/semanticscholar",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/openalex",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/googlebooks",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/core",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/nemotron",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/gemini",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "https://gradifi.vercel.app/api/verify/persist",
+      "status": 200,
+      "method": "POST"
+    }
+  ],
+  "consoleLogs": [
+    {
+      "type": "log",
+      "text": "[OfflineStorage] Database initialized"
+    },
+    {
+      "type": "log",
+      "text": "✅ Offline storage initialized"
+    },
+    {
+      "type": "log",
+      "text": "[OfflineStorage] Database initialized"
+    },
+    {
+      "type": "log",
+      "text": "✅ Initial sync: 0 items synced"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "certifiedGates": [
+    "SIM-17",
+    "SIM-18"
+  ],
+  "status": "PASS"
+}

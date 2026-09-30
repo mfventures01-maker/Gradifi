@@ -8,6 +8,13 @@
  * Normalizes document text for deterministic matching.
  * Converts to lowercase, strips diacritics/control characters, normalizes whitespace.
  */
+export const NORMALIZATION_VERSION = 'NORM-V1';
+export const SIMILARITY_ENGINE_VERSION = 'SIM-V1';
+
+/**
+ * Normalizes document text for deterministic matching.
+ * Converts to lowercase, strips diacritics/control characters, normalizes whitespace.
+ */
 export function normalizeText(text: string): string {
   if (!text) return '';
   return text
@@ -74,7 +81,158 @@ export function computeHash(text: string): string {
   return `${hex1}${hex2}`;
 }
 
-import { CanonicalAnalysisDocument, DocumentSourceMetadata, DocumentStats, DocumentOriginType } from './types.js';
+import {
+  CanonicalAnalysisDocument,
+  DocumentSourceMetadata,
+  DocumentStats,
+  DocumentOriginType,
+  SegmentedDocument,
+  DocumentParagraph,
+  DocumentSentence,
+  DocumentPhrase
+} from './types.js';
+
+/**
+ * Deterministically segments text into Paragraphs (PAR-XXX), Sentences (SEN-XXX), and Phrases (PHR-XXX).
+ * Stable sequential IDs provide 100% reproducible evidence references.
+ */
+export function segmentDocument(rawText: string, docId: string = 'DOC-001'): SegmentedDocument {
+  if (!rawText || !rawText.trim()) {
+    return {
+      documentId: docId,
+      rawText: '',
+      normalizedText: '',
+      paragraphs: [],
+      totalSentences: 0,
+      totalPhrases: 0,
+      totalTokens: 0
+    };
+  }
+
+  const normalizedText = normalizeText(rawText);
+  const totalTokens = tokenize(rawText).length;
+
+  // Split on paragraph boundaries (two or more newlines, or lines separated by empty space)
+  const paragraphRegex = /(?:[^\r\n]+(?:\r?\n(?![ \t]*\r?\n)[^\r\n]+)*)/g;
+  const paragraphs: DocumentParagraph[] = [];
+  let match: RegExpExecArray | null;
+  let pIdx = 0;
+  let globalSentenceIdx = 0;
+  let globalPhraseIdx = 0;
+
+  while ((match = paragraphRegex.exec(rawText)) !== null) {
+    const pText = match[0].trim();
+    if (!pText) continue;
+
+    pIdx++;
+    const pId = `PAR-${String(pIdx).padStart(3, '0')}`;
+    const pStart = match.index;
+    const pEnd = pStart + match[0].length;
+    const pTokens = tokenize(pText);
+
+    // Segment sentences inside paragraph
+    const sentenceRegex = /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g;
+    const sentences: DocumentSentence[] = [];
+    let sMatch: RegExpExecArray | null;
+    let sInPIdx = 0;
+
+    while ((sMatch = sentenceRegex.exec(pText)) !== null) {
+      const sText = sMatch[0].trim();
+      if (sText.length < 3) continue;
+
+      sInPIdx++;
+      globalSentenceIdx++;
+      const sId = `SEN-${String(globalSentenceIdx).padStart(3, '0')}`;
+      const sStart = pStart + sMatch.index;
+      const sEnd = sStart + sMatch[0].length;
+      const sTokens = tokenize(sText);
+
+      // Extract sliding window n-gram phrases (N=3, 5, 7)
+      const phrases: DocumentPhrase[] = [];
+      const nGramSizes = [3, 5, 7];
+
+      for (const n of nGramSizes) {
+        if (sTokens.length >= n) {
+          for (let i = 0; i <= sTokens.length - n; i++) {
+            const phraseTokens = sTokens.slice(i, i + n);
+            const phraseText = phraseTokens.join(' ');
+            globalPhraseIdx++;
+            const phrId = `PHR-${String(globalPhraseIdx).padStart(3, '0')}`;
+
+            // Character coordinates within sentence
+            const normSent = normalizeText(sText);
+            const charIdx = normSent.indexOf(phraseText);
+            const startChar = charIdx !== -1 ? sStart + charIdx : sStart;
+            const endChar = startChar + phraseText.length;
+
+            phrases.push({
+              phraseId: phrId,
+              sentenceId: sId,
+              paragraphId: pId,
+              text: phraseText,
+              normalizedText: phraseText,
+              nGramSize: n,
+              startChar,
+              endChar,
+              tokenIndex: i
+            });
+          }
+        }
+      }
+
+      sentences.push({
+        sentenceId: sId,
+        paragraphId: pId,
+        index: sInPIdx,
+        text: sText,
+        normalizedText: normalizeText(sText),
+        startChar: sStart,
+        endChar: sEnd,
+        tokenCount: sTokens.length,
+        phrases
+      });
+    }
+
+    // Fallback if no punctuation was present in paragraph
+    if (sentences.length === 0 && pText.length > 0) {
+      globalSentenceIdx++;
+      const sId = `SEN-${String(globalSentenceIdx).padStart(3, '0')}`;
+      sentences.push({
+        sentenceId: sId,
+        paragraphId: pId,
+        index: 1,
+        text: pText,
+        normalizedText: normalizeText(pText),
+        startChar: pStart,
+        endChar: pEnd,
+        tokenCount: pTokens.length,
+        phrases: []
+      });
+    }
+
+    paragraphs.push({
+      paragraphId: pId,
+      index: pIdx,
+      text: pText,
+      normalizedText: normalizeText(pText),
+      startChar: pStart,
+      endChar: pEnd,
+      tokenCount: pTokens.length,
+      sentences
+    });
+  }
+
+  return {
+    documentId: docId,
+    rawText,
+    normalizedText,
+    paragraphs,
+    totalSentences: globalSentenceIdx,
+    totalPhrases: globalPhraseIdx,
+    totalTokens
+  };
+}
+
 
 export interface BuildCanonicalOptions {
   rawText: string;

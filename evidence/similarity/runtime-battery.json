@@ -1,0 +1,235 @@
+{
+  "batteryConsistent": true,
+  "runs": [
+    {
+      "run": 1,
+      "timestamp": "2026-09-30T09:30:39.293Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 12.34
+    },
+    {
+      "run": 2,
+      "timestamp": "2026-09-30T09:30:39.298Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 5.63
+    },
+    {
+      "run": 3,
+      "timestamp": "2026-09-30T09:30:39.304Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 5.23
+    },
+    {
+      "run": 4,
+      "timestamp": "2026-09-30T09:30:39.311Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 7.21
+    },
+    {
+      "run": 5,
+      "timestamp": "2026-09-30T09:30:39.313Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 2.22
+    },
+    {
+      "run": 6,
+      "timestamp": "2026-09-30T09:30:39.316Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 2.58
+    },
+    {
+      "run": 7,
+      "timestamp": "2026-09-30T09:30:39.321Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 5.26
+    },
+    {
+      "run": 8,
+      "timestamp": "2026-09-30T09:30:39.330Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 8.5
+    },
+    {
+      "run": 9,
+      "timestamp": "2026-09-30T09:30:39.333Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 3.28
+    },
+    {
+      "run": 10,
+      "timestamp": "2026-09-30T09:30:39.337Z",
+      "documentHash": "a29b8ada291d6b38",
+      "evidenceHash": "e918db77d59ec321",
+      "overallCoverage": 62.3,
+      "sourceCount": 3,
+      "paragraphCount": 1,
+      "sentenceCount": 3,
+      "phraseCount": 67,
+      "highestSourceMatch": 76.4,
+      "deterministicFlags": {
+        "paragraphs": 2,
+        "sentences": 3,
+        "phrases": 67
+      },
+      "providerStates": {
+        "crossref": "VERIFIED",
+        "gemini": "SUBORDINATED_INDEPENDENT",
+        "nemotron": "SUBORDINATED_INDEPENDENT"
+      },
+      "elapsedMs": 4.31
+    }
+  ]
+}

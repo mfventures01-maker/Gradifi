@@ -1,0 +1,512 @@
+{
+  "Case A (Identical document/source)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "db963d643dcc8222",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 5,
+        "totalPhraseMatches": 123
+      },
+      {
+        "run": 2,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "db963d643dcc8222",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 5,
+        "totalPhraseMatches": 123
+      },
+      {
+        "run": 3,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "db963d643dcc8222",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 5,
+        "totalPhraseMatches": 123
+      },
+      {
+        "run": 4,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "db963d643dcc8222",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 5,
+        "totalPhraseMatches": 123
+      },
+      {
+        "run": 5,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "db963d643dcc8222",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 5,
+        "totalPhraseMatches": 123
+      }
+    ]
+  },
+  "Case B (Whitespace variations)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "122ba392f1929120",
+        "evidenceHash": "cc733584d2beaab0",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 3,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 2,
+        "documentHash": "122ba392f1929120",
+        "evidenceHash": "cc733584d2beaab0",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 3,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 3,
+        "documentHash": "122ba392f1929120",
+        "evidenceHash": "cc733584d2beaab0",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 3,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 4,
+        "documentHash": "122ba392f1929120",
+        "evidenceHash": "cc733584d2beaab0",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 3,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 5,
+        "documentHash": "122ba392f1929120",
+        "evidenceHash": "cc733584d2beaab0",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 3,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      }
+    ]
+  },
+  "Case C (Punctuation variations)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "066495ad69bd857f",
+        "evidenceHash": "d77cc02ccb80f5ec",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 2,
+        "documentHash": "066495ad69bd857f",
+        "evidenceHash": "d77cc02ccb80f5ec",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 3,
+        "documentHash": "066495ad69bd857f",
+        "evidenceHash": "d77cc02ccb80f5ec",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 4,
+        "documentHash": "066495ad69bd857f",
+        "evidenceHash": "d77cc02ccb80f5ec",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 5,
+        "documentHash": "066495ad69bd857f",
+        "evidenceHash": "d77cc02ccb80f5ec",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      }
+    ]
+  },
+  "Case D (Case variations)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "683a327a81c06c58",
+        "evidenceHash": "b3c53ef3016fe5a1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 2,
+        "documentHash": "683a327a81c06c58",
+        "evidenceHash": "b3c53ef3016fe5a1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 3,
+        "documentHash": "683a327a81c06c58",
+        "evidenceHash": "b3c53ef3016fe5a1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 4,
+        "documentHash": "683a327a81c06c58",
+        "evidenceHash": "b3c53ef3016fe5a1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 5,
+        "documentHash": "683a327a81c06c58",
+        "evidenceHash": "b3c53ef3016fe5a1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      }
+    ]
+  },
+  "Case E (Paraphrased sentence)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "e0ff618892339118",
+        "evidenceHash": "32e0692bcd2cae4f",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      },
+      {
+        "run": 2,
+        "documentHash": "e0ff618892339118",
+        "evidenceHash": "32e0692bcd2cae4f",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      },
+      {
+        "run": 3,
+        "documentHash": "e0ff618892339118",
+        "evidenceHash": "32e0692bcd2cae4f",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      },
+      {
+        "run": 4,
+        "documentHash": "e0ff618892339118",
+        "evidenceHash": "32e0692bcd2cae4f",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      },
+      {
+        "run": 5,
+        "documentHash": "e0ff618892339118",
+        "evidenceHash": "32e0692bcd2cae4f",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      }
+    ]
+  },
+  "Case F (Identical paragraph)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "8d16d7e6ca953276",
+        "evidenceHash": "a014f7f81762ac5a",
+        "overallSimilarity": 56.5,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 1,
+        "totalPhraseMatches": 28
+      },
+      {
+        "run": 2,
+        "documentHash": "8d16d7e6ca953276",
+        "evidenceHash": "a014f7f81762ac5a",
+        "overallSimilarity": 56.5,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 1,
+        "totalPhraseMatches": 28
+      },
+      {
+        "run": 3,
+        "documentHash": "8d16d7e6ca953276",
+        "evidenceHash": "a014f7f81762ac5a",
+        "overallSimilarity": 56.5,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 1,
+        "totalPhraseMatches": 28
+      },
+      {
+        "run": 4,
+        "documentHash": "8d16d7e6ca953276",
+        "evidenceHash": "a014f7f81762ac5a",
+        "overallSimilarity": 56.5,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 1,
+        "totalPhraseMatches": 28
+      },
+      {
+        "run": 5,
+        "documentHash": "8d16d7e6ca953276",
+        "evidenceHash": "a014f7f81762ac5a",
+        "overallSimilarity": 56.5,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 1,
+        "totalPhraseMatches": 28
+      }
+    ]
+  },
+  "Case G (Repeated phrase)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "d7b3040fdd7f1afb",
+        "evidenceHash": "7fe8d150618d2a6e",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 18
+      },
+      {
+        "run": 2,
+        "documentHash": "d7b3040fdd7f1afb",
+        "evidenceHash": "7fe8d150618d2a6e",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 18
+      },
+      {
+        "run": 3,
+        "documentHash": "d7b3040fdd7f1afb",
+        "evidenceHash": "7fe8d150618d2a6e",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 18
+      },
+      {
+        "run": 4,
+        "documentHash": "d7b3040fdd7f1afb",
+        "evidenceHash": "7fe8d150618d2a6e",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 18
+      },
+      {
+        "run": 5,
+        "documentHash": "d7b3040fdd7f1afb",
+        "evidenceHash": "7fe8d150618d2a6e",
+        "overallSimilarity": 100,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 18
+      }
+    ]
+  },
+  "Case H (No overlap)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "f69fd01bc52cd451",
+        "evidenceHash": "0605c6daf547394e",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      },
+      {
+        "run": 2,
+        "documentHash": "f69fd01bc52cd451",
+        "evidenceHash": "0605c6daf547394e",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      },
+      {
+        "run": 3,
+        "documentHash": "f69fd01bc52cd451",
+        "evidenceHash": "0605c6daf547394e",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      },
+      {
+        "run": 4,
+        "documentHash": "f69fd01bc52cd451",
+        "evidenceHash": "0605c6daf547394e",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      },
+      {
+        "run": 5,
+        "documentHash": "f69fd01bc52cd451",
+        "evidenceHash": "0605c6daf547394e",
+        "overallSimilarity": 0,
+        "totalParagraphMatches": 0,
+        "totalSentenceMatches": 0,
+        "totalPhraseMatches": 0
+      }
+    ]
+  },
+  "Case I (Multiple sources sharing phrase)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 2,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 3,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 4,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 5,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      }
+    ]
+  },
+  "Case J (Provider failure isolation simulation)": {
+    "isRepeatable": true,
+    "runsCount": 5,
+    "runs": [
+      {
+        "run": 1,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 2,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 3,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 4,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      },
+      {
+        "run": 5,
+        "documentHash": "a29b8ada291d6b38",
+        "evidenceHash": "78abe745996c77f1",
+        "overallSimilarity": 62.3,
+        "totalParagraphMatches": 1,
+        "totalSentenceMatches": 3,
+        "totalPhraseMatches": 67
+      }
+    ]
+  }
+}

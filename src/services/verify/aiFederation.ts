@@ -202,12 +202,25 @@ export class AIFederationService {
       findings.push(...generateDeterministicFallbackFindings(documentText, matches));
     }
 
+    // HOEOS Rule 16: Provider federation must NOT create evidence where no deterministic source exists
+    const verifiedSourceIds = new Set(matches.map(m => m.sourceId));
+    const validatedFindings = findings.map(f => {
+      if (matches.length === 0 || (f.sourceId && !verifiedSourceIds.has(f.sourceId))) {
+        return {
+          ...f,
+          requiresHumanReview: true,
+          explanation: `[AI_SUGGESTION_WITHOUT_DETERMINISTIC_EVIDENCE] ${f.explanation}`
+        };
+      }
+      return f;
+    });
+
     return {
       localAiStatus,
       gemmaStatus: gemmaResult.status,
       nemotronStatus: nemotronResult.status,
       geminiStatus: geminiResult.status,
-      findings
+      findings: validatedFindings
     };
   }
 }

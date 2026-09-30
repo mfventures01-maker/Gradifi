@@ -1,0 +1,12 @@
+{
+  "sameInputConsistent": true,
+  "whitespaceConsistent": true,
+  "noInflation": true,
+  "emptySafe": true,
+  "details": {
+    "singleSourceCoverage": 21.3,
+    "duplicateSourcesCoverage": 21.3,
+    "whitespaceCoverage": 21.3,
+    "emptyCoverage": 0
+  }
+}
