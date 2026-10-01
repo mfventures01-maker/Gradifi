@@ -257,21 +257,46 @@ Distributed machine learning frameworks require mathematical determinism to guar
 
     try {
       const res = await verifyCoreService.executeVerifyRun(documentText);
-      let vid = `VRF-${res.documentHash.slice(0, 8).toUpperCase()}${(res.evidenceHash || '').slice(0, 4).toUpperCase()}`;
-      try {
-        const { record } = await verificationPersistenceService.persistVerificationRecord(res);
-        if (record?.verification_id) {
-          vid = record.verification_id;
-        }
-      } catch (persistErr: any) {
-        console.warn('Persistence notice (using derived verification ID):', persistErr);
+
+      // Slim persistence payload — stays under Vercel's 4.5 MB function body limit.
+      const persistResult = {
+        documentHash: res.documentHash,
+        evidenceHash: res.evidenceHash,
+        engineVersion: res.engineVersion,
+        policyVersion: res.policyVersion,
+        overallSimilarity: res.overallSimilarity,
+        totalSourcesFound: res.totalSourcesFound
+      };
+
+      const persistEnvelope = {
+        findingCount: res.findings?.length ?? 0,
+        sourceCount: res.verifiedSources?.length ?? 0,
+        firstSourceIds: (res.verifiedSources ?? []).slice(0, 10).map(s => s.sourceId),
+        uniqueMatchedCoverage: res.uniqueMatchedCoverage ?? res.overallSimilarity,
+        highestSourceMatch: res.highestSourceMatch ?? 0,
+        timestamp: res.timestamp ?? new Date().toISOString()
+      };
+
+      const { record } = await verificationPersistenceService.persistVerificationRecord(
+        persistResult as any,
+        persistEnvelope as any
+      );
+
+      if (!record?.verification_id) {
+        throw new Error('Persistence returned no verification_id');
       }
-      setVerificationId(vid);
+
+      setVerificationId(record.verification_id);
       setResult(res);
       setCurrentStep('result');
     } catch (err: any) {
       console.error('Verification execution error:', err);
-      setUploadError(err?.message || 'Verification execution failed.');
+      setUploadError(
+        err?.message ||
+        'Verification completed locally but could not be committed to authoritative storage. Receipt cannot be issued.'
+      );
+      setVerificationId('');
+      setResult(null);
     } finally {
       setVerifying(false);
     }
