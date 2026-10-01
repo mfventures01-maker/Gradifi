@@ -1,0 +1,21 @@
+{
+  "commitSha": "e87610563f65ee11f5c5690dfcf96987a624cc18",
+  "timestamp": "2026-10-01T11:36:42.697Z",
+  "gate": "Gate F — Client-Side Payload Trim (OPTIMIZATION-D4)",
+  "route": "/api/verify/gemini and /api/verify/nemotron",
+  "measurements": {
+    "untrimmedPayloadBytes": 7014,
+    "untrimmedPayloadKb": "6.85",
+    "trimmedPayloadBytes": 4433,
+    "trimmedPayloadKb": "4.33",
+    "reductionPercentage": "36.8%",
+    "under6KbThreshold": true
+  },
+  "verificationCriteria": {
+    "maxDocumentCharsAllowed": 3000,
+    "maxMatchesAllowed": 5,
+    "maxSnippetLength": 500,
+    "meetsCriterion": true
+  },
+  "status": "PASS"
+}

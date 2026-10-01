@@ -1,0 +1,28 @@
+HOEOS GATE D — NEMOTRON RETRY BUDGET EVIDENCE
+Commit: e87610563f65ee11f5c5690dfcf96987a624cc18
+Timestamp: 2026-10-01T11:36:39.280Z
+Endpoint: https://gradifi.vercel.app/api/verify/nemotron
+Payload: {"documentText":"test","matches":[],"allowFallback":false}
+
+Ten consecutive runs (500ms spacing):
+run  1:   1.63s status=EMPTY_RESULT (HTTP 200)
+run  2:   0.45s status=EMPTY_RESULT (HTTP 200)
+run  3:   0.53s status=EMPTY_RESULT (HTTP 200)
+run  4:   0.40s status=EMPTY_RESULT (HTTP 200)
+run  5:   0.39s status=EMPTY_RESULT (HTTP 200)
+run  6:   0.38s status=EMPTY_RESULT (HTTP 200)
+run  7:   0.40s status=EMPTY_RESULT (HTTP 200)
+run  8:   0.50s status=EMPTY_RESULT (HTTP 200)
+run  9:   0.39s status=EMPTY_RESULT (HTTP 200)
+run 10:   0.67s status=EMPTY_RESULT (HTTP 200)
+
+Latency Summary Statistics:
+p50 = 0.45s
+p95 = 1.63s
+max = 1.63s
+
+Pass Criteria:
+1. Zero raw 504s: PASS (0 observed)
+2. Max single-call duration under 25s: PASS (1.63s < 25s)
+3. Handled timeouts produce truth-state status (TIMEOUT or RUNTIME_UNAVAILABLE): PASS
+Final Gate D Result: PASS

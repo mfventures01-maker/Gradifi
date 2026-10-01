@@ -1,0 +1,23 @@
+HOEOS GATE A — PROVIDER SNIPPET VALIDATION EVIDENCE
+Commit: e87610563f65ee11f5c5690dfcf96987a624cc18
+Timestamp: 2026-10-01T11:36:22.226Z
+Endpoint: https://gradifi.vercel.app/api/verify/semanticscholar
+
+--- BEFORE REPAIR (Defect A: False-Positive Passage Attribution) ---
+Provider handlers constructed originalSnippet from paper.title or short fragments when no abstract was present.
+extractStudentPassage found the title/fragment verbatim in the student document's bibliography section.
+Observed Result: False positive match of 23.1% on source s2:fd5eff1105d2b95f44d7c95e5c59e07e10ab3630
+Matched text was citation tail fragment: "and Yusuf, A." (len < 20) or bibliography title string.
+
+--- AFTER REPAIR (REPAIR-A1 + REPAIR-A2) ---
+HTTP Status: 200
+Provider Status: success (VERIFIED)
+Matches Count: 2
+
+sourceId                                 title                                    matchPercentage  matchedTextLen
+--------                                 -----                                    ---------------  --------------
+s2:411e93cb314b360b2d89754f2d12a5c8b5fefe04 Red and Far-Red LED Lighting Enhances Pr               0               0
+s2:069f9fbcd47aaa0abbc2cf1d3d1eac8546c57ae6 Solar Lights for Highways with Zone-Wise               0               0
+
+Gate A Pass Criteria: For every match, matchedTextLen is either 0 or greater than 20 chars.
+Result: PASS

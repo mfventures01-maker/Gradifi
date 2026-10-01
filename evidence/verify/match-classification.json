@@ -1,0 +1,36 @@
+{
+  "commitSha": "e87610563f65ee11f5c5690dfcf96987a624cc18",
+  "timestamp": "2026-10-01T11:36:26.816Z",
+  "gate": "Gate C — Deterministic Match Classification",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "allowedClassifications": [
+    "EXACT",
+    "NEAR_EXACT",
+    "STRUCTURAL",
+    "SEMANTIC"
+  ],
+  "matchesEvaluated": 2,
+  "matches": [
+    {
+      "sourceId": "s2:fd5eff1105d2b95f44d7c95e5c59e07e10ab3630",
+      "title": "Dark Activated Lighting System Using Phototransistors",
+      "matchPercentage": 92.4,
+      "relevanceScore": 93.7,
+      "matchType": "exact",
+      "matchCharacter": "EXACT",
+      "hasValidCharacterEnum": true
+    },
+    {
+      "sourceId": "openalex:W2111092972",
+      "title": "Photovoltaic Systems for Off-Grid Lighting",
+      "matchPercentage": 0.7,
+      "relevanceScore": 0.6,
+      "matchType": "citation",
+      "matchCharacter": "SEMANTIC",
+      "hasValidCharacterEnum": true
+    }
+  ],
+  "allMatchesCarryingValidCharacter": true,
+  "status": "PASS"
+}

@@ -1,0 +1,20 @@
+{
+  "commitSha": "e87610563f65ee11f5c5690dfcf96987a624cc18",
+  "timestamp": "2026-10-01T11:36:26.783Z",
+  "gate": "Gate B — Duplicate Elimination",
+  "sefaesDocumentVerificationId": "VRF-35CFE25D0AB0",
+  "before": {
+    "rawProviderMatchesCount": 10,
+    "uniqueSpansCount": 5,
+    "duplicateSpansIdentified": 5,
+    "issue": "Same source attributed twice when returned by multiple providers or canonical vs raw processing."
+  },
+  "after": {
+    "orchestratorInputMatchesCount": 3,
+    "orchestratorDeduplicatedMatchesCount": 2,
+    "deduplicationKeyFormula": "sourceId + \"::\" + (matchedText || originalSnippet).slice(0, 80)",
+    "duplicatesRemoved": 1,
+    "distinctPassagesPreserved": true
+  },
+  "status": "PASS"
+}
