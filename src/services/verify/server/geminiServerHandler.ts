@@ -102,11 +102,41 @@ export function generateDeterministicFallbackFindings(documentText: string, matc
   return findings;
 }
 
+const geminiResponseCache = new Map<string, { body: GeminiServerResponse; expiresAt: number }>();
+const GEMINI_CACHE_TTL_MS = 60_000;
+const GEMINI_CACHE_MAX = 20;
+
+function geminiCacheKey(documentText: string, matches: EvidenceMatch[]): string {
+  return `${documentText.slice(0, 100)}::${matches.length}`;
+}
+
+function getGeminiCache(key: string): GeminiServerResponse | null {
+  const entry = geminiResponseCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    geminiResponseCache.delete(key);
+    return null;
+  }
+  return entry.body;
+}
+
+function setGeminiCache(key: string, body: GeminiServerResponse): void {
+  geminiResponseCache.set(key, { body, expiresAt: Date.now() + GEMINI_CACHE_TTL_MS });
+  if (geminiResponseCache.size > GEMINI_CACHE_MAX) {
+    const firstKey = geminiResponseCache.keys().next().value;
+    if (firstKey) geminiResponseCache.delete(firstKey);
+  }
+}
+
 export async function handleGeminiServerReasoning(payload: GeminiServerRequestPayload): Promise<GeminiServerResponse> {
   const documentText = typeof payload?.documentText === 'string' ? payload.documentText : '';
   const matches = Array.isArray(payload?.matches) ? payload.matches : [];
   const validSourceIds = new Set(matches.map(m => m.sourceId));
   const allowFallback = Boolean(payload?.allowFallback);
+
+  const cacheKey = geminiCacheKey(documentText, matches);
+  const cached = getGeminiCache(cacheKey);
+  if (cached) return cached;
 
   const buildFailure = (status: ProviderTruthStatus, message: string): GeminiServerResponse => ({
     status,
@@ -213,13 +243,15 @@ INSTRUCTIONS:
 
     const responseText = response.text || '';
     if (!responseText.trim()) {
-      return {
+      const result: GeminiServerResponse = {
         status: 'EMPTY_RESULT',
         findings: [],
         fallback_used: false,
         fallbackUsed: false,
         modelProvider: 'gemini'
       };
+      setGeminiCache(cacheKey, result);
+      return result;
     }
 
     let parsed: any;
@@ -236,13 +268,15 @@ INSTRUCTIONS:
     }
 
     if (parsed.length === 0) {
-      return {
+      const result: GeminiServerResponse = {
         status: 'EMPTY_RESULT',
         findings: [],
         fallback_used: false,
         fallbackUsed: false,
         modelProvider: 'gemini'
       };
+      setGeminiCache(cacheKey, result);
+      return result;
     }
 
     let hasSchemaError = false;
@@ -264,13 +298,15 @@ INSTRUCTIONS:
       return buildFailure('SCHEMA_INVALID', 'Gemini response contained no structurally valid findings matching schema');
     }
 
-    return {
+    const result: GeminiServerResponse = {
       status: 'VERIFIED',
       findings: validatedFindings,
       fallback_used: false,
       fallbackUsed: false,
       modelProvider: 'gemini'
     };
+    setGeminiCache(cacheKey, result);
+    return result;
   } catch (error: any) {
     const msg = error?.message || String(error);
     const status = error?.status || error?.statusCode || error?.response?.status;

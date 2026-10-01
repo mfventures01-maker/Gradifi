@@ -86,55 +86,70 @@ export async function handleUnpaywallServerSearch(payload: UnpaywallServerReques
         const bestLocation = item.best_oa_location || {};
         const pdfUrl = bestLocation.url_for_pdf || bestLocation.url || item.doi_url || `https://doi.org/${doi}`;
 
-        const originalSnippet = bestLocation.evidence ? `Open Access Evidence: ${bestLocation.evidence}` : title;
-        const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
-        const passage = extractStudentPassage(studentText, originalSnippet);
-        const matchedText = passage ? passage.text : '';
-        const matchPercentage = (passage && studentText.length > 0)
-          ? Math.round((passage.text.length / studentText.length) * 100)
-          : 0;
-        const matchType = passage
-          ? (passage.text === originalSnippet ? 'exact' : 'lexical')
-          : 'citation';
+        const rawSnippet = typeof bestLocation.evidence === 'string' ? bestLocation.evidence : '';
+        const matches: EvidenceMatch[] = [];
 
-        const match: EvidenceMatch = {
-          sourceId: `unpaywall:${doi}`,
-          title,
-          authors: authors.length > 0 ? authors : ['Unknown Author'],
-          url: pdfUrl,
-          doi,
-          matchedText,
-          matchedTextStart: passage?.start,
-          matchedTextEnd: passage?.end,
-          originalSnippet,
-          matchType,
-          matchPercentage,
-          relevanceScore: 0,   // not yet populated — see HOEOS-RELEVANCE
-          provenance: {
-            provider: 'unpaywall',
-            providerRecordId: doi,
-            retrievedAt: responseTimestamp,
-            sourceType: 'unpaywall_oa_record',
-            sourceUrl: pdfUrl,
+        // A source passage must be long enough to contain a real overlap.
+        // Titles, fragments, and truncated metadata strings are not source passages.
+        if (rawSnippet.trim().length >= 200) {
+          // Trim at a sentence boundary to prevent mid-citation truncation.
+          let originalSnippet = rawSnippet.trim().slice(0, 500);
+          const lastPeriod = originalSnippet.lastIndexOf('. ');
+          if (lastPeriod > 300) {
+            originalSnippet = originalSnippet.slice(0, lastPeriod + 1);
+          }
+
+          const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
+          const passage = extractStudentPassage(studentText, originalSnippet);
+          const matchedText = passage ? passage.text : '';
+          const matchPercentage = (passage && studentText.length > 0)
+            ? Math.round((passage.text.length / studentText.length) * 100)
+            : 0;
+          const matchType = passage
+            ? (passage.text === originalSnippet ? 'exact' : 'lexical')
+            : 'citation';
+
+          const match: EvidenceMatch = {
+            sourceId: `unpaywall:${doi}`,
             title,
             authors: authors.length > 0 ? authors : ['Unknown Author'],
+            url: pdfUrl,
             doi,
-            publishedYear: item.year,
-            publisher: item.publisher || item.journal_name,
-            provenanceState: 'VERIFIED',
-            query: rawQuery,
-            requestTimestamp,
-            responseTimestamp,
-            correlationId,
-            fineGrainedStatus: 'VERIFIED'
-          }
-        };
+            matchedText,
+            matchedTextStart: passage?.start,
+            matchedTextEnd: passage?.end,
+            originalSnippet,
+            matchType,
+            matchPercentage,
+            relevanceScore: 0,   // not yet populated — see HOEOS-RELEVANCE
+            provenance: {
+              provider: 'unpaywall',
+              providerRecordId: doi,
+              retrievedAt: responseTimestamp,
+              sourceType: 'unpaywall_oa_record',
+              sourceUrl: pdfUrl,
+              title,
+              authors: authors.length > 0 ? authors : ['Unknown Author'],
+              doi,
+              publishedYear: item.year,
+              publisher: item.publisher || item.journal_name,
+              provenanceState: 'VERIFIED',
+              query: rawQuery,
+              requestTimestamp,
+              responseTimestamp,
+              correlationId,
+              fineGrainedStatus: 'VERIFIED'
+            }
+          };
+
+          matches.push(match);
+        }
 
         return {
           providerId: 'unpaywall',
           status: 'success',
-          fineGrainedStatus: 'VERIFIED',
-          matches: [match],
+          fineGrainedStatus: matches.length > 0 ? 'VERIFIED' : 'EMPTY_RESULT',
+          matches,
           rawCount: 1,
           requestTimestamp,
           responseTimestamp,

@@ -190,10 +190,27 @@ export class VerifyCoreService {
       fineGrainedStatuses['semanticscholar'] = 'REQUEST_FAILED';
     }
 
+    // Deduplicate matches on (sourceId, matchedText prefix).
+    // The same source may be returned by multiple providers, and the same
+    // document may be processed in both raw and canonical form. Both cases
+    // produce duplicate match entries for the same underlying evidence.
+    const dedupeKey = (m: any): string => {
+      const text = (m.matchedText || m.originalSnippet || '').slice(0, 80);
+      return `${m.sourceId}::${text}`;
+    };
+
+    const seenMatches = new Set<string>();
+    const deduplicatedMatches = rawMatches.filter(m => {
+      const key = dedupeKey(m);
+      if (seenMatches.has(key)) return false;
+      seenMatches.add(key);
+      return true;
+    });
+
     // Run Pure Deterministic Evidence Engine
     const engineOutput = analyzeDocumentEvidence({
       documentText,
-      candidateMatches: rawMatches
+      candidateMatches: deduplicatedMatches
     });
 
     // Run AI Federation (Nemotron, Gemma, Gemini)

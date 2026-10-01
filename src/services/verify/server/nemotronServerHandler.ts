@@ -24,20 +24,50 @@ export interface NemotronServerResponse {
 }
 
 const RETRIABLE_STATUSES = new Set([429, 502, 503, 504]);
-const MAX_ATTEMPTS = 3;
-const BACKOFF_MS = [1000, 2000, 4000];
+
+// Retry budget must fit inside Vercel's 30-second serverless gateway.
+// Worst case: 8s + 0.5s + 8s = 16.5s, well under the edge timeout.
+const MAX_ATTEMPTS = 2;
+const BACKOFF_MS = [500];
+const PER_ATTEMPT_TIMEOUT_MS = 8000;
+
+const nemotronResponseCache = new Map<string, { body: NemotronServerResponse; expiresAt: number }>();
+const NEMOTRON_CACHE_TTL_MS = 60_000;
+const NEMOTRON_CACHE_MAX = 20;
+
+function nemotronCacheKey(documentText: string, matches: EvidenceMatch[]): string {
+  return `${documentText.slice(0, 100)}::${matches.length}`;
+}
+
+function getNemotronCache(key: string): NemotronServerResponse | null {
+  const entry = nemotronResponseCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    nemotronResponseCache.delete(key);
+    return null;
+  }
+  return entry.body;
+}
+
+function setNemotronCache(key: string, body: NemotronServerResponse): void {
+  nemotronResponseCache.set(key, { body, expiresAt: Date.now() + NEMOTRON_CACHE_TTL_MS });
+  if (nemotronResponseCache.size > NEMOTRON_CACHE_MAX) {
+    const firstKey = nemotronResponseCache.keys().next().value;
+    if (firstKey) nemotronResponseCache.delete(firstKey);
+  }
+}
 
 export async function callNvidiaWithRetry(
   url: string,
   options: RequestInit,
-  maxAttempts = 3
+  maxAttempts = MAX_ATTEMPTS
 ): Promise<Response> {
   let lastError: unknown = null;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const resp = await fetch(url, {
         ...options,
-        signal: AbortSignal.timeout(45000)
+        signal: AbortSignal.timeout(PER_ATTEMPT_TIMEOUT_MS)
       });
       if (!RETRIABLE_STATUSES.has(resp.status)) {
         return resp;
@@ -48,7 +78,7 @@ export async function callNvidiaWithRetry(
     }
     if (attempt < maxAttempts) {
       await new Promise(r =>
-        setTimeout(r, BACKOFF_MS[attempt - 1] ?? 1000)
+        setTimeout(r, BACKOFF_MS[attempt - 1] ?? 500)
       );
     }
   }
@@ -60,6 +90,10 @@ export async function handleNemotronServerReasoning(payload: NemotronServerReque
   const matches = Array.isArray(payload?.matches) ? payload.matches : [];
   const validSourceIds = new Set(matches.map(m => m.sourceId));
   const allowFallback = Boolean(payload?.allowFallback);
+
+  const cacheKey = nemotronCacheKey(documentText, matches);
+  const cached = getNemotronCache(cacheKey);
+  if (cached) return cached;
 
   const buildFailure = (status: ProviderTruthStatus, message: string): NemotronServerResponse => ({
     status,
@@ -194,13 +228,15 @@ Do NOT wrap in markdown backticks. Do NOT include any intro or outro text. Outpu
     }
 
     if (parsed.length === 0) {
-      return {
+      const result: NemotronServerResponse = {
         status: 'EMPTY_RESULT',
         findings: [],
         fallback_used: false,
         fallbackUsed: false,
         modelProvider: 'nemotron'
       };
+      setNemotronCache(cacheKey, result);
+      return result;
     }
 
     let hasSchemaError = false;
@@ -222,13 +258,15 @@ Do NOT wrap in markdown backticks. Do NOT include any intro or outro text. Outpu
       return buildFailure('SCHEMA_INVALID', 'Nemotron JSON contained no valid findings matching schema');
     }
 
-    return {
+    const result: NemotronServerResponse = {
       status: 'VERIFIED',
       findings: validatedFindings,
       fallback_used: false,
       fallbackUsed: false,
       modelProvider: 'nemotron'
     };
+    setNemotronCache(cacheKey, result);
+    return result;
   } catch (error: any) {
     const msg = error?.message || String(error);
     const status = error?.status || error?.statusCode || error?.response?.status;

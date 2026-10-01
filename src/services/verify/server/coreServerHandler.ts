@@ -107,8 +107,21 @@ export async function handleCoreServerSearch(payload: CoreServerRequestPayload):
             : [];
           
           const downloadUrl = item.downloadUrl || item.links?.[0]?.url || (doi ? `https://doi.org/${doi}` : '#');
-          const abstractSnippet = typeof item.abstract === 'string' ? item.abstract : title;
-          const originalSnippet = abstractSnippet.slice(0, 300);
+          const rawSnippet = typeof item.abstract === 'string' ? item.abstract : '';
+
+          // A source passage must be long enough to contain a real overlap.
+          // Titles, fragments, and truncated metadata strings are not source passages.
+          if (rawSnippet.trim().length < 200) {
+            continue; // skip this candidate; do not score it
+          }
+
+          // Trim at a sentence boundary to prevent mid-citation truncation.
+          let originalSnippet = rawSnippet.trim().slice(0, 500);
+          const lastPeriod = originalSnippet.lastIndexOf('. ');
+          if (lastPeriod > 300) {
+            originalSnippet = originalSnippet.slice(0, lastPeriod + 1);
+          }
+
           const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
           const passage = extractStudentPassage(studentText, originalSnippet);
           const matchedText = passage ? passage.text : '';

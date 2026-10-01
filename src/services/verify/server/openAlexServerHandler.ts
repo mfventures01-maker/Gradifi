@@ -99,7 +99,9 @@ export async function handleOpenAlexServerSearch(payload: OpenAlexServerRequestP
         .filter((name: string | undefined): name is string => Boolean(name));
 
       let abstractSnippet = '';
-      if (item.abstract_inverted_index) {
+      if (typeof item.abstract === 'string' && item.abstract.trim()) {
+        abstractSnippet = item.abstract.trim();
+      } else if (item.abstract_inverted_index) {
         const words: [string, number][] = [];
         for (const [word, positions] of Object.entries(item.abstract_inverted_index as Record<string, number[]>)) {
           for (const pos of positions) {
@@ -107,10 +109,24 @@ export async function handleOpenAlexServerSearch(payload: OpenAlexServerRequestP
           }
         }
         words.sort((a, b) => a[1] - b[1]);
-        abstractSnippet = words.slice(0, 100).map(w => w[0]).join(' ');
+        abstractSnippet = words.slice(0, 120).map(w => w[0]).join(' ');
       }
 
-      const originalSnippet = abstractSnippet || item.title || '';
+      const rawSnippet = abstractSnippet;
+
+      // A source passage must be long enough to contain a real overlap.
+      // Titles, fragments, and truncated metadata strings are not source passages.
+      if (rawSnippet.trim().length < 200) {
+        continue; // skip this candidate; do not score it
+      }
+
+      // Trim at a sentence boundary to prevent mid-citation truncation.
+      let originalSnippet = rawSnippet.trim().slice(0, 500);
+      const lastPeriod = originalSnippet.lastIndexOf('. ');
+      if (lastPeriod > 300) {
+        originalSnippet = originalSnippet.slice(0, lastPeriod + 1);
+      }
+
       const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
       const passage = extractStudentPassage(studentText, originalSnippet);
       const matchedText = passage ? passage.text : '';

@@ -89,7 +89,22 @@ export async function handleCrossrefServerSearch(payload: CrossrefServerRequestP
           const containerTitle = item['container-title']?.[0] || '';
           const publishedYear = item.published?.['date-parts']?.[0]?.[0];
           const isbn = Array.isArray(item.ISBN) ? item.ISBN[0] : undefined;
-          const originalSnippet = containerTitle ? `${title} (${containerTitle})` : title;
+          let rawSnippet = typeof item.abstract === 'string' ? item.abstract : '';
+          rawSnippet = rawSnippet.replace(/<[^>]*>/g, '').trim();
+
+          // A source passage must be long enough to contain a real overlap.
+          // Titles, fragments, and truncated metadata strings are not source passages.
+          if (rawSnippet.length < 200) {
+            continue; // skip this candidate; do not score it
+          }
+
+          // Trim at a sentence boundary to prevent mid-citation truncation.
+          let originalSnippet = rawSnippet.slice(0, 500);
+          const lastPeriod = originalSnippet.lastIndexOf('. ');
+          if (lastPeriod > 300) {
+            originalSnippet = originalSnippet.slice(0, lastPeriod + 1);
+          }
+
           const studentText = (typeof payload?.documentText === 'string' && payload.documentText.trim()) || rawQuery;
           const passage = extractStudentPassage(studentText, originalSnippet);
           const matchedText = passage ? passage.text : '';

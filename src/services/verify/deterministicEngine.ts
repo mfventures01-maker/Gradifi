@@ -6,6 +6,8 @@
 
 import {
   EvidenceMatch,
+  MatchCharacter,
+  AttributionStatus,
   ProvenanceState,
   CanonicalAnalysisDocument,
   SimilarityAnalysisResult,
@@ -574,13 +576,33 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
     }
 
     // Reconstruct EvidenceMatch with derived deterministic values
-    const exactMatchInfo = calculateExactPhraseMatch(input.documentText, candidateSnippet);
+    const exactMatch = calculateExactPhraseMatch(input.documentText, candidateSnippet);
+    const ngramOverlap = calculateNGramOverlap(input.documentText, candidateSnippet, 3) / 100;
+    const relevanceScore = Math.min(100, Math.round((sourceCoverage * 0.5 + highestSentenceMatch * 0.5) * 10) / 10);
+
+    // Deterministic match classification.
+    // EXACT       — byte-for-byte identical token sequence.
+    // NEAR_EXACT  — token overlap >= 90% with same ordering.
+    // STRUCTURAL  — same syntactic shape, < 90% token overlap.
+    // SEMANTIC    — below structural threshold; retained for AI advisory only.
+    let matchCharacter: MatchCharacter;
+    if (exactMatch.length > 0 && exactMatch.length === candidateSnippet.length) {
+      matchCharacter = 'EXACT';
+    } else if (ngramOverlap >= 0.9) {
+      matchCharacter = 'NEAR_EXACT';
+    } else if (ngramOverlap >= 0.5) {
+      matchCharacter = 'STRUCTURAL';
+    } else {
+      matchCharacter = 'SEMANTIC';
+    }
+
     const updatedMatch: EvidenceMatch = {
       ...candidate,
-      matchedText: exactMatchInfo.matchedText || candidateSnippet,
-      matchType: exactMatchInfo.length > 20 ? 'exact' : (sourceCoverage > 10 ? 'lexical' : 'citation'),
+      matchedText: exactMatch.matchedText || '',
+      matchType: exactMatch.length > 20 ? 'exact' : (aggregateSourceScore > 20 ? 'lexical' : 'citation'),
+      matchCharacter,
       matchPercentage: aggregateSourceScore,
-      relevanceScore: Math.min(100, Math.round((sourceCoverage * 0.5 + highestSentenceMatch * 0.5) * 10) / 10),
+      relevanceScore,
       provenance: {
         ...candidate.provenance,
         provenanceState

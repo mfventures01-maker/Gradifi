@@ -101,6 +101,14 @@ export class AIFederationService {
       const isBrowser = typeof window !== 'undefined';
 
       if (isBrowser) {
+        const slimMatches = matches.slice(0, 5).map(m => ({
+          sourceId: m.sourceId,
+          title: m.title,
+          authors: m.authors,
+          doi: m.doi,
+          originalSnippet: (m.originalSnippet || '').slice(0, 500)
+        }));
+
         const response = await fetch('/api/verify/nemotron', {
           method: 'POST',
           signal: AbortSignal.timeout(5000),
@@ -108,7 +116,11 @@ export class AIFederationService {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ documentText, matches, allowFallback })
+          body: JSON.stringify({
+            documentText: documentText.slice(0, 3000),
+            matches: slimMatches,
+            allowFallback
+          })
         });
 
         if (!response.ok) {
@@ -164,6 +176,14 @@ export class AIFederationService {
       const isBrowser = typeof window !== 'undefined';
 
       if (isBrowser) {
+        const slimMatches = matches.slice(0, 5).map(m => ({
+          sourceId: m.sourceId,
+          title: m.title,
+          authors: m.authors,
+          doi: m.doi,
+          originalSnippet: (m.originalSnippet || '').slice(0, 500)
+        }));
+
         const response = await fetch('/api/verify/gemini', {
           method: 'POST',
           signal: AbortSignal.timeout(5000),
@@ -171,7 +191,11 @@ export class AIFederationService {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ documentText, matches, allowFallback })
+          body: JSON.stringify({
+            documentText: documentText.slice(0, 3000),
+            matches: slimMatches,
+            allowFallback
+          })
         });
 
         if (!response.ok) {

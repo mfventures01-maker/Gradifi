@@ -76,26 +76,33 @@ export function extractStudentPassage(
   const trimmedSnippet = sourceSnippet.trim();
   if (!trimmedSnippet) return null;
 
-  // 1. Exact raw substring shortcut
-  const rawIdx = studentText.indexOf(trimmedSnippet);
-  if (rawIdx !== -1) {
-    return {
-      text: studentText.slice(rawIdx, rawIdx + trimmedSnippet.length),
-      start: rawIdx,
-      end: rawIdx + trimmedSnippet.length
-    };
-  }
+  // Exact-substring shortcuts require a minimum snippet length.
+  // Below this threshold, a "match" is more likely to be a coincidental
+  // fragment (a citation tail, a common phrase) than a real passage.
+  const MIN_EXACT_SNIPPET_LENGTH = 120;
 
-  // 2. Exact case-insensitive substring shortcut
-  const lowerDoc = studentText.toLowerCase();
-  const lowerSnippet = trimmedSnippet.toLowerCase();
-  const lowerIdx = lowerDoc.indexOf(lowerSnippet);
-  if (lowerIdx !== -1) {
-    return {
-      text: studentText.slice(lowerIdx, lowerIdx + trimmedSnippet.length),
-      start: lowerIdx,
-      end: lowerIdx + trimmedSnippet.length
-    };
+  if (trimmedSnippet.length >= MIN_EXACT_SNIPPET_LENGTH) {
+    // 1. Exact raw substring shortcut
+    const rawIdx = studentText.indexOf(trimmedSnippet);
+    if (rawIdx !== -1) {
+      return {
+        text: studentText.slice(rawIdx, rawIdx + trimmedSnippet.length),
+        start: rawIdx,
+        end: rawIdx + trimmedSnippet.length
+      };
+    }
+
+    // 2. Exact case-insensitive substring shortcut
+    const lowerDoc = studentText.toLowerCase();
+    const lowerSnippet = trimmedSnippet.toLowerCase();
+    const lowerIdx = lowerDoc.indexOf(lowerSnippet);
+    if (lowerIdx !== -1) {
+      return {
+        text: studentText.slice(lowerIdx, lowerIdx + trimmedSnippet.length),
+        start: lowerIdx,
+        end: lowerIdx + trimmedSnippet.length
+      };
+    }
   }
 
   // 3. Tokenized sliding window Jaccard overlap

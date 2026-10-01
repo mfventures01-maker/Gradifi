@@ -84,6 +84,18 @@ export interface ProviderSearchInput {
   limit?: number;
 }
 
+export type MatchCharacter =
+  | 'EXACT'
+  | 'NEAR_EXACT'
+  | 'STRUCTURAL'
+  | 'SEMANTIC';
+
+export type AttributionStatus =
+  | 'ATTRIBUTED_QUOTED'
+  | 'ATTRIBUTED_CITED'
+  | 'POSSIBLY_UNATTRIBUTED'
+  | 'CANNOT_DETERMINE';
+
 export interface EvidenceMatch {
   sourceId: string;
   title: string;
@@ -96,6 +108,8 @@ export interface EvidenceMatch {
   matchedTextEnd?: number;
   originalSnippet: string;
   matchType: 'exact' | 'lexical' | 'semantic' | 'citation';
+  matchCharacter?: MatchCharacter;
+  attributionStatus?: AttributionStatus;
   matchPercentage: number;
   relevanceScore: number;
   provenance: ProviderProvenance;
