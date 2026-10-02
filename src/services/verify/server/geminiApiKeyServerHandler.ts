@@ -18,7 +18,7 @@ export type { GeminiServerRequestPayload, GeminiServerResponse };
 const RETRIABLE_STATUSES = new Set([429, 502, 503, 504]);
 const MAX_ATTEMPTS = 2;
 const BACKOFF_MS = [600];
-const PER_ATTEMPT_TIMEOUT_MS = 8000;
+const PER_ATTEMPT_TIMEOUT_MS = 14000;
 const REQUESTED_MODEL = 'gemini-3.5-flash';
 const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${REQUESTED_MODEL}:generateContent`;
 
