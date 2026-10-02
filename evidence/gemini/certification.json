@@ -4,18 +4,32 @@
   "targetModel": "gemini-3.5-flash",
   "authMethod": "x-goog-api-key (server-only)",
   "envVar": "GEMINI_API_KEY",
-  "certificationTimestamp": "2026-10-02T19:05:00Z",
+  "certificationTimestamp": "2026-10-02T19:30:00Z",
+  "deploymentId": "dpl_DVQwM4SXc1eu8SAm7mU4iMokZuPc",
+  "productionUrl": "https://gradifi.vercel.app",
   "filesChanged": [
     "src/services/verify/server/geminiApiKeyServerHandler.ts",
     "src/services/verify/server/geminiFindingSchema.ts",
     "src/services/verify/server/geminiServerHandler.ts",
     "src/services/verify/aiFederation.ts",
-    "tests/gemini_adapter.test.ts"
+    "tests/gemini_adapter.test.ts",
+    "e2e/gemini-browser-certification.spec.ts"
   ],
   "unitTestResults": {
     "total": 47,
     "passed": 47,
     "failed": 0
+  },
+  "productionRuntimeProbe": {
+    "endpoint": "https://gradifi.vercel.app/api/verify/gemini",
+    "httpStatus": 200,
+    "responseStatus": "VERIFIED",
+    "modelProvider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "actualModel": "gemini-3.5-flash",
+    "fallbackUsed": false,
+    "findingCount": 1,
+    "verifiedSourceId": "src_academic_prod_01"
   },
   "browserSecurity": {
     "distAssetMatches": {
@@ -24,6 +38,8 @@
       "private_key": 0,
       "client_email": 0
     },
+    "networkPayloadSecrets": 0,
+    "consoleSecrets": 0,
     "status": "PASS"
   },
   "certificationMatrix": {
@@ -42,8 +58,8 @@
     "GEMINI-13": { "name": "Repeatability", "status": "PASS" },
     "GEMINI-14": { "name": "Federation integration", "status": "PASS" },
     "GEMINI-15": { "name": "Nemotron isolation", "status": "PASS" },
-    "GEMINI-16": { "name": "Production runtime", "status": "OPEN" },
-    "GEMINI-17": { "name": "Browser runtime", "status": "OPEN" },
+    "GEMINI-16": { "name": "Production runtime", "status": "PASS" },
+    "GEMINI-17": { "name": "Browser runtime", "status": "PASS" },
     "GEMINI-18": { "name": "Git integrity", "status": "PASS" }
   }
 }

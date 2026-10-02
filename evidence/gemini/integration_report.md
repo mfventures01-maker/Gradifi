@@ -4,11 +4,15 @@
 **Baseline Commit:** `399ad488bc15d86863739b35ca9e32ef7e47895a`  
 **Target Model:** `gemini-3.5-flash`  
 **Authentication Header:** `x-goog-api-key` (server-side secret only)  
+**Deployment ID:** `dpl_DVQwM4SXc1eu8SAm7mU4iMokZuPc`  
+**Production URL:** `https://gradifi.vercel.app`  
 
 ---
 
 ## 1. Executive Summary
 The Gemini reasoning integration was executed under strict HOEOS guidelines. The newly verified Gemini API key (`GEMINI_API_KEY`) was integrated as a dedicated server-only adapter (`geminiApiKeyServerHandler.ts`) targeting model `gemini-3.5-flash`. The adapter respects existing contracts, preserves deterministic SIM-V1 metrics, provides fail-closed provider truth states, and ensures absolute exclusion of credentials from client bundles.
+
+Both direct server runtime probes and full live browser Playwright certification suites have verified the implementation end-to-end against production.
 
 ---
 
@@ -52,18 +56,32 @@ Total: 47/47 PASS in `tests/gemini_adapter.test.ts`
 
 ---
 
-## 4. Browser Security Verification (Phase 11)
-Automated scan of `dist/` production build assets for credentials and patterns:
-- `GEMINI_API_KEY`: 0 matches
-- `x-goog-api-key`: 0 matches
-- `private_key`: 0 matches
-- `client_email`: 0 matches
-
-Credentials exist strictly in server-side configuration (`.env.local` locally, Vercel Production Environment Secrets in cloud).
+## 4. Production Runtime Verification (Phase 17)
+Direct probe executed against live endpoint `https://gradifi.vercel.app/api/verify/gemini`:
+- **HTTP Status**: 200
+- **Response Status**: `VERIFIED`
+- **Model Provider**: `gemini`
+- **Requested Model**: `gemini-3.5-flash`
+- **Actual Model**: `gemini-3.5-flash`
+- **Fallback Used**: `false`
+- **Finding Count**: 1
+- **Verified Source ID**: `src_academic_prod_01` (synthesized strictly from provided match)
+- **Finding Type**: `semantic_overlap`
+- **Severity**: `low`
 
 ---
 
-## 5. Certification Matrix
+## 5. Browser Runtime & Secret Safety (Phase 11 & Phase 19)
+Automated Playwright browser test (`e2e/gemini-browser-certification.spec.ts`) against `https://gradifi.vercel.app/verify`:
+- Page load: `PASS`
+- Deterministic multi-metric panel visibility: `PASS` (Unique Matched Coverage & Highest Source Match)
+- Network payload secret inspection: `PASS` (0 occurrences of `x-goog-api-key` or key fragments)
+- Browser console secret inspection: `PASS` (0 occurrences of credentials)
+- Client build inspection (`dist/`): `PASS` (0 matches for `GEMINI_API_KEY`, `x-goog-api-key`, `private_key`, `client_email`)
+
+---
+
+## 6. Certification Matrix
 | Gate | Description | Status |
 |---|---|---|
 | GEMINI-01 | Provider direct inference | PASS |
@@ -81,6 +99,6 @@ Credentials exist strictly in server-side configuration (`.env.local` locally, V
 | GEMINI-13 | Repeatability | PASS |
 | GEMINI-14 | Federation integration | PASS |
 | GEMINI-15 | Nemotron isolation | PASS |
-| GEMINI-16 | Production runtime | OPEN |
-| GEMINI-17 | Browser runtime | OPEN |
+| GEMINI-16 | Production runtime | PASS |
+| GEMINI-17 | Browser runtime | PASS |
 | GEMINI-18 | Git integrity | PASS |
