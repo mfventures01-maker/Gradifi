@@ -5,7 +5,7 @@
  */
 
 import { AIFinding, EvidenceMatch, ProviderTruthStatus } from './types.js';
-import { handleGeminiServerReasoning, generateDeterministicFallbackFindings, validateAIFindingSchema } from './server/geminiServerHandler.js';
+import { generateDeterministicFallbackFindings, validateAIFindingSchema } from './server/geminiFindingSchema.js';
 import { handleNemotronServerReasoning } from './server/nemotronServerHandler.js';
 import { handleGemmaServerReasoning } from './server/gemmaServerHandler.js';
 
@@ -220,6 +220,8 @@ export class AIFederationService {
           fallbackReason: data.fallbackReason
         };
       } else {
+        const handlerPath = './server/geminiServerHandler.js';
+        const { handleGeminiServerReasoning } = await import(/* @vite-ignore */ handlerPath);
         return handleGeminiServerReasoning({ documentText, matches, allowFallback });
       }
     } catch (err: any) {

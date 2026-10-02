@@ -20,6 +20,9 @@ export interface GeminiServerResponse {
   fallbackReason?: string;
   errorMessage?: string;
   modelProvider?: string;
+  requestedModel?: string;
+  actualModel?: string;
+  latencyMs?: number;
 }
 
 export function validateAIFindingSchema(raw: any): AIFinding | null {
@@ -129,6 +132,13 @@ function setGeminiCache(key: string, body: GeminiServerResponse): void {
 }
 
 export async function handleGeminiServerReasoning(payload: GeminiServerRequestPayload): Promise<GeminiServerResponse> {
+  // Delegate to API-key adapter when server-side GEMINI_API_KEY is present
+  if (process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('YOUR_')) {
+    const handlerPath = './geminiApiKeyServerHandler.js';
+    const { handleGeminiApiKeyServerReasoning } = await import(/* @vite-ignore */ handlerPath);
+    return handleGeminiApiKeyServerReasoning(payload);
+  }
+
   const documentText = typeof payload?.documentText === 'string' ? payload.documentText : '';
   const matches = Array.isArray(payload?.matches) ? payload.matches : [];
   const validSourceIds = new Set(matches.map(m => m.sourceId));

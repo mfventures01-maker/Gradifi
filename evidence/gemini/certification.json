@@ -1,0 +1,49 @@
+{
+  "governingStandard": "HOEOS (House of Oroh Engineering Operating System)",
+  "baselineCommit": "399ad488bc15d86863739b35ca9e32ef7e47895a",
+  "targetModel": "gemini-3.5-flash",
+  "authMethod": "x-goog-api-key (server-only)",
+  "envVar": "GEMINI_API_KEY",
+  "certificationTimestamp": "2026-10-02T19:05:00Z",
+  "filesChanged": [
+    "src/services/verify/server/geminiApiKeyServerHandler.ts",
+    "src/services/verify/server/geminiFindingSchema.ts",
+    "src/services/verify/server/geminiServerHandler.ts",
+    "src/services/verify/aiFederation.ts",
+    "tests/gemini_adapter.test.ts"
+  ],
+  "unitTestResults": {
+    "total": 47,
+    "passed": 47,
+    "failed": 0
+  },
+  "browserSecurity": {
+    "distAssetMatches": {
+      "GEMINI_API_KEY": 0,
+      "x-goog-api-key": 0,
+      "private_key": 0,
+      "client_email": 0
+    },
+    "status": "PASS"
+  },
+  "certificationMatrix": {
+    "GEMINI-01": { "name": "Provider direct inference", "status": "PASS" },
+    "GEMINI-02": { "name": "Server-only credential boundary", "status": "PASS" },
+    "GEMINI-03": { "name": "Model identity", "status": "PASS" },
+    "GEMINI-04": { "name": "Schema validation", "status": "PASS" },
+    "GEMINI-05": { "name": "Source validation", "status": "PASS" },
+    "GEMINI-06": { "name": "Truth-state mapping", "status": "PASS" },
+    "GEMINI-07": { "name": "Empty-result handling", "status": "PASS" },
+    "GEMINI-08": { "name": "Fallback transparency", "status": "PASS" },
+    "GEMINI-09": { "name": "Cache integrity", "status": "PASS" },
+    "GEMINI-10": { "name": "Deterministic authority isolation", "status": "PASS" },
+    "GEMINI-11": { "name": "Browser secret exclusion", "status": "PASS" },
+    "GEMINI-12": { "name": "Failure injection", "status": "PASS" },
+    "GEMINI-13": { "name": "Repeatability", "status": "PASS" },
+    "GEMINI-14": { "name": "Federation integration", "status": "PASS" },
+    "GEMINI-15": { "name": "Nemotron isolation", "status": "PASS" },
+    "GEMINI-16": { "name": "Production runtime", "status": "OPEN" },
+    "GEMINI-17": { "name": "Browser runtime", "status": "OPEN" },
+    "GEMINI-18": { "name": "Git integrity", "status": "PASS" }
+  }
+}
