@@ -286,29 +286,77 @@ export async function auditPipeline(
   // =========================================================================
   const s8Start = Date.now();
   const s8StartedAt = new Date(s8Start).toISOString();
-  let persistenceStatus: 'PASS' | 'PARTIAL' | 'FAIL' = 'PASS';
+  let persistenceStatus: 'PASS' | 'PARTIAL' | 'FAIL' = 'FAIL';
   let persistenceDetail = '';
   let persistedVid = '';
 
   if (verifyResult) {
     try {
-      const { record, status } = await verificationPersistenceService.persistVerificationRecord(verifyResult);
-      persistedVid = record?.verification_id || '';
-      persistenceDetail = `Verification record persisted: id=${persistedVid}, status=${status}.`;
-    } catch (err: any) {
-      if (err?.name === 'VerificationConflictError' || err?.message?.includes('Conflicting')) {
-        persistedVid = `VRF-${verifyResult.documentHash.slice(0, 12).toUpperCase()}`;
-        persistenceDetail = `Verification conflict handled safely (idempotent record exists): id=${persistedVid}.`;
-        persistenceStatus = 'PASS';
-      } else {
-        persistedVid = `VRF-${verifyResult.documentHash.slice(0, 12).toUpperCase()}`;
-        persistenceDetail = `Persistence fallback engaged: ${err?.message || 'Remote store offline'}.`;
-        persistenceStatus = 'PASS';
+      const persistResult = {
+        documentHash: verifyResult.documentHash,
+        evidenceHash: verifyResult.evidenceHash,
+        engineVersion: verifyResult.engineVersion,
+        policyVersion: verifyResult.policyVersion,
+        totalSourcesFound: verifyResult.totalSourcesFound,
+      };
+
+      const persistEnvelope = {
+        findingCount: verifyResult.findings?.length || 0,
+        sourceCount: verifyResult.verifiedSources?.length || 0,
+        firstSourceIds: (verifyResult.verifiedSources || [])
+          .slice(0, 10)
+          .map(
+            (source: any) =>
+              source.id ||
+              source.sourceId ||
+              source.provenance?.sourceId
+          )
+          .filter(Boolean),
+
+        uniqueMatchedCoverage:
+          verifyResult.engineOutput?.aggregation?.uniqueMatchedCoverage ??
+          verifyResult.uniqueMatchedCoverage ??
+          null,
+
+        highestSourceMatch:
+          verifyResult.engineOutput?.aggregation?.highestSourceMatch ??
+          verifyResult.highestSourceMatch ??
+          null,
+
+        timestamp: new Date().toISOString(),
+      };
+
+      const { record, status } =
+        await verificationPersistenceService.persistVerificationRecord(
+          persistResult as any,
+          persistEnvelope as any
+        );
+
+      if (!record?.verification_id) {
+        throw new Error(
+          'Persistence returned no authoritative verification_id'
+        );
       }
+
+      persistedVid = record.verification_id;
+
+      persistenceDetail =
+        `Verification record persisted: id=${persistedVid}, status=${status}.`;
+
+      persistenceStatus = 'PASS';
+    } catch (err: any) {
+      persistedVid = '';
+
+      persistenceDetail =
+        `Persistence failed: ${err?.message || 'Remote store offline'}.`;
+
+      persistenceStatus = 'FAIL';
     }
   } else {
     persistenceStatus = 'FAIL';
-    persistenceDetail = 'Persistence skipped: verification result unavailable.';
+
+    persistenceDetail =
+      'Persistence failed: verification result unavailable.';
   }
 
   stages.push({
