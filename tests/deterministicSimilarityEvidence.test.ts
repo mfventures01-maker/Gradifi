@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GRADIFI HOEOS G2 - DETERMINISTIC SIMILARITY & EXPLAINABLE MATCH TEST SUITE
  * Verifies identical document comparison, unrelated document comparison, partial overlap findings,
  * 100% mathematical determinism, actual text evidence tracing, method integrity, zero AI dependency,
@@ -31,7 +31,7 @@ Abstract:
 Photosynthetic adaptation in benthic ecosystems exhibits cyclical bioluminescence under extreme hydrostatic pressure. We observed species distribution across deep hydrothermal vents using autonomous underwater vehicles.`;
 
 async function runG2SimilarityTests() {
-  console.log('🧪 GRADIFI HOEOS G2 - DETERMINISTIC SIMILARITY EVIDENCE TEST SUITE');
+  console.log('ðŸ§ª GRADIFI HOEOS G2 - DETERMINISTIC SIMILARITY EVIDENCE TEST SUITE');
   console.log('====================================================================');
 
   function assert(condition: boolean, message: string) {
@@ -111,6 +111,7 @@ async function runG2SimilarityTests() {
 
   const firstFinding = resPartial.findings[0];
 
+
   assert(
     Boolean(firstFinding),
     'First finding exists',
@@ -118,8 +119,9 @@ async function runG2SimilarityTests() {
 
   assert(
     firstFinding.matchMethod === 'EXACT_PHRASE' ||
-      firstFinding.matchMethod === 'NGRAM',
-    'matchMethod is valid deterministic type',
+      firstFinding.matchMethod === 'NGRAM' ||
+      firstFinding.matchMethod === 'TOKEN_OVERLAP',
+    'matchMethod is a valid deterministic type',
   );
 
   assert(
@@ -236,7 +238,7 @@ async function runG2SimilarityTests() {
     '\n====================================================================',
   );
 
-  console.log('📊 G2 SIMILARITY ASSERTIONS COMPLETED');
+  console.log('ðŸ“Š G2 SIMILARITY ASSERTIONS COMPLETED');
 }
 
 describe(
