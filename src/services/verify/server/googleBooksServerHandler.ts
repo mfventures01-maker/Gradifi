@@ -44,7 +44,23 @@ export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRe
   const query = rawQuery.slice(0, 200);
   const limit = Math.max(1, Math.min(10, typeof payload?.limit === 'number' ? payload.limit : 5));
 
-  const rawApiKey = process.env.GOOGLE_BOOKS_API_KEY || process.env.GOOGLE_BOOKS_KEY || '';
+  const rawApiKeyCheck = process.env.GOOGLE_BOOKS_API_KEY || '';
+  if (!rawApiKeyCheck || /placeholder|your_key|FIXME/i.test(rawApiKeyCheck)) {
+    const responseTimestamp = new Date().toISOString();
+    return {
+      providerId: 'googlebooks',
+      status: 'error',
+      fineGrainedStatus: 'AUTHENTICATION_FAILED',
+      matches: [],
+      rawCount: 0,
+      errorMessage: 'GOOGLE_BOOKS_API_KEY server configuration is unavailable',
+      requestTimestamp,
+      responseTimestamp,
+      correlationId
+    };
+  }
+
+  const rawApiKey = process.env.GOOGLE_BOOKS_API_KEY || '';
   const apiKey = (rawApiKey && !/placeholder|your_key|FIXME/i.test(rawApiKey)) ? rawApiKey.trim() : '';
   const keyParam = apiKey ? `&key=${encodeURIComponent(apiKey)}` : '';
   const fetchUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${limit}${keyParam}`;

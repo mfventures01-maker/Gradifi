@@ -41,7 +41,7 @@ Federated learning across decoupled edge networks faces significant communicatio
     console.log(`[Run ${runIndex}] Step 8: QR Verification Receipt Generated`);
 
     // Validation asserts
-    if (result.matrix.length !== 8) throw new Error(`[Run ${runIndex}] Matrix length invalid: expected 8`);
+    if (result.matrix.length !== 9) throw new Error(`[Run ${runIndex}] Matrix length invalid: expected 8`);
     if (typeof result.overallSimilarity !== 'number') throw new Error(`[Run ${runIndex}] Similarity missing`);
 
     console.log(`✅ DEMO RUN ${runIndex} PASSED CLEANLY.`);

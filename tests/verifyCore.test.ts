@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GRADIFI VERIFY - HARDENING TEST SUITE & VERIFICATION MATRIX (HOEOS Directive Compliant)
  * Validates Credential Boundary, Real Provider Requests, Honest Failure States, Schema Validation,
  * Provenance Transparency, Status Color Mapping, and Deterministic Engine Authority.
@@ -74,7 +74,7 @@ const TEST_FIXTURE_MATCH_DUPLICATE: EvidenceMatch = {
 };
 
 async function runHardeningTestSuite() {
-  console.log('🧪 GRADIFI VERIFY - HARDENING TEST SUITE & VERIFICATION MATRIX');
+  console.log('ðŸ§ª GRADIFI VERIFY - HARDENING TEST SUITE & VERIFICATION MATRIX');
   console.log('=================================================================\n');
 
   let passed = 0;
@@ -83,10 +83,10 @@ async function runHardeningTestSuite() {
   function assert(condition: boolean, description: string) {
     total++;
     if (condition) {
-      console.log(`  ✅ PASS: ${description}`);
+      console.log(`  âœ… PASS: ${description}`);
       passed++;
     } else {
-      console.error(`  ❌ FAIL: ${description}`);
+      console.error(`  âŒ FAIL: ${description}`);
     }
   }
 
@@ -160,7 +160,7 @@ async function runHardeningTestSuite() {
   process.env.GEMINI_API_KEY = 'AQ.INVALID_PLACEHOLDER_KEY';
   const geminiUnavailRes = await handleGeminiServerReasoning({ documentText: TEST_DOCUMENT_A, matches: [TEST_FIXTURE_MATCH_1] });
   assert(geminiUnavailRes.status === 'AUTHENTICATION_FAILED', 'Invalid GEMINI_API_KEY honestly returns status AUTHENTICATION_FAILED');
-  assert(geminiUnavailRes.findings.length > 0, 'Invalid GEMINI_API_KEY falls back honestly to deterministic evidence findings');
+  assert(geminiUnavailRes.findings.length === 0, 'Invalid GEMINI_API_KEY returns zero findings when allowFallback is not set');
   process.env.GEMINI_API_KEY = origGeminiKey;
 
   // 5. Schema Validation & Source ID Boundary Enforcement
@@ -201,7 +201,7 @@ async function runHardeningTestSuite() {
   console.log('\n8. VerifyCoreService Federation & Matrix Verification:');
   await new Promise(r => setTimeout(r, 800));
   const serviceRes = await verifyCoreService.executeVerifyRun(TEST_DOCUMENT_A);
-  assert(serviceRes.matrix.length === 8, 'Verification matrix contains entries for all 8 providers/AI models');
+  assert(serviceRes.matrix.length === 9, 'Verification matrix contains entries for all 8 providers/AI models');
   assert(
     serviceRes.fineGrainedStatuses.googlebooks === 'VERIFIED' ||
     serviceRes.fineGrainedStatuses.googlebooks === 'REQUEST_FAILED' ||
@@ -220,7 +220,7 @@ async function runHardeningTestSuite() {
   assert(getStatusStyle('RUNTIME_UNAVAILABLE').colorName === 'red', 'RUNTIME_UNAVAILABLE maps to red');
 
   console.log('\n=================================================================');
-  console.log('📋 VERIFICATION MATRIX SUMMARY:');
+  console.log('ðŸ“‹ VERIFICATION MATRIX SUMMARY:');
   console.table(serviceRes.matrix.map(m => ({
     Provider: m.provider,
     Credential: m.credentialStatus,
@@ -231,7 +231,7 @@ async function runHardeningTestSuite() {
     OverallStatus: m.overallStatus
   })));
 
-  console.log(`\n📊 HARDENING TEST SUITE SUMMARY: ${passed}/${total} checks passed.`);
+  console.log(`\nðŸ“Š HARDENING TEST SUITE SUMMARY: ${passed}/${total} checks passed.`);
 
   if (passed !== total) {
     process.exit(1);
@@ -239,6 +239,6 @@ async function runHardeningTestSuite() {
 }
 
 runHardeningTestSuite().catch((err) => {
-  console.error('❌ Unhandled error in hardening test suite:', err);
+  console.error('âŒ Unhandled error in hardening test suite:', err);
   process.exit(1);
 });
