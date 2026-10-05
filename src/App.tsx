@@ -30,7 +30,6 @@ import { SummarizerPage } from './pages/writing/SummarizerPage';
 
 import { OfflineStatus } from './components/OfflineStatus';
 
-import { PlagiarismPage } from './pages/writing/PlagiarismPage';
 import { GradifiVerifyDemoPage } from './pages/verify/GradifiVerifyDemoPage';
 
 import { GradingEngineTestPage } from './pages/grading/GradingEngineTestPage';

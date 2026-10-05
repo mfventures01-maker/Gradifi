@@ -8,7 +8,6 @@
 import { ocrService } from '../src/services/ocrService';
 import { gemmaService } from '../src/services/gemmaService';
 import { nemotronService } from '../src/services/nemotronService';
-import { plagiarismService } from '../src/services/plagiarismService';
 
 async function runAllTests() {
   console.log('🏛️ GRADIFI / SEFAES - SERVICE TEST SUITE');
@@ -41,14 +40,6 @@ async function runAllTests() {
     console.log('   ❌ Nemotron: Failed');
   }
 
-  // Test Plagiarism Service
-  console.log('\n📚 Testing Plagiarism Service...');
-  try {
-    const result = await plagiarismService.checkDocument('Test document');
-    console.log(`   ✅ Plagiarism: Similarity ${result.overallSimilarity}%, Sources ${result.totalSources}`);
-  } catch (e) {
-    console.log('   ❌ Plagiarism: Failed');
-  }
 
   console.log('\n========================================');
   console.log('✅ ALL TESTS COMPLETE!');
