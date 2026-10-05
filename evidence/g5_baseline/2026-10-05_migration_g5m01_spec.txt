@@ -1,0 +1,49 @@
+G5-M01 - CONTROLLED SCANNER IMPLEMENTATION SPECIFICATION
+Date:      2026-10-05
+Status:    REJECTED - FAILED ACCEPTANCE
+Target:    src/services/verify/documentNormalizer.ts:134
+
+Change attempted:
+Replace sentence segmentation regex.
+
+Before:
+/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g
+
+After:
+/.+?(?:[.!?](?=\s|$)|$)/gs
+
+Acceptance criterion:
+8/8 PASS on tests/g2-punctuation-classification.temp.test.ts
+
+Measured result:
+4/8 PASS, 4/8 FAIL
+
+Tests that passed after the change:
+- preserves DOI decimal punctuation
+- preserves percentage decimal punctuation
+- recognizes normal sentence endings
+- preserves all canonical tokens in the forensic fixture
+
+Tests that still failed after the change:
+- does not treat Dr. as a sentence boundary
+- does not treat Prof. as a sentence boundary
+- does not treat Vol. as a sentence boundary
+- preserves decimal and DOI regions as lexical sentence content
+
+Root cause of partial failure:
+The candidate regex handles numeric periods (10.1038, 99.4%)
+but not abbreviation periods (Dr., Prof., Vol.). The
+lookahead (?=\s|$) matches when an abbreviation period is
+followed by a space, so the sentence still splits there.
+
+CERTIFICATION DECISION: REJECTED
+- The acceptance criterion (8/8) was not met.
+- Do not commit.
+- Reverted to production regex on 2026-10-05.
+
+NEXT MIGRATION: G5-M02
+A candidate that handles BOTH:
+  (a) decimal/DOI continuity (10.1038, 99.4%)
+  (b) protected abbreviations (Dr., Prof., Vol., et al.)
+This is an architectural change, not a one-line regex
+replacement. Requires its own specification.

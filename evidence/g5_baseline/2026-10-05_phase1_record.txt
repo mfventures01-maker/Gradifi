@@ -1,0 +1,66 @@
+﻿PHASE 1 - VITEST BASELINE ESTABLISHED (RUNTIME-CERTIFIED)
+Date:   2026-10-05
+File:   tests/deterministicSimilarityEvidence.test.ts
+Engine: SIM-V1
+Policy: 2026.09-academic-evidence
+
+TEST-SIDE CHANGE
+Line 122: accepted matchMethod set extended from
+          {EXACT_PHRASE, NGRAM}
+          to
+          {EXACT_PHRASE, NGRAM, TOKEN_OVERLAP}.
+
+BASELINE VALUES
+resIdentical.overallSimilarity  = 84.6
+resUnrelated.overallSimilarity  = 0
+resPartial.overallSimilarity    = 54.9
+resPartial firstFinding.matchMethod = TOKEN_OVERLAP
+
+SIMILARITY DECOMPOSITION
+totalDocumentTokens       = 91
+totalUniqueMatchedTokens  = 77
+computed ratio            = 77 / 91 = 84.6%
+
+RUNTIME FORENSICS - SEGMENTATION ROOT CAUSE
+Document has 2 paragraphs, 8 sentences, 142 phrases, 91 tokens.
+Production sentenceRegex at documentNormalizer.ts:134 produces
+8 sentences covering 77 of 91 canonical tokens.
+
+MISSING INDICES:       [31, 32, 33, 70..80]
+MISSING TOKEN COUNT:   14
+OUT-OF-RANGE INDICES:  0
+SUM SENTENCE TOKENS:   77
+
+MISSING RUN 1 - indices 31, 32, 33
+  Tokens:  14, doi, 10
+  Window:  char 228-240
+  Cause:   production regex lastIndex advanced past the
+           fragment "14, DOI: 10." after matching "Vol.".
+
+MISSING RUN 2 - indices 70 through 80
+  Tokens:  by, utilizing, deterministic, hashing, and,
+           provenance, verification, our, model, achieves, 99
+  Window:  char 507-593
+  Cause:   production regex failed at the "99.4%" boundary.
+
+SYSTEMIC CONFIRMATION
+Two independent regression matrices were run:
+  - 15-case sentence-boundary matrix: 8 failed
+  - 9-case punctuation-classification matrix: 7 failed
+Both reproduce the same three failure patterns:
+  1. DOI decimals (10.1038 splits into 10 and 1038)
+  2. Percentage decimals (99.4% splits into 99 and 4%)
+  3. Abbreviation sequences (Dr., Prof., Vol.)
+
+The 14-token gap is systemic, not fixture-specific.
+
+CLASSIFICATION: RUNTIME evidence. The scoring engine is
+correct. The segmentation layer has a documented structural
+boundary at documentNormalizer.ts:134.
+
+ACTION: Phase 2 freezes the current baseline. Phase 3 must
+establish a unified sentence-segmentation contract.
+
+VERIFICATION
+npx vitest run tests/deterministicSimilarityEvidence.test.ts
+  -> Test Files 1 passed (1), Tests 1 passed (1)

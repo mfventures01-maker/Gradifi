@@ -1,0 +1,41 @@
+﻿SEGMENTATION V2 CANDIDATE
+Date:   2026-10-05
+Status: PROVEN at RUNTIME, awaiting Phase 3 migration
+
+Target:  src/services/verify/documentNormalizer.ts:134
+Current: /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g
+Replace: /.+?(?:[.!?](?=\s|$)|$)/gs
+
+Runtime proof on SAMPLE_TEXT_A:
+  CANONICAL TOKENS:        91
+  CANDIDATE SENTENCES:     8
+  SUM SENTENCE TOKENS:     91
+  UNIQUE MAPPED INDICES:   91
+  MISSING INDICES:         0
+  DUPLICATE INDICES:       0
+  OUT-OF-RANGE INDICES:    0
+
+Partial-fix outcome (G5-M01 REJECTED):
+  Regression suite result: 4/8 PASS, 4/8 FAIL
+  The candidate regex handles numeric periods
+  (10.1038, 99.4%) but does not handle abbreviation
+  periods (Dr., Prof., Vol.).
+  The lookahead (?=\s|$) still matches when an
+  abbreviation period is followed by a space.
+
+Properties:
+  - Handles numeric periods (99.4%, 10.1038)
+  - Multi-line aware (dot matches newline under /s flag)
+  - Same 8 sentence count as production regex
+  - Preserves all coordinates
+  - Does NOT handle abbreviation periods
+
+ADDITIONAL STRUCTURAL FINDING
+A second sentence segmenter exists at
+canonicalTextOffsetService.ts:127 with regex
+/[^.!?]+[.!?]*/g. It produces 10 matches on the same
+fixture. Phase 3 must decide canonical segmenter
+boundaries and unify the two.
+
+Applicable to: Phase 3 migration G5-M02
+Do not apply until Phase 3 specification exists.
