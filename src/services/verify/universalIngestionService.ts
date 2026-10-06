@@ -11,6 +11,7 @@ import { extractHtmlAdapter } from './ingestionAdapters/htmlAdapter.js';
 import { extractRtfAdapter } from './ingestionAdapters/rtfAdapter.js';
 import { extractCsvAdapter, extractJsonAdapter, extractXmlAdapter } from './ingestionAdapters/structuredAdapter.js';
 import { extractDocxText, extractOdtText, extractEpubText, extractPptxText, extractXlsxText } from './ingestionAdapters/officeZipAdapter.js';
+import { extractDocx } from './ingestionAdapters/docxExtractor.js';
 import { extractLegacyBinaryAdapter } from './ingestionAdapters/legacyBinaryAdapter.js';
 import { MAX_FILE_SIZE_BYTES } from '../../utils/pdfExtractor.js';
 
@@ -250,7 +251,7 @@ export async function ingestDocument(
     }
     case 'docx': {
       const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
-      adapterResult = await extractDocxText(buf);
+      adapterResult = await extractDocx(buf);
       break;
     }
     case 'odt': {

@@ -1,0 +1,28 @@
+{
+  "description": "G5-M03 Phase 4 fixture manifest. Consumed by tests/docxExtractor.test.ts. Entries with source 'real' are loaded from disk. Entries with source 'builder' are constructed at test time by the named function from builders.ts.",
+  "valid": [
+    { "id": "F01", "source": "real",    "file": "valid/F01_academic.docx", "expect": { "success": true, "warningsContains": [] } },
+    { "id": "F02", "source": "builder", "builder": "buildF02XmlSpace",             "expect": { "success": true } },
+    { "id": "F03", "source": "builder", "builder": "buildF03TrackedInsertion",     "expect": { "success": true, "warningsContains": ["TRACKED_INSERTION_PRESENT"], "canonicalTextContains": ["Inserted text"] } },
+    { "id": "F04", "source": "builder", "builder": "buildF04TrackedDeletion",      "expect": { "success": true, "warningsContains": ["TRACKED_DELETION_PRESENT"], "canonicalTextExcludes": ["Deleted text"] } },
+    { "id": "F05", "source": "builder", "builder": "buildF05XmlEntities",          "expect": { "success": true, "canonicalTextContains": ["&amp;", "&lt;", "&gt;"] } },
+    { "id": "F06", "source": "builder", "builder": "buildF06Table",                "expect": { "success": true, "canonicalTextContains": ["A1", "B1", "A2", "B2"] } },
+    { "id": "F07", "source": "builder", "builder": "buildF07MultiParagraph",       "expect": { "success": true } },
+    { "id": "F08", "source": "builder", "builder": "buildF08FootnoteReference",    "expect": { "success": true, "warningsContains": ["FOOTNOTE_REFERENCE_IGNORED"] } },
+    { "id": "F09", "source": "builder", "builder": "buildF09Drawing",              "expect": { "success": true, "warningsContains": ["DRAWING_IGNORED"] } },
+    { "id": "F11", "source": "builder", "builder": "buildF11EmptyBodyParagraph",   "expect": { "success": true } },
+    { "id": "F12", "source": "builder", "builder": "buildF12CrlfInText",           "expect": { "success": true, "canonicalTextContains": ["line one\nline two"] } }
+  ],
+  "adversarial": [
+    { "id": "A01", "source": "builder", "builder": "buildA01TruncatedZip",       "expect": { "success": false, "errorCode": "CORRUPT_PACKAGE" } },
+    { "id": "A02", "source": "builder", "builder": "buildA02MissingMainPart",    "expect": { "success": false, "errorCode": "MISSING_MAIN_PART" } },
+    { "id": "A03", "source": "builder", "builder": "buildA03NotAZip",            "expect": { "success": false, "errorCode": "INVALID_DOCX" } },
+    { "id": "A04", "source": "builder", "builder": "buildA04PathTraversal",      "expect": { "success": false, "errorCode": "SECURITY_REJECTED" } },
+    { "id": "A05", "source": "builder", "builder": "buildA05AbsolutePath",       "expect": { "success": false, "errorCode": "SECURITY_REJECTED" } },
+    { "id": "A06", "source": "builder", "builder": "buildA06Doctype",            "expect": { "success": false, "errorCode": "SECURITY_REJECTED" } },
+    { "id": "A07", "source": "builder", "builder": "buildA07EntityDeclaration",  "expect": { "success": false, "errorCode": "SECURITY_REJECTED" } },
+    { "id": "A08", "source": "builder", "builder": "buildA08DuplicateMainPart",  "expect": { "success": false, "errorCode": "SECURITY_REJECTED" } },
+    { "id": "A09", "source": "builder", "builder": "buildA09OversizedDeclared",  "expect": { "success": false, "errorCode": "SECURITY_REJECTED" } },
+    { "id": "A10", "source": "builder", "builder": "buildA10OversizedRaw",       "expect": { "success": false, "errorCode": "OVERSIZED" } }
+  ]
+}
