@@ -11,6 +11,7 @@ import {
   ProvenanceState,
   CanonicalAnalysisDocument,
   SimilarityAnalysisResult,
+  GranularSimilarityResult,
   SimilarityFinding,
   SimilarityMatchMethod,
   DocumentParagraph,
@@ -707,10 +708,15 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
  * Produces explainable, evidence-backed SimilarityFinding items.
  * HOEOS G2 Standard: ZERO AI dependency, ZERO Math.random(), 100% reproducible.
  */
-export function evaluateDocumentSimilarity(
+/**
+ * Evaluates deterministic document similarity returning both standard and granular evidence (paragraphFlags, sentenceFlags).
+ * Internal engine implementation exposing already-computed aggregation without changing scoring or normalization.
+ * HOEOS G5-M05A Standard.
+ */
+export function evaluateDocumentSimilarityInternal(
   sourceDoc: CanonicalAnalysisDocument,
   comparisonDoc: CanonicalAnalysisDocument
-): SimilarityAnalysisResult {
+): GranularSimilarityResult {
   const sourceText = sourceDoc.rawText || '';
   const compText = comparisonDoc.rawText || '';
   const findings: SimilarityFinding[] = [];
@@ -726,7 +732,9 @@ export function evaluateDocumentSimilarity(
       engineVersion: ENGINE_VERSION,
       policyVersion: POLICY_VERSION,
       deterministic: true,
-      warnings: ['One or both input documents are empty']
+      warnings: ['One or both input documents are empty'],
+      paragraphFlags: [],
+      sentenceFlags: []
     };
   }
 
@@ -792,8 +800,19 @@ export function evaluateDocumentSimilarity(
     engineVersion: ENGINE_VERSION,
     policyVersion: POLICY_VERSION,
     deterministic: true,
-    warnings
+    warnings,
+    paragraphFlags: engineOutput.aggregation.paragraphFlags,
+    sentenceFlags: engineOutput.aggregation.sentenceFlags
   };
+}
+
+export function evaluateDocumentSimilarity(
+  sourceDoc: CanonicalAnalysisDocument,
+  comparisonDoc: CanonicalAnalysisDocument
+): SimilarityAnalysisResult {
+  const result = evaluateDocumentSimilarityInternal(sourceDoc, comparisonDoc);
+  const { paragraphFlags, sentenceFlags, ...publicResult } = result;
+  return publicResult;
 }
 
 /**

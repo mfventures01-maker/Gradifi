@@ -15,11 +15,12 @@ import {
   AnalysisInputContract,
   AnalysisResultEnvelope,
   SimilarityAnalysisResult,
+  GranularSimilarityResult,
   SimilarityFinding,
   PlagiarismEvidenceResult,
   PlagiarismEvidenceFinding
 } from './types.js';
-import { analyzeDocumentEvidence, evaluateDocumentSimilarity, extractSimilarityFindingsFromEvidenceMatches } from './deterministicEngine.js';
+import { analyzeDocumentEvidence, evaluateDocumentSimilarity, evaluateDocumentSimilarityInternal, extractSimilarityFindingsFromEvidenceMatches } from './deterministicEngine.js';
 import { buildCanonicalAnalysisDocument } from './documentNormalizer.js';
 import { evaluatePlagiarismEvidence } from './plagiarismPolicy.js';
 import { OpenAlexProvider } from './providers/openAlexProvider.js';
@@ -436,6 +437,26 @@ export class VerifyCoreService {
   }
 
   /**
+   * Executes granular deterministic similarity analysis comparing two canonical documents directly,
+   * exposing paragraphFlags and sentenceFlags directly from the deterministic engine.
+   * HOEOS G5-M05A Standard: Pure deterministic calculation, single engine execution.
+   */
+  executeGranularSimilarityAnalysis(
+    sourceInput: string | CanonicalAnalysisDocument,
+    comparisonInput: string | CanonicalAnalysisDocument
+  ): GranularSimilarityResult {
+    const sourceDoc = typeof sourceInput === 'string'
+      ? buildCanonicalAnalysisDocument({ rawText: sourceInput })
+      : sourceInput;
+
+    const compDoc = typeof comparisonInput === 'string'
+      ? buildCanonicalAnalysisDocument({ rawText: comparisonInput })
+      : comparisonInput;
+
+    return evaluateDocumentSimilarityInternal(sourceDoc, compDoc);
+  }
+
+  /**
    * Executes deterministic plagiarism evidence policy evaluation over G2 similarity results.
    * HOEOS G3 Standard: Pure evidence policy classification, 0 AI dependency.
    */
@@ -476,3 +497,10 @@ export class VerifyCoreService {
 }
 
 export const verifyCoreService = new VerifyCoreService();
+
+export function executeGranularSimilarityAnalysis(
+  sourceInput: string | CanonicalAnalysisDocument,
+  comparisonInput: string | CanonicalAnalysisDocument
+): GranularSimilarityResult {
+  return verifyCoreService.executeGranularSimilarityAnalysis(sourceInput, comparisonInput);
+}

@@ -442,6 +442,11 @@ export interface SimilarityAnalysisResult {
   warnings: string[];
 }
 
+export interface GranularSimilarityResult extends SimilarityAnalysisResult {
+  paragraphFlags: ParagraphMatchEvidence[];
+  sentenceFlags: SentenceMatchEvidence[];
+}
+
 /**
  * GRADIFI HOEOS G1 - CANONICAL DOCUMENT ANALYSIS CONTRACT
  */
