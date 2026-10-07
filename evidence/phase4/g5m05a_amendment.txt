@@ -1,0 +1,232 @@
+G5-M05A CONSTITUTIONAL AMENDMENT
+Status: PENDING IMPLEMENTATION
+Date: 2026-10-07
+Baseline: 6d672db
+Amends: Phase 1 freeze of deterministicEngine.ts
+
+--------------------------------------------------------------------
+1. THE AMENDMENT
+--------------------------------------------------------------------
+
+Phase 1 froze src/services/verify/deterministicEngine.ts at SHA-256
+hash:
+
+  97AAC0CC891771C577CA49DDE3E17E02C733124C033934F5BDF909BE37879793
+
+That freeze is lifted, on a temporary and controlled basis, for the
+sole purpose of G5-M05A.
+
+The freeze will be re-applied at the new post-G5-M05A hash once
+G5-M05A is certified and committed.
+
+--------------------------------------------------------------------
+2. WHY THE FREEZE IS LIFTED
+--------------------------------------------------------------------
+
+The G5 deterministic engine already computes paragraph-level and
+sentence-level evidence as part of every similarity run. That
+evidence is captured in GlobalSimilarityAggregation at:
+
+  deterministicEngine.ts:666-683
+
+and returned by analyzeDocumentEvidence at:
+
+  deterministicEngine.ts:700
+
+The public wrapper evaluateDocumentSimilarity at line 710 already
+receives that aggregation via engineOutput.aggregation, uses it to
+build the returned findings at line 764, and then discards it when
+composing its return object at lines 786-796.
+
+The result: the aggregation exists. It is computed. It is available.
+It is simply not surfaced.
+
+The student-facing correction workflow requires the paragraph and
+sentence evidence. There is no way to expose it from outside the
+engine without either:
+
+  (a) modifying deterministicEngine.ts to add a new internal
+      function that returns the aggregation alongside the existing
+      result, or
+
+  (b) rebuilding the evidence pipeline outside the engine and
+      fabricating a second engine invocation.
+
+Option (b) was attempted. It was rejected because it required
+constructing a synthetic EvidenceMatch with fabricated provenance
+(provider: "openalex", provenanceState: "VERIFIED", a 1970 timestamp).
+That is a contract violation, not an implementation shortcut.
+
+Option (a) is the correct path. It is the amendment this document
+records.
+
+--------------------------------------------------------------------
+3. PERMITTED CHANGE
+--------------------------------------------------------------------
+
+The following change is authorized:
+
+  Add a new exported function evaluateDocumentSimilarityInternal to
+  src/services/verify/deterministicEngine.ts with the same signature
+  as evaluateDocumentSimilarity:
+
+    evaluateDocumentSimilarityInternal(
+      sourceDoc: CanonicalAnalysisDocument,
+      comparisonDoc: CanonicalAnalysisDocument
+    ): GranularSimilarityResult
+
+  where GranularSimilarityResult extends SimilarityAnalysisResult
+  and adds two fields:
+
+    paragraphFlags: ParagraphMatchEvidence[]
+    sentenceFlags: SentenceMatchEvidence[]
+
+  The function body must be identical to the current body of
+  evaluateDocumentSimilarity, except that its return object must
+  additionally include the two flag arrays copied from
+  engineOutput.aggregation:
+
+    paragraphFlags: engineOutput.aggregation.paragraphFlags
+    sentenceFlags: engineOutput.aggregation.sentenceFlags
+
+  evaluateDocumentSimilarity must then delegate to
+  evaluateDocumentSimilarityInternal and return its result. Its
+  declared return type remains SimilarityAnalysisResult for
+  backward compatibility.
+
+The change is ADDITIVE. It does not remove, rename, or alter any
+existing exported function.
+
+--------------------------------------------------------------------
+4. PROHIBITED CHANGES
+--------------------------------------------------------------------
+
+The following changes are forbidden in this migration:
+
+  4.1  Changing the value of overallSimilarity
+  4.2  Changing tokenization (tokenize)
+  4.3  Changing overlap calculation (calculateNGramOverlap,
+       calculateExactPhraseMatch, detectPhraseMatches)
+  4.4  Changing source aggregation (aggregateSourceScore,
+       deduplicateSources)
+  4.5  Changing threshold logic (the 20% gate at line 517, the flag
+       thresholds in evaluateSentenceMatch and evaluateParagraphMatch)
+  4.6  Changing normalization (normalizeText, NORMALIZE_VERSION)
+  4.7  Changing the semantics of any evidence field
+  4.8  Introducing a second similarity algorithm
+  4.9  Constructing a synthetic EvidenceMatch to feed
+       analyzeDocumentEvidence a second time
+  4.10 Setting provenance.provider to a value that is not the actual
+       provider
+  4.11 Setting provenance.provenanceState to VERIFIED when no
+       verification occurred
+  4.12 Setting provenance.retrievedAt to a fixed timestamp such as
+       1970-01-01T00:00:00.000Z
+  4.13 Touching any file outside the authorized scope below
+
+--------------------------------------------------------------------
+5. AUTHORIZED FILE SCOPE
+--------------------------------------------------------------------
+
+The following files may be modified:
+
+  src/services/verify/deterministicEngine.ts   (additive only)
+  src/services/verify/verifyCoreService.ts     (additive only)
+  src/services/verify/types.ts                 (additive only)
+  tests/granularSimilarityResult.test.ts       (new file)
+
+The following files remain frozen and must not be modified:
+
+  src/services/verify/documentNormalizer.ts
+  src/services/verify/canonicalTextOffsetService.ts
+  src/services/verify/plagiarismPolicy.ts
+  src/services/verify/verificationPersistenceService.ts
+  src/services/verify/publicVerificationService.ts
+  src/services/verify/ingestionAdapters/**
+  src/services/verify/server/**
+  supabase/**
+  src/pages/**
+  src/components/**
+
+If any file outside the authorized scope appears in git diff at the
+end of G5-M05A, the migration is FAIL and is reverted.
+
+--------------------------------------------------------------------
+6. REQUIRED ACCEPTANCE TESTS
+--------------------------------------------------------------------
+
+The following tests are required for G5-M05A certification:
+
+  Test A: executeGranularSimilarityAnalysis on SAMPLE_TEXT_A
+          self-comparison returns overallSimilarity = 84.6 with
+          non-empty paragraphFlags and sentenceFlags.
+
+  Test B: For the same input, every field of
+          executeGranularSimilarityAnalysis except the two new
+          fields is deeply equal to the corresponding field of
+          executeSimilarityAnalysis.
+
+  Test C: Two consecutive calls to
+          executeGranularSimilarityAnalysis with the same input
+          produce byte-identical JSON.
+
+  Test D: The existing suite
+          tests/deterministicSimilarityEvidence.test.ts continues to
+          pass 1/1.
+
+  Test E: git diff -- src/services/verify/documentNormalizer.ts
+          is empty.
+
+  Test F: git diff -- src/services/verify/canonicalTextOffsetService.ts
+          is empty.
+
+  Test G: For three fixtures (self-comparison of SAMPLE_TEXT_A,
+          unrelated, partial overlap), evaluateDocumentSimilarity's
+          output equals the frozen baseline recorded in
+          tests/deterministicSimilarityEvidence.test.ts.
+
+  Test H: evaluateDocumentSimilarityInternal and
+          evaluateDocumentSimilarity produce the same
+          overallSimilarity, findings, engineVersion, and
+          policyVersion for the same input.
+
+--------------------------------------------------------------------
+7. NEW HASH
+--------------------------------------------------------------------
+
+Post-G5-M05A hash of deterministicEngine.ts:
+
+  [TO BE FILLED IN AFTER IMPLEMENTATION]
+
+Post-G5-M05A hashes of verifyCoreService.ts and types.ts:
+
+  [TO BE FILLED IN AFTER IMPLEMENTATION]
+
+--------------------------------------------------------------------
+8. RE-FREEZE CONTRACT
+--------------------------------------------------------------------
+
+On successful certification of G5-M05A, deterministicEngine.ts is
+re-frozen at the new hash recorded in section 7. Any further change
+to deterministicEngine.ts requires a new amendment and a new
+migration ID.
+
+The Phase 1 freeze record is amended to reflect that the
+deterministicEngine.ts freeze was lifted once for G5-M05A and
+re-applied at the new hash.
+
+--------------------------------------------------------------------
+9. CONSEQUENCE OF FAILURE
+--------------------------------------------------------------------
+
+If any of the required tests fails, or if the forbidden-file audit
+detects a modification outside the authorized scope:
+
+  git revert the G5-M05A commit
+  git checkout -- the modified files back to 6d672db
+  record G5-M05A as REJECTED in evidence/phase4/
+
+The engine returns to the 97AAC0CC... hash and remains frozen.
+
+--------------------------------------------------------------------
+END OF G5-M05A CONSTITUTIONAL AMENDMENT
