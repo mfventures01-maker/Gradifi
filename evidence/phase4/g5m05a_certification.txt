@@ -1,0 +1,111 @@
+G5-M05A CERTIFICATION
+Status: CERTIFIED
+Date: 2026-10-07
+Parent commit: c15557c (amendment)
+Amends: evidence/phase4/g5m05a_amendment.txt
+
+--------------------------------------------------------------------
+CHANGE SCOPE
+--------------------------------------------------------------------
+
+Production files modified:
+  src/services/verify/deterministicEngine.ts   (additive)
+  src/services/verify/types.ts                 (additive)
+  src/services/verify/verifyCoreService.ts     (additive)
+
+New test artifact:
+  tests/granularSimilarityResult.test.ts
+
+--------------------------------------------------------------------
+ACCEPTANCE
+--------------------------------------------------------------------
+
+  Test A  Granular self-comparison returns 84.6 + non-empty flags  PASS
+  Test B  Field equivalence with executeSimilarityAnalysis         PASS
+  Test C  Byte-identical JSON across consecutive calls             PASS
+  Test D  Existing G5 baseline values unchanged                    PASS
+  Test E  documentNormalizer.ts unchanged                          PASS
+  Test F  canonicalTextOffsetService.ts unchanged                  PASS
+  Test G  evaluateDocumentSimilarity matches frozen baseline       PASS
+  Test H  Internal and public produce the same result              PASS
+
+  G5 regression  (deterministicSimilarityEvidence.test.ts):  1/1
+  DOCX extractor (docxExtractor.test.ts):                   22/22
+  G2 regression  (g2-punctuation-classification.temp):      11/7
+  npx tsc --noEmit:                                         clean (exit 0)
+
+--------------------------------------------------------------------
+NON-MODIFICATION VERIFIED
+--------------------------------------------------------------------
+
+  documentNormalizer.ts                    unchanged
+  canonicalTextOffsetService.ts            unchanged
+  plagiarismPolicy.ts                      unchanged
+  verificationPersistenceService.ts        unchanged
+  publicVerificationService.ts             unchanged
+  ingestionAdapters/**                     unchanged
+  server/**                                unchanged
+  supabase/**                              unchanged
+  pages/**                                 unchanged
+  components/**                            unchanged
+
+--------------------------------------------------------------------
+NO SYNTHETIC PATTERNS
+--------------------------------------------------------------------
+
+  No candidateMatch reconstruction in executeGranularSimilarityAnalysis
+  No provider: 'openalex' fabrication
+  No provenanceState: 'VERIFIED' fabrication
+  No retrievedAt: '1970-01-01T00:00:00.000Z'
+  No second analyzeDocumentEvidence call in executeGranularSimilarityAnalysis
+  Single engine execution per granular call
+
+--------------------------------------------------------------------
+ARCHITECTURE
+--------------------------------------------------------------------
+
+  evaluateDocumentSimilarityInternal (new, exported)
+    - Same body as the previous evaluateDocumentSimilarity
+    - Return object includes paragraphFlags and sentenceFlags from
+      engineOutput.aggregation
+
+  evaluateDocumentSimilarity (existing public wrapper)
+    - Delegates to evaluateDocumentSimilarityInternal
+    - Narrows the return to SimilarityAnalysisResult by destructuring
+      out paragraphFlags and sentenceFlags
+    - Behavior unchanged for all existing callers
+
+  executeGranularSimilarityAnalysis (new, on VerifyCoreService and
+  as top-level export)
+    - Delegates to evaluateDocumentSimilarityInternal
+    - Returns GranularSimilarityResult (the full richer shape)
+
+--------------------------------------------------------------------
+HASHES
+--------------------------------------------------------------------
+
+  deterministicEngine.ts
+    before:  97AAC0CC891771C577CA49DDE3E17E02C733124C033934F5BDF909BE37879793
+    after:   501004055030FD9AEB9AF1CBBE6F1E8D9BB7A5BC6044BED11C2C1899D7594E4C
+
+  verifyCoreService.ts
+    before:  FEE280F27201807BF6BCB3D03175DFBA5B9AFFAC7C6ED99CB9F6F5473405BEBD
+    after:   8407CB951F1CFCDF5F9A18BF7550CC6A7C3FE6A3FEE1AFD0F8040349B4BC7F52
+
+  types.ts
+    before:  A50EB3AC1C31635105C37941632B579CDA2B67E1064E830C90C2B13BB8DB8DF3
+    after:   C5105A8C2060FBB88836F59598CF1530615410DD25F9A9997F9E821B265F14B0
+
+  tests/granularSimilarityResult.test.ts
+    new:    10F729BD31A66D3E26B8EC526B5DB3CA83EB7C24921E6F464D69988F386190DB
+
+--------------------------------------------------------------------
+RE-FREEZE
+--------------------------------------------------------------------
+
+  deterministicEngine.ts is re-frozen at
+    501004055030FD9AEB9AF1CBBE6F1E8D9BB7A5BC6044BED11C2C1899D7594E4C
+  Any further change requires a new amendment and a new migration ID.
+
+--------------------------------------------------------------------
+END OF G5-M05A CERTIFICATION
