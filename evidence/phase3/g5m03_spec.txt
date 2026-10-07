@@ -1,0 +1,532 @@
+﻿G5-M03 - DOCX EXTRACTOR CONTRACT
+Status: PENDING REVIEW
+Date: 2026-10-06
+Predecessor: Phase 2 G1 audit (FAIL, extractor replacement required)
+Successor: G5-M04 (deletion of legacy officeZipAdapter DOCX path)
+
+--------------------------------------------------------------------
+0. SCOPE
+--------------------------------------------------------------------
+
+G5-M03 defines a new DOCX extraction module that meets the G1
+contract. It does NOT modify any scoring, segmentation, or
+persistence code. It does NOT modify the existing legacy
+officeZipAdapter.ts DOCX function; that function is left in place
+but bypassed by the dispatcher. Deleting it is deferred to G5-M04.
+
+The migration introduces exactly:
+  - one new production file (docxExtractor.ts)
+  - one line changed in universalIngestionService.ts (dispatch)
+  - one new dependency (fast-xml-parser)
+  - one new test file (docxExtractor.test.ts)
+  - one acceptance fixture corpus (tests/fixtures/docx/)
+
+No other production file is modified.
+
+--------------------------------------------------------------------
+1. MODULE AND PUBLIC API
+--------------------------------------------------------------------
+
+FILE
+  src/services/verify/ingestionAdapters/docxExtractor.ts
+
+EXPORTS
+
+  export async function extractDocx(
+    input: Uint8Array | ArrayBuffer,
+    options?: ExtractDocxOptions
+  ): Promise<DocxExtractionResult>;
+
+  export interface ExtractDocxOptions {
+    maxBytes?: number;             // default 50 * 1024 * 1024
+    maxDecompressedBytes?: number; // default 100 * 1024 * 1024
+    maxEntryBytes?: number;        // default 20 * 1024 * 1024
+    maxEntryCount?: number;        // default 5000
+  }
+
+  export interface DocxExtractionResult {
+    success: boolean;
+    segments: TextSegment[];
+    canonicalText: string;
+    canonicalTextHash: string;
+    zipEntryCount: number;
+    decompressedBytes: number;
+    warnings: ExtractionWarning[];
+    error?: ExtractionFailure;
+  }
+
+  export interface TextSegment {
+    story: 'main';
+    partName: string;
+    paragraphOrdinal: number;
+    runOrdinal: number | null;
+    xmlPath: string;
+    kind: 'text' | 'tab' | 'lineBreak' | 'paragraphBreak';
+    rawText: string;
+    canonicalStart: number;
+    canonicalEnd: number;
+  }
+
+  export interface ExtractionWarning {
+    code: ExtractionWarningCode;
+    message: string;
+    part?: string;
+  }
+
+  export type ExtractionWarningCode =
+    | 'TRACKED_INSERTION_PRESENT'
+    | 'TRACKED_DELETION_PRESENT'
+    | 'FOOTNOTE_REFERENCE_IGNORED'
+    | 'ENDNOTE_REFERENCE_IGNORED'
+    | 'DRAWING_IGNORED'
+    | 'EMBEDDED_OBJECT_IGNORED'
+    | 'UNSUPPORTED_ELEMENT_IGNORED';
+
+  export interface ExtractionFailure {
+    code: ExtractionFailureCode;
+    message: string;
+    detail?: Record<string, unknown>;
+  }
+
+  export type ExtractionFailureCode =
+    | 'INVALID_DOCX'
+    | 'CORRUPT_PACKAGE'
+    | 'MISSING_MAIN_PART'
+    | 'EMPTY_DOCUMENT'
+    | 'SECURITY_REJECTED'
+    | 'UNSUPPORTED_FEATURE'
+    | 'OVERSIZED';
+
+CANONICAL HASH
+  canonicalTextHash is FNV-1a-64 (same algorithm as documentNormalizer
+  computeHash) over the UTF-8 bytes of canonicalText. The extractor
+  does NOT import computeHash from documentNormalizer to avoid a
+  circular dependency; it implements the identical algorithm inline
+  and the two are verified equal in a fixture.
+
+--------------------------------------------------------------------
+2. INPUT CONTRACT
+--------------------------------------------------------------------
+
+- input MUST be Uint8Array or ArrayBuffer. String input is rejected
+  with INVALID_DOCX.
+- input MUST begin with the four bytes 0x50 0x4B 0x03 0x04 (PK\x03\x04).
+  Any other prefix yields INVALID_DOCX before any decompression.
+- input.byteLength MUST be <= options.maxBytes (default 50 MB).
+  Any larger input yields OVERSIZED.
+- The extractor does NOT trust the file extension, the MIME type, or
+  the caller-supplied filename. Only the bytes are authoritative.
+
+--------------------------------------------------------------------
+3. ZIP SECURITY CONTRACT
+--------------------------------------------------------------------
+
+3.1 Pre-decompression validation
+   The extractor MUST read the ZIP central directory before
+   decompressing any entry, and MUST reject the archive without
+   decompressing if any of the following holds:
+
+     raw byte length                 > maxBytes             -> OVERSIZED
+     central directory entry count   > maxEntryCount        -> SECURITY_REJECTED
+     any entry declared size         > maxEntryBytes        -> SECURITY_REJECTED
+     sum of declared sizes           > maxDecompressedBytes -> SECURITY_REJECTED
+     central directory is malformed                          -> CORRUPT_PACKAGE
+     any entry name contains '..'                            -> SECURITY_REJECTED
+     any entry name starts with '/' or '\'                   -> SECURITY_REJECTED
+     any entry name matches /^[A-Za-z]:[\\\/]/               -> SECURITY_REJECTED
+     any entry name contains a null byte                     -> SECURITY_REJECTED
+     'word/document.xml' appears more than once              -> SECURITY_REJECTED
+
+3.2 Decompression
+   Only the specific entry 'word/document.xml' is decompressed. No
+   other entry is materialized. Decompression is performed with
+   fflate's streaming `unzip` API so that a single oversized entry
+   cannot be emitted before its declared size is re-verified.
+
+3.3 Post-decompression validation
+   After decompression, the byte length of word/document.xml is
+   re-checked against maxEntryBytes. Any exceedance yields
+   SECURITY_REJECTED.
+
+--------------------------------------------------------------------
+4. XML SECURITY CONTRACT
+--------------------------------------------------------------------
+
+4.1 Parser
+   fast-xml-parser v4, configured as:
+     ignoreAttributes: false
+     attributeNamePrefix: '@_'
+     processEntities: false
+     htmlEntities: false
+     allowBooleanAttributes: false
+     parseTagValue: false
+     trimValues: false
+     parseAttributeValue: false
+     stopNodes: []
+
+4.2 Pre-parse rejection
+   Before invoking the parser, the extractor scans the raw text of
+   word/document.xml for:
+     - any occurrence of '<!DOCTYPE'   -> SECURITY_REJECTED
+     - any occurrence of '<!ENTITY'    -> SECURITY_REJECTED
+   The scan is case-insensitive and operates on the raw bytes so
+   that encoding tricks (UTF-8 with BOM, UTF-16) cannot bypass it.
+   Non-UTF-8 encodings yield SECURITY_REJECTED.
+
+4.3 Entity handling
+   Entity references ('&amp;', '&lt;', '&gt;', '&quot;', '&apos;')
+   are NOT decoded. They appear as their literal source characters
+   in segment.rawText. Decoding is a downstream concern.
+
+4.4 Attribute handling
+   Attributes are preserved on the parsed tree but are NOT included
+   in canonical text. The one exception is xml:space, which is read
+   to control whitespace in w:t.
+
+--------------------------------------------------------------------
+5. WORDPROCESSINGML SEMANTICS
+--------------------------------------------------------------------
+
+5.1 Story coverage
+   Only the main story (word/document.xml) is extracted.
+   Headers, footers, footnotes, endnotes are NOT extracted.
+   References to them produce a warning (FOOTNOTE_REFERENCE_IGNORED,
+   ENDNOTE_REFERENCE_IGNORED) but do not fail the extraction.
+
+5.2 Element coverage
+   Handled:   w:p, w:r, w:t, w:tab, w:br, w:tbl, w:tr, w:tc
+   Warned:    w:ins, w:del, w:footnoteReference, w:endnoteReference,
+              w:drawing, w:object
+   Ignored:   all other w:* elements
+
+5.3 Segment emission rules
+   w:p     -> emit paragraphBreak segment after the paragraph's runs
+   w:r     -> increments runOrdinal, recurse into children
+   w:t     -> emit text segment with rawText = character data.
+              Whitespace handling:
+                if xml:space="preserve" -> keep as-is
+                else                     -> trim leading and trailing whitespace
+   w:tab   -> emit tab segment
+   w:br    -> emit lineBreak segment
+   w:tbl   -> recurse into w:tr -> w:tc -> w:p in document order
+   w:ins   -> include contained text; emit TRACKED_INSERTION_PRESENT
+   w:del   -> skip contained text; emit TRACKED_DELETION_PRESENT
+
+5.4 Canonical text assembly
+   Segments are concatenated in emission order:
+     text            -> rawText
+     tab             -> '\t'
+     lineBreak       -> '\n'
+     paragraphBreak  -> '\n\n'
+   No further normalization. No NFC, no lowercasing, no whitespace
+   collapsing. Normalization is documentNormalizer's responsibility.
+
+--------------------------------------------------------------------
+6. SOURCE-MAP SPANS
+--------------------------------------------------------------------
+
+Each TextSegment carries canonicalStart and canonicalEnd, which are
+byte offsets into the UTF-8 encoding of canonicalText.
+
+canonicalStart[i]   = sum of canonical-encoded byte lengths of
+                      segments 0..i-1
+canonicalEnd[i]     = canonicalStart[i] + canonical-encoded byte
+                      length of segment i
+
+Segment positions are contiguous: no gaps, no overlaps.
+
+The spans are stable: identical input bytes yield identical spans.
+
+The spans enable G4 highlighting: given a finding with a
+canonicalStart..canonicalEnd range, the UI can identify the exact
+character positions in the canonical text.
+
+--------------------------------------------------------------------
+7. TYPED FAILURE TAXONOMY
+--------------------------------------------------------------------
+
+Every failure returns success: false with error.code set to exactly
+one of:
+
+INVALID_DOCX          - not a ZIP archive, or archive lacks required
+                        parts in a way that indicates the file is not
+                        a DOCX
+CORRUPT_PACKAGE       - ZIP central directory malformed, or a
+                        declared entry cannot be read
+MISSING_MAIN_PART     - word/document.xml not present in the archive
+EMPTY_DOCUMENT        - word/document.xml parsed but produced zero
+                        text segments after accounting for all rules
+SECURITY_REJECTED     - a ZIP or XML safety limit was exceeded, or a
+                        forbidden pattern was detected
+UNSUPPORTED_FEATURE   - a required feature could not be processed
+                        (e.g., encrypted archive). Most unsupported
+                        features are warnings, not failures.
+OVERSIZED             - raw input byte length exceeded maxBytes
+
+Failures NEVER throw. The extractor's promise always resolves.
+
+--------------------------------------------------------------------
+8. ACCEPTANCE MATRIX - VALID FIXTURES
+--------------------------------------------------------------------
+
+F1  Real academic DOCX with:
+      headings, paragraphs, punctuation, decimal, DOI, percentage,
+      'Dr.', 'Prof.', 'Vol.', a two-column two-row table, a
+      Unicode character (U+2026 ELLIPSIS), a w:br line break.
+    Expected: success: true
+              segments: text, tab, lineBreak, paragraphBreak only
+              canonicalText contains all source characters including
+              '\n\n' between paragraphs
+              canonicalTextHash deterministic
+              warnings: []
+
+F2  DOCX with xml:space="preserve" leading and trailing spaces in a
+    w:t element.
+    Expected: success: true; rawText preserves the spaces exactly.
+
+F3  DOCX with tracked insertion (w:ins).
+    Expected: success: true; inserted text present in canonicalText;
+              warnings contains TRACKED_INSERTION_PRESENT.
+
+F4  DOCX with tracked deletion (w:del).
+    Expected: success: true; deleted text NOT present in
+              canonicalText; warnings contains
+              TRACKED_DELETION_PRESENT.
+
+F5  DOCX with '&amp;', '&lt;', '&gt;' in text content.
+    Expected: success: true; canonicalText contains the literal
+              six-character sequences.
+
+F6  DOCX with a small table.
+    Expected: success: true; cells appear in row-major order;
+              no data loss.
+
+F7  DOCX with multiple paragraphs and mixed punctuation.
+    Expected: success: true; paragraphBreak segments separate
+              paragraphs.
+
+F8  DOCX with a footnote reference.
+    Expected: success: true; warning FOOTNOTE_REFERENCE_IGNORED.
+
+F9  DOCX with an embedded drawing.
+    Expected: success: true; warning DRAWING_IGNORED.
+
+F10 Same DOCX bytes processed twice.
+    Expected: identical canonicalTextHash, identical segments,
+              identical warnings.
+
+F11 DOCX with an empty body paragraph.
+    Expected: success: true; segment stream contains only the
+              structural paragraphBreak for that paragraph.
+
+F12 DOCX where word/document.xml has CRLF newlines inside w:t.
+    Expected: success: true; CRLF preserved as-is in rawText
+              (no normalisation at extractor level).
+
+--------------------------------------------------------------------
+9. ADVERSARIAL TEST MATRIX
+--------------------------------------------------------------------
+
+A1  Truncated ZIP (first 100 bytes of F1).
+    Expected: success: false; code CORRUPT_PACKAGE.
+
+A2  ZIP with word/document.xml missing.
+    Expected: success: false; code MISSING_MAIN_PART.
+
+A3  Non-ZIP bytes (40 bytes of 0x00).
+    Expected: success: false; code INVALID_DOCX.
+
+A4  ZIP whose central directory contains an entry named
+    '../etc/passwd'.
+    Expected: success: false; code SECURITY_REJECTED.
+
+A5  ZIP whose central directory contains an entry named
+    '/absolute/path.xml'.
+    Expected: success: false; code SECURITY_REJECTED.
+
+A6  ZIP whose word/document.xml contains '<!DOCTYPE' before the
+    first element.
+    Expected: success: false; code SECURITY_REJECTED.
+
+A7  ZIP whose word/document.xml contains '<!ENTITY' before the
+    first element.
+    Expected: success: false; code SECURITY_REJECTED.
+
+A8  ZIP with two entries both named 'word/document.xml'.
+    Expected: success: false; code SECURITY_REJECTED.
+
+A9  ZIP with declared decompressed size of 500 MB (simulated via
+    crafted central directory).
+    Expected: success: false; code SECURITY_REJECTED.
+
+A10 Raw file of 60 MB (>= maxBytes default).
+    Expected: success: false; code OVERSIZED.
+
+--------------------------------------------------------------------
+10. DETERMINISM CONTRACT
+--------------------------------------------------------------------
+
+For identical input bytes:
+
+  - segments array identical in order and content
+  - canonicalText identical (byte-for-byte)
+  - canonicalTextHash identical
+  - zipEntryCount, decompressedBytes identical
+  - warnings array identical in order and content
+
+The extractor MUST NOT:
+  - call Date.now()
+  - call Math.random()
+  - depend on locale
+  - depend on Object.keys iteration order without sorting
+  - call OCR or any external service
+  - use any environment variable
+
+--------------------------------------------------------------------
+11. DISPATCHER INTEGRATION
+--------------------------------------------------------------------
+
+In universalIngestionService.ts, the DOCX branch changes from:
+
+  if (mimeType.includes('openxmlformats-officedocument.wordprocessingml')) {
+    adapterResult = await extractDocxText(payload.bytes);
+  }
+
+to:
+
+  if (mimeType.includes('openxmlformats-officedocument.wordprocessingml')) {
+    adapterResult = await extractDocx(payload.bytes);
+  }
+
+The legacy extractDocxText function is not modified. It remains
+present and unused in this migration. It is deleted in G5-M04.
+
+All other branches of universalIngestionService.ts are unchanged.
+
+--------------------------------------------------------------------
+12. NON-MODIFICATION CONTRACT
+--------------------------------------------------------------------
+
+G5-M03 does NOT modify any of the following:
+
+  src/services/verify/documentNormalizer.ts
+  src/services/verify/deterministicEngine.ts
+  src/services/verify/verifyCoreService.ts
+  src/services/verify/canonicalTextOffsetService.ts
+  src/services/verify/types.ts
+  src/services/verify/plagiarismPolicy.ts
+  src/services/verify/verificationPersistenceService.ts
+  src/services/verify/publicVerificationService.ts
+  src/services/verify/server/**
+  supabase/**
+  any file under src/pages/ or src/components/
+  any test file other than the new docxExtractor.test.ts
+  any scoring formula
+  any test expectation from the existing G2 regression matrix
+
+If any of these files appears in git diff at the end of G5-M03,
+the migration FAILS and is reverted.
+
+--------------------------------------------------------------------
+13. G1 CERTIFICATION CRITERIA
+--------------------------------------------------------------------
+
+G5-M03 is CERTIFIED when ALL of the following hold:
+
+  C1. Valid fixtures F1-F12: 12/12 PASS
+  C2. Adversarial fixtures A1-A10: 10/10 PASS
+  C3. Determinism fixture F10: two runs produce identical output
+  C4. G5 deterministic suite:
+        npx vitest run tests/deterministicSimilarityEvidence.test.ts
+        -> 1 passed (1)
+  C5. G2 regression matrix:
+        npx vitest run tests/g2-punctuation-classification.temp.test.ts
+        -> 11 failed | 7 passed (18)   [baseline unchanged]
+  C6. SAMPLE_TEXT_A token coverage unchanged from frozen baseline
+  C7. git diff is confined to:
+        src/services/verify/ingestionAdapters/docxExtractor.ts (new)
+        src/services/verify/universalIngestionService.ts (dispatch)
+        package.json and package-lock.json (fast-xml-parser)
+        tests/docxExtractor.test.ts (new)
+        tests/fixtures/docx/** (new fixtures)
+  C8. No file in the Section 12 non-modification list appears in
+      git diff.
+  C9. No scoring formula is modified.
+
+If any criterion fails, the migration is reverted and re-specified.
+
+--------------------------------------------------------------------
+14. IMPLEMENTATION ORDER
+--------------------------------------------------------------------
+
+  14.1  Write this specification.               <-- current step
+  14.2  Capture BEFORE state (HEAD, hashes).
+  14.3  Add fast-xml-parser to package.json.
+  14.4  Create tests/fixtures/docx/ with F1-F12 and A1-A10.
+  14.5  Run fixtures against UNMODIFIED production.
+        All fixtures fail because the module does not exist yet.
+        Record the failure baseline.
+  14.6  Implement docxExtractor.ts.
+  14.7  Run fixtures. Must be 22/22.
+  14.8  Change dispatcher in universalIngestionService.ts.
+  14.9  Run G5 deterministic suite. Must be 1/1.
+  14.10 Run G2 regression matrix. Must be 7 passed / 11 failed.
+  14.11 Verify SAMPLE_TEXT_A coverage.
+  14.12 Inspect git diff. Confirm Section 13 C7 and C8.
+  14.13 TypeScript build.
+  14.14 Commit with message:
+          "feat(ingestion): G5-M03 DOCX extractor contract
+           - F1-F12 valid fixtures: 12/12 PASS
+           - A1-A10 adversarial fixtures: 10/10 PASS
+           - G5 deterministic suite: 1/1 PASS
+           - G2 regression matrix unchanged: 7/11"
+  14.15 Push to clean-deploy.
+  14.16 Mark G5-M03 CERTIFIED in evidence/phase3/.
+
+If any step from 14.7 onward fails, revert with:
+  git checkout -- src/services/verify/ingestionAdapters/docxExtractor.ts
+  git checkout -- src/services/verify/universalIngestionService.ts
+  git checkout -- package.json package-lock.json
+and record G5-M03 REJECTED.
+
+--------------------------------------------------------------------
+15. REVERSIBILITY
+--------------------------------------------------------------------
+
+G5-M03 is reversible by three git checkouts and one npm uninstall.
+No database migration. No API contract change. No scoring change.
+No persisted artifact references the new extractor until a user
+uploads a DOCX after the migration is deployed.
+
+--------------------------------------------------------------------
+16. OUT OF SCOPE
+--------------------------------------------------------------------
+
+G5-M03 does NOT:
+  - Fix the segmentation gap documented in Phase 1
+  - Change the deterministic engine
+  - Add canonical_text_hash to persistence
+  - Add receipt signing
+  - Modify Supabase schema or RLS
+  - Modify the student or lecturer UI
+  - Modify any Edge Function
+  - Delete officeZipAdapter.extractDocxText (deferred to G5-M04)
+  - Extract headers, footers, footnotes, endnotes as separate stories
+  - Apply Unicode normalization
+  - Decode XML entities
+
+Each of these is a separate migration with its own specification.
+
+--------------------------------------------------------------------
+17. FROZEN ON SUCCESS
+--------------------------------------------------------------------
+
+Once all C1-C9 hold and the commit is pushed:
+  - docxExtractor.ts is frozen at the G5-M03 state.
+  - The ZIP and XML security contracts are frozen.
+  - The failure taxonomy is frozen.
+  - The TextSegment shape is frozen.
+  - Any further change to DOCX extraction requires a new migration ID.
+
+--------------------------------------------------------------------
+END OF G5-M03 SPECIFICATION

@@ -1,0 +1,105 @@
+G5-M03 CERTIFICATION
+Status: CERTIFIED
+Date: 2026-10-06
+Commit: aa09836
+Branch: clean-deploy
+Remote: origin/clean-deploy
+
+--------------------------------------------------------------------
+COMMIT SCOPE
+--------------------------------------------------------------------
+
+  8 files changed, 1434 insertions(+), 1 deletion(-)
+
+  package.json                                     |  1 +
+  package-lock.json                                | 31 +
+  src/services/verify/ingestionAdapters/docxExtractor.ts  | 793 ++++
+  src/services/verify/universalIngestionService.ts |  3 +-
+  tests/docxExtractor.test.ts                      | 123 +++
+  tests/fixtures/docx/builders.ts                  | 456 +++
+  tests/fixtures/docx/manifest.json                |  28 +
+  tests/fixtures/docx/valid/F01_academic.docx      | Bin 12397
+
+--------------------------------------------------------------------
+CERTIFICATION EVIDENCE
+--------------------------------------------------------------------
+
+  F-series valid fixtures:            11/11 PASS
+  A-series adversarial fixtures:      10/10 PASS
+  Determinism (F02 processed twice):   1/1  PASS
+  Total:                              22/22 PASS
+
+  G5 deterministic suite:              1/1  PASS
+  G2 regression matrix:                11 failed / 7 passed
+                                       (baseline unchanged)
+
+  Forbidden-file diff:                 empty
+
+  F01_academic.docx SHA-256:
+    CC26F5E0B6EA44F06DECFC9AD65E0632E80824BFADCE83D10A8A3698A9B133FF
+
+--------------------------------------------------------------------
+NON-MODIFICATION VERIFIED
+--------------------------------------------------------------------
+
+  src/services/verify/documentNormalizer.ts           unchanged
+  src/services/verify/deterministicEngine.ts          unchanged
+  src/services/verify/verifyCoreService.ts            unchanged
+  src/services/verify/canonicalTextOffsetService.ts   unchanged
+  src/services/verify/types.ts                        unchanged
+  src/services/verify/plagiarismPolicy.ts             unchanged
+  src/services/verify/verificationPersistenceService.ts  unchanged
+  src/services/verify/publicVerificationService.ts    unchanged
+  src/services/verify/ingestionAdapters/officeZipAdapter.ts  unchanged
+  src/services/verify/server/**                       unchanged
+  supabase/**                                          unchanged
+  src/pages/**                                         unchanged
+  src/components/**                                    unchanged
+
+--------------------------------------------------------------------
+KNOWN GAPS NOT ADDRESSED BY G5-M03
+--------------------------------------------------------------------
+
+  GAP 1 - Production DOCX upload end-to-end is NOT tested.
+    The extractor is certified against fixtures. The full path
+    from browser upload UI through ingestDocument -> extractDocx
+    -> buildCanonicalAnalysisDocument -> executeVerifyRun ->
+    persistence has not been exercised in a live session with a
+    real uploaded DOCX.
+    PHASE 9 work item.
+
+  GAP 2 - Paragraph-level similarity is NOT surfaced in the public
+    API.
+    evaluateParagraphMatch computes paragraph evidence and
+    analyzeDocumentEvidence returns it in aggregation.paragraphFlags.
+    But executeSimilarityAnalysis narrows its return type to
+    SimilarityAnalysisResult, which omits aggregation. Consumers
+    needing paragraph-level data must use executeVerifyRun.
+    PHASE 10 work item.
+
+  GAP 3 - The scoring engine runs client-side.
+    GradifiVerifyDemoPage.tsx calls
+    verifyCoreService.executeVerifyRun() in the browser. The server
+    validates hashes but does not recompute verification. Receipts
+    are therefore client-authored claims. This must be resolved
+    before institutional trust can be claimed.
+    PHASE 11 work item.
+
+--------------------------------------------------------------------
+REVERSIBILITY
+--------------------------------------------------------------------
+
+  git revert aa09836 restores the pre-G5-M03 state.
+  The legacy DOCX path in officeZipAdapter.ts is preserved.
+  The legacy extractDocxText function is present but unused.
+
+--------------------------------------------------------------------
+FROZEN ON SUCCESS
+--------------------------------------------------------------------
+
+  src/services/verify/ingestionAdapters/docxExtractor.ts is
+  frozen at the G5-M03 state. Any further DOCX extractor change
+  requires a new migration ID.
+
+--------------------------------------------------------------------
+END OF G5-M03 CERTIFICATION
