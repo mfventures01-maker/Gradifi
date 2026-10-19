@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-10-18T17:25:00Z",
+  "repository": {
+    "root": "C:\\Projects\\Gradifi",
+    "head": "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+    "workingTree": "DIRTY",
+    "modifiedFilesCount": 14,
+    "stagedChangesCount": 0
+  },
+  "toolchain": {
+    "node": "v20.20.2",
+    "npm": "10.8.2",
+    "os": "Windows"
+  },
+  "evidenceArtifactHashes": {
+    "evidence/g4-closure-20261016T1632Z/G4_RESULT.json": "3A4381D39BFA19DA96E04F12C98A460F77BEFB325AEF53A9D6258B9D5B9215AA",
+    "evidence/g4-r6-engine-certification/r6-summary.json": "CF862551196498D470E108EC74570F7F47F8B379385FE29FF5CC846FC249A6AB",
+    "evidence/g4-r6-engine-certification/G4_CLOSURE_REPORT.md": "1B5EF192BF57E9CBEFFDB36E65E7DAF38C8DBD0AAAA53A5A2D97E9AA019B5AAE",
+    "evidence/g4-r7-live-provider-20261018T154500Z/R7_RESULT.json": "ED5952F2AFD964AACC15BA41E56A8BB4C0158C147E1B04F7B522961C6325A6F6"
+  },
+  "trackedModifiedFiles": [
+    "e2e/four-gates-g4-browser.spec.ts",
+    "e2e/matched-text-highlighting.spec.ts",
+    "playwright.config.ts",
+    "src/components/verify/CanonicalDocumentViewer.tsx",
+    "src/lib/supabase.ts",
+    "src/pages/verify/GradifiVerifyDemoPage.tsx",
+    "src/services/verify/ingestionAdapters/docxExtractor.ts",
+    "src/services/verify/publicVerificationService.ts",
+    "src/services/verify/server/verifyServerPlugin.ts",
+    "src/services/verify/universalIngestionService.ts",
+    "src/services/verify/verificationPersistenceService.ts",
+    "tests/publicVerificationResolution.test.ts",
+    "tests/verificationPersistence.test.ts",
+    "vite.config.ts"
+  ]
+}

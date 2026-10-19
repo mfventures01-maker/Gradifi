@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-10-18T18:00:25.456Z",
+  "targetRoute": "/tools/plagiarism",
+  "seamAbsenceVerified": true,
+  "documentTextLength": 1083,
+  "canonicalTextLength": 1083,
+  "providerNetworkEvents": [
+    {
+      "url": "http://127.0.0.1:5173/api/verify/openalex",
+      "method": "POST",
+      "status": 200,
+      "timestamp": "2026-10-18T18:00:10.805Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/verify/semanticscholar",
+      "method": "POST",
+      "status": 200,
+      "timestamp": "2026-10-18T18:00:11.723Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/verify/crossref",
+      "method": "POST",
+      "status": 200,
+      "timestamp": "2026-10-18T18:00:13.105Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/verify/unpaywall",
+      "method": "POST",
+      "status": 200,
+      "timestamp": "2026-10-18T18:00:13.305Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/verify/gemma",
+      "method": "POST",
+      "status": 200,
+      "timestamp": "2026-10-18T18:00:15.531Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/verify/gemini",
+      "method": "POST",
+      "status": 500,
+      "timestamp": "2026-10-18T18:00:20.604Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/verify/persist",
+      "method": "POST",
+      "status": 200,
+      "timestamp": "2026-10-18T18:00:21.333Z"
+    }
+  ],
+  "findingsCount": 10,
+  "verifiedSourcesCount": 10,
+  "markCount": 2,
+  "observedDomMarks": [
+    {
+      "index": 0,
+      "findingId": "de51b5db0696a8eb",
+      "sourceId": "https://openalex.org/W7163668962",
+      "start": 58,
+      "end": 76,
+      "markText": "Federated Learning",
+      "canonicalSlice": "Federated Learning",
+      "sliceMatchesExact": true
+    },
+    {
+      "index": 1,
+      "findingId": "a8bf1fe9b46f5759",
+      "sourceId": "doi:10.21203/rs.3.rs-9358734/v1",
+      "start": 800,
+      "end": 816,
+      "markText": "machine learning",
+      "canonicalSlice": "machine learning",
+      "sliceMatchesExact": true
+    }
+  ],
+  "allSlicesMatched": true,
+  "provenanceNonFixture": true,
+  "screenshotPath": "evidence/g4-live-recertification-20261018T172500Z/screenshots/g4_live_dom_highlight.png",
+  "verdict": "PASS"
+}

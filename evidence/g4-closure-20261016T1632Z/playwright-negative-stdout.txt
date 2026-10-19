@@ -1,0 +1,14 @@
+[WebServer] ΓÜá∩╕Å  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+
+[WebServer] ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+
+
+Running 1 test using 1 worker
+
+[1/1] [chromium] ΓÇ║ e2e\four-gates-g4-negative.spec.ts:4:3 ΓÇ║ HOEOS Gate 4 Negative Case: Missing Canonical Document Fails Closed ΓÇ║ proves that missing canonical document suppresses highlights and renders unavailable banner
+[chromium] ΓÇ║ e2e\four-gates-g4-negative.spec.ts:4:3 ΓÇ║ HOEOS Gate 4 Negative Case: Missing Canonical Document Fails Closed ΓÇ║ proves that missing canonical document suppresses highlights and renders unavailable banner
+NEGATIVE_TEST_ASSERTION_FAILED_CLOSED: true
+
+NEGATIVE_TEST_CANONICAL_RAW_TEXT_PRESENT: false
+
+  1 passed (22.2s)

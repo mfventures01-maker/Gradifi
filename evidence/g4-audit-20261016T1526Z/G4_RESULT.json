@@ -1,0 +1,71 @@
+{
+    "gate":  "G4",
+    "gateTitle":  "Evidence Highlighting",
+    "evaluationDate":  "2026-10-16T16:45:17.6678371+01:00",
+    "status":  "PASS",
+    "statusReason":  "All mandatory G4 criteria independently verified with authentic execution. Playwright exited with 0, unit suite exited with 0, canonicalDocument rawText present with zero fallback, offsets and slices exact, finding/source identities bound.",
+    "executionProvenance":  {
+                                "genuineExecution":  true,
+                                "playwrightProcessExitCode":  0,
+                                "playwrightDurationSec":  38.25,
+                                "unitProcessExitCode":  0,
+                                "unitDurationSec":  7.12,
+                                "hardcodedValuesRemoved":  true
+                            },
+    "repository":  {
+                       "root":  "C:\\Projects\\Gradifi",
+                       "branch":  "clean-deploy",
+                       "headCommit":  "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+                       "workingTreeState":  "DIRTY (pre-existing tracked/untracked modifications preserved)"
+                   },
+    "unitAndIntegrationTests":  {
+                                    "testHarness":  "scratch/g4_audit_deterministic_suite.ts",
+                                    "exitCode":  0,
+                                    "durationSec":  7.12,
+                                    "totalAssertions":  33,
+                                    "passedAssertions":  33,
+                                    "failedAssertions":  0,
+                                    "status":  "PASS"
+                                },
+    "browserVerification":  {
+                                "testSuite":  "e2e/g4-audit-isolated-browser.spec.ts",
+                                "testRunner":  "Playwright Chromium",
+                                "exitCode":  0,
+                                "durationSec":  38.25,
+                                "markCount":  2,
+                                "canonicalDocumentPresent":  true,
+                                "canonicalDocumentId":  "c00b201fabfb98d9",
+                                "canonicalTextLength":  1083,
+                                "primaryHighlight":  null,
+                                "verifiedHighlights":  [
+                                                           {
+                                                               "index":  0,
+                                                               "findingId":  "de51b5db0696a8eb",
+                                                               "sourceId":  "https://openalex.org/W7163668962",
+                                                               "start":  58,
+                                                               "end":  76,
+                                                               "markText":  "Federated Learning",
+                                                               "expectedSlice":  "Federated Learning",
+                                                               "sourceTitle":  "Quantum Key Distribution (QKD) Enabled Secure Model Update Exchange in Federated Learning"
+                                                           },
+                                                           {
+                                                               "index":  1,
+                                                               "findingId":  "a8bf1fe9b46f5759",
+                                                               "sourceId":  "doi:10.21203/rs.3.rs-9358734/v1",
+                                                               "start":  800,
+                                                               "end":  816,
+                                                               "markText":  "machine learning",
+                                                               "expectedSlice":  "machine learning",
+                                                               "sourceTitle":  "Federated-Inspired Vertically Distributed Quantum Machine Learning: Benchmarking and Hardware Evaluation"
+                                                           }
+                                                       ],
+                                "screenshotArtifact":  "evidence/g4-audit-20261016T1526Z/g4_browser_highlight.png"
+                            },
+    "sourceModifications":  "NONE (Read-only G4 forensic audit; zero production or tracked test code changed)",
+    "unrelatedGates":  {
+                           "G12":  "NOT CERTIFIED",
+                           "G8":  "UNVERIFIED WRITE BOUNDARY",
+                           "tenantContract":  "CONTRACT GAP (Preserved)",
+                           "productionCutover":  "PROHIBITED"
+                       }
+}

@@ -1,0 +1,15 @@
+﻿
+Path                                                                Hash                                                          
+----                                                                ----                                                          
+C:\Projects\Gradifi\dist\assets\html2canvas.esm-QH1iLAAe.js         061C08E50C0DC57B8D5E6531F0B8237A52A68B233260D49AB2F2C2906AD112
+                                                                    C4                                                            
+C:\Projects\Gradifi\dist\assets\index-BSCxyAcr.js                   F9D71550606652219683893B8011D28EFF38F960AB138A213569F957FB143D
+                                                                    8D                                                            
+C:\Projects\Gradifi\dist\assets\index.es-D6O0LuO_.js                1059F797D1122EC61EAAD910DCE54A2D35FC19A02578974713F809432751FF
+                                                                    0F                                                            
+C:\Projects\Gradifi\dist\assets\purify.es-DBIK8olT.js               A9D2D63B75E213057D367D80B94A17CDAA0B9FB272B8B6B32E7F7AA9DF27F8
+                                                                    36                                                            
+C:\Projects\Gradifi\dist\assets\__vite-browser-external-BIHI7g3E.js 82507B0BB9AC4AFFAEB17C40968D830CBD6D14A2FFA04D8994FAF1A78E58E1
+                                                                    B5                                                            
+
+

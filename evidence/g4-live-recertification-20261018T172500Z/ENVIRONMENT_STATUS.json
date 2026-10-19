@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-10-18T17:25:00Z",
+  "serverTarget": {
+    "url": "http://127.0.0.1:5173",
+    "config": "playwright.config.ts",
+    "command": "npm run dev -- --host 127.0.0.1 --port 5173",
+    "mode": "development",
+    "testSeamEnvFlag": "UNSET"
+  },
+  "providerReachability": {
+    "openalex": "CONNECTIVITY_CONFIRMED",
+    "crossref": "CONNECTIVITY_CONFIRMED",
+    "unpaywall": "CONNECTIVITY_CONFIRMED",
+    "core": "AUTHENTICATION_FAILED",
+    "googlebooks": "AUTHENTICATION_FAILED"
+  },
+  "supabaseStatus": {
+    "url": "URL_PRESENT",
+    "anonKey": "ANON_KEY_PRESENT",
+    "serviceRoleKey": "SERVICE_ROLE_KEY_PRESENT",
+    "connectivity": "CONNECTIVITY_CONFIRMED",
+    "persistenceBoundary": "IDEMPOTENT_SERVER_WRITE_PATH"
+  },
+  "fixtureInjectionStatus": {
+    "globalFixtureActive": false,
+    "transformSeamActive": false
+  }
+}

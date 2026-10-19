@@ -1,0 +1,3 @@
+PLAYWRIGHT_E2E_STATUS: PASS
+MARK_COUNT: 2
+SCREENSHOT_PATH: evidence/g4-closure-20261016T1632Z/g4/g4_browser_highlight.png

@@ -1,0 +1,52 @@
+{
+    "gate":  "G4",
+    "gateTitle":  "Evidence Highlighting",
+    "evaluationDate":  "2026-10-16T15:55:06.9822723+01:00",
+    "status":  "PASS",
+    "statusReason":  "All 12 mandatory criteria satisfied: G1 extraction reliable, UTF-16 offset convention proven, finding/source provenance bound, exact canonical text slices rendered, 31/31 unit assertions passed, real browser Playwright run executed with exit code 0.",
+    "repository":  {
+                       "root":  "C:\\Projects\\Gradifi",
+                       "branch":  "clean-deploy",
+                       "headCommit":  "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+                       "workingTreeState":  "DIRTY (pre-existing tracked/untracked modifications preserved)"
+                   },
+    "g1Dependency":  {
+                         "testFixture":  "tests/fixtures/ingestion/quantum_federated_learning_paper.pdf",
+                         "inputSha256":  "0c5860b9d729860dcf3a7480d9ec26d7e5354ade7353b1d7e8fcd66895c9f4ff",
+                         "status":  "VERIFIED_RELIABLE",
+                         "canonicalTextLength":  310,
+                         "canonicalTextHash":  "bba6f55f3e88ab19",
+                         "utf8Corruption":  false
+                     },
+    "unitAndIntegrationTests":  {
+                                    "testHarness":  "scratch/g4_phase4_deterministic_suite.ts",
+                                    "totalAssertions":  31,
+                                    "passedAssertions":  31,
+                                    "failedAssertions":  0,
+                                    "status":  "PASS"
+                                },
+    "browserVerification":  {
+                                "testSuite":  "e2e/four-gates-g4-browser.spec.ts",
+                                "testRunner":  "Playwright Chromium",
+                                "exitCode":  0,
+                                "durationSec":  40.6,
+                                "markCount":  2,
+                                "primaryHighlight":  {
+                                                         "markText":  "Federated Learning",
+                                                         "sourceId":  "https://openalex.org/W7163668962",
+                                                         "findingId":  "de51b5db0696a8eb",
+                                                         "startOffset":  58,
+                                                         "endOffset":  76,
+                                                         "exactSliceMatch":  true,
+                                                         "sourceIdentityBound":  true
+                                                     },
+                                "screenshotArtifact":  "evidence/g4-deterministic-20261016T1415Z/g4_browser_highlight.png"
+                            },
+    "sourceModifications":  "NONE (Read-only G4 investigation; no production code, tests, migrations, or DB modified)",
+    "unrelatedGates":  {
+                           "G12":  "NOT CERTIFIED",
+                           "G8":  "UNVERIFIED WRITE BOUNDARY (G8 analysis completed in prior turn)",
+                           "tenantContract":  "CONTRACT GAP (Preserved)",
+                           "productionCutover":  "PROHIBITED"
+                       }
+}

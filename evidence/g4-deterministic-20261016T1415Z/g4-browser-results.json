@@ -1,0 +1,44 @@
+{
+    "testName":  "e2e/four-gates-g4-browser.spec.ts",
+    "command":  "npx playwright test e2e/four-gates-g4-browser.spec.ts",
+    "exitCode":  0,
+    "status":  "PASS",
+    "durationSec":  40.6,
+    "realBrowser":  true,
+    "browserEngine":  "Chromium (Playwright)",
+    "markCount":  2,
+    "primaryHighlight":  {
+                             "markText":  "Federated Learning",
+                             "sourceId":  "https://openalex.org/W7163668962",
+                             "findingId":  "de51b5db0696a8eb",
+                             "startOffset":  58,
+                             "endOffset":  76,
+                             "authoritativeTextMatch":  true,
+                             "offsetInvariant":  true,
+                             "identityBound":  true
+                         },
+    "verifiedHighlights":  [
+                               {
+                                   "index":  0,
+                                   "findingId":  "de51b5db0696a8eb",
+                                   "sourceId":  "https://openalex.org/W7163668962",
+                                   "start":  58,
+                                   "end":  76,
+                                   "markText":  "Federated Learning",
+                                   "expectedSlice":  "Federated Learning",
+                                   "sourceTitle":  "Quantum Key Distribution (QKD) Enabled Secure Model Update Exchange in Federated Learning"
+                               },
+                               {
+                                   "index":  1,
+                                   "findingId":  "a8bf1fe9b46f5759",
+                                   "sourceId":  "doi:10.21203/rs.3.rs-9358734/v1",
+                                   "start":  800,
+                                   "end":  816,
+                                   "markText":  "machine learning",
+                                   "expectedSlice":  "machine learning",
+                                   "sourceTitle":  "Federated-Inspired Vertically Distributed Quantum Machine Learning: Benchmarking and Hardware Evaluation"
+                               }
+                           ],
+    "screenshotArtifact":  "evidence/g4-deterministic-20261016T1415Z/g4_browser_highlight.png",
+    "networkConsoleLog":  "evidence/g4-deterministic-20261016T1415Z/g4-browser-network-console.txt"
+}

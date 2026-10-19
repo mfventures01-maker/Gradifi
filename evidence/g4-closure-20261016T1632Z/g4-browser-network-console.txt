@@ -1,0 +1,18 @@
+CONSOLE_LOGS_COUNT: 9
+NETWORK_FAILURES_COUNT: 3
+
+CONSOLE_LOGS:
+[debug] [vite] connecting...
+[debug] [vite] connected.
+[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[log] [OfflineStorage] Database initialized
+[log] ✅ Offline storage initialized
+[log] [OfflineStorage] Database initialized
+[log] [OfflineStorage] Database initialized
+[log] ✅ Initial sync: 0 items synced
+[error] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+
+NETWORK_FAILURES:
+FAILED: POST http://127.0.0.1:5173/api/verify/googlebooks - net::ERR_ABORTED
+FAILED: GET http://localhost:11434/v1/models - net::ERR_ABORTED
+FAILED: POST http://127.0.0.1:5173/api/verify/nemotron - net::ERR_ABORTED

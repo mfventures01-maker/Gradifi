@@ -1,0 +1,20 @@
+﻿{
+    "stamp":  "20261017T1430Z",
+    "head_before":  "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+    "head_after":  "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+    "page_hash_before":  "B52BC95C375A14811CDBC83DCC4C528849CE59745B01A4FA1D46A6038AFD7DD6",
+    "page_hash_after":  "6112AA7E75B18BB05F19597171FC8709ACA40E76675A80186FDF0CE64B0E1F3C",
+    "negative_spec_hash_before":  "FA1A98F8FBD4284FEB5BD0EEAAE30E3E934D617E9DE1FCE035E23586AD54275A",
+    "negative_spec_quarantined":  true,
+    "r1_patch_sha256":  "6B8FEB2EDB0A838B234AC2B1C6A89DB5F61B5584D33121E42AE910CF4CB27CD4",
+    "build_exit":  0,
+    "dist_fresh":  true,
+    "bundle_seam_hits":  0,
+    "prod_config_sha256":  "030128EDFBD6422A707DFBF6C168D1155DEB4266BD983D0F25B1A34CEA09C3EC",
+    "prod_config_preserved":  true,
+    "localprod_config_absent":  true,
+    "post_write_checks":  "PASS",
+    "source_diff_isolated":  "only gate hunk remains; no BOM, mojibake, or trailing-newline change",
+    "build_note":  "Step 8 PowerShell pipeline threw NativeCommandError on @supabase/supabase-js Node20 deprecation warning on stderr; npm run build completed and regenerated dist/assets at 15:18:04 vs page at 15:17:06",
+    "script_hash":  "62923CB75E2269F3556A0471842D37769F3D96168C1FE1028219306402A07C5D"
+}

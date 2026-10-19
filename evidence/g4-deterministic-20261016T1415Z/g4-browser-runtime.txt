@@ -1,0 +1,3 @@
+PLAYWRIGHT_E2E_STATUS: PASS
+MARK_COUNT: 2
+SCREENSHOT_PATH: tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png

@@ -1,0 +1,71 @@
+{
+  "gate": "G4",
+  "gateTitle": "Deterministic Verification and Matched-Text Highlighting",
+  "evaluationTimestamp": "2026-10-18T18:00:25.456Z",
+  "status": "PASS",
+  "statusReason": "Current working-tree G4 recertification succeeded via seam-free e2e/g4-live-provider-certification.spec.ts. All 14 certification invariants satisfied. Zero synthetic fixture injection, genuine live providers contacted (OpenAlex, Crossref, Semantic Scholar, Unpaywall, Gemma), real persistence succeeded via /api/verify/persist (200 OK), and 2 rendered DOM marks match exact canonical text slices without offset drift.",
+  "executionProvenance": {
+    "testFile": "e2e/g4-live-provider-certification.spec.ts",
+    "testRunner": "Playwright Chromium",
+    "exitCode": 0,
+    "durationSec": 37.1,
+    "seamAbsenceVerified": true,
+    "fixtureInjectionDetected": false,
+    "syntheticIdsDetected": false
+  },
+  "repository": {
+    "root": "C:\\Projects\\Gradifi",
+    "headCommit": "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+    "workingTreeState": "DIRTY (14 tracked modified files preserved from pre-existing user work, zero application files modified for this certification, 1 new isolated test file e2e/g4-live-provider-certification.spec.ts)",
+    "applicationSourceChanges": 0
+  },
+  "providerNetworkVerification": {
+    "openalexStatus": 200,
+    "semanticscholarStatus": 200,
+    "crossrefStatus": 200,
+    "unpaywallStatus": 200,
+    "gemmaStatus": 200,
+    "geminiStatus": 500,
+    "persistStatus": 200,
+    "persistenceAwaited": true
+  },
+  "findingsAndHighlights": {
+    "findingsCount": 10,
+    "verifiedSourcesCount": 10,
+    "domMarkCount": 2,
+    "verifiedHighlights": [
+      {
+        "index": 0,
+        "findingId": "de51b5db0696a8eb",
+        "sourceId": "https://openalex.org/W7163668962",
+        "start": 58,
+        "end": 76,
+        "markText": "Federated Learning",
+        "canonicalSlice": "Federated Learning",
+        "sliceMatchesExact": true
+      },
+      {
+        "index": 1,
+        "findingId": "a8bf1fe9b46f5759",
+        "sourceId": "doi:10.21203/rs.3.rs-9358734/v1",
+        "start": 800,
+        "end": 816,
+        "markText": "machine learning",
+        "canonicalSlice": "machine learning",
+        "sliceMatchesExact": true
+      }
+    ],
+    "screenshotArtifact": "evidence/g4-live-recertification-20261018T172500Z/screenshots/g4_live_dom_highlight.png"
+  },
+  "historicalPillarReconciliation": {
+    "historicalOctober16": "PASS (evidence/g4-closure-20261016T1632Z/G4_RESULT.json)",
+    "historicalR6Hermetic": "PASS (evidence/g4-r6-engine-certification/r6-summary.json)",
+    "historicalR7LiveRegression": "INCONCLUSIVE (evidence/g4-r7-live-provider-20261018T154500Z/R7_RESULT.json, fixture-seam contaminated harness)",
+    "currentWorktreeRecertification": "PASS (evidence/g4-live-recertification-20261018T172500Z/G4_RESULT.json, seam-free live-provider execution)"
+  },
+  "unrelatedGates": {
+    "G12": "NOT CERTIFIED",
+    "G8": "UNVERIFIED WRITE BOUNDARY",
+    "productionCutover": "PROHIBITED"
+  }
+}

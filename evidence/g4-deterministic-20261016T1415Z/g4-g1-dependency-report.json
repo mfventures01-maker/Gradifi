@@ -1,0 +1,41 @@
+{
+  "testDate": "2026-10-16T14:43:10.087Z",
+  "fixturePath": "tests/fixtures/ingestion/quantum_federated_learning_paper.pdf",
+  "inputSha256": "0c5860b9d729860dcf3a7480d9ec26d7e5354ade7353b1d7e8fcd66895c9f4ff",
+  "inputSizeBytes": 652,
+  "executionDurationMs": 8,
+  "ingestSuccess": true,
+  "canonicalReady": true,
+  "extractionMethod": "UNKNOWN",
+  "warnings": [],
+  "errors": [],
+  "encodingInspection": {
+    "hasUtf8ReplacementCharUfffd": false,
+    "ufffdCount": 0,
+    "hasControlCharacters": false,
+    "controlCharCount": 0,
+    "rawTextLength": 0,
+    "canonicalTextLength": 310
+  },
+  "canonicalTextHash": "bba6f55f3e88ab19",
+  "canonicalTextExcerpt": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks By Dr. Aris Thorne and Prof. Elena Rostova 2024 Journal of Advanced Computer Science Federated learning across edge networks faces latency challenges. We propose quantum inspired architecture for high order evidenc",
+  "passageIntegrity": [
+    {
+      "passage": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+      "foundInRaw": false,
+      "foundInCanonical": true
+    },
+    {
+      "passage": "By Dr. Aris Thorne and Prof. Elena Rostova",
+      "foundInRaw": false,
+      "foundInCanonical": true
+    },
+    {
+      "passage": "Federated learning across edge networks faces latency challenges",
+      "foundInRaw": false,
+      "foundInCanonical": true
+    }
+  ],
+  "allPassagesVerified": true,
+  "g1ReliableForG4": true
+}

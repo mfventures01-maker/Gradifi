@@ -1,0 +1,66 @@
+{
+  "evidenceDirectory": "evidence/g4-live-recertification-20261018T172500Z",
+  "generatedAtUtc": "2026-10-18T18:03:04.659Z",
+  "files": [
+    {
+      "relativePath": "ASSERTION_RESULTS.json",
+      "sha256": "1A716DBA1B99B9C925A6873CFA8503952A1A0DE486524DFAEC2971EB635593A1",
+      "sizeBytes": 2188
+    },
+    {
+      "relativePath": "BASELINE.json",
+      "sha256": "958B21A1F806BB2E7160FBEE8F5D218B2FB043738FC08D790E8B33E8770B3A54",
+      "sizeBytes": 1573
+    },
+    {
+      "relativePath": "CERTIFICATION_CONTRACT.md",
+      "sha256": "0DBA15DBDCC26BF09DF9A320EA5CEE56683AA1CCDB4ABC352C3B98656DE0229D",
+      "sizeBytes": 3303
+    },
+    {
+      "relativePath": "command.log",
+      "sha256": "8989D1F8006C41F4E31CC6D15D5270CBF60F85778431541A4064553CC61501A2",
+      "sizeBytes": 106
+    },
+    {
+      "relativePath": "ENVIRONMENT_STATUS.json",
+      "sha256": "AA1EF62A13FBA08A96D229E4525509C5363148201B014023D64B3A94FE9EB88C",
+      "sizeBytes": 845
+    },
+    {
+      "relativePath": "exit-code.txt",
+      "sha256": "617BF2BC4417E336ACB9DCD730BB4EF907AD37CA11DC47A37E95CEBBB1ED20DA",
+      "sizeBytes": 16
+    },
+    {
+      "relativePath": "FINAL_REPORT.md",
+      "sha256": "07A458B7B6B9C263433D665A16001C7903AC1E651F08E49ECA1BACAB75BE50DE",
+      "sizeBytes": 9319
+    },
+    {
+      "relativePath": "G4_RESULT.json",
+      "sha256": "D39F4602F97CDA62309055F4609ADFEE503AD06E3D52311CDD99806818C7D27B",
+      "sizeBytes": 3037
+    },
+    {
+      "relativePath": "git-diff-tracked.patch",
+      "sha256": "7CC0DB40EB42F53F708B004F6E2A907F720EBABF2E7A6E57EC99E6CF9A5D0D40",
+      "sizeBytes": 127070
+    },
+    {
+      "relativePath": "screenshots/g4_live_dom_highlight.png",
+      "sha256": "27BDF984EDAE3B5FD341DDC2535FA350036D14E105183E3C8B0E1CA9441ED59E",
+      "sizeBytes": 1358661
+    },
+    {
+      "relativePath": "SOURCE_TRACE.md",
+      "sha256": "6642221285C3B09D4CCFAA1FF93A8A8437AACFEF808F4C9CA64DE5E6A0B959C0",
+      "sizeBytes": 6881
+    },
+    {
+      "relativePath": "stdout.log",
+      "sha256": "61DB53DEE06B3798291029FF0844C2A955F6B703917598A929B6DFCD934ECD46",
+      "sizeBytes": 2424
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+Repository Root: C:\Projects\Gradifi
+Branch: clean-deploy
+HEAD Commit: 9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44
+Execution Date: 2026-10-16T17:36:27.9308562+01:00
+Evidence Directory: evidence/g4-closure-20261016T1632Z

@@ -1,0 +1,250 @@
+[
+  {
+    "id": "A1.1",
+    "testClass": "POSITIVE",
+    "description": "Verified finding preserved through source filter",
+    "expected": 1,
+    "actual": 1,
+    "passed": true
+  },
+  {
+    "id": "A1.2",
+    "testClass": "POSITIVE",
+    "description": "Finding matchedDocumentId equals match sourceId",
+    "expected": "src_crossref_01",
+    "actual": "src_crossref_01",
+    "passed": true
+  },
+  {
+    "id": "A1.3",
+    "testClass": "POSITIVE",
+    "description": "Highlight segment produced with exact findingId",
+    "expected": true,
+    "actual": true,
+    "passed": true
+  },
+  {
+    "id": "A1.4",
+    "testClass": "POSITIVE",
+    "description": "Start offset is exact integer 0",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "A1.5",
+    "testClass": "POSITIVE",
+    "description": "End offset is exact integer 20",
+    "expected": 20,
+    "actual": 20,
+    "passed": true
+  },
+  {
+    "id": "A1.6",
+    "testClass": "POSITIVE",
+    "description": "Slice equals expected phrase",
+    "expected": "Quantum Entanglement",
+    "actual": "Quantum Entanglement",
+    "passed": true
+  },
+  {
+    "id": "A1.7",
+    "testClass": "POSITIVE",
+    "description": "Segment text equals expected phrase",
+    "expected": "Quantum Entanglement",
+    "actual": "Quantum Entanglement",
+    "passed": true
+  },
+  {
+    "id": "A2.1",
+    "testClass": "POSITIVE",
+    "description": "All 3 verified findings preserved",
+    "expected": 3,
+    "actual": 3,
+    "passed": true
+  },
+  {
+    "id": "A2.2",
+    "testClass": "POSITIVE",
+    "description": "Exactly 3 highlighted segments created",
+    "expected": 3,
+    "actual": 3,
+    "passed": true
+  },
+  {
+    "id": "A2.3",
+    "testClass": "POSITIVE",
+    "description": "First highlight is at document beginning",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "A2.4",
+    "testClass": "POSITIVE",
+    "description": "Last highlight reaches document end",
+    "expected": 192,
+    "actual": 192,
+    "passed": true
+  },
+  {
+    "id": "A2.5",
+    "testClass": "POSITIVE",
+    "description": "Middle highlight matches expected text",
+    "expected": "Federated Learning Networks",
+    "actual": "Federated Learning Networks",
+    "passed": true
+  },
+  {
+    "id": "A3.1",
+    "testClass": "POSITIVE",
+    "description": "Both occurrences of repeated phrase highlighted independently",
+    "expected": 2,
+    "actual": 2,
+    "passed": true
+  },
+  {
+    "id": "A3.2",
+    "testClass": "POSITIVE",
+    "description": "Occurrence 1 has distinct offset",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "A3.3",
+    "testClass": "POSITIVE",
+    "description": "Occurrence 2 has distinct offset",
+    "expected": 51,
+    "actual": 51,
+    "passed": true
+  },
+  {
+    "id": "A3.4",
+    "testClass": "POSITIVE",
+    "description": "Occurrence 1 slice matches phrase",
+    "expected": "neural architecture",
+    "actual": "neural architecture",
+    "passed": true
+  },
+  {
+    "id": "A3.5",
+    "testClass": "POSITIVE",
+    "description": "Occurrence 2 slice matches phrase",
+    "expected": "neural architecture",
+    "actual": "neural architecture",
+    "passed": true
+  },
+  {
+    "id": "A4.1",
+    "testClass": "POSITIVE",
+    "description": "CJK segment resolved correctly",
+    "expected": true,
+    "actual": true,
+    "passed": true
+  },
+  {
+    "id": "A4.2",
+    "testClass": "POSITIVE",
+    "description": "CJK UTF-16 slice matches exactly",
+    "expected": "中文",
+    "actual": "中文",
+    "passed": true
+  },
+  {
+    "id": "A4.3",
+    "testClass": "POSITIVE",
+    "description": "Accented segment resolved correctly",
+    "expected": true,
+    "actual": true,
+    "passed": true
+  },
+  {
+    "id": "A4.4",
+    "testClass": "POSITIVE",
+    "description": "Accented UTF-16 slice matches exactly",
+    "expected": "Café, résumé",
+    "actual": "Café, résumé",
+    "passed": true
+  },
+  {
+    "id": "B1.1",
+    "testClass": "NEGATIVE",
+    "description": "Finding referencing non-existent source is rejected",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "B2.1",
+    "testClass": "NEGATIVE",
+    "description": "Finding with UNVERIFIED source provenance is rejected",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "B3.1",
+    "testClass": "NEGATIVE",
+    "description": "Finding with start offset outside bounds is rejected",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "B4.1",
+    "testClass": "NEGATIVE",
+    "description": "Finding with end offset outside bounds is rejected",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "B5.1",
+    "testClass": "NEGATIVE",
+    "description": "Finding with negative start offset is rejected",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "B6.1",
+    "testClass": "NEGATIVE",
+    "description": "Finding with reversed range (start > end) is rejected",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "B7.1",
+    "testClass": "NEGATIVE",
+    "description": "Finding with mismatched text slice is rejected",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "C1.1",
+    "testClass": "INTEGRITY",
+    "description": "Stale offsets against mutated document are rejected",
+    "expected": 0,
+    "actual": 0,
+    "passed": true
+  },
+  {
+    "id": "C2.1",
+    "testClass": "INTEGRITY",
+    "description": "Markup stripping restores exact byte-for-byte canonical text",
+    "expected": "Academic integrity requires exact deterministic text preservation under all conditions.",
+    "actual": "Academic integrity requires exact deterministic text preservation under all conditions.",
+    "passed": true
+  },
+  {
+    "id": "C3.1",
+    "testClass": "INTEGRITY",
+    "description": "applyHighlights produces 100% identical output over 50 executions",
+    "expected": true,
+    "actual": true,
+    "passed": true
+  }
+]

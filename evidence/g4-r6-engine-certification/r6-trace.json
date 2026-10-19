@@ -1,0 +1,222 @@
+{
+  "timestamp": "2026-10-18T12:52:48.551Z",
+  "seamAbsentAtLoad": true,
+  "seamAbsentAfterRun": true,
+  "canonicalLength": 1083,
+  "loadedTextLength": 1083,
+  "viewerVisible": true,
+  "findingCount": 7,
+  "markCount": 3,
+  "stubSourceIds": [
+    "doi:10.9999/gradifi-r6-a",
+    "doi:10.9999/gradifi-r6-b"
+  ],
+  "syntheticProvenance": true,
+  "syntheticProvenanceNote": "Stub ProviderResult carries provenanceState=VERIFIED (required by filterVerifiedFindings) and syntheticStub=true. R6 certifies engine behavior against synthetic input only.",
+  "findings": [
+    {
+      "rowIndex": 0,
+      "findingId": "40d3ffdd3e45d531",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "sourceStart": 135,
+      "sourceEnd": 228,
+      "similarityScore": 100,
+      "matchMethod": "EXACT_PHRASE"
+    },
+    {
+      "rowIndex": 1,
+      "findingId": "4e4ee35f498f1dcf",
+      "sourceId": "doi:10.9999/gradifi-r6-b",
+      "sourceStart": 698,
+      "sourceEnd": 772,
+      "similarityScore": 100,
+      "matchMethod": "EXACT_PHRASE"
+    },
+    {
+      "rowIndex": 2,
+      "findingId": "502190ab66add8c7",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "sourceStart": 93,
+      "sourceEnd": 112,
+      "similarityScore": 100,
+      "matchMethod": "EXACT_PHRASE"
+    },
+    {
+      "rowIndex": 3,
+      "findingId": "974e54fc0a4f71a2",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "sourceStart": 112,
+      "sourceEnd": 135,
+      "similarityScore": 100,
+      "matchMethod": "EXACT_PHRASE"
+    },
+    {
+      "rowIndex": 4,
+      "findingId": "984af705a1605c73",
+      "sourceId": "doi:10.9999/gradifi-r6-b",
+      "sourceStart": 774,
+      "sourceEnd": 936,
+      "similarityScore": 100,
+      "matchMethod": "EXACT_PHRASE"
+    },
+    {
+      "rowIndex": 5,
+      "findingId": "e42c8ca2ff0a9bd8",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "sourceStart": 0,
+      "sourceEnd": 93,
+      "similarityScore": 100,
+      "matchMethod": "EXACT_PHRASE"
+    },
+    {
+      "rowIndex": 6,
+      "findingId": "207e76876bf14241",
+      "sourceId": "doi:10.9999/gradifi-r6-b",
+      "sourceStart": 618,
+      "sourceEnd": 698,
+      "similarityScore": 29.7,
+      "matchMethod": "NGRAM"
+    }
+  ],
+  "domMarks": [
+    {
+      "index": 0,
+      "findingId": "e42c8ca2ff0a9bd8",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "startAttr": "0",
+      "endAttr": "228",
+      "start": 0,
+      "end": 228,
+      "markText": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks\nBy Dr. Aris Thorne, Prof. Elena Rostova, and Dr. Marcus Vance (2024)\nJournal of Advanced Computer Science & Quantum Information Systems, Vol. "
+    },
+    {
+      "index": 1,
+      "findingId": "207e76876bf14241",
+      "sourceId": "doi:10.9999/gradifi-r6-b",
+      "startAttr": "618",
+      "endAttr": "772",
+      "start": 618,
+      "end": 772,
+      "markText": "4% accuracy across distributed node topology while preserving complete privacy. We compare our approach against standard Crossref and OpenAlex benchmarks."
+    },
+    {
+      "index": 2,
+      "findingId": "984af705a1605c73",
+      "sourceId": "doi:10.9999/gradifi-r6-b",
+      "startAttr": "774",
+      "endAttr": "936",
+      "start": 774,
+      "end": 936,
+      "markText": "Introduction:\nDistributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence. "
+    }
+  ],
+  "mapping": [
+    {
+      "rowIndex": 0,
+      "findingId": "40d3ffdd3e45d531",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "sourceStart": 135,
+      "sourceEnd": 228,
+      "spanLength": 93,
+      "expectedCanonicalSlice": "Marcus Vance (2024)\nJournal of Advanced Computer Science & Quantum Information Systems, Vol. ",
+      "coveredByMarkIndices": [
+        0
+      ],
+      "exactMarkIndices": [],
+      "outcome": "COVERED_BY_LARGER_MARK"
+    },
+    {
+      "rowIndex": 1,
+      "findingId": "4e4ee35f498f1dcf",
+      "sourceId": "doi:10.9999/gradifi-r6-b",
+      "sourceStart": 698,
+      "sourceEnd": 772,
+      "spanLength": 74,
+      "expectedCanonicalSlice": "We compare our approach against standard Crossref and OpenAlex benchmarks.",
+      "coveredByMarkIndices": [
+        1
+      ],
+      "exactMarkIndices": [],
+      "outcome": "COVERED_BY_LARGER_MARK"
+    },
+    {
+      "rowIndex": 2,
+      "findingId": "502190ab66add8c7",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "sourceStart": 93,
+      "sourceEnd": 112,
+      "spanLength": 19,
+      "expectedCanonicalSlice": "Aris Thorne, Prof. ",
+      "coveredByMarkIndices": [
+        0
+      ],
+      "exactMarkIndices": [],
+      "outcome": "COVERED_BY_LARGER_MARK"
+    },
+    {
+      "rowIndex": 3,
+      "findingId": "974e54fc0a4f71a2",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "sourceStart": 112,
+      "sourceEnd": 135,
+      "spanLength": 23,
+      "expectedCanonicalSlice": "Elena Rostova, and Dr. ",
+      "coveredByMarkIndices": [
+        0
+      ],
+      "exactMarkIndices": [],
+      "outcome": "COVERED_BY_LARGER_MARK"
+    },
+    {
+      "rowIndex": 4,
+      "findingId": "984af705a1605c73",
+      "sourceId": "doi:10.9999/gradifi-r6-b",
+      "sourceStart": 774,
+      "sourceEnd": 936,
+      "spanLength": 162,
+      "expectedCanonicalSlice": "Introduction:\nDistributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence. ",
+      "coveredByMarkIndices": [
+        2
+      ],
+      "exactMarkIndices": [
+        2
+      ],
+      "outcome": "EXACT_MATCH"
+    },
+    {
+      "rowIndex": 5,
+      "findingId": "e42c8ca2ff0a9bd8",
+      "sourceId": "doi:10.9999/gradifi-r6-a",
+      "sourceStart": 0,
+      "sourceEnd": 93,
+      "spanLength": 93,
+      "expectedCanonicalSlice": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks\nBy Dr. ",
+      "coveredByMarkIndices": [
+        0
+      ],
+      "exactMarkIndices": [
+        0
+      ],
+      "outcome": "EXACT_MATCH"
+    },
+    {
+      "rowIndex": 6,
+      "findingId": "207e76876bf14241",
+      "sourceId": "doi:10.9999/gradifi-r6-b",
+      "sourceStart": 618,
+      "sourceEnd": 698,
+      "spanLength": 80,
+      "expectedCanonicalSlice": "4% accuracy across distributed node topology while preserving complete privacy. ",
+      "coveredByMarkIndices": [
+        1
+      ],
+      "exactMarkIndices": [
+        1
+      ],
+      "outcome": "EXACT_MATCH"
+    }
+  ],
+  "allFindingsHaveCoveringMark": true,
+  "allMarksAttributedToFinding": true,
+  "allMarkTextMatchesSlice": true
+}

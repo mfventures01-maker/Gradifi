@@ -1,0 +1,80 @@
+{
+  "auditTimestamp": "2026-10-16T15:32:00+01:00",
+  "auditedArtifacts": [
+    {
+      "artifact": "tests/hoeos/four_gates/evidence/G4_RESULT.json",
+      "generatingCommand": "npx playwright test e2e/four-gates-g4-browser.spec.ts",
+      "generationDate": "2026-10-16",
+      "testedCommit": "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44 (dirty working tree)",
+      "inputDocument": "Hardcoded SAMPLE_ACADEMIC_TEXT string in GradifiVerifyDemoPage.tsx (Pre-load Demo Document button)",
+      "inputHash": "SHA256 of SAMPLE_ACADEMIC_TEXT (1,083 characters)",
+      "realProcessExecution": true,
+      "realExitCode": 0,
+      "executedAssertions": [
+        "markCount > 0 (found 2)",
+        "authResult truthy via window.__GRADIFI_VERIFY_RESULT__",
+        "canonicalText.length > 0",
+        "start >= 0 and end > start",
+        "end <= canonicalText.length",
+        "markText === canonicalText.slice(start, end)",
+        "authFinding is defined and matchedDocumentId === sourceId",
+        "authSource is defined and provenanceState === 'VERIFIED'"
+      ],
+      "evidentiaryLimitations": [
+        "Uses pre-loaded hardcoded demo string, bypassing G1 document extraction entirely.",
+        "Relies on window.__GRADIFI_VERIFY_RESULT__ test hook injected in browser window.",
+        "Does not test multi-page documents, DOCX, or scanned PDF fixtures.",
+        "Contains only 2 marks in a 1,083 character text snippet."
+      ],
+      "conclusion": "VALID FOR DEMO STRING PATH; INSUFFICIENT FOR FULL PIPELINE / G1 EXTRACTION CERTIFICATION"
+    },
+    {
+      "artifact": "G4_FORENSIC_CERTIFICATION_REPORT.md",
+      "generatingCommand": "Manual forensic report compilation referencing HOEOS_G4_RUNNER.ts",
+      "generationDate": "2026-09-21T09:10:35+01:00",
+      "testedCommit": "9a59897599d11d5f812f0800c6764b2d01eeb93b",
+      "inputDocument": "tests/matchedTextHighlighting.test.ts fixture & SAMPLE_ACADEMIC_TEXT",
+      "inputHash": "73780F7D125E819C99F213AB986C8EFD100C0623388171C3633FDFA888E35090",
+      "realProcessExecution": true,
+      "realExitCode": 0,
+      "executedAssertions": [
+        "18 unit tests in tests/matchedTextHighlighting.test.ts",
+        "Round-trip text invariant: stripHighlightingMarkup(renderHighlightedHtml(text, spans)) === canonicalText"
+      ],
+      "evidentiaryLimitations": [
+        "Evaluated DocumentEvidenceViewer.tsx, whereas current production page GradifiVerifyDemoPage.tsx renders CanonicalDocumentViewer.tsx.",
+        "Unit tests constructed synthetic MatchedEvidenceSpan[] arrays directly, bypassing deterministic engine finding generation.",
+        "Tested commit is stale (2026-09-21) and does not reflect October 2026 UI changes."
+      ],
+      "conclusion": "HISTORICAL ONLY; COMPONENT TARGET DIVERGED FROM PRODUCTION RUNTIME"
+    },
+    {
+      "artifact": "e2e/matched-text-highlighting.spec.ts",
+      "generatingCommand": "npx playwright test e2e/matched-text-highlighting.spec.ts",
+      "generationDate": "2026-10-15",
+      "testedCommit": "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+      "inputDocument": "SAMPLE_ACADEMIC_TEXT & XSS payload",
+      "inputHash": "N/A",
+      "realProcessExecution": true,
+      "realExitCode": 0,
+      "executedAssertions": [
+        "markCount > 0",
+        "containerText.toContain('Quantum Entanglement')",
+        "XSS script tag count === 0"
+      ],
+      "evidentiaryLimitations": [
+        "WEAK ASSERTION: markCount > 0 does not verify exact offset bounds, expected slices, or finding bindings.",
+        "Does not assert sourceId or findingId values on marks."
+      ],
+      "conclusion": "WEAK ASSERTIONS; USEFUL ONLY FOR XSS REGRESSION CHECK"
+    }
+  ],
+  "auditSummary": {
+    "totalArtifactsAudited": 3,
+    "unsupportedClaimsFound": [
+      "G4 claimed certified in G4_FORENSIC_CERTIFICATION_REPORT.md targeting DocumentEvidenceViewer.tsx, but production UI now renders CanonicalDocumentViewer.tsx.",
+      "G4 Playwright suite tests only pre-loaded textarea string, never testing G1 PDF/DOCX ingestion to highlight pipeline."
+    ],
+    "overallStatus": "IMPLEMENTED BUT UNVERIFIED"
+  }
+}

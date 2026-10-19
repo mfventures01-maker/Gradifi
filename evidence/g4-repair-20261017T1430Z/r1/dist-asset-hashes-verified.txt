@@ -1,0 +1,32 @@
+﻿[
+    {
+        "RelativePath":  "dist\\assets\\__vite-browser-external-BIHI7g3E.js",
+        "Bytes":  33,
+        "LastWriteTimeUtc":  "2026-10-17T19:23:15.0952981Z",
+        "SHA256":  "82507B0BB9AC4AFFAEB17C40968D830CBD6D14A2FFA04D8994FAF1A78E58E1B5"
+    },
+    {
+        "RelativePath":  "dist\\assets\\html2canvas.esm-QH1iLAAe.js",
+        "Bytes":  202379,
+        "LastWriteTimeUtc":  "2026-10-17T19:23:15.0943061Z",
+        "SHA256":  "061C08E50C0DC57B8D5E6531F0B8237A52A68B233260D49AB2F2C2906AD112C4"
+    },
+    {
+        "RelativePath":  "dist\\assets\\index.es-D6O0LuO_.js",
+        "Bytes":  159715,
+        "LastWriteTimeUtc":  "2026-10-17T19:23:15.0952981Z",
+        "SHA256":  "1059F797D1122EC61EAAD910DCE54A2D35FC19A02578974713F809432751FF0F"
+    },
+    {
+        "RelativePath":  "dist\\assets\\index-BSCxyAcr.js",
+        "Bytes":  2010229,
+        "LastWriteTimeUtc":  "2026-10-17T19:23:15.0993141Z",
+        "SHA256":  "F9D71550606652219683893B8011D28EFF38F960AB138A213569F957FB143D8D"
+    },
+    {
+        "RelativePath":  "dist\\assets\\purify.es-DBIK8olT.js",
+        "Bytes":  29400,
+        "LastWriteTimeUtc":  "2026-10-17T19:23:15.0952981Z",
+        "SHA256":  "A9D2D63B75E213057D367D80B94A17CDAA0B9FB272B8B6B32E7F7AA9DF27F836"
+    }
+]

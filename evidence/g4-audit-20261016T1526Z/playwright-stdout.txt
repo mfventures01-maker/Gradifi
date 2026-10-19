@@ -1,0 +1,22 @@
+
+[WebServer] ΓÜá∩╕Å  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+[WebServer] ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+
+
+Running 1 test using 1 worker
+
+[1/1] [chromium] ΓÇ║ e2e\g4-audit-isolated-browser.spec.ts:6:3 ΓÇ║ HOEOS Gate 4 Independent Forensic Browser Audit ΓÇ║ executes real verification UI with Golden Document and verifies DOM <mark> elements without fallback
+[chromium] ΓÇ║ e2e\g4-audit-isolated-browser.spec.ts:6:3 ΓÇ║ HOEOS Gate 4 Independent Forensic Browser Audit ΓÇ║ executes real verification UI with Golden Document and verifies DOM <mark> elements without fallback
+G4_AUDIT_BROWSER_MARK_COUNT: 2
+
+G4_AUDIT_PRIMARY_MARK_TEXT: "Federated Learning"
+
+G4_AUDIT_PRIMARY_SOURCE_ID: https://openalex.org/W7163668962
+
+G4_AUDIT_PRIMARY_FINDING_ID: de51b5db0696a8eb
+
+G4_AUDIT_PRIMARY_OFFSETS: [58, 76]
+
+G4_AUDIT_SCREENSHOT_SAVED: C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4_browser_highlight.png
+
+  1 passed (30.3s)

@@ -1,0 +1,889 @@
+diff --git a/e2e/four-gates-g4-browser.spec.ts b/e2e/four-gates-g4-browser.spec.ts
+index fe87205..ecbb14f 100644
+--- a/e2e/four-gates-g4-browser.spec.ts
++++ b/e2e/four-gates-g4-browser.spec.ts
+@@ -38,62 +38,191 @@ test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
+     await expect(checkBtn).toBeEnabled();
+     await checkBtn.click();
+ 
+-    // 4. Wait for analysis result and Document Evidence Viewer to appear
+-    await page.waitForSelector('text=Visual Evidence Boundary', { timeout: 60000 });
++    // 4. Wait for analysis result and Canonical Document Viewer to appear
++    await page.waitForSelector('text=Canonical Document Evidence Payload', { timeout: 60000 });
+ 
+-    // Verify boundary disclaimer is present
+-    await expect(page.locator('text=Highlighted passages indicate deterministic text matching')).toBeVisible();
++    // Verify Human Academic Review Boundary disclaimer is present
++    await expect(page.locator('text=Human Academic Review Boundary')).toBeVisible();
+ 
+-    // Ensure forbidden verdict words are absent
+-    const viewerHtml = await page.locator('text=Visual Evidence Boundary').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]').innerHTML();
++    // Ensure forbidden verdict words are absent from viewer section
++    const viewerSection = page.locator('text=Canonical Document Evidence Payload').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]');
++    const viewerHtml = await viewerSection.innerHTML();
+     expect(viewerHtml).not.toContain('PLAGIARIZED');
+     expect(viewerHtml).not.toContain('GUILTY');
+     expect(viewerHtml).not.toContain('PROVEN PLAGIARISM');
+ 
+-    // 5. Assert mark elements in DOM
+-    const markElements = page.locator('mark[data-evidence-span]');
++    // 5. Assert mark elements rendered inside Canonical Document Viewer in DOM
++    const viewerContainer = page.locator('[data-testid="canonical-document-viewer"]');
++    await expect(viewerContainer).toBeVisible();
++
++    const markElements = viewerContainer.locator('mark[data-finding-id]');
+     const markCount = await markElements.count();
+     console.log(`G4_BROWSER_MARK_COUNT: ${markCount}`);
+     expect(markCount).toBeGreaterThan(0);
+ 
+-    // 6. Retrieve attributes from primary mark element
+-    const primaryMark = markElements.first();
+-    const markText = (await primaryMark.textContent()) || '';
+-    const sourceId = await primaryMark.getAttribute('data-source-id');
+-    const spanId = await primaryMark.getAttribute('data-evidence-span');
+-
+-    console.log(`G4_PRIMARY_MARK_TEXT: "${markText}"`);
+-    console.log(`G4_PRIMARY_SOURCE_ID: ${sourceId}`);
+-    console.log(`G4_PRIMARY_SPAN_ID: ${spanId}`);
+-
+-    expect(markText.length).toBeGreaterThan(0);
+-    expect(sourceId).toBeTruthy();
+-    expect(spanId).toBeTruthy();
+-    expect(documentText).toContain(markText);
+-
+-    // 7. Capture screenshot artifact
++    // 6. Obtain authoritative verification result from browser runtime
++    const authResult = await page.evaluate(() => (window as any).__GRADIFI_VERIFY_RESULT__);
++    expect(authResult).toBeTruthy();
++
++    const canonicalText = authResult?.canonicalDocument?.rawText || documentText;
++    expect(canonicalText.length).toBeGreaterThan(0);
++
++    const authFindings: any[] = authResult?.similarityAnalysis?.findings || [];
++    const authSources: any[] = authResult?.verifiedSources || [];
++
++    const findingMap = new Map<string, any>();
++    for (const f of authFindings) {
++      if (f?.findingId) findingMap.set(f.findingId, f);
++    }
++
++    const sourceMap = new Map<string, any>();
++    for (const s of authSources) {
++      if (s?.sourceId) sourceMap.set(s.sourceId, s);
++    }
++
++    // 7. Rigorous Exact Canonical Offset & Identity Assertions for Every Rendered Mark
++    let allOffsetsVerified = true;
++    let allExactMatches = true;
++    let allIdentitiesVerified = true;
++    const verifiedDetails: Array<{
++      index: number;
++      findingId: string;
++      sourceId: string;
++      start: number;
++      end: number;
++      markText: string;
++      expectedSlice: string;
++      sourceTitle: string;
++    }> = [];
++
++    for (let i = 0; i < markCount; i++) {
++      const mark = markElements.nth(i);
++      const textSpan = mark.locator('[data-highlight-text]');
++      const markText = (await textSpan.count()) > 0
++        ? ((await textSpan.textContent()) || '')
++        : ((await mark.evaluate((el: any) => Array.from(el.childNodes).filter((n: any) => n.nodeType === 3).map((n: any) => n.textContent).join(''))) || '');
++      const findingId = await mark.getAttribute('data-finding-id');
++      const sourceId = await mark.getAttribute('data-source-id');
++      const startOffsetAttr = await mark.getAttribute('data-start-offset');
++      const endOffsetAttr = await mark.getAttribute('data-end-offset');
++
++      expect(markText.length).toBeGreaterThan(0);
++      expect(findingId).toBeTruthy();
++      expect(sourceId).toBeTruthy();
++      expect(startOffsetAttr).toBeTruthy();
++      expect(endOffsetAttr).toBeTruthy();
++
++      const start = parseInt(startOffsetAttr!, 10);
++      const end = parseInt(endOffsetAttr!, 10);
++
++      // Check offset convention: 0-based indexing, slice(start, end)
++      expect(start).toBeGreaterThanOrEqual(0);
++      expect(end).toBeGreaterThan(start);
++      expect(end).toBeLessThanOrEqual(canonicalText.length);
++
++      // Exact canonical text slice calculation
++      const expectedSlice = canonicalText.slice(start, end);
++      expect(markText).toBe(expectedSlice);
++
++      if (markText !== expectedSlice) {
++        allExactMatches = false;
++      }
++
++      // Finding & source identity binding verification
++      const authFinding = findingMap.get(findingId!);
++      expect(authFinding).toBeDefined();
++      expect(authFinding.matchedDocumentId).toBe(sourceId);
++
++      const authSource = sourceMap.get(sourceId!);
++      expect(authSource).toBeDefined();
++      expect(authSource.provenance?.provenanceState).toBe('VERIFIED');
++
++      if (!authFinding || authFinding.matchedDocumentId !== sourceId || !authSource) {
++        allIdentitiesVerified = false;
++      }
++
++      verifiedDetails.push({
++        index: i,
++        findingId: findingId!,
++        sourceId: sourceId!,
++        start,
++        end,
++        markText,
++        expectedSlice,
++        sourceTitle: authSource?.title || 'Unknown Source'
++      });
++    }
++
++    const primaryMark = verifiedDetails[0];
++    console.log(`G4_PRIMARY_MARK_TEXT: "${primaryMark.markText}"`);
++    console.log(`G4_PRIMARY_SOURCE_ID: ${primaryMark.sourceId}`);
++    console.log(`G4_PRIMARY_FINDING_ID: ${primaryMark.findingId}`);
++    console.log(`G4_PRIMARY_OFFSETS: [${primaryMark.start}, ${primaryMark.end}]`);
++
++    // 8. Capture screenshot artifact
+     const screenshotDir = path.join(process.cwd(), 'tests', 'hoeos', 'four_gates', 'evidence', 'g4');
+     fs.mkdirSync(screenshotDir, { recursive: true });
+     const screenshotPath = path.join(screenshotDir, 'g4_browser_highlight.png');
+     await page.screenshot({ path: screenshotPath, fullPage: true });
+     console.log(`G4_SCREENSHOT_SAVED: ${screenshotPath}`);
+ 
+-    // 8. Record console & network evidence
++    // 9. Record honest console, network, and assertion evidence derived from real execution
+     const evidenceDir = path.join(process.cwd(), 'tests', 'hoeos', 'four_gates', 'evidence');
+-    fs.writeFileSync(path.join(evidenceDir, 'G4_MARK_ASSERTIONS.txt'), `MARK_COUNT: ${markCount}\nPRIMARY_MARK_TEXT: "${markText}"\nSOURCE_ID: ${sourceId}\nSPAN_ID: ${spanId}\nTEXT_IN_DOCUMENT_VERIFIED: true\nVERDICT: PASS\n`);
+-    fs.writeFileSync(path.join(evidenceDir, 'G4_CANONICAL_IDENTITY.txt'), `CANONICAL_TEXT_LENGTH: ${documentText.length}\nMARK_TEXT: "${markText}"\nMATCH_EXACT: true\nAUTHORITATIVE_IDENTITY_VERDICT: PASS\n`);
+-    fs.writeFileSync(path.join(evidenceDir, 'G4_NETWORK_CONSOLE.txt'), `CONSOLE_LOGS_COUNT: ${consoleLogs.length}\nNETWORK_FAILURES_COUNT: ${networkFailures.length}\n\nCONSOLE_LOGS:\n${consoleLogs.join('\n')}\n\nNETWORK_FAILURES:\n${networkFailures.join('\n')}\n`);
+-    fs.writeFileSync(path.join(evidenceDir, 'G4_BROWSER_RUNTIME.txt'), `PLAYWRIGHT_E2E_STATUS: PASS\nMARK_COUNT: ${markCount}\nSCREENSHOT_PATH: tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png\n`);
+-    fs.writeFileSync(path.join(evidenceDir, 'G4_RESULT.json'), JSON.stringify({
+-      status: 'PASS',
+-      realBrowser: true,
+-      markCount,
+-      primaryMarkText: markText,
+-      sourceId,
+-      spanId,
+-      authoritativeTextMatch: true,
+-      offsetInvariant: true,
+-      screenshotPath: 'tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png'
+-    }, null, 2));
++    fs.mkdirSync(evidenceDir, { recursive: true });
++
++    const markAssertionsContent = [
++      `MARK_COUNT: ${markCount}`,
++      `PRIMARY_MARK_TEXT: "${primaryMark.markText}"`,
++      `SOURCE_ID: ${primaryMark.sourceId}`,
++      `FINDING_ID: ${primaryMark.findingId}`,
++      `START_OFFSET: ${primaryMark.start}`,
++      `END_OFFSET: ${primaryMark.end}`,
++      `ALL_OFFSETS_VERIFIED: ${allOffsetsVerified}`,
++      `ALL_EXACT_MATCHES: ${allExactMatches}`,
++      `ALL_IDENTITIES_VERIFIED: ${allIdentitiesVerified}`,
++      `VERDICT: ${allOffsetsVerified && allExactMatches && allIdentitiesVerified ? 'PASS' : 'FAIL'}`
++    ].join('\n') + '\n';
++    fs.writeFileSync(path.join(evidenceDir, 'G4_MARK_ASSERTIONS.txt'), markAssertionsContent);
++
++    const canonicalIdentityContent = [
++      `CANONICAL_TEXT_LENGTH: ${canonicalText.length}`,
++      `PRIMARY_MARK_TEXT: "${primaryMark.markText}"`,
++      `EXPECTED_CANONICAL_SLICE: "${primaryMark.expectedSlice}"`,
++      `MATCH_EXACT: ${allExactMatches}`,
++      `OFFSETS_INVARIANT: ${allOffsetsVerified}`,
++      `AUTHORITATIVE_IDENTITY_VERDICT: ${allIdentitiesVerified && allExactMatches ? 'PASS' : 'FAIL'}`,
++      `VERIFIED_HIGHLIGHTS_DETAIL:`,
++      JSON.stringify(verifiedDetails, null, 2)
++    ].join('\n') + '\n';
++    fs.writeFileSync(path.join(evidenceDir, 'G4_CANONICAL_IDENTITY.txt'), canonicalIdentityContent);
++
++    fs.writeFileSync(
++      path.join(evidenceDir, 'G4_NETWORK_CONSOLE.txt'),
++      `CONSOLE_LOGS_COUNT: ${consoleLogs.length}\nNETWORK_FAILURES_COUNT: ${networkFailures.length}\n\nCONSOLE_LOGS:\n${consoleLogs.join('\n')}\n\nNETWORK_FAILURES:\n${networkFailures.join('\n')}\n`
++    );
++
++    fs.writeFileSync(
++      path.join(evidenceDir, 'G4_BROWSER_RUNTIME.txt'),
++      `PLAYWRIGHT_E2E_STATUS: ${allOffsetsVerified && allExactMatches && allIdentitiesVerified ? 'PASS' : 'FAIL'}\nMARK_COUNT: ${markCount}\nSCREENSHOT_PATH: tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png\n`
++    );
++
++    fs.writeFileSync(
++      path.join(evidenceDir, 'G4_RESULT.json'),
++      JSON.stringify({
++        status: allOffsetsVerified && allExactMatches && allIdentitiesVerified ? 'PASS' : 'FAIL',
++        realBrowser: true,
++        markCount,
++        primaryMarkText: primaryMark.markText,
++        sourceId: primaryMark.sourceId,
++        findingId: primaryMark.findingId,
++        startOffset: primaryMark.start,
++        endOffset: primaryMark.end,
++        authoritativeTextMatch: allExactMatches,
++        offsetInvariant: allOffsetsVerified,
++        identityBound: allIdentitiesVerified,
++        verifiedHighlights: verifiedDetails,
++        screenshotPath: 'tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png'
++      }, null, 2)
++    );
+   });
+ });
+diff --git a/e2e/matched-text-highlighting.spec.ts b/e2e/matched-text-highlighting.spec.ts
+index bdd4a21..9f84eeb 100644
+--- a/e2e/matched-text-highlighting.spec.ts
++++ b/e2e/matched-text-highlighting.spec.ts
+@@ -24,26 +24,27 @@ test.describe('HOEOS P4 Matched-Text Highlighting Visual Evidence Boundary', ()
+     await expect(checkBtn).toBeEnabled();
+     await checkBtn.click();
+ 
+-    // Wait for analysis result and Document Evidence Viewer to appear (up to 60s for federated run)
+-    await page.waitForSelector('text=Visual Evidence Boundary', { timeout: 60000 });
+-
+-    // Verify the Visual Evidence Boundary disclaimer is present
+-    await expect(page.locator('text=Highlighted passages indicate deterministic text matching')).toBeVisible();
+-
+-    // Verify "Matched text" terminology is used (never PLAGIARIZED)
+-    const viewerText = await page.locator('text=Visual Evidence Boundary').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]').innerHTML();
+-    expect(viewerText).not.toContain('PLAGIARIZED');
+-    expect(viewerText).not.toContain('GUILTY');
+-    expect(viewerText).not.toContain('PROVEN PLAGIARISM');
+-
+-    // Verify highlighted text contains exact matched mark elements or rendered text
+-    const markElement = page.locator('mark[data-evidence-span]');
+-    const markCount = await markElement.count();
+-    expect(markCount).toBeGreaterThanOrEqual(0);
+-
+-    // Verify rendered document text is preserved
+-    const renderedContainer = page.locator('text=Visual Evidence Boundary').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]');
+-    const containerText = await renderedContainer.textContent();
++    // Wait for analysis result and Canonical Document Evidence Payload to appear
++    await page.waitForSelector('text=Canonical Document Evidence Payload', { timeout: 60000 });
++
++    // Verify the Human Academic Review Boundary disclaimer is present
++    await expect(page.locator('text=Human Academic Review Boundary')).toBeVisible();
++
++    // Verify forbidden verdict words are absent (never PLAGIARIZED or GUILTY)
++    const viewerContainer = page.locator('[data-testid="canonical-document-viewer"]');
++    await expect(viewerContainer).toBeVisible();
++    const viewerHtml = await viewerContainer.innerHTML();
++    expect(viewerHtml).not.toContain('PLAGIARIZED');
++    expect(viewerHtml).not.toContain('GUILTY');
++    expect(viewerHtml).not.toContain('PROVEN PLAGIARISM');
++
++    // Verify highlighted text contains exact matched mark elements
++    const markElements = viewerContainer.locator('mark[data-finding-id]');
++    const markCount = await markElements.count();
++    expect(markCount).toBeGreaterThan(0);
++
++    // Verify rendered document text preserves canonical text
++    const containerText = await viewerContainer.textContent();
+     expect(containerText).toContain('Quantum Entanglement');
+   });
+ 
+@@ -64,14 +65,17 @@ test.describe('HOEOS P4 Matched-Text Highlighting Visual Evidence Boundary', ()
+     await expect(checkBtn).toBeEnabled();
+     await checkBtn.click();
+ 
+-    await page.waitForSelector('text=Visual Evidence Boundary', { timeout: 60000 });
++    await page.waitForSelector('text=Canonical Document Evidence Payload', { timeout: 60000 });
++
++    const viewerContainer = page.locator('[data-testid="canonical-document-viewer"]');
++    await expect(viewerContainer).toBeVisible();
+ 
+     // Ensure script tag was escaped into text nodes and did NOT execute as an HTML script element
+-    const scriptsInViewer = await page.locator('div:has-text("Visual Evidence Boundary") script').count();
++    const scriptsInViewer = await viewerContainer.locator('script').count();
+     expect(scriptsInViewer).toBe(0);
+ 
+     // Verify text contains escaped literal content in text node
+-    const viewerText = await page.locator('text=Visual Evidence Boundary').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]').textContent();
++    const viewerText = await viewerContainer.textContent();
+     expect(viewerText).toContain('<script>alert("XSS")</script>');
+   });
+ });
+diff --git a/playwright.config.ts b/playwright.config.ts
+index a161982..0ec0d53 100644
+--- a/playwright.config.ts
++++ b/playwright.config.ts
+@@ -9,7 +9,7 @@ export default defineConfig({
+   workers: 1,
+   reporter: 'html',
+   use: {
+-    baseURL: 'http://localhost:5173',
++    baseURL: 'http://127.0.0.1:5173',
+     trace: 'on-first-retry',
+   },
+   projects: [
+@@ -19,9 +19,10 @@ export default defineConfig({
+     },
+   ],
+   webServer: {
+-    command: 'npm run dev -- --port 5173',
+-    url: 'http://localhost:5173',
++    command: 'npm run dev -- --host 127.0.0.1 --port 5173',
++    url: 'http://127.0.0.1:5173',
+     reuseExistingServer: true,
++    timeout: 120000,
+     env: {
+       DISABLE_HMR: 'true',
+     },
+diff --git a/src/components/verify/CanonicalDocumentViewer.tsx b/src/components/verify/CanonicalDocumentViewer.tsx
+index 8ecedc7..6891ab1 100644
+--- a/src/components/verify/CanonicalDocumentViewer.tsx
++++ b/src/components/verify/CanonicalDocumentViewer.tsx
+@@ -56,7 +56,10 @@ export const CanonicalDocumentViewer: React.FC<CanonicalDocumentViewerProps> = (
+   }, [verifiedFindings, matches]);
+ 
+   return (
+-    <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs text-slate-200 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto selection:bg-blue-600 selection:text-white">
++    <div
++      data-testid="canonical-document-viewer"
++      className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs text-slate-200 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto selection:bg-blue-600 selection:text-white"
++    >
+       {segments.map((seg, idx) => {
+         if (!seg.findingId) {
+           return <span key={idx}>{seg.text}</span>;
+@@ -65,6 +68,7 @@ export const CanonicalDocumentViewer: React.FC<CanonicalDocumentViewerProps> = (
+         const data = findingsMap.get(seg.findingId);
+         const match = data?.match;
+         const finding = data?.finding;
++        const sourceId = finding?.matchedDocumentId || match?.sourceId || '';
+ 
+         const title = match?.title || match?.provenance?.title || 'Verified Academic Source';
+         const authors = (match?.authors || match?.provenance?.authors || []).join(', ') || 'N/A';
+@@ -77,11 +81,15 @@ export const CanonicalDocumentViewer: React.FC<CanonicalDocumentViewerProps> = (
+           <mark
+             key={idx}
+             data-finding-id={seg.findingId}
++            data-source-id={sourceId}
++            data-start-offset={seg.start !== undefined ? seg.start : (finding?.sourceStart !== undefined ? finding.sourceStart : '')}
++            data-end-offset={seg.end !== undefined ? seg.end : (finding?.sourceEnd !== undefined ? finding.sourceEnd : '')}
++            data-method={seg.method || finding?.matchMethod || ''}
+             className={`relative inline group cursor-pointer rounded px-0.5 border ${methodToClass(seg.method)}`}
+             onClick={() => seg.findingId && onFindingClick?.(seg.findingId)}
+             title={tooltipTitle}
+           >
+-            {seg.text}
++            <span data-highlight-text>{seg.text}</span>
+             <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col z-50 w-64 p-2.5 bg-slate-950 text-slate-200 text-xs rounded-lg border border-slate-700 shadow-2xl space-y-1 font-sans text-left not-italic whitespace-normal normal-case">
+               <span className="font-bold text-white text-[11px] line-clamp-2">{title}</span>
+               <span className="text-slate-400 text-[10px]">
+diff --git a/src/lib/supabase.ts b/src/lib/supabase.ts
+index 9502ddf..8e69882 100644
+--- a/src/lib/supabase.ts
++++ b/src/lib/supabase.ts
+@@ -1,3 +1,8 @@
++// Ensure Node.js runtime prior to Node 22 has global WebSocket definition during Vite config loading
++if (typeof globalThis !== 'undefined' && typeof (globalThis as any).WebSocket === 'undefined') {
++  (globalThis as any).WebSocket = class {} as any;
++}
++
+ import { createClient } from '@supabase/supabase-js';
+ 
+ const getEnv = (key: string) => {
+diff --git a/src/pages/verify/GradifiVerifyDemoPage.tsx b/src/pages/verify/GradifiVerifyDemoPage.tsx
+index 7933f12..941a0f4 100644
+--- a/src/pages/verify/GradifiVerifyDemoPage.tsx
++++ b/src/pages/verify/GradifiVerifyDemoPage.tsx
+@@ -238,7 +238,22 @@ Distributed machine learning frameworks require mathematical determinism to guar
+       setDocumentText(res.text);
+       setUploadProgress(100);
+       setUploadStatus('EXTRACTED');
+-      parseNormalizedMetadata(res.text);
++      if (res.canonicalDocument) {
++        setCanonicalDoc(res.canonicalDocument);
++        setNormalizedDoc({
++          title: res.canonicalDocument.title,
++          authors: res.canonicalDocument.authors,
++          abstract: res.canonicalDocument.abstract,
++          publication: res.canonicalDocument.publication || 'Journal of Advanced Computer Science',
++          year: res.canonicalDocument.year || 2024,
++          doi: res.canonicalDocument.doi,
++          isbn: res.canonicalDocument.isbn,
++          url: res.canonicalDocument.doi ? `https://doi.org/${res.canonicalDocument.doi}` : undefined,
++          identifiers: res.canonicalDocument.identifiers
++        });
++      } else {
++        parseNormalizedMetadata(res.text);
++      }
+     } catch (err: any) {
+       setUploadStatus('FAILED');
+       setUploadError(err?.message || 'Failed to parse uploaded document file.');
+@@ -288,6 +303,9 @@ Distributed machine learning frameworks require mathematical determinism to guar
+ 
+       setVerificationId(record.verification_id);
+       setResult(res);
++      if (typeof window !== 'undefined') {
++        (window as any).__GRADIFI_VERIFY_RESULT__ = res;
++      }
+       setCurrentStep('result');
+     } catch (err: any) {
+       console.error('Verification execution error:', err);
+@@ -297,6 +315,9 @@ Distributed machine learning frameworks require mathematical determinism to guar
+       );
+       setVerificationId('');
+       setResult(null);
++      if (typeof window !== 'undefined') {
++        (window as any).__GRADIFI_VERIFY_RESULT__ = null;
++      }
+     } finally {
+       setVerifying(false);
+     }
+diff --git a/src/services/verify/ingestionAdapters/docxExtractor.ts b/src/services/verify/ingestionAdapters/docxExtractor.ts
+index b715dac..e020971 100644
+--- a/src/services/verify/ingestionAdapters/docxExtractor.ts
++++ b/src/services/verify/ingestionAdapters/docxExtractor.ts
+@@ -1,4 +1,4 @@
+-∩╗┐/**
++/**
+  * G5-M03 DOCX EXTRACTOR
+  *
+  * Conforms to evidence/phase3/g5m03_spec.txt.
+@@ -225,7 +225,8 @@ function readCentralDirectory(bytes: Uint8Array): CentralDir | null {
+ 
+     if (pos + 46 + nameLen > bytes.length) return null;
+     const nameBytes = bytes.slice(pos + 46, pos + 46 + nameLen);
+-    const name = strFromU8(nameBytes, true);
++    const rawName = strFromU8(nameBytes, true);
++    const name = rawName.replace(/\\/g, '/');
+ 
+     entries.push({
+       name,
+diff --git a/src/services/verify/publicVerificationService.ts b/src/services/verify/publicVerificationService.ts
+index 5e45e85..8b25447 100644
+--- a/src/services/verify/publicVerificationService.ts
++++ b/src/services/verify/publicVerificationService.ts
+@@ -90,21 +90,58 @@ export class PublicVerificationService {
+         };
+       }
+ 
+-      const expectedDerivedId = VerificationPersistenceService.deriveVerificationId(data.document_hash, data.evidence_hash);
+-      if (expectedDerivedId !== cleanId) {
++      // Validate presence of required evidence fields
++      if (!data.evidence_hash || !data.evidence_envelope) {
++        return {
++          status: 'MALFORMED_RECORD',
++          verificationId: cleanId,
++          errorMessage: 'Verification record is missing required evidence_hash or evidence_envelope.',
++        };
++      }
++
++      // Strict Identity Matching: Ensure stored record identifier matches requested ID
++      if (data.verification_id !== cleanId) {
+         return {
+           status: 'INTEGRITY_FAILED',
+           verificationId: cleanId,
+-          errorMessage: `Verification integrity check failed: Verification ID '${cleanId}' does not match document hash derived ID '${expectedDerivedId}'.`,
++          errorMessage: `Verification integrity check failed: Stored ID does not match requested verification ID.`,
+         };
+       }
+ 
+-      // Validate presence of required evidence fields
+-      if (!data.evidence_hash || !data.evidence_envelope) {
++      // Deterministic Derivation Validation:
++      // Try current two-hash derivation first. If not matched, evaluate legacy document-only derivation.
++      let isIntegrityValid = false;
++
++      try {
++        const expectedCurrentId = VerificationPersistenceService.deriveVerificationId(
++          data.document_hash,
++          data.evidence_hash
++        );
++        if (cleanId === expectedCurrentId) {
++          isIntegrityValid = true;
++        }
++      } catch {
++        // If current derivation fails due to evidence_hash structure, check legacy derivation below
++      }
++
++      if (!isIntegrityValid) {
++        try {
++          const expectedLegacyId = VerificationPersistenceService.deriveLegacyVerificationId(
++            data.document_hash
++          );
++          if (cleanId === expectedLegacyId) {
++            isIntegrityValid = true;
++          }
++        } catch {
++          // If legacy derivation fails, record cannot be validated
++        }
++      }
++
++      if (!isIntegrityValid) {
+         return {
+-          status: 'MALFORMED_RECORD',
++          status: 'INTEGRITY_FAILED',
+           verificationId: cleanId,
+-          errorMessage: 'Verification record is missing required evidence_hash or evidence_envelope.',
++          errorMessage: `Verification integrity check failed: Verification ID '${cleanId}' does not match document hash derived ID.`,
+         };
+       }
+ 
+diff --git a/src/services/verify/universalIngestionService.ts b/src/services/verify/universalIngestionService.ts
+index 6f1edec..c9da786 100644
+--- a/src/services/verify/universalIngestionService.ts
++++ b/src/services/verify/universalIngestionService.ts
+@@ -135,8 +135,22 @@ export async function getFilePayload(
+     };
+   }
+ 
+-  const obj = fileOrInput as { name: string; text?: string; buffer?: ArrayBuffer; mimeType?: string };
+-  const buf = obj.buffer || (obj.text ? new TextEncoder().encode(obj.text).buffer : new ArrayBuffer(0));
++  const obj = fileOrInput as { name: string; text?: string; buffer?: any; mimeType?: string };
++  let buf: ArrayBuffer;
++  if (obj.buffer) {
++    if (obj.buffer instanceof ArrayBuffer) {
++      buf = obj.buffer;
++    } else if (typeof obj.buffer.byteOffset === 'number' && obj.buffer.buffer instanceof ArrayBuffer) {
++      const u = obj.buffer as { byteOffset: number; byteLength: number; buffer: ArrayBuffer };
++      buf = u.buffer.slice(u.byteOffset, u.byteOffset + u.byteLength);
++    } else {
++      buf = obj.buffer as ArrayBuffer;
++    }
++  } else if (obj.text) {
++    buf = new TextEncoder().encode(obj.text).buffer;
++  } else {
++    buf = new ArrayBuffer(0);
++  }
+   return {
+     filename: obj.name,
+     mimeType: obj.mimeType || 'application/octet-stream',
+@@ -251,7 +265,40 @@ export async function ingestDocument(
+     }
+     case 'docx': {
+       const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
+-      adapterResult = await extractDocx(buf);
++      const docxRes = await extractDocx(buf);
++      if (docxRes.success) {
++        const text = docxRes.canonicalText;
++        const words = text.split(/\s+/).filter(Boolean);
++        adapterResult = {
++          success: true,
++          text,
++          wordCount: words.length,
++          characterCount: text.length,
++          pageCount: Math.max(1, Math.ceil(text.length / 2000)),
++          extractionMethod: 'docx_xml_extractor',
++          ocrUsed: false,
++          ocrStatus: 'NOT_REQUIRED',
++          warnings: (docxRes.warnings || []).map((w: any) => typeof w === 'string' ? w : w.message || w.code)
++        };
++      } else {
++        adapterResult = {
++          success: false,
++          text: '',
++          wordCount: 0,
++          characterCount: 0,
++          extractionMethod: 'docx_xml_extractor',
++          ocrUsed: false,
++          ocrStatus: 'NOT_REQUIRED',
++          warnings: (docxRes.warnings || []).map((w: any) => typeof w === 'string' ? w : w.message || w.code),
++          error: docxRes.error ? {
++            code: docxRes.error.code,
++            message: docxRes.error.message
++          } : {
++            code: 'EXTRACTION_FAILED',
++            message: 'DOCX extraction failed.'
++          }
++        };
++      }
+       break;
+     }
+     case 'odt': {
+diff --git a/src/services/verify/verificationPersistenceService.ts b/src/services/verify/verificationPersistenceService.ts
+index 22eb0fe..5f15ece 100644
+--- a/src/services/verify/verificationPersistenceService.ts
++++ b/src/services/verify/verificationPersistenceService.ts
+@@ -48,11 +48,27 @@ export class VerificationPersistenceService {
+     if (!documentHash || documentHash.length < 12) {
+       throw new VerificationValidationError('Invalid documentHash for verification ID derivation');
+     }
++    if (!evidenceHash || evidenceHash.length < 4) {
++      throw new VerificationValidationError('Missing or invalid evidenceHash for current verification ID derivation');
++    }
+     const docPart = documentHash.slice(0, 8).toUpperCase();
+-    const evPart = evidenceHash ? evidenceHash.slice(0, 4).toUpperCase() : '';
++    const evPart = evidenceHash.slice(0, 4).toUpperCase();
+     return `VRF-${docPart}${evPart}`;
+   }
+ 
++  /**
++   * Derives the historical (legacy) verification ID using document hash only.
++   * Format: VRF-{12 chars of document hash}
++   * Total: 12 chars after the VRF- prefix (16 characters total).
++   */
++  static deriveLegacyVerificationId(documentHash: string): string {
++    if (!documentHash || documentHash.length < 12) {
++      throw new VerificationValidationError('Invalid documentHash for legacy verification ID derivation');
++    }
++    const docPart = documentHash.slice(0, 12).toUpperCase();
++    return `VRF-${docPart}`;
++  }
++
+   /**
+    * Validates the data integrity of a certified G5 result before persistence.
+    */
+diff --git a/tests/publicVerificationResolution.test.ts b/tests/publicVerificationResolution.test.ts
+index b2c6b36..4b4b6fa 100644
+--- a/tests/publicVerificationResolution.test.ts
++++ b/tests/publicVerificationResolution.test.ts
+@@ -6,12 +6,21 @@
+ import dotenv from 'dotenv';
+ dotenv.config({ path: '.env.local' });
+ 
++// Ensure polyfill for WebSocket in Node 20 if needed
++if (typeof (globalThis as any).WebSocket === 'undefined') {
++  (globalThis as any).WebSocket = class MockWebSocket {
++    constructor() {}
++    close() {}
++    send() {}
++  };
++}
++
+ import {
+   PublicVerificationService,
+   publicVerificationService,
+ } from '../src/services/verify/publicVerificationService';
+ import { VerificationPersistenceService } from '../src/services/verify/verificationPersistenceService';
+-import { EvidenceEngineResult } from '../src/services/verify/types';
++import { supabase } from '../src/lib/supabase';
+ 
+ async function runPublicResolutionTests() {
+   console.log('≡ƒº¬ GRADIFI VERIFY - HOEOS G6.3 PUBLIC RESOLUTION SUITE');
+@@ -35,6 +44,7 @@ async function runPublicResolutionTests() {
+   console.log('\n1. Verification ID Format Validation:');
+   assert(PublicVerificationService.validateVerificationIdFormat('VRF-8AFCFF6056B0'), 'VRF-8AFCFF6056B0 is valid format');
+   assert(PublicVerificationService.validateVerificationIdFormat('vrf-8afcff6056b0'), 'Case insensitive format is valid');
++  assert(PublicVerificationService.validateVerificationIdFormat('VRF-8AFCFF609B01'), 'Current two-hash format is valid');
+   assert(!PublicVerificationService.validateVerificationIdFormat('VRF-SHORT'), 'Short ID rejected');
+   assert(!PublicVerificationService.validateVerificationIdFormat('INVALID_PREFIX_123'), 'Invalid prefix rejected');
+   assert(!PublicVerificationService.validateVerificationIdFormat(''), 'Empty string rejected');
+@@ -46,17 +56,22 @@ async function runPublicResolutionTests() {
+   assert(invalidRes.record === undefined, 'No record returned for invalid format');
+   assert(invalidRes.errorMessage !== undefined, 'Contains descriptive error message');
+ 
+-  // TEST 3: Document Hash Integrity Grounding
++  // TEST 3: Document Hash Integrity Grounding (Current and Legacy Derivations)
+   console.log('\n3. Document Hash Integrity Grounding:');
+   const validDocHash = '8afcff6056b0d9123456789abcdef0123456789abcdef0123456789abcdef012';
+-  const expectedId = VerificationPersistenceService.deriveVerificationId(validDocHash);
+-  assert(expectedId === 'VRF-8AFCFF6056B0', 'Derived ID matches VRF-8AFCFF6056B0');
++  const validEvHash = '9b0123456789abcdef0123456789abcdef0123456789abcdef0123456789abc';
++
++  const expectedCurrentId = VerificationPersistenceService.deriveVerificationId(validDocHash, validEvHash);
++  assert(expectedCurrentId === 'VRF-8AFCFF609B01', 'Derived two-hash ID matches VRF-8AFCFF609B01');
++
++  const expectedLegacyId = VerificationPersistenceService.deriveLegacyVerificationId(validDocHash);
++  assert(expectedLegacyId === 'VRF-8AFCFF6056B0', 'Derived legacy ID matches VRF-8AFCFF6056B0');
+ 
+   // TEST 4: Integrity Failure Detection
+   console.log('\n4. Integrity Failure Detection (Mismatched Document Hash):');
+   const mismatchedHash = '000000000000d9123456789abcdef0123456789abcdef0123456789abcdef012';
+-  const mismatchedDerivedId = VerificationPersistenceService.deriveVerificationId(mismatchedHash);
+-  assert(mismatchedDerivedId !== 'VRF-8AFCFF6056B0', 'Mismatched document hash produces different derived ID');
++  const mismatchedDerivedId = VerificationPersistenceService.deriveVerificationId(mismatchedHash, validEvHash);
++  assert(mismatchedDerivedId !== expectedCurrentId, 'Mismatched document hash produces different derived ID');
+ 
+   // TEST 5: No Fabricated Results on Missing Records
+   console.log('\n5. No Fabricated Results Boundary:');
+@@ -74,8 +89,115 @@ async function runPublicResolutionTests() {
+   assert(true, 'Route /verify/:verificationId maps to GradifiVerifyDemoPage');
+   assert(true, 'useParams() extracts verificationId parameter from URL');
+ 
+-  // TEST 8: Live Supabase Environment Probe
+-  console.log('\n8. Live Environment Status Probe:');
++  // =========================================================================
++  // CONTROLLED UNIT TESTS FOR COMPATIBILITY AND INTEGRITY (SCENARIOS 8-15)
++  // =========================================================================
++  console.log('\n--- Controlled Database Compatibility & Integrity Scenarios ---');
++
++  const originalFrom = supabase.from.bind(supabase);
++  const mockDbResponse = (data: any, error: any = null) => {
++    (supabase as any).from = () => ({
++      select: () => ({
++        eq: () => ({
++          maybeSingle: async () => ({ data, error }),
++        }),
++      }),
++    });
++  };
++
++  try {
++    // TEST 8: Resolution of Valid Current Two-Hash Record
++    console.log('\n8. Valid Current Two-Hash Record:');
++    mockDbResponse({
++      verification_id: 'VRF-8AFCFF609B01',
++      document_hash: validDocHash,
++      evidence_hash: validEvHash,
++      evidence_envelope: { result: { overallSimilarity: 42.5 } },
++    });
++    const resCurrent = await publicVerificationService.resolveVerification('VRF-8AFCFF609B01');
++    assert(resCurrent.status === 'VALID', 'Current two-hash record resolves with VALID status');
++    assert(resCurrent.record?.verification_id === 'VRF-8AFCFF609B01', 'Preserves exact current verification ID');
++
++    // TEST 9: Resolution of Valid Legacy Document-Only Record
++    console.log('\n9. Valid Historical Legacy Record:');
++    mockDbResponse({
++      verification_id: 'VRF-8AFCFF6056B0',
++      document_hash: validDocHash,
++      evidence_hash: validEvHash,
++      evidence_envelope: { result: { overallSimilarity: 10.0 } },
++    });
++    const resLegacy = await publicVerificationService.resolveVerification('VRF-8AFCFF6056B0');
++    assert(resLegacy.status === 'VALID', 'Historical legacy record resolves with VALID status');
++    assert(resLegacy.record?.verification_id === 'VRF-8AFCFF6056B0', 'Preserves exact historical verification ID');
++
++    // TEST 10: Stored-ID / Requested-ID Mismatch Rejection
++    console.log('\n10. Stored-ID / Requested-ID Mismatch:');
++    mockDbResponse({
++      verification_id: 'VRF-8AFCFF6056B0',
++      document_hash: validDocHash,
++      evidence_hash: validEvHash,
++      evidence_envelope: { result: {} },
++    });
++    const resWrongStored = await publicVerificationService.resolveVerification('VRF-8AFCFF609B01');
++    assert(resWrongStored.status === 'INTEGRITY_FAILED', 'Rejects when stored verification_id differs from requested ID');
++
++    // TEST 11: Tampered/Incorrect Document Hash Rejection
++    console.log('\n11. Tampered / Incorrect Document Hash:');
++    mockDbResponse({
++      verification_id: 'VRF-8AFCFF609B01',
++      document_hash: 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
++      evidence_hash: validEvHash,
++      evidence_envelope: { result: {} },
++    });
++    const resTamperedDoc = await publicVerificationService.resolveVerification('VRF-8AFCFF609B01');
++    assert(resTamperedDoc.status === 'INTEGRITY_FAILED', 'Rejects when document hash does not derive the verification ID');
++
++    // TEST 12: Tampered/Incorrect Evidence Hash Rejection (for Current Two-Hash ID)
++    console.log('\n12. Tampered / Incorrect Evidence Hash:');
++    mockDbResponse({
++      verification_id: 'VRF-8AFCFF609B01',
++      document_hash: validDocHash,
++      evidence_hash: '0000000000000000000000000000000000000000000000000000000000000000',
++      evidence_envelope: { result: {} },
++    });
++    const resTamperedEv = await publicVerificationService.resolveVerification('VRF-8AFCFF609B01');
++    assert(resTamperedEv.status === 'INTEGRITY_FAILED', 'Rejects when evidence hash does not match two-hash derivation');
++
++    // TEST 13: Missing Document Hash Rejection
++    console.log('\n13. Missing Document Hash Rejection:');
++    mockDbResponse({
++      verification_id: 'VRF-8AFCFF609B01',
++      document_hash: null,
++      evidence_hash: validEvHash,
++      evidence_envelope: { result: {} },
++    });
++    const resMissingDoc = await publicVerificationService.resolveVerification('VRF-8AFCFF609B01');
++    assert(resMissingDoc.status === 'MALFORMED_RECORD', 'Rejects record with missing document_hash as MALFORMED_RECORD');
++
++    // TEST 14: Missing Evidence Envelope Rejection
++    console.log('\n14. Missing Evidence Envelope Rejection:');
++    mockDbResponse({
++      verification_id: 'VRF-8AFCFF609B01',
++      document_hash: validDocHash,
++      evidence_hash: validEvHash,
++      evidence_envelope: null,
++    });
++    const resMissingEnv = await publicVerificationService.resolveVerification('VRF-8AFCFF609B01');
++    assert(resMissingEnv.status === 'MALFORMED_RECORD', 'Rejects record with missing evidence_envelope as MALFORMED_RECORD');
++
++    // TEST 15: Database Error Handling
++    console.log('\n15. Database Error Handling:');
++    mockDbResponse(null, { message: 'Connection timeout', code: 'PGRST500' });
++    const resDbErr = await publicVerificationService.resolveVerification('VRF-8AFCFF609B01');
++    assert(resDbErr.status === 'RESOLUTION_ERROR', 'Returns RESOLUTION_ERROR on database failure');
++    assert(resDbErr.errorMessage?.includes('Connection timeout'), 'Includes database error message in response');
++
++  } finally {
++    (supabase as any).from = originalFrom;
++  }
++
++  // TEST 16: Live Supabase Environment Probe
++  console.log('\n16. Live Environment Status Probe:');
+   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
+   if (!anonKey || anonKey.trim().length === 0) {
+     console.log('  ΓÜá∩╕Å ENVIRONMENT LIMITATION: Live Supabase anon key unavailable in local environment (.env.local missing VITE_SUPABASE_ANON_KEY). Classified as STATIC / CONTRACT VERIFIED.');
+diff --git a/tests/verificationPersistence.test.ts b/tests/verificationPersistence.test.ts
+index 48a9147..b39f439 100644
+--- a/tests/verificationPersistence.test.ts
++++ b/tests/verificationPersistence.test.ts
+@@ -51,17 +51,33 @@ async function runPersistenceTests() {
+     timestamp: '2026-09-12T07:00:00.000Z',
+   };
+ 
+-  // TEST 1: Verification ID Derivation
++  // TEST 1: Current Verification ID Derivation (Two-Hash)
+   console.log('\n1. Verification ID Derivation:');
+-  const derivedId = VerificationPersistenceService.deriveVerificationId(sampleResult.documentHash);
+-  assert(derivedId === 'VRF-8AFCFF6056B0', 'Derived ID matches VRF-8AFCFF6056B0');
++  const derivedId = VerificationPersistenceService.deriveVerificationId(
++    sampleResult.documentHash,
++    sampleResult.evidenceHash
++  );
++  assert(derivedId === 'VRF-8AFCFF609B01', 'Current derived ID matches VRF-8AFCFF609B01');
+   assert(derivedId.startsWith('VRF-'), 'ID adheres to VRF- prefix contract');
+-  assert(derivedId.length === 16, 'ID length is exactly 16 characters');
++  assert(derivedId.length === 16, 'Current ID length is exactly 16 characters');
++
++  // TEST 1b: Legacy Verification ID Derivation Compatibility
++  const legacyDerivedId = VerificationPersistenceService.deriveLegacyVerificationId(sampleResult.documentHash);
++  assert(legacyDerivedId === 'VRF-8AFCFF6056B0', 'Legacy derived ID matches VRF-8AFCFF6056B0');
++  assert(legacyDerivedId.length === 16, 'Legacy ID length is exactly 16 characters');
++
++  // TEST 1c: Current Derivation Missing Evidence Hash Rejection
++  try {
++    VerificationPersistenceService.deriveVerificationId(sampleResult.documentHash);
++    assert(false, 'Calling deriveVerificationId without evidenceHash should throw');
++  } catch (err: any) {
++    assert(err instanceof VerificationValidationError, 'Throws VerificationValidationError when evidenceHash is omitted');
++  }
+ 
+   // TEST 2: Record Construction & Data Integrity
+   console.log('\n2. Persistence Record Construction & Integrity:');
+   const record = VerificationPersistenceService.buildPersistenceRecord(sampleResult);
+-  assert(record.verification_id === 'VRF-8AFCFF6056B0', 'Record contains correct verification_id');
++  assert(record.verification_id === 'VRF-8AFCFF609B01', 'Record contains correct two-hash verification_id');
+   assert(record.document_hash === sampleResult.documentHash, 'Record preserves document_hash 100% unchanged');
+   assert(record.evidence_hash === sampleResult.evidenceHash, 'Record preserves evidence_hash 100% unchanged');
+   assert(record.overall_similarity === 42.5, 'Record preserves overall_similarity score');
+@@ -111,7 +127,7 @@ async function runPersistenceTests() {
+   assert(record1.document_hash === record2.document_hash, 'Identical results yield identical document_hash');
+   assert(record1.evidence_hash === record2.evidence_hash, 'Identical results yield identical evidence_hash');
+ 
+-  // TEST 7: Hash Conflict Protection
++  // TEST 7: Hash Conflict Protection & Evidence Sensitivity
+   console.log('\n7. Hash Conflict Rejection Contract:');
+   const conflictingResult: EvidenceEngineResult = {
+     ...sampleResult,
+@@ -119,7 +135,7 @@ async function runPersistenceTests() {
+   };
+ 
+   const recordConflicting = VerificationPersistenceService.buildPersistenceRecord(conflictingResult);
+-  assert(recordConflicting.verification_id === record1.verification_id, 'Same document text yields same verification_id');
++  assert(recordConflicting.verification_id !== record1.verification_id, 'Distinct evidence hashes yield distinct verification IDs');
+   assert(recordConflicting.evidence_hash !== record1.evidence_hash, 'Conflicting evidence hash is detected');
+ 
+   // TEST 8: Live Supabase Probe & Environment Status
+diff --git a/vite.config.ts b/vite.config.ts
+index 998fea8..9c18428 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -22,8 +22,9 @@ export default defineConfig(() => {
+       // HMR is disabled in AI Studio via DISABLE_HMR env var.
+       // Do not modifyΓÇöfile watching is disabled to prevent flickering during agent edits.
+       hmr: process.env.DISABLE_HMR !== 'true',
+-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
+-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
++      watch: process.env.DISABLE_HMR === 'true' ? null : {
++        ignored: ['**/certification/**', '**/playwright-report/**', '**/test-results/**', '**/evidence/**', '**/scratch/**', '**/*.jsonl']
++      },
+       proxy: {
+         '/api/core': {
+           target: 'https://api.core.ac.uk',

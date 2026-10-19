@@ -1,0 +1,3 @@
+PLAYWRIGHT_E2E_STATUS: PASS
+MARK_COUNT: 2
+SCREENSHOT_PATH: evidence/g4-audit-20261016T1526Z/g4_browser_highlight.png

@@ -1,0 +1,87 @@
+ M e2e/four-gates-g4-browser.spec.ts
+ M e2e/matched-text-highlighting.spec.ts
+ M playwright.config.ts
+ M src/components/verify/CanonicalDocumentViewer.tsx
+ M src/lib/supabase.ts
+ M src/pages/verify/GradifiVerifyDemoPage.tsx
+ M src/services/verify/ingestionAdapters/docxExtractor.ts
+ M src/services/verify/publicVerificationService.ts
+ M src/services/verify/universalIngestionService.ts
+ M src/services/verify/verificationPersistenceService.ts
+ M tests/publicVerificationResolution.test.ts
+ M tests/verificationPersistence.test.ts
+ M vite.config.ts
+?? certification/federation_complete/AFTER_deployed_probes.txt
+?? certification/federation_logs/2026-09-23/unpaywall.jsonl
+?? certification/federation_logs/2026-09-24/
+?? certification/federation_logs/2026-09-25/
+?? certification/federation_logs/2026-09-27/
+?? certification/federation_logs/2026-09-29/
+?? certification/federation_logs/2026-10-03/
+?? certification/federation_logs/2026-10-04/
+?? certification/federation_logs/2026-10-05/
+?? certification/federation_logs/2026-10-07/
+?? certification/federation_logs/2026-10-08/
+?? certification/federation_logs/2026-10-15/
+?? certification/federation_logs/2026-10-16/
+?? certification/forensic/
+?? certification/g1_browser_fix/stream_extractor_preview_result.png
+?? certification/g1_browser_fix/stream_extractor_prod_result.png
+?? certification/g1_browser_fix/stream_extractor_verification_log.json
+?? certification/g1_extension/G1_EXTENSION_COMPOSITE.txt
+?? certification/g7_public_verification/
+?? certification/mirror_archive_2026-09-23T08-48-35Z/
+?? certification/provider_passage/OVERLAP_DEMO_DOC.txt
+?? certification/provider_passage/PASSAGE_DEMO_PRE_FIX.txt
+?? certification/provider_predictability/
+?? certification/repairs/
+?? certification/vercel_forensics/
+?? certification/vercel_logger_build_repair/verification/
+?? certification/vercel_repair/
+?? certification/vercel_server_compile/AFTER_deployed_probes.txt
+?? certification/vercel_standalone_restore/BEFORE_AFTER_REPORT.txt
+?? certification/vercel_ungate_deploy/AFTER_deployed_probes.txt
+?? certification/vercel_ungate_deploy/AFTER_runtime_error.txt
+?? certification/vercel_ungate_deploy/AFTER_supabase_rows.txt
+?? certification/vercel_ungate_deploy/BEFORE_AFTER_REPORT.txt
+?? certification/vercel_wrapper_repair/05_preview_probes.txt
+?? e2e/four-gates-g4-negative.spec.ts
+?? e2e/g1-docx-browser-acceptance.spec.ts
+?? e2e/g1-pdf-browser-acceptance.spec.ts
+?? e2e/golden-path-demo-e2e.spec.ts
+?? e2e/public-verification-g7.spec.ts
+?? evidence/ai/provider-truth/
+?? evidence/commercial-mvp/
+?? evidence/forensic-20261016T0240Z/
+?? evidence/g4-audit-20261016T1526Z/
+?? evidence/g4-closure-20261016T1632Z/
+?? evidence/g4-deterministic-20261016T1415Z/
+?? evidence/g5_baseline/2026-10-06_g5m02_before_state.txt
+?? evidence/g5_baseline/2026-10-06_g5m02_rejection_evidence.txt
+?? evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt
+?? evidence/g9/
+?? evidence/phase0/
+?? evidence/phase1/
+?? evidence/phase2/
+?? evidence/provider-truth/
+?? gap-c-test.mjs
+?? playwright.prod.config.ts
+?? sales-engine-production.png
+?? sales-geometry-test.mjs
+?? scripts/probeLiveProduction.ts
+?? scripts/probeMatchingEvidence.ts
+?? scripts/providerTruthSuite.ts
+?? tests/fixtures/ingestion/quantum_federated_learning_paper.pdf
+?? tests/g1_certification.test.ts
+?? tests/g1_format_matrix.test.ts
+?? tests/g1_format_matrix.test.ts.bak
+?? tests/g1_format_matrix.test.ts.before-docx-buffer-fix-20261015-030530.bak
+?? tests/g1_format_matrix.test.ts.before-docx-buffer-fix-20261015-030537.bak
+?? tests/g1_ocr_branch_forensic.test.ts
+?? tests/g1_ocr_complete_forensic_runtime.test.ts
+?? tests/g5m02-baseline-check.temp.test.ts
+?? tests/g5m02-partial-diagnostic.temp.test.ts
+?? tests/g5m02-sentinel-collision.temp.test.ts
+?? tests/hoeos-n5-r4-runtime.ts
+?? tests/hoeos-n5-runtime.ts
+?? tests/pipeline/pipelineAuditFailClosed.test.ts

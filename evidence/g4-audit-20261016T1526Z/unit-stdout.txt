@@ -1,0 +1,10 @@
+=== RUNNING HOEOS G4 INDEPENDENT AUDIT TEST SUITE ===
+
+
+======================================================
+AUDIT TEST SUMMARY: 33/33 assertions passed (0 failed).
+======================================================
+
+Results written to:
+  - C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z/g4-test-results.json
+  - C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z/g4-assertion-results.json

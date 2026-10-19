@@ -1,0 +1,95 @@
+{
+    "gate":  "G4",
+    "gateTitle":  "Evidence Highlighting",
+    "evaluationDate":  "2026-10-16T17:37:31.1436282+01:00",
+    "status":  "PASS",
+    "statusReason":  "All 12 mandatory criteria independently verified with authentic execution. Playwright exited with code 0 (Duration: 31.78s, 2 marks verified against canonical slices). Unit oracle passed with exit code 0 (33/33 assertions passed). Negative fail-closed boundary verified with exit code 0.",
+    "executionProvenance":  {
+                                "genuineExecution":  true,
+                                "playwrightProcessExitCode":  0,
+                                "playwrightDurationSec":  31.78,
+                                "unitProcessExitCode":  0,
+                                "unitDurationSec":  4.31,
+                                "negativeProcessExitCode":  0,
+                                "negativeDurationSec":  25.2,
+                                "hardcodedValuesRemoved":  true
+                            },
+    "repository":  {
+                       "root":  "C:\\Projects\\Gradifi",
+                       "branch":  "clean-deploy",
+                       "headCommit":  "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+                       "workingTreeState":  "DIRTY (pre-existing modifications preserved + G4 minimal repair)"
+                   },
+    "g1Dependency":  {
+                         "testFixture":  "tests/fixtures/ingestion/quantum_federated_learning_paper.pdf",
+                         "inputSha256":  "0c5860b9d729860dcf3a7480d9ec26d7e5354ade7353b1d7e8fcd66895c9f4ff",
+                         "status":  "VERIFIED_RELIABLE",
+                         "canonicalTextLength":  310,
+                         "canonicalTextHash":  "bba6f55f3e88ab19",
+                         "utf8Corruption":  false
+                     },
+    "unitAndIntegrationTests":  {
+                                    "testHarness":  "scratch/g4_audit_deterministic_suite.ts",
+                                    "exitCode":  0,
+                                    "durationSec":  4.31,
+                                    "totalAssertions":  33,
+                                    "passedAssertions":  33,
+                                    "failedAssertions":  0,
+                                    "status":  "PASS"
+                                },
+    "browserVerification":  {
+                                "testSuite":  "e2e/four-gates-g4-browser.spec.ts",
+                                "testRunner":  "Playwright Chromium",
+                                "exitCode":  0,
+                                "durationSec":  31.78,
+                                "markCount":  2,
+                                "primaryHighlight":  {
+                                                         "markText":  "Federated Learning",
+                                                         "sourceId":  "https://openalex.org/W7163668962",
+                                                         "findingId":  "de51b5db0696a8eb",
+                                                         "startOffset":  58,
+                                                         "endOffset":  76,
+                                                         "authoritativeTextMatch":  true,
+                                                         "offsetInvariant":  true,
+                                                         "identityBound":  true
+                                                     },
+                                "verifiedHighlights":  [
+                                                           {
+                                                               "index":  0,
+                                                               "findingId":  "de51b5db0696a8eb",
+                                                               "sourceId":  "https://openalex.org/W7163668962",
+                                                               "start":  58,
+                                                               "end":  76,
+                                                               "markText":  "Federated Learning",
+                                                               "expectedSlice":  "Federated Learning",
+                                                               "sourceTitle":  "Quantum Key Distribution (QKD) Enabled Secure Model Update Exchange in Federated Learning"
+                                                           },
+                                                           {
+                                                               "index":  1,
+                                                               "findingId":  "a8bf1fe9b46f5759",
+                                                               "sourceId":  "doi:10.21203/rs.3.rs-9358734/v1",
+                                                               "start":  800,
+                                                               "end":  816,
+                                                               "markText":  "machine learning",
+                                                               "expectedSlice":  "machine learning",
+                                                               "sourceTitle":  "Federated-Inspired Vertically Distributed Quantum Machine Learning: Benchmarking and Hardware Evaluation"
+                                                           }
+                                                       ],
+                                "screenshotArtifact":  "evidence/g4-closure-20261016T1632Z/g4_browser_highlight.png"
+                            },
+    "negativeVerification":  {
+                                 "testSuite":  "e2e/four-gates-g4-negative.spec.ts",
+                                 "testRunner":  "Playwright Chromium",
+                                 "exitCode":  0,
+                                 "durationSec":  25.2,
+                                 "status":  "PASS",
+                                 "finding":  "Missing canonicalDocument.rawText verified to fail closed with zero stale highlights rendered."
+                             },
+    "sourceModifications":  "G4 MINIMAL REPAIR: e2e/four-gates-g4-browser.spec.ts, src/pages/verify/GradifiVerifyDemoPage.tsx, scratch/compile_browser_results.ps1, scratch/finalize_g4_evidence.ps1",
+    "unrelatedGates":  {
+                           "G12":  "NOT CERTIFIED",
+                           "G8":  "UNVERIFIED WRITE BOUNDARY",
+                           "tenantContract":  "CONTRACT GAP (Preserved)",
+                           "productionCutover":  "PROHIBITED"
+                       }
+}

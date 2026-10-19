@@ -1,0 +1,9 @@
+REPOSITORY BASELINE FOR G4 FORENSIC AUDIT
+=========================================
+Timestamp:        2026-10-16T16:27:04.9660438+01:00
+Repository Root:  C:/Projects/Gradifi
+Branch:           clean-deploy
+HEAD Commit SHA:  9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44
+Working Tree:     DIRTY
+New Audit Path:   evidence/g4-audit-20261016T1526Z
+Previous Ev Path: evidence/g4-deterministic-20261016T1415Z

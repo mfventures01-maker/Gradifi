@@ -1,0 +1,30 @@
+CANONICAL_TEXT_LENGTH: 1083
+CANONICAL_DOC_DOCUMENT_ID: c00b201fabfb98d9
+PRIMARY_MARK_TEXT: "Federated Learning"
+EXPECTED_CANONICAL_SLICE: "Federated Learning"
+MATCH_EXACT: true
+OFFSETS_INVARIANT: true
+AUTHORITATIVE_IDENTITY_VERDICT: PASS
+VERIFIED_HIGHLIGHTS_DETAIL:
+[
+  {
+    "index": 0,
+    "findingId": "de51b5db0696a8eb",
+    "sourceId": "https://openalex.org/W7163668962",
+    "start": 58,
+    "end": 76,
+    "markText": "Federated Learning",
+    "expectedSlice": "Federated Learning",
+    "sourceTitle": "Quantum Key Distribution (QKD) Enabled Secure Model Update Exchange in Federated Learning"
+  },
+  {
+    "index": 1,
+    "findingId": "a8bf1fe9b46f5759",
+    "sourceId": "doi:10.21203/rs.3.rs-9358734/v1",
+    "start": 800,
+    "end": 816,
+    "markText": "machine learning",
+    "expectedSlice": "machine learning",
+    "sourceTitle": "Federated-Inspired Vertically Distributed Quantum Machine Learning: Benchmarking and Hardware Evaluation"
+  }
+]
