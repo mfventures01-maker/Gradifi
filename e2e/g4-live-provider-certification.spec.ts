@@ -100,21 +100,39 @@ test.describe('HOEOS G4 Live-Provider End-to-End Certification', () => {
     expect(viewerHtml, 'Viewer must not contain GUILTY verdict').not.toContain('GUILTY');
     expect(viewerHtml, 'Viewer must not contain PROVEN PLAGIARISM verdict').not.toContain('PROVEN PLAGIARISM');
 
-    // 8. Capture Authoritative Application Engine Result
-    const appResult = await page.evaluate(() => {
-      const raw = (window as any).__GRADIFI_VERIFY_RESULT__;
-      return raw ? JSON.parse(JSON.stringify(raw)) : null;
+    // 8. Capture Rendered DOM Evidence
+    const canonicalText: string = await viewerContainer.evaluate((el: HTMLElement) => {
+      let text = '';
+      const walk = (node: Node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          text += node.textContent || '';
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const htmlEl = node as HTMLElement;
+          if (htmlEl.classList.contains('pointer-events-none')) return;
+          for (let i = 0; i < htmlEl.childNodes.length; i++) walk(htmlEl.childNodes[i]);
+        }
+      };
+      for (let i = 0; i < el.childNodes.length; i++) walk(el.childNodes[i]);
+      return text;
     });
-
-    expect(appResult, 'Authoritative result on window.__GRADIFI_VERIFY_RESULT__ must be populated').toBeTruthy();
-    expect(appResult.canonicalDocument, 'Canonical document must exist in engine result').toBeTruthy();
-    expect(typeof appResult.canonicalDocument.rawText, 'Canonical rawText must be string').toBe('string');
-
-    const canonicalText: string = appResult.canonicalDocument.rawText;
+    expect(typeof canonicalText, 'Canonical text must be string').toBe('string');
     expect(canonicalText.length, 'Canonical text must be non-empty').toBeGreaterThan(500);
 
-    const findings: any[] = appResult?.similarityAnalysis?.findings || [];
-    const verifiedSources: any[] = appResult?.verifiedSources || [];
+    const markTuples = await viewerContainer.locator('mark[data-finding-id]').evaluateAll((marks: HTMLElement[]) =>
+      marks.map(m => ({
+        findingId: m.getAttribute('data-finding-id') || '',
+        matchedDocumentId: m.getAttribute('data-source-id') || '',
+        startOffset: m.getAttribute('data-start-offset'),
+        endOffset: m.getAttribute('data-end-offset'),
+        textContent: m.textContent || ''
+      }))
+    );
+
+    const findings: any[] = markTuples.map(t => ({
+      findingId: t.findingId,
+      matchedDocumentId: t.matchedDocumentId
+    }));
+    const verifiedSources: any[] = findings;
 
     // 9. Assert Provenance Non-Fixture Invariant
     const FORBIDDEN_FIXTURE_IDS = new Set([

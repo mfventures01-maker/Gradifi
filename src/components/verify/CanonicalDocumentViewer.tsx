@@ -56,7 +56,10 @@ export const CanonicalDocumentViewer: React.FC<CanonicalDocumentViewerProps> = (
   }, [verifiedFindings, matches]);
 
   return (
-    <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs text-slate-200 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto selection:bg-blue-600 selection:text-white">
+    <div
+      data-testid="canonical-document-viewer"
+      className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs text-slate-200 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto selection:bg-blue-600 selection:text-white"
+    >
       {segments.map((seg, idx) => {
         if (!seg.findingId) {
           return <span key={idx}>{seg.text}</span>;
@@ -77,11 +80,14 @@ export const CanonicalDocumentViewer: React.FC<CanonicalDocumentViewerProps> = (
           <mark
             key={idx}
             data-finding-id={seg.findingId}
+            data-source-id={match?.sourceId || ''}
+            data-start-offset={seg.start}
+            data-end-offset={seg.end}
             className={`relative inline group cursor-pointer rounded px-0.5 border ${methodToClass(seg.method)}`}
             onClick={() => seg.findingId && onFindingClick?.(seg.findingId)}
             title={tooltipTitle}
           >
-            {seg.text}
+            <span data-highlight-text>{seg.text}</span>
             <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col z-50 w-64 p-2.5 bg-slate-950 text-slate-200 text-xs rounded-lg border border-slate-700 shadow-2xl space-y-1 font-sans text-left not-italic whitespace-normal normal-case">
               <span className="font-bold text-white text-[11px] line-clamp-2">{title}</span>
               <span className="text-slate-400 text-[10px]">
