@@ -1,0 +1,19 @@
+﻿INDEPENDENT G1 CERTIFICATION VERDICT
+========================================
+Timestamp (UTC): 2026-10-24T16:21:01.2656143Z
+Gate: G1 — Universal Document Ingestion
+Certifier: PowerShell-independent-reproduction
+Repository HEAD: b27f6b03ad762537fbbf07532740259f97c7fa8e
+
+Measurements:
+  Fixtures match claimed hashes: True
+  Contract test suite exit: 0 (expect 0)
+  Contract tests passed: 0
+  Browser E2E exit: 0 (expect 0)
+  Browser E2E passed: 23 (expect 23)
+  Determinism (3 runs, same hash): DETERMINISTIC
+  Falsification controls passed: 0 / 5
+
+Failed checks: 1
+
+VERDICT: FAIL

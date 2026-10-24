@@ -1,0 +1,184 @@
+{
+  "format": "docx",
+  "fixture": "golden_test_001.docx",
+  "inputSha256": "3903fcaff82b632acb69ccdb6a5d4b7450053598a2fa79f6ac31c55fad9184d2",
+  "testName": "Browser E2E [docx]: verifies upload, extraction, and 3-run determinism via CDP",
+  "browser": "chromium (Chrome for Testing 151 via CDP)",
+  "expectedOutcome": "PASS",
+  "actualOutcome": "STATUS: EXTRACTED",
+  "extractionMethod": "docx_xml_extractor",
+  "canonicalTextLength": 197,
+  "canonicalHash": "5f820c0a653601564cad8b409c1d7c60cb858ebf9878d6ae7f5b334d60b5a8bb",
+  "textMarkerFound": true,
+  "elapsedMs": 1620,
+  "consoleErrors": [],
+  "networkRequests": [
+    {
+      "url": "http://localhost:5173/verify",
+      "method": "GET",
+      "type": "Document",
+      "timestamp": 1792859756.805096,
+      "status": 200,
+      "mimeType": "text/html"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/vite/dist/client/env.mjs",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859757.476027,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859757.476471,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/react.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859757.476633,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859757.476774,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-USTO3F3J.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859757.882508,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-SNAQBZPT.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859757.882702,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859757.968156,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/idb.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859758.003169,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/lucide-react.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859758.144605,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-MUB6OXK6.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859758.220565,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/jspdf.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859758.485048,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/@supabase_supabase-js.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859758.904902,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/qrcode.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859759.513444,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/pdfjs-dist_legacy_build_pdf__mjs.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859759.514234,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-D7ZASVPN.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859759.587212,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-WEJSBCU2.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859759.587417,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/tesseract__js.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859759.676464,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/fflate.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859759.841795,
+      "status": 200,
+      "mimeType": "text/javascript"
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/fast-xml-parser.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859759.842011,
+      "status": 200,
+      "mimeType": "text/javascript"
+    }
+  ],
+  "repetitionHashes": [
+    "5f820c0a653601564cad8b409c1d7c60cb858ebf9878d6ae7f5b334d60b5a8bb",
+    "5f820c0a653601564cad8b409c1d7c60cb858ebf9878d6ae7f5b334d60b5a8bb",
+    "5f820c0a653601564cad8b409c1d7c60cb858ebf9878d6ae7f5b334d60b5a8bb"
+  ],
+  "deterministic": true,
+  "classification": "PASS"
+}

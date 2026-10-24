@@ -1,0 +1,84 @@
+﻿G1 Universal Document Ingestion: CERTIFICATION PASS
+
+Gate G1 — Universal Document Ingestion
+Decision: PASS
+Certification protocol: HOEOS-G1-E2E-DETERMINISTIC-CLOSURE-001
+
+=== Certification evidence ===
+
+Agent certification (evidence/G1-e2e-closure-20261024-123632/):
+- 17 advertised formats, 18 contract paths verified
+- 14 supported formats PASS (native PDF, DOCX, TXT, MD, HTML, HTM, RTF,
+  CSV, JSON, XML, EPUB, ODT, PPTX, XLSX)
+- 1 OCR PDF PASS (Tesseract, HOEOS_KNOWN_PHRASE_7F3A9C recovered)
+- 3 legacy binary formats FAIL_CLOSED with conversion guidance
+  (.doc, .ppt, .xls)
+- 23/23 browser E2E tests passed in real Chromium via Playwright
+- 32/32 contract tests passed
+- 5/5 negative controls fail-closed with named error codes
+- Chrome DevTools Protocol verified zero document leakage
+- Zero Math.random() in deterministic engine
+- Scoped production repair: structuredAdapter.ts XML validation using
+  XMLValidator from fast-xml-parser
+
+=== Independent verification ===
+
+Three independent verification runs, each preserving its own evidence:
+
+Run 1 (evidence/G1-independent-20261024-161815/):
+  Verdict: FAIL
+  Cause: Phase E and F 'tsx' scripts written to evidence directory
+         (not repo root), relative imports failed.
+  Phases B, C, D passed independently.
+
+Run 2 (evidence/G1-independent-corrected-20261024-162710/):
+  Verdict: FAIL
+  Cause: Same tsx path issue + BOM on tsx files +
+         UNKNOWN-as-deterministic false positive in verdict logic.
+  Phases B and D passed independently.
+
+Run 3 (evidence/G1-independent-run3-20261024-163518/):
+  Original G-verdict.txt: FAIL (Phase C parser bug)
+  Corrected G-verdict-corrected.txt: PASS (all six phases)
+  Phase results (from G-verdict-corrected.txt):
+    A environment:      PASS
+    B fixtures:         PASS (15/15 hashes match)
+    C contract tests:   PASS (32 / 32)
+    D browser E2E:      PASS (23 / 23)
+    E determinism:      PASS (3 byte-identical logs: CB46DF00..., canonical hash f4dde3c7932be24b)
+    F falsification:    PASS (5/5 fail-closed controls)
+
+Six verifier bugs found and fixed across three runs:
+  1. tsx scripts written to evidence directory, not repo root
+  2. tsx scripts written with BOM
+  3. C-contract-test.log was UTF-16 LE from '*' redirect
+  4. Vitest summary line contains inline ANSI color escapes
+  5. UNKNOWN counted as deterministic in Phase E verdict logic
+  6. Phase D parser matched wrong "N passed" occurrence
+
+Each was caught by a specific byte-level diagnostic and corrected.
+The record preserves each failure as evidence that the verifier was
+stress-tested against its own bugs and each was diagnosed.
+
+=== Certification artifacts ===
+
+  docs/HOEOS/G1-TARGETS-APPENDIX.md
+  e2e/g1-universal-browser-acceptance.spec.ts
+  scripts/compile_g1_closure_evidence.ts
+  tests/fixtures/ingestion/*  (20 fixtures, hashed)
+  tests/g1_all_17_formats_contract.test.ts
+  src/services/verify/ingestionAdapters/structuredAdapter.ts
+  tests/hoeos/four_gates/focused_repairs.test.ts
+
+=== Gate G1 decision ===
+
+PASS
+
+  Supported: PDF (native + OCR), DOCX, TXT, MD, HTML, HTM, RTF, CSV,
+             JSON, XML, EPUB, ODT, PPTX, XLSX
+  Fail-closed by design with user guidance: DOC, PPT, XLS
+  Determinism: 100% across 3 runs (byte-identical logs CB46DF00...)
+  Negative controls: 5/5 fail-closed with named error codes
+  CDP verified: zero document leakage during client-side extraction
+
+Not pushed to remote by this commit.

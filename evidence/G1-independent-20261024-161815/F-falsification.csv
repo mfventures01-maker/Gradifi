@@ -1,0 +1,6 @@
+﻿control,expected_fail_closed,actual_exit,verdict
+invalid.json,true,1,FAIL
+malformed.xml,true,1,FAIL
+empty.txt,true,1,FAIL
+corrupted.docx,true,1,FAIL
+corrupted.pdf,true,1,FAIL

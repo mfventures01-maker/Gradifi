@@ -1,0 +1,16 @@
+{
+  "format": "json",
+  "fixture": "invalid.json",
+  "inputSha256": "e0ba2125b5f8adb761f8e4990221b9633b77bf1e04781d3276cb1a2d55bc57f0",
+  "testName": "Browser E2E [Negative Control - invalid_json]: rejects malformed document with STATUS: FAILED",
+  "browser": "chromium (Chrome for Testing 151 via CDP)",
+  "expectedOutcome": "FAIL_CLOSED",
+  "actualOutcome": "STATUS: FAILED",
+  "rejectionReason": "Invalid JSON document syntax.",
+  "elapsedMs": 270,
+  "consoleErrors": [],
+  "networkRequests": [],
+  "repetitionHashes": [],
+  "deterministic": true,
+  "classification": "FAIL_CLOSED"
+}

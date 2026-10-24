@@ -4,6 +4,7 @@
  */
 
 import { AdapterExtractionResult } from './pdfAdapter.js';
+import { XMLValidator } from 'fast-xml-parser';
 
 export function extractCsvAdapter(csvContent: string): AdapterExtractionResult {
   if (!csvContent || !csvContent.trim()) {
@@ -182,8 +183,9 @@ export function extractXmlAdapter(xmlContent: string): AdapterExtractionResult {
     };
   }
 
-  // Verify XML tag closing balance basic syntax check
-  if ((xmlContent.match(/</g) || []).length !== (xmlContent.match(/>/g) || []).length) {
+  // Verify XML tag closing balance and well-formed syntax
+  const validation = XMLValidator.validate(xmlContent);
+  if (validation !== true) {
     return {
       success: false,
       text: '',

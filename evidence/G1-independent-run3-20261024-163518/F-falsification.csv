@@ -1,0 +1,6 @@
+﻿control,success,error_code,verdict
+invalid.json,false,MALFORMED_DOCUMENT,PASS
+malformed.xml,false,MALFORMED_DOCUMENT,PASS
+empty.txt,false,EMPTY_DOCUMENT,PASS
+corrupted.docx,false,CORRUPT_PACKAGE,PASS
+corrupted.pdf,false,TEXT_EXTRACTION_UNAVAILABLE,PASS

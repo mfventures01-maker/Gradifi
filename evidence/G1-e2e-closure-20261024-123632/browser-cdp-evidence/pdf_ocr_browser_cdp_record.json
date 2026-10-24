@@ -1,0 +1,160 @@
+{
+  "format": "pdf-ocr",
+  "fixture": "scanned_page_001.pdf",
+  "inputSha256": "62f34dcac71edd6563d95f3cfd6ef7d1301a227d6f4a1fac752255b450d688a2",
+  "testName": "Browser E2E [pdf - OCR]: extracts scanned image PDF via Tesseract under real browser with CDP trace",
+  "browser": "chromium (Chrome for Testing 151 via CDP)",
+  "expectedOutcome": "PASS",
+  "actualOutcome": "STATUS: EXTRACTED",
+  "extractionMethod": "ocr_tesseract",
+  "canonicalTextLength": 25,
+  "canonicalHash": "e7fc962ff449dbad3b5871afed997d67790618f933b6d62d30cdac7ff74b5274",
+  "textMarkerFound": true,
+  "elapsedMs": 20218,
+  "consoleErrors": [],
+  "networkRequests": [
+    {
+      "url": "http://localhost:5173/verify",
+      "method": "GET",
+      "type": "Document",
+      "timestamp": 1792859823.129817
+    },
+    {
+      "url": "http://localhost:5173/node_modules/vite/dist/client/env.mjs",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859823.638412
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859823.641612
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/react.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859823.641889
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859823.642077
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-USTO3F3J.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859823.700937
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-SNAQBZPT.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859823.701158
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859823.837242
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/idb.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859823.848379
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-MUB6OXK6.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859824.022925
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/lucide-react.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859824.053457
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/@supabase_supabase-js.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859824.122739
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/jspdf.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859824.175927
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/qrcode.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859826.037058
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/pdfjs-dist_legacy_build_pdf__mjs.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859826.176692
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/tesseract__js.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859826.203522
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/fast-xml-parser.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859826.209058
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-D7ZASVPN.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859826.209518
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/chunk-WEJSBCU2.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859826.209723
+    },
+    {
+      "url": "http://localhost:5173/node_modules/.vite/deps/fflate.js?v=0c1ea1c0",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859826.23516
+    },
+    {
+      "url": "http://localhost:5173/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859828.408277
+    },
+    {
+      "url": "http://localhost:5173/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859831.825892
+    },
+    {
+      "url": "blob:http://localhost:5173/d51fa05e-b136-4106-827a-e87ad08d70ea",
+      "method": "GET",
+      "type": "Script",
+      "timestamp": 1792859834.646814
+    }
+  ],
+  "repetitionHashes": [
+    "e7fc962ff449dbad3b5871afed997d67790618f933b6d62d30cdac7ff74b5274"
+  ],
+  "deterministic": true,
+  "classification": "PASS"
+}

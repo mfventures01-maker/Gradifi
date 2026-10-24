@@ -1,0 +1,6 @@
+﻿# branch.oid b27f6b03ad762537fbbf07532740259f97c7fa8e
+# branch.head clean-deploy
+# branch.upstream origin/clean-deploy
+# branch.ab +1 -0
+? evidence/G1-REPAIR-AND-B-GROUP-COMMIT-MSG.txt
+? evidence/G1-e2e-closure-20261024-123632/

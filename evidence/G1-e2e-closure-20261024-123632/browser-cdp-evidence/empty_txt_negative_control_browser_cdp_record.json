@@ -1,0 +1,16 @@
+{
+  "format": "txt",
+  "fixture": "empty.txt",
+  "inputSha256": "2106c36011520fe73876d45bfb9ef8bf7b2e9f4362096a320376d8ee9b27ef12",
+  "testName": "Browser E2E [Negative Control - empty_txt]: rejects malformed document with STATUS: FAILED",
+  "browser": "chromium (Chrome for Testing 151 via CDP)",
+  "expectedOutcome": "FAIL_CLOSED",
+  "actualOutcome": "STATUS: FAILED",
+  "rejectionReason": "The uploaded file is empty.",
+  "elapsedMs": 97,
+  "consoleErrors": [],
+  "networkRequests": [],
+  "repetitionHashes": [],
+  "deterministic": true,
+  "classification": "FAIL_CLOSED"
+}

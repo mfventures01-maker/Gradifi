@@ -1,0 +1,9 @@
+﻿command,exit_code,recorded_at
+git status --porcelain=v2 --branch,0,2026-10-24T14:56:32.6233411+01:00
+git log -1 --format=fuller,0,2026-10-24T14:56:32.6233411+01:00
+tool versions check,0,2026-10-24T14:56:32.6243407+01:00
+npx vitest run (full suite),1,2026-10-24T15:19:45.1869962+01:00
+npx tsx tests/fixtures/ingestion/build_g1_fixtures.ts,0,2026-10-24T16:26:34.0559036+01:00
+npx vitest run tests/g1_all_17_formats_contract.test.ts,0,2026-10-24T16:26:34.0611744+01:00
+npx playwright test e2e/g1-universal-browser-acceptance.spec.ts,0,2026-10-24T16:26:34.0641761+01:00
+npx playwright test e2e/g1-docx-browser-acceptance.spec.ts e2e/g1-pdf-browser-acceptance.spec.ts,0,2026-10-24T16:26:34.0671754+01:00

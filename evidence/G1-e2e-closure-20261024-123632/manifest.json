@@ -1,0 +1,41 @@
+{
+  "protocolId": "HOEOS-G1-E2E-DETERMINISTIC-CLOSURE-001",
+  "gate": "G1",
+  "gateTitle": "Universal Document Ingestion",
+  "timestampUtc": "2026-10-24T12:36:32Z",
+  "finalDecision": "PASS",
+  "evidenceClass": "CERTIFICATION",
+  "author": "Antigravity / HOEOS V2 Deterministic Engine",
+  "headSha": "b27f6b03ad762537fbbf07532740259f97c7fa8e",
+  "environment": {
+    "node": "v22.23.3",
+    "npm": "10.9.9",
+    "playwright": "1.62.1",
+    "vitest": "2.1.9",
+    "browser": "Chrome for Testing 151.0.7922.34 (playwright chromium v1234)",
+    "ocr": "tesseract.js 7.0.0"
+  },
+  "totals": {
+    "advertisedFormatsCount": 17,
+    "contractEntriesCount": 18,
+    "supportedFormatsCount": 15,
+    "failClosedFormatsCount": 3,
+    "browserAcceptanceTestsPassed": 23,
+    "browserAcceptanceTestsFailed": 0,
+    "vitestContractTestsPassed": 32,
+    "vitestContractTestsFailed": 0,
+    "threeRunDeterminismScore": "100%",
+    "negativeControlsVerified": 5
+  },
+  "manifestFiles": [
+    "baseline.md",
+    "g1-contract-matrix.csv",
+    "browser-acceptance-summary.csv",
+    "cdp-runtime-summary.csv",
+    "repeatability-results.csv",
+    "falsification-results.csv",
+    "commands.log",
+    "exit-codes.csv",
+    "decision.md"
+  ]
+}

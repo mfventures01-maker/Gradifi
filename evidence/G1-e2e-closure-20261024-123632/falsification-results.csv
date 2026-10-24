@@ -1,0 +1,9 @@
+control_name,fixture,expected_code,rejection_reason_observed,terminal_status,classification
+docx,corrupted.docx,UNSUPPORTED_OR_MALFORMED,"ZIP central directory could not be read.",STATUS: FAILED,PASS
+pdf,corrupted.pdf,UNSUPPORTED_OR_MALFORMED,"Text extraction unavailable",STATUS: FAILED,PASS
+doc,legacy.doc,UNSUPPORTED_OR_MALFORMED,"Legacy binary .doc format is not directly supported. Please convert legacy.doc to .docx or PDF.",STATUS: FAILED,PASS
+txt,empty.txt,UNSUPPORTED_OR_MALFORMED,"The uploaded file is empty.",STATUS: FAILED,PASS
+json,invalid.json,UNSUPPORTED_OR_MALFORMED,"Invalid JSON document syntax.",STATUS: FAILED,PASS
+xml,malformed.xml,UNSUPPORTED_OR_MALFORMED,"Malformed XML document syntax.",STATUS: FAILED,PASS
+ppt,legacy.ppt,UNSUPPORTED_OR_MALFORMED,"Legacy binary .ppt format is not directly supported. Please convert legacy.ppt to .pptx or PDF.",STATUS: FAILED,PASS
+xls,legacy.xls,UNSUPPORTED_OR_MALFORMED,"Legacy binary .xls format is not directly supported. Please convert legacy.xls to .xlsx or PDF.",STATUS: FAILED,PASS

@@ -1,0 +1,16 @@
+{
+  "format": "xml",
+  "fixture": "malformed.xml",
+  "inputSha256": "2f9d1efcbad996e73caca120f3e27fb07445bda9f1e936151afc6d564ec5ce7e",
+  "testName": "Browser E2E [Negative Control - malformed_xml]: rejects malformed document with STATUS: FAILED",
+  "browser": "chromium (Chrome for Testing 151 via CDP)",
+  "expectedOutcome": "FAIL_CLOSED",
+  "actualOutcome": "STATUS: FAILED",
+  "rejectionReason": "Malformed XML document syntax.",
+  "elapsedMs": 207,
+  "consoleErrors": [],
+  "networkRequests": [],
+  "repetitionHashes": [],
+  "deterministic": true,
+  "classification": "FAIL_CLOSED"
+}

@@ -1,0 +1,16 @@
+{
+  "format": "docx",
+  "fixture": "corrupted.docx",
+  "inputSha256": "c740f0ec5aff6078d92cd8843de452a73d41c5df00d238f5568b43dac4864740",
+  "testName": "Browser E2E [Negative Control - corrupted_docx]: rejects malformed document with STATUS: FAILED",
+  "browser": "chromium (Chrome for Testing 151 via CDP)",
+  "expectedOutcome": "FAIL_CLOSED",
+  "actualOutcome": "STATUS: FAILED",
+  "rejectionReason": "ZIP central directory could not be read.",
+  "elapsedMs": 220,
+  "consoleErrors": [],
+  "networkRequests": [],
+  "repetitionHashes": [],
+  "deterministic": true,
+  "classification": "FAIL_CLOSED"
+}

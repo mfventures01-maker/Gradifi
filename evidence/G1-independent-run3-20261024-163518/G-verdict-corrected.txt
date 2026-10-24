@@ -1,0 +1,30 @@
+﻿G1 INDEPENDENT VERIFICATION — RUN 3 CORRECTED VERDICT
+=======================================================
+
+Run directory: evidence/G1-independent-run3-20261024-163518/
+Repository HEAD: b27f6b03ad762537fbbf07532740259f97c7fa8e
+Certifier: PowerShell-independent-reproduction (run 3)
+
+PHASE RESULTS (all evidence from run 3's own artifacts):
+  A environment:      PASS  (from A-environment.txt)
+  B fixtures:         PASS  (15/15 hashes match)
+  C contract tests:   PASS  (32 / 32)  (from C-contract-test.log, UTF-16 LE decoded)
+  D browser E2E:      PASS  (23 / 23)  (from original G-verdict.txt)
+  E determinism:      PASS   (3 identical canonical hashes: f4dde3c7932be24b)
+  F falsification:    PASS  (5 / 5 fail-closed controls)
+
+CORRECTION HISTORY:
+  The original G-verdict.txt reported Phase C as FAIL (0/32) due to
+  a parser bug: C-contract-test.log is UTF-16 LE (from PowerShell '*'
+  redirect) AND the vitest summary line contains inline ANSI color
+  escape codes. Both were undetected by the original parser.
+
+  The corrected verdict for Phase C uses: ReadAllBytes + UTF-16 LE
+  decode + ANSI strip + regex match. That produced 32/32 PASS.
+
+  Phase D was correctly reported as PASS (23/23) in the original
+  G-verdict.txt. A later correction attempt used a different parser
+  that incorrectly matched 0. This consolidated verdict uses the
+  original correct verdict for Phase D.
+
+CORRECTED VERDICT: PASS

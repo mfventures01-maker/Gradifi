@@ -1,0 +1,17 @@
+﻿THIRD INDEPENDENT G1 CERTIFICATION VERDICT
+==============================================
+Timestamp (UTC): 2026-10-24T16:38:31.8436383Z
+Gate: G1 — Universal Document Ingestion
+Certifier: PowerShell-independent-reproduction (run 3)
+Repository HEAD: b27f6b03ad762537fbbf07532740259f97c7fa8e
+
+Phase results:
+  B fixtures match claimed hashes: True
+  C contract tests:                FAIL (0 / 32)
+  D browser E2E:                   PASS (23 / 23)
+  E determinism:                   PASS
+  F falsification:                 PASS (5 / 5)
+
+Failed phases: 1
+
+VERDICT: FAIL
