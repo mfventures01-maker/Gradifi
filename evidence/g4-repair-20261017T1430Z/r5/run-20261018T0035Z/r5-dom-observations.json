@@ -1,0 +1,29 @@
+{
+  "capturedAt": "2026-10-18T00:01:18.380Z",
+  "viewerVisible": true,
+  "unavailableVisible": false,
+  "markCount": 2,
+  "domMarks": [
+    {
+      "index": 0,
+      "findingId": "de51b5db0696a8eb",
+      "sourceId": "https://openalex.org/W7163668962",
+      "startOffset": 58,
+      "endOffset": 76,
+      "method": "TOKEN_OVERLAP",
+      "highlightText": "Federated Learning",
+      "renderedText": "Federated Learning"
+    },
+    {
+      "index": 1,
+      "findingId": "a8bf1fe9b46f5759",
+      "sourceId": "doi:10.21203/rs.3.rs-9358734/v1",
+      "startOffset": 800,
+      "endOffset": 816,
+      "method": "TOKEN_OVERLAP",
+      "highlightText": "machine learning",
+      "renderedText": "machine learning"
+    }
+  ],
+  "screenshotArtifact": "screenshots/r5_real_engine_dom_highlight.png"
+}

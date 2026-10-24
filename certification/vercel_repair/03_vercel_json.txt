@@ -1,0 +1,19 @@
+diff --git a/vercel.json b/vercel.json
+index e746cd2..fae82fc 100644
+--- a/vercel.json
++++ b/vercel.json
+@@ -5,6 +5,14 @@
+   "installCommand": "npm install",
+   "framework": "vite",
+   "rewrites": [
++    {
++      "source": "/api/verify/(.*)",
++      "destination": "/api/verify/$1"
++    },
++    {
++      "source": "/api/_probe",
++      "destination": "/api/_probe"
++    },
+     {
+       "source": "/(.*)",
+       "destination": "/index.html"

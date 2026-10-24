@@ -1,0 +1,44 @@
+[
+  {
+    "checkId": "G2.1-G2.2",
+    "name": "Canonicalization Rules & Unicode Normalization",
+    "verdict": "PASS",
+    "details": "NFKD diacritic stripping, whitespace folding, punctuation replacement, and empty hash contract verified.",
+    "evidenceLevel": "RUNTIME"
+  },
+  {
+    "checkId": "G2.3",
+    "name": "Equivalent Representation Convergence",
+    "verdict": "PASS",
+    "details": "Identical canonical text and documentId (aaaea8f33a95f675) generated for disparate whitespace/line-ending encodings.",
+    "evidenceLevel": "RUNTIME"
+  },
+  {
+    "checkId": "G2.4",
+    "name": "Negative Controls & Identity Differentiation",
+    "verdict": "PASS",
+    "details": "Meaningfully distinct texts produce distinct canonical IDs; zero false collisions detected.",
+    "evidenceLevel": "RUNTIME"
+  },
+  {
+    "checkId": "G2.5",
+    "name": "Offset and Coordinate System Exactness",
+    "verdict": "PASS",
+    "details": "Character coordinate bounds [startChar, endChar] strictly slice original canonical string byte-for-byte.",
+    "evidenceLevel": "RUNTIME"
+  },
+  {
+    "checkId": "G2.6",
+    "name": "10-Run Determinism Invariant",
+    "verdict": "PASS",
+    "details": "10 consecutive executions produced byte-for-byte identical similarity scores, finding IDs, and coordinate bounds.",
+    "evidenceLevel": "RUNTIME"
+  },
+  {
+    "checkId": "G2.7",
+    "name": "Production Path Integration & Service Authority",
+    "verdict": "PASS",
+    "details": "verifyCoreService successfully invokes documentNormalizer and deterministicEngine with deterministic=true receipt.",
+    "evidenceLevel": "CERTIFICATION"
+  }
+]

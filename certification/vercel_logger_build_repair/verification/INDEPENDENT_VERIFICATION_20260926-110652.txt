@@ -1,0 +1,80 @@
+﻿
+============================================================
+0. REPOSITORY IDENTITY
+============================================================
+ROOT=C:\Projects\Gradifi
+BRANCH=clean-deploy
+HEAD=485eb1f98f07d21a0934cffb9b375677f17389fe
+DIRTY=True
+
+============================================================
+1. CLAIM: COMMIT 485eb1f EXISTS
+============================================================
+PASS  COMMIT_485EB1F  Commit 485eb1f exists.
+COMMIT_485EB1F=485eb1f98f07d21a0934cffb9b375677f17389fe|vercel: remove build:api bundle step; guard providerLogger|2026-09-26 11:02:50 +0100
+
+============================================================
+2. CLAIM: build:api SCRIPT REMOVED FROM package.json
+============================================================
+PASS  BUILD_SCRIPT_SIMPLIFIED  build script is exactly 'vite build'.
+
+============================================================
+3. CLAIM: api/ DIRECTORY CONTAINS 0 .js FILES
+============================================================
+PASS  API_NO_JS  api/ directory contains 0 .js files.
+PASS  API_HAS_TS  api/ contains 11 TypeScript source file(s).
+
+============================================================
+4. CLAIM: providerLogger USES /tmp ON VERCEL
+============================================================
+PASS  LOGGER_VERCEL_ENV  providerLogger checks process.env.VERCEL.
+PASS  LOGGER_TMP_PATH  providerLogger uses /tmp/gradifi-logs for Vercel writes.
+PASS  LOGGER_TRY_CATCH  providerLogger wraps fs operations in try/catch.
+LOGGER_SHA256=16400E2E9E1906D5C103CFF3DD9C813D63C738206104355D935F0F4B4FB77042
+
+============================================================
+5. CLAIM: EVIDENCE ARTIFACTS EXIST
+============================================================
+PASS  EVIDENCE_ARTIFACTS  All expected evidence artifacts are present.
+
+============================================================
+6. CLAIM: PRE-REPAIR BACKUPS PRESENT
+============================================================
+PASS  PRE_REPAIR_BACKUPS  Pre-repair backups are present.
+
+============================================================
+7. CLAIM: LOGGER GUARD TEST EXISTS
+============================================================
+PASS  GUARD_TEST_PRESENT  scratch/test_logger_guard.ts exists.
+GUARD_TEST_SHA256=3B8191B807804DB8795763017FCEC1AAD7418FDAF0AE8BC1303B4E4202341462
+
+============================================================
+8. CLAIM: TYPE-CHECK OF providerLogger IS CLEAN
+============================================================
+TSC_OUTPUT:
+
+PASS  TSC_LOGGER  tsc --noEmit on providerLogger.ts passed with 0 errors.
+
+============================================================
+9. RECORD CURRENT HASHES OF REPAIRED FILES
+============================================================
+HASH package.json = 2A858D0557730D89716C6E1C4C6F7575C91C850613FA94BCA33DB28E01E36A89
+HASH src\services\verify\federation\providerLogger.ts = 16400E2E9E1906D5C103CFF3DD9C813D63C738206104355D935F0F4B4FB77042
+
+============================================================
+10. FINAL VERDICT
+============================================================
+
+FINAL_VERDICT=PASS
+RESULTS:
+COMMIT_485EB1F=PASS
+BUILD_SCRIPT_SIMPLIFIED=PASS
+API_NO_JS=PASS
+API_HAS_TS=PASS
+LOGGER_VERCEL_ENV=PASS
+LOGGER_TMP_PATH=PASS
+LOGGER_TRY_CATCH=PASS
+EVIDENCE_ARTIFACTS=PASS
+PRE_REPAIR_BACKUPS=PASS
+GUARD_TEST_PRESENT=PASS
+TSC_LOGGER=PASS

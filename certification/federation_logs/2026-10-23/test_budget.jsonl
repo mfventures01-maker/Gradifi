@@ -1,0 +1,3 @@
+{"timestamp":"2026-10-23T23:09:31.058Z","correlationId":"corr_test_4","providerId":"test_budget","url":"https://test_budget.api/","attempt":1,"durationMs":0,"outcome":"RETRY","errorCode":"Error","errorMessage":"503 Service Unavailable"}
+{"timestamp":"2026-10-23T23:09:32.062Z","correlationId":"corr_test_4","providerId":"test_budget","url":"https://test_budget.api/","attempt":2,"durationMs":1002,"outcome":"RETRY","errorCode":"Error","errorMessage":"503 Service Unavailable"}
+{"timestamp":"2026-10-23T23:09:32.064Z","correlationId":"corr_test_4","providerId":"test_budget","url":"https://test_budget.api/","attempt":3,"durationMs":0,"outcome":"TIMEOUT","errorCode":"TOTAL_BUDGET_EXCEEDED","errorMessage":"Total budget of 300ms exceeded for provider 'test_budget'"}

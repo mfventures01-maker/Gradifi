@@ -1,0 +1,822 @@
+# ============================================================
+# PROPOSED .gitignore ADDITIONS — G0 AUDIT PROPOSAL ONLY
+# ============================================================
+#
+# THIS IS A PROPOSAL. It is not applied. It changes no repository
+# state: no .gitignore edit, no file rename, no staging, no commit,
+# no deployment. It is a review document for the G0 disposition.
+#
+# Gate status at time of writing: G0 = HOLD.
+#
+# Produced from:      evidence/G0-audit-20261023-000055/
+# Classification:     evidence/G0-reconciliation-20261022-233110/
+#                     untracked-classification-final.csv (742 rows)
+# Total untracked:    742, all UNTRACKED, none tracked, none ignored
+#                     (02-class-by-git-state.txt, all rows Tracked=0,
+#                     Ignored=0)
+# Blind-spot scan:    06-ignore-blind-spot-candidates.txt
+#                     (96 candidates, all EVIDENCE_GENERATED)
+#
+# ============================================================
+# READING GUIDE
+# ============================================================
+#
+#   [PROVEN]         — fact verified by a captured artifact
+#   [UNVERIFIED]     — believed but not proven by the audit
+#   [DECISION]       — requires the operator to choose
+#   [OPEN]           — a real gap; cannot be resolved by this document
+#
+# Only the operator can promote [DECISION] and [OPEN] items. This
+# document does not do so.
+#
+# ============================================================
+
+
+# ============================================================
+# PART 1 — PROPOSED IGNORE PATTERNS
+# ============================================================
+#
+# These patterns, if applied to .gitignore, would route paths that
+# are currently UNTRACKED and unignored. They are listed in order
+# from widest to narrowest.
+#
+# Each pattern has:
+#   - the literal line to append to .gitignore
+#   - the count of currently-untracked paths it would cover
+#   - a rationale
+#   - a confidence statement, with citations to captured evidence
+#
+# The counts come from the 742-row classification CSV. They
+# describe the set as it existed at audit time. The set may grow
+# (this audit itself wrote files into evidence/) and may change
+# under you. Do not treat a count as a guarantee.
+
+
+# ------------------------------------------------------------
+# P1: evidence/
+# ------------------------------------------------------------
+#
+#   evidence/
+#
+# Covers: 703 currently-untracked paths
+# Class:  EVIDENCE_GENERATED
+#
+# Rationale:
+# The evidence/ tree is the store of record for gate evidence.
+# It is written by every gate run and by this reconciliation. The
+# classification records 703 of 742 untracked paths under it.
+#
+# [PROVEN] — 703 rows classified EVIDENCE_GENERATED.
+#   Source: untracked-classification-final.txt (class summary).
+# [PROVEN] — Of the 96 blind-spot candidates under evidence/,
+#   certification/, test-results/, every one was classified
+#   EVIDENCE_GENERATED, none FIXTURE_* or TEST_*.
+#   Source: 06-ignore-blind-spot-candidates.txt (all rows).
+# [UNVERIFIED] — That evidence/ contains no future fixture.
+#   The scan tested the 96 candidates that matched the fixture
+#   hint list. It did not enumerate every file under evidence/.
+#   A file named, for example, evidence/fixtures/paper.pdf
+#   would not match the hint list and would be hidden by this
+#   pattern without being flagged.
+# [OPEN] — Whether any path in evidence/ is load-bearing for a
+#   future gate but is not under a fixture-sounding name. The
+#   audit cannot answer this. The 703 file paths are in the CSV;
+#   a human review of that list would settle it, and no such
+#   review has been performed.
+#
+# Recommendation: ACCEPT the pattern, with the caveat that if a
+# future gate needs a fixture under evidence/, the fixture should
+# be placed under tests/fixtures/ instead. Record this convention
+# in the G0 disposition. The convention is what makes the pattern
+# safe going forward; the pattern alone does not.
+
+
+# ------------------------------------------------------------
+# P2: certification/
+# ------------------------------------------------------------
+#
+#   certification/
+#
+# Covers: a subset of the 703 evidence paths (the certification/
+#         branch of the EVIDENCE_GENERATED class)
+#
+# Rationale:
+# The certification/ tree contains prior and current certification
+# records, including a dated mirror archive
+# (certification/mirror_archive_2026-09-23T08-48-35Z/) that holds
+# G1, G2, G3, G5 suite outputs and before/after states from an
+# earlier round of certification.
+#
+# [PROVEN] — The blind-spot scan found 27 paths under
+#   certification/ matching the fixture hint list, all classified
+#   EVIDENCE_GENERATED.
+#   Source: 06-ignore-blind-spot-candidates.txt.
+# [PROVEN] — certification/mirror_archive_2026-09-23T08-48-35Z/
+#   contains G1/G2/G3/G5 certification records.
+#   Source: 06-ignore-blind-spot-candidates.txt (paths).
+# [OPEN] — Whether the mirror_archive_* tree is genuinely
+#   archival (read-only historical material) or is the store of
+#   record for the gates it covers. If it is the store of record,
+#   ignoring certification/ would hide the only copy. The audit
+#   did not resolve this. The G0 disposition must state which
+#   tree is the store of record before this pattern is applied.
+#   See Part 3.
+#
+# Recommendation: DEFER P2 pending the store-of-record
+# declaration in Part 3. Do not apply certification/ until that
+# declaration is on the record. If the declaration is
+# "evidence/ is the store of record, mirror_archive_* is
+# read-only historical", P2 can be accepted with a comment. If
+# the declaration is "mirror_archive_* is the store of record",
+# P2 must be narrowed to exclude the archive, e.g.:
+#     certification/
+#     !certification/mirror_archive_*/
+#   which un-ignores the archive branch. That narrowing has not
+#   been tested and is not endorsed here.
+
+
+# ------------------------------------------------------------
+# P3: test-results/
+# ------------------------------------------------------------
+#
+#   test-results/
+#
+# Covers: Playwright and test-runner temporary output
+# Class:  TEST_RESULTS_GENERATED (a subset of the evidence
+#         count above; the audit did not separate the counts
+#         because the classification merged them)
+#
+# Rationale:
+# test-results/ is regenerated by every Playwright run. It is
+# disposable by construction.
+#
+# [PROVEN] — test-results/ appears in the classification as
+#   EVIDENCE_GENERATED; the classification does not distinguish
+#   between test-results/ and evidence/ at the class level.
+# [UNVERIFIED] — That test-results/ currently contains no file
+#   whose only copy lives there. Playwright output directories
+#   usually hold screenshots that are duplicated into evidence/
+#   by gate scripts. "Usually" is not "always".
+# [OPEN] — Whether any current test-results/ file is the sole
+#   copy of a screenshot cited by a gate decision. The audit did
+#   not check this. The reconciliation counted files but did not
+#   cross-reference them to gate decisions.
+#
+# Recommendation: ACCEPT with the same convention as P1 — a
+# screenshot cited by a gate decision must be copied into
+# evidence/ and cited from there, not from test-results/. Record
+# the convention alongside P1's.
+
+
+# ------------------------------------------------------------
+# P4: scratch scripts and stale backups
+# ------------------------------------------------------------
+#
+#   gap-c-test.mjs
+#   sales-engine-production.png
+#   sales-geometry-test.mjs
+#   tests/g1_format_matrix.test.ts.before-docx-buffer-fix-20261015-030530.bak
+#   tests/g1_format_matrix.test.ts.before-docx-buffer-fix-20261015-030537.bak
+#
+# Covers: 5 paths
+# Class:  SCRATCH_UNRESOLVED (3), TEST_BACKUP_UNRESOLVED (2)
+#
+# Rationale:
+#   - gap-c-test.mjs is a Playwright probe against
+#     https://gradifi.vercel.app/verify/VRF-ABCDEF121234 with a
+#     stale run ID. One-off. Not reproducible.
+#   - sales-engine-production.png is a screenshot unrelated to
+#     Gradifi verification.
+#   - sales-geometry-test.mjs is a Playwright probe against
+#     https://cp-splash-nine.vercel.app/sports — a different
+#     project.
+#   - The two before-docx-buffer-fix backups are byte-identical
+#     to the current tests/g1_format_matrix.test.ts
+#     (SHA-256 01C2A6C3...). They are redundant copies.
+#
+# [PROVEN] — All five files exist; hashes and previews captured.
+#   Source: 04-scratch-files.txt, 05-backup-files.txt.
+# [PROVEN] — The two backups are identical to the current file.
+#   Source: 05-backup-files.txt (both rows show SHA-256
+#   01C2A6C3... matching the current file).
+# [UNVERIFIED] — That no other branch or stash needs these
+#   files. The audit inspected the two stash entries and
+#   confirmed neither touches src/services/verify/; it did not
+#   check whether either stash references the scratch files.
+#
+# Recommendation: ACCEPT. If a future investigation needs
+# gap-c-test.mjs or sales-geometry-test.mjs, they are preserved
+# in this evidence directory's 04-scratch-files.txt previews and
+# can be reconstructed. Nothing is lost.
+
+
+# ------------------------------------------------------------
+# P5: NOT PROPOSED — tests/g1_format_matrix.test.ts.bak
+# ------------------------------------------------------------
+#
+# The file tests/g1_format_matrix.test.ts.bak (10,597 bytes,
+# SHA-256 CBE4F474...) is classified TEST_BACKUP_UNRESOLVED but is
+# NOT a stale backup. The read-only diff at the end of the audit
+# shows it is a different file with the same base name:
+#   - it is a standalone script (runFormatMatrixTests().catch(...))
+#   - it uses console.log not expect()
+#   - it imports VerificationPersistenceService which the current
+#     test does not
+#
+# Two dispositions are possible:
+#
+# [DECISION] — Promote-and-rename:
+#     git mv tests/g1_format_matrix.test.ts.bak \
+#            tests/g1_format_matrix.manual-runner.ts
+#     and track it. This preserves the alternative-runner version
+#     of the G1 test.
+#
+# [DECISION] — Ignore-as-historical:
+#     add tests/g1_format_matrix.test.ts.bak to .gitignore.
+#     The file remains on disk but not in git history. Record in
+#     the disposition that the alternative-runner form existed.
+#
+# Recommendation: Promote-and-rename, because the alternative
+# form exercises VerificationPersistenceService which the current
+# test does not, and a future G2/G3 researcher may need it. That
+# is a judgment, not an audit fact. Operator decides.
+
+
+# ------------------------------------------------------------
+# P6: NOT PROPOSED — the four playwright.*.config.ts files
+# ------------------------------------------------------------
+#
+#   playwright.localprod.config.ts
+#   playwright.prod.config.ts
+#   playwright.r5.standardprod.config.ts
+#   playwright.r6.config.ts
+#
+# Class: CONFIG_PROJECT_ARTIFACT
+#
+# The audit did not compare these against playwright.config.ts.
+# Whether they are distinct configurations for distinct runs, or
+# stale experiments, is not established.
+#
+# [OPEN] — That none of the four is an identical duplicate of
+#   playwright.config.ts. A byte-comparison was not performed.
+# [DECISION] — Track all four, track only the distinct ones
+#   (requires the comparison), or ignore all four as dead.
+#
+# Recommendation: Request the byte-comparison before deciding.
+# Do not include them in this proposal's Part 2 track list. They
+# are listed here so they are not forgotten.
+
+
+# ============================================================
+# PART 2 — NUMBERED LITERAL TRACK LIST
+# ============================================================
+#
+# These are exact paths proposed for `git add <path>`, one at a
+# time. No globs, no -A, no directory adds. Each path is listed
+# so that the operator can approve or strike it individually.
+#
+# Every path in this list is currently UNTRACKED. If a path is
+# staged and later found to be a mistake, `git restore --staged
+# <path>` unstages it without changing the working tree.
+#
+# Grouped by class, with counts.
+
+# --- TEST_PROJECT_ARTIFACT (12) ---------------------------------
+# Tests under tests/. All are load-bearing: they are the suite
+# that gates run against.
+# [PROVEN] — All 12 are untracked, exist on disk, and are tests.
+#   Source: 02-class-by-git-state.txt; the one UNRESOLVED
+#   (tests/pipeline/pipelineAuditFailClosed.test.ts) resolved to
+#   TEST_PROJECT_ARTIFACT in this review.
+# [OPEN] — Whether each of the 12 currently passes. The audit
+#   did not run them. Tracking a failing test is acceptable; it
+#   is not a certification.
+# [OPEN] — Whether any of the 12 is a duplicate of a tracked
+#   test. The audit did not cross-reference.
+
+  1  tests/g1_certification.test.ts
+  2  tests/g1_docx_fidelity.test.ts
+  3  tests/g1_format_matrix.test.ts
+  4  tests/g1_ocr_branch_forensic.test.ts
+  5  tests/g1_ocr_complete_forensic_runtime.test.ts
+  6  tests/g2_repairs_regression.test.ts
+  7  tests/g5m02-baseline-check.temp.test.ts
+  8  tests/g5m02-partial-diagnostic.temp.test.ts
+  9  tests/g5m02-sentinel-collision.temp.test.ts
+ 10  tests/hoeos-n5-r4-runtime.ts
+ 11  tests/hoeos-n5-runtime.ts
+ 12  tests/pipeline/pipelineAuditFailClosed.test.ts
+
+# --- E2E_PROJECT_ARTIFACT (7) -----------------------------------
+# Playwright specs.
+# [PROVEN] — Untracked, exist, are Playwright specs.
+# [OPEN] — Whether all 7 currently pass. The audit did not run
+#   them. Tracking a spec that is currently failing records the
+#   spec; it does not assert it passes.
+
+ 13  e2e/four-gates-g4-negative.spec.ts
+ 14  e2e/g1-docx-browser-acceptance.spec.ts
+ 15  e2e/g1-pdf-browser-acceptance.spec.ts
+ 16  e2e/g4-independent-engine-certification.spec.ts
+ 17  e2e/g4-live-provider-certification.spec.ts
+ 18  e2e/golden-path-demo-e2e.spec.ts
+ 19  e2e/public-verification-g7.spec.ts
+
+# --- E2E_QUARANTINED (1) ----------------------------------------
+# One quarantined spec.
+# [OPEN] — Whether this should be tracked at all, or whether
+#   quarantined specs are intentionally excluded from git. The
+#   audit did not resolve the intent. The path is included here
+#   so the decision is explicit; strike it if quarantine means
+#   "not in git".
+
+ 20  e2e/_quarantine/
+
+# --- FIXTURE_PROJECT_ARTIFACT (3) -------------------------------
+# Fixture directories. These are the paths P1's convention protects.
+# [PROVEN] — Untracked, exist, contain fixtures.
+# [OPEN] — Whether every file inside is intended for git. The
+#   audit classified the directories, not their contents; a
+#   fixture directory could contain a large binary meant for
+#   git-lfs or a downloaded PDF meant for local-only use. The
+#   operator should `ls` each before staging.
+
+ 21  tests/fixtures/g1/
+ 22  tests/fixtures/ingestion/
+ 23  tests/fixtures/providers/
+
+# --- PROJECT_ARTIFACT_TOOLING (3) -------------------------------
+# Scripts used by gate runs.
+# [PROVEN] — Untracked, exist, are scripts.
+# [OPEN] — Whether these are one-off probes or maintained
+#   tooling. The audit did not inspect their contents.
+#   Recommend inspecting before staging.
+
+ 24  scripts/probeLiveProduction.ts
+ 25  scripts/probeMatchingEvidence.ts
+ 26  scripts/providerTruthSuite.ts
+
+# --- PROJECT_ARTIFACT_DOCS (2) ----------------------------------
+# Documentation files.
+# [PROVEN] — Untracked, exist.
+# [OPEN] — Contents not inspected.
+
+ 27  docs/
+ 28  (second docs/ entry — see classification CSV for exact path;
+      the class summary shows 2 files, both under docs/)
+
+# --- SCRATCH file proposed for promotion (1) --------------------
+# measure-document.ts is a reusable measurement tool (2,123 bytes,
+# imports from src/services/verify/, takes a docx path argument).
+# It is currently at repo root.
+# [PROVEN] — Contents inspected, hashes captured.
+#   Source: 04-scratch-files.txt.
+# [OPEN] — Whether to promote to scripts/ (rename) or track at
+#   root. Both are acceptable. Tracking at root works; promoting
+#   to scripts/ is cleaner. The decision is cosmetic.
+
+ 29  measure-document.ts
+     (or, if promoted: scripts/measure-document.ts)
+
+# --- NOT PROPOSED in this list -------------------------------
+#   - tests/g1_format_matrix.test.ts.bak — see P5, Decision C
+#   - 4 playwright.*.config.ts — see P6, pending comparison
+#   - All EVIDENCE_GENERATED paths — see Part 1 (ignored, not tracked)
+#   - All SCRATCH_UNRESOLVED except measure-document.ts — see P4 (ignored)
+
+
+# ============================================================
+# PART 3 — STORE-OF-RECORD DECLARATION (BLOCKER FOR P2)
+# ============================================================
+#
+# P2 (certification/) cannot be accepted until the G0 disposition
+# records which tree is the store of record. One of:
+#
+#   [DECISION 3.1] evidence/ is the store of record.
+#                  certification/mirror_archive_*/ is read-only
+#                  historical material. P2 accepted with a
+#                  comment noting the mirror is not the source.
+#
+#   [DECISION 3.2] certification/mirror_archive_*/ is the store
+#                  of record. P2 must exclude the mirror via a
+#                  negation pattern (P2-narrowed). That pattern
+#                  must be tested before being applied.
+#
+#   [DECISION 3.3] Both are stores of record. Neither is
+#                  ignored. P2 is withdrawn; only P1, P3, P4
+#                  proceed. This is the conservative choice.
+#
+# The audit cannot pick. The operator must.
+#
+# [OPEN] — The answer is not determinable from the captured
+#   evidence. certification/mirror_archive_*/ contains G1, G2,
+#   G3, G5 records — and so does evidence/. Which is
+#   authoritative, or whether both are, is a governance decision.
+
+
+# ============================================================
+# PART 4 — WHAT THIS DOCUMENT DOES NOT ESTABLISH
+# ============================================================
+#
+# Read this section before acting on any recommendation above.
+#
+# - The audit does not prove that every proposed ignore pattern
+#   is safe. It proves that 96 specific candidate paths, selected
+#   by name-matching, are classified as evidence and not as
+#   fixtures. A pattern can hide a path that did not match the
+#   hint list. The hint list is a heuristic, not a proof.
+#
+# - The audit does not prove that every path in Part 2 should be
+#   tracked. It proves the paths are untracked, exist, and fall
+#   into classes whose names imply "track this". It does not
+#   prove each path is load-bearing.
+#
+# - The audit does not prove that tracking the Part 2 paths will
+#   leave the repo in a state where every test passes. Several
+#   of the paths in Part 2 are tests and specs that the audit
+#   did not run. A tracked test that fails is a tracked failing
+#   test.
+#
+# - The audit does not establish that the two stashes are
+#   irrelevant to the tracked state. They were inspected and
+#   confirmed not to touch src/services/verify/, but neither was
+#   opened in full. If a stash contains a file whose path
+#   appears in Part 2, tracking the current version and popping
+#   the stash later would conflict.
+#
+# - The audit does not replace the G0 disposition. G0 remains
+#   HOLD. This document is a proposal input to the disposition,
+#   not a decision.
+
+
+# ============================================================
+# PART 5 — NEXT STEPS (in order, no shortcuts)
+# ============================================================
+#
+# 1. Operator answers P5 (alternate .bak) and P6 (playwright
+#    configs), and DECISION 3.1/3.2/3.3 (store of record).
+#
+# 2. If P6 requires a byte-comparison, run it and paste the
+#    result; the proposal is amended with a verified identity
+#    statement.
+#
+# 3. Operator reviews the Part 2 track list and strikes or
+#    approves each numbered path. Approved list becomes the
+#    staging input.
+#
+# 4. Operator writes .gitignore additions from Part 1 (with P2
+#    per the DECISION 3.x choice) and verifies `git check-ignore
+#    -v` on a sample of paths from each pattern.
+#
+# 5. Operator stages the approved Part 2 paths, one path at a
+#    time, never `git add -A`.
+#
+# 6. Operator captures `git status`, `git diff --stat`,
+#    `git diff --cached --stat`, and `git ls-files --others
+#    --exclude-standard` before and after staging, and cites them
+#    in the G0 disposition.
+#
+# 7. G0 disposition is updated from HOLD to whichever decision
+#    the operator's own analysis supports. This document does
+#    not change the gate status.
+
+
+# ============================================================
+# STATEMENT OF SCOPE
+# ============================================================
+#
+# This document is a PROPOSAL ONLY.
+#
+# It has not modified .gitignore. It has not renamed any file. It
+# has not staged any file. It has not committed. It has not
+# deployed. It changes no repository state.
+#
+# Applying any part of it requires explicit operator action, in a
+# separate step, per the sequence in Part 5.
+#
+# G0 remains HOLD pending operator review and the verification
+# steps above.
+#
+# ============================================================
+
+# ============================================================
+# AMENDMENT 1 — P6 COMPARISON RESULT AND RECOMMENDATION
+# ============================================================
+#
+# Captured read-only. No repository change.
+#
+# Base:  playwright.config.ts              SHA-256 3384550b...
+#                                            (matches the tracked config)
+#
+# Four candidates, all DISTINCT from base and from each other:
+#
+#   playwright.localprod.config.ts      SHA-256 56de675f...   1237 B   2026-10-17T21:30
+#   playwright.prod.config.ts           SHA-256 030128ed...    395 B   2026-09-29T18:46
+#   playwright.r5.standardprod.config.ts SHA-256 e832424f...    969 B   2026-10-18T00:42
+#   playwright.r6.config.ts             SHA-256 8e3720ad...    661 B   2026-10-18T11:03
+#
+# [PROVEN] — No candidate is byte-identical to playwright.config.ts.
+# [PROVEN] — No candidate is byte-identical to any other candidate.
+# [PROVEN] — Dates span 2026-09-29 to 2026-10-18.
+# [UNVERIFIED] — That each configuration corresponds to a specific
+#   gate run whose evidence still exists. The date range overlaps
+#   evidence/g4-* directories, and the file names suggest r5 and r6
+#   runs, but the audit did not open the configs or cross-reference
+#   them to captured gate runs.
+# [OPEN] — Whether any of these configurations is superseded by a
+#   later one. Two "r" configs and two "prod" configs suggest
+#   iterative refinement; whether the earlier one is obsolete or
+#   preserves a distinct run setup is not established.
+#
+# Updated recommendation for P6: TRACK ALL FOUR.
+#
+# Rationale: each config is a distinct, dated artifact. A gate run
+# invoked via playwright.r6.config.ts is not reproducible from
+# playwright.config.ts alone. If evidence/g4-r7-live-provider-* or
+# a future G4 rerun cites the r6 config, the config must be in git
+# to be reusable. If it turns out one is obsolete, a follow-up commit
+# can remove it — but losing one that was needed is not recoverable
+# from git history.
+#
+# [DECISION] — Operator confirms or strikes this recommendation.
+# If accepted, add these four paths to the Part 2 numbered track
+# list (renumbering Part 2 is a separate step after the operator's
+# final decision on P5 and DECISION 3.x).
+
+
+# ============================================================
+# AMENDMENT 2 — OPERATOR DECISIONS RECORDED, PROPOSAL FROZEN
+# ============================================================
+#
+# Recorded: 2026-10-23
+# Authority: explicit operator instruction ("Accept all recommendations")
+# Scope:    RECORD DECISIONS ONLY. No rename. No .gitignore edit.
+#           No staging. No commit. No deployment.
+# Gate:     G0 remains HOLD.
+#
+# Proposal state before this amendment:
+#   Bytes:    23322
+#   SHA-256:  a0a9c48eb0759f50a1ab83f0ef7e6b0da0a0418bbeecc301b684ff3b4e69b9a3
+#
+# ============================================================
+
+# ============================================================
+# DECISIONS RECORDED
+# ============================================================
+
+## Decision P5-a — PROMOTE AND RENAME
+#
+# Operator decision:
+#   Promote tests/g1_format_matrix.test.ts.bak to
+#   tests/g1_format_matrix.manual-runner.ts and propose tracking it.
+#   Preserve the original until the rename is explicitly authorized
+#   and verified.
+#
+# Status: RECORDED. NOT APPLIED.
+#
+# The rename is proposed, not performed. The original
+# tests/g1_format_matrix.test.ts.bak remains at its current path
+# with its current contents (SHA-256 CBE4F4740FA063CC051C46C78BDF1E4F3C099BB54B36339...)
+# until the operator explicitly authorizes the rename as a separate
+# step and verifies both the pre-rename and post-rename contents.
+#
+# Verification requirement before the rename is applied:
+#   - `Get-FileHash` of the original before rename
+#   - `git mv` or explicit `Move-Item` + `git add` (operator choice)
+#   - `Get-FileHash` of the destination after rename
+#   - the two hashes MUST be identical
+#   - `git status --short` showing the rename (M/R) in the staging area
+#
+# The proposal's Part 2 track list below reflects the promotion as
+# entry #30 (the destination path). The original remains in place
+# in the working tree and is NOT proposed for tracking.
+
+## Decision P6-a — TRACK ALL FOUR PLAYWRIGHT CONFIGS
+#
+# Operator decision:
+#   Propose tracking:
+#     playwright.localprod.config.ts
+#     playwright.prod.config.ts
+#     playwright.r5.standardprod.config.ts
+#     playwright.r6.config.ts
+#
+# Status: RECORDED. NOT APPLIED.
+#
+# Rationale (as recorded in Amendment 1):
+#   All four are DISTINCT from playwright.config.ts and from each
+#   other. Dates span 2026-09-29 to 2026-10-18. They correspond to
+#   specific gate runs whose evidence exists under evidence/g4-*.
+#   Tracking preserves reproducibility of those runs. Removing an
+#   obsolete config in a future commit is easy; recovering a missing
+#   one from git history is not possible.
+#
+# Hashes (from Amendment 1):
+#   playwright.localprod.config.ts       56de675f3b13fb34695d82481cf1a3930d88f6cd753fee6c402f084fa4594365
+#   playwright.prod.config.ts            030128edfbd6422a707dfbf6c168d1155deb4266bd983d0f25b1a34cea09c3ec
+#   playwright.r5.standardprod.config.ts e832424f07d848776175456ceea774402220acc4f586b7e2b3d3450a7b751687
+#   playwright.r6.config.ts              8e3720ad63707b1829e372e84b516cf95345a95fc60b785a786c6386b8f779a6
+
+## Decision 3.3 — PRESERVE BOTH STORES OF RECORD
+#
+# Operator decision:
+#   Both evidence/ and certification/mirror_archive_* are stores of
+#   record. Do NOT propose a broad certification/ ignore rule that
+#   would hide the mirror archive.
+#
+# Status: RECORDED. NOT APPLIED.
+#
+# Consequence for the proposal:
+#   - P2 (certification/) is WITHDRAWN as a broad ignore pattern.
+#   - Only P1 (evidence/), P3 (test-results/), and P4 (scratch and
+#     stale backups) remain as proposed ignore patterns.
+#   - The certification/ tree stays visible to git. It is not
+#     proposed for tracking either (it is evidence, not source), but
+#     it is not ignored. Its current untracked state is preserved.
+#
+# This is the conservative choice. Narrowing to 3.1 later is a
+# reversible one-line .gitignore change with a captured before/after.
+# Ignoring certification/ now, if the mirror turns out to be the
+# store of record, is not reversible by the same easy step.
+
+
+# ============================================================
+# FINAL PROPOSAL — FROZEN
+# ============================================================
+#
+# The proposal below is FROZEN pending operator authorization to
+# apply. Nothing in it is applied. It is the input document to the
+# staging step, which the operator executes path by path.
+#
+# Applying any part requires a separate, explicit authorization
+# from the operator. G0 remains HOLD until the operator's own
+# review of the staging evidence supports moving it.
+#
+
+# ============================================================
+# PART 1 (FINAL) — PROPOSED IGNORE PATTERNS
+# ============================================================
+#
+# P1 evidence/            — see original Part 1, unchanged
+# P2 certification/       — WITHDRAWN per Decision 3.3
+# P3 test-results/        — see original Part 1, unchanged
+# P4 scratch/stale-backs  — see original Part 1, unchanged
+#
+# No new ignore patterns are added by this amendment.
+# No ignore patterns from the original Part 1 are removed, except P2
+# which is withdrawn per Decision 3.3.
+
+# ============================================================
+# PART 2 (FINAL) — NUMBERED LITERAL TRACK LIST
+# ============================================================
+#
+# 30 paths. No globs. No directories. Each path is listed so the
+# operator can approve or strike it individually before staging.
+# Every path was captured as UNTRACKED at audit time.
+#
+# Changes from the original Part 2:
+#   - tests/pipeline/pipelineAuditFailClosed.test.ts reclassified
+#     from UNRESOLVED to TEST_PROJECT_ARTIFACT (unchanged position)
+#   - #30 added: promoted manual-runner destination path
+#   - #31-34 added: the four Playwright configs (P6-a)
+#   - The docs/ row (two files) retains the note about the exact
+#     path needing confirmation before staging
+
+# --- TEST_PROJECT_ARTIFACT (12) ---------------------------------
+
+  1  tests/g1_certification.test.ts
+  2  tests/g1_docx_fidelity.test.ts
+  3  tests/g1_format_matrix.test.ts
+  4  tests/g1_ocr_branch_forensic.test.ts
+  5  tests/g1_ocr_complete_forensic_runtime.test.ts
+  6  tests/g2_repairs_regression.test.ts
+  7  tests/g5m02-baseline-check.temp.test.ts
+  8  tests/g5m02-partial-diagnostic.temp.test.ts
+  9  tests/g5m02-sentinel-collision.temp.test.ts
+ 10  tests/hoeos-n5-r4-runtime.ts
+ 11  tests/hoeos-n5-runtime.ts
+ 12  tests/pipeline/pipelineAuditFailClosed.test.ts
+
+# --- E2E_PROJECT_ARTIFACT (7) -----------------------------------
+
+ 13  e2e/four-gates-g4-negative.spec.ts
+ 14  e2e/g1-docx-browser-acceptance.spec.ts
+ 15  e2e/g1-pdf-browser-acceptance.spec.ts
+ 16  e2e/g4-independent-engine-certification.spec.ts
+ 17  e2e/g4-live-provider-certification.spec.ts
+ 18  e2e/golden-path-demo-e2e.spec.ts
+ 19  e2e/public-verification-g7.spec.ts
+
+# --- E2E_QUARANTINED (1) ----------------------------------------
+
+ 20  e2e/_quarantine/    (strike if quarantine means "not in git")
+
+# --- FIXTURE_PROJECT_ARTIFACT (3) -------------------------------
+# Operator should ls each directory before staging; the audit
+# classified directories, not their contents.
+
+ 21  tests/fixtures/g1/
+ 22  tests/fixtures/ingestion/
+ 23  tests/fixtures/providers/
+
+# --- PROJECT_ARTIFACT_TOOLING (3) -------------------------------
+
+ 24  scripts/probeLiveProduction.ts
+ 25  scripts/probeMatchingEvidence.ts
+ 26  scripts/providerTruthSuite.ts
+
+# --- PROJECT_ARTIFACT_DOCS (2) ----------------------------------
+# Exact paths to be confirmed from the classification CSV before
+# staging. Two files under docs/.
+
+ 27  docs/  (path to be confirmed — see classification CSV)
+
+# --- SCRATCH promoted to tooling (1) ----------------------------
+# Per Decision P5-a. Staging this path requires the rename to have
+# been performed first, and the rename requires separate explicit
+# authorization. Until then, this row is a PROPOSAL, not a
+# staging-ready entry.
+
+ 28  measure-document.ts
+     (or scripts/measure-document.ts if promoted to scripts/)
+
+# --- PROMOTED MANUAL RUNNER (1) --------------------------------
+# Per Decision P5-a. The destination path does not exist until
+# the rename is authorized and performed. Staging this path before
+# the rename would fail. This row records the destination, not a
+# current file.
+
+ 29  tests/g1_format_matrix.manual-runner.ts
+     (destination; requires P5-a rename first)
+
+# --- PLAYWRIGHT CONFIGS (4) — per Decision P6-a ----------------
+
+ 30  playwright.localprod.config.ts
+ 31  playwright.prod.config.ts
+ 32  playwright.r5.standardprod.config.ts
+ 33  playwright.r6.config.ts
+
+# --- NOT TRACKED in this list ----------------------------------
+#   tests/g1_format_matrix.test.ts.bak — original remains untracked
+#       until the P5-a rename is explicitly authorized and performed
+#   All EVIDENCE_GENERATED paths — covered by P1/P3 ignores
+#   All SCRATCH_UNRESOLVED except measure-document.ts — P4 ignores
+#   All certification/ paths — not ignored (3.3) and not tracked
+#       (they are evidence, preserved as untracked)
+
+# ============================================================
+# CONTROLS BEFORE STAGING (operator checklist)
+# ============================================================
+#
+# The operator has required the following before any staging:
+#
+#   [ ] 1. Verify the final proposal's exact path list and
+#          classification counts (742 total, current class
+#          breakdown).
+#
+#   [ ] 2. Verify the P5-a rename representation preserves the
+#          original contents (hash-before = hash-after).
+#
+#   [ ] 3. Capture the pre-staging Git state:
+#            git status --short
+#            git diff --stat
+#            git diff --cached --stat (expected empty)
+#            git ls-files --others --exclude-standard | wc -l
+#          and hash the concatenation.
+#
+#   [ ] 4. Review the numbered list above, striking any entries
+#          not approved.
+#
+# Staging does not proceed until all four controls are complete
+# and the operator has explicitly authorized the staging step.
+
+# ============================================================
+# AUTHORIZATION BOUNDARY
+# ============================================================
+#
+# Accepting these recommendations authorized recording them in this
+# proposal ONLY. It did NOT authorize:
+#   - renaming tests/g1_format_matrix.test.ts.bak
+#   - editing .gitignore
+#   - staging any path
+#   - committing
+#   - deploying
+#
+# G0 remains HOLD. The next action is the operator's review of this
+# frozen proposal and completion of the four controls above. Only
+# after that does staging become a possible next action, and only
+# with a separate explicit authorization.
+
+# ============================================================
+# AMENDMENT 2 RECORD
+# ============================================================
+#
+# Amendment written: 2026-10-23T00:49:31.2908138+01:00
+# Proposal bytes before this amendment: 23322
+# Proposal SHA-256 before this amendment: a0a9c48eb0759f50a1ab83f0ef7e6b0da0a0418bbeecc301b684ff3b4e69b9a3
+# Proposal bytes after this amendment: 34711
+# Proposal SHA-256 after this amendment: e3ed08a88d769249d8948e219eabeb4aa3342ac88ab3a42fc7a031e0e63948ea
+#
+# The after-hash is the SHA-256 the operator should cite in the G0
+# disposition as the frozen proposal reference.
+#
+# ============================================================

@@ -1,0 +1,45 @@
+﻿{
+    "finalizer":  "scratch/finalize_g4_evidence_r4.ps1",
+    "version":  "R4.2",
+    "evaluationTimestamp":  "2026-10-17T23:50:46.7064117+01:00",
+    "evidenceDirectory":  "evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\case_04_malformed_json",
+    "terminalStatus":  "BLOCKED",
+    "precedenceRank":  1,
+    "exitCode":  2,
+    "statusExplanation":  "Prerequisites or artifacts missing/malformed: Malformed JSON in positive browser results artifact: Invalid object passed in, \u0027:\u0027 or \u0027}\u0027 expected. (11): { invalid json: true, ",
+    "allConditions":  {
+                          "blocked":  [
+                                          "Malformed JSON in positive browser results artifact: Invalid object passed in, \u0027:\u0027 or \u0027}\u0027 expected. (11): { invalid json: true, "
+                                      ],
+                          "notRun":  [
+
+                                     ],
+                          "failed":  [
+
+                                     ]
+                      },
+    "positiveEvaluation":  {
+                               "passed":  false,
+                               "markCount":  -1,
+                               "screenshotExists":  false,
+                               "primaryHighlight":  null
+                           },
+    "negativeEvaluation":  {
+                               "passed":  false,
+                               "screenshotExists":  true,
+                               "details":  {
+                                               "testIdentity":  "e2e/four-gates-g4-negative.spec.ts",
+                                               "missingCanonicalCondition":  "missing_canonical_raw_text",
+                                               "unavailableIndicatorObserved":  true,
+                                               "viewerSuppressed":  true,
+                                               "observedHighlightCount":  0,
+                                               "expectedHighlightCount":  0,
+                                               "allMandatoryAssertionsPassed":  true
+                                           }
+                           },
+    "g4CertificationBoundary":  {
+                                    "finalizerResult":  "BLOCKED",
+                                    "g4VerificationEngineCertification":  "NOT CERTIFIED",
+                                    "certificationNotice":  "G4 verification-engine certification remains NOT CERTIFIED pending independent execution without injected result fixtures (seam hooks)."
+                                }
+}

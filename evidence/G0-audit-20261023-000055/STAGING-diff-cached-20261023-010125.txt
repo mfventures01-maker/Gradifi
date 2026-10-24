@@ -1,0 +1,33 @@
+ docs/HOEOS/GRADIFI-AI-CONSTITUTION.md              |  63 +++
+ docs/HOEOS/GRADIFI-CONSTITUTION.md                 |  52 ++
+ e2e/four-gates-g4-negative.spec.ts                 | 113 ++++
+ e2e/g1-docx-browser-acceptance.spec.ts             | 130 +++++
+ e2e/g1-pdf-browser-acceptance.spec.ts              |  94 ++++
+ e2e/g4-independent-engine-certification.spec.ts    | 258 +++++++++
+ e2e/g4-live-provider-certification.spec.ts         |  57 +-
+ e2e/golden-path-demo-e2e.spec.ts                   | 196 +++++++
+ e2e/public-verification-g7.spec.ts                 |  77 +++
+ measure-document.ts                                |  50 ++
+ playwright.localprod.config.ts                     |  42 ++
+ playwright.prod.config.ts                          |  19 +
+ playwright.r5.standardprod.config.ts               |  35 ++
+ playwright.r6.config.ts                            |  23 +
+ scripts/probeLiveProduction.ts                     |  46 ++
+ scripts/probeMatchingEvidence.ts                   |  41 ++
+ scripts/providerTruthSuite.ts                      | 578 +++++++++++++++++++++
+ tests/fixtures/g1/DIGITAL_THERMOMETER_real.docx    | Bin 0 -> 285032 bytes
+ .../ingestion/quantum_federated_learning_paper.pdf |  21 +
+ tests/fixtures/providers/stub-responses.json       |  94 ++++
+ tests/g1_certification.test.ts                     | 175 +++++++
+ tests/g1_docx_fidelity.test.ts                     |  88 ++++
+ tests/g1_format_matrix.test.ts                     | 171 ++++++
+ tests/g1_ocr_branch_forensic.test.ts               |  40 ++
+ tests/g1_ocr_complete_forensic_runtime.test.ts     |  41 ++
+ tests/g2_repairs_regression.test.ts                | 171 ++++++
+ tests/g5m02-baseline-check.temp.test.ts            |  50 ++
+ tests/g5m02-partial-diagnostic.temp.test.ts        |  36 ++
+ tests/g5m02-sentinel-collision.temp.test.ts        |  21 +
+ tests/hoeos-n5-r4-runtime.ts                       |  37 ++
+ tests/hoeos-n5-runtime.ts                          |  33 ++
+ tests/pipeline/pipelineAuditFailClosed.test.ts     | 213 ++++++++
+ 32 files changed, 3059 insertions(+), 6 deletions(-)

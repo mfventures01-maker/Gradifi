@@ -1,0 +1,50 @@
+﻿G5-M02 - BEFORE STATE SNAPSHOT
+Date:   2026-10-06
+Status: CAPTURED
+Purpose: Baseline for G5-M02 certification delta
+
+SPECIFICATION STATUS
+  File:   evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt
+  Size:   11348 bytes
+  Revision: 1 (x.5 contradiction resolved, Resolution A)
+
+PRODUCTION STATE (BEFORE)
+  HEAD:                   6f3e776d1596ae2cb422a3c2862e6fe091b6d105
+  documentNormalizer.ts:  ED216949F81BB8E228DD8AE646BA5F317095AD40414B0B4CEB587477A8EB7871
+  git diff:               empty (no uncommitted production changes)
+  Line 134:               const sentenceRegex = /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g;
+
+REGRESSION MATRIX (BEFORE)
+  Suite:  tests/g2-punctuation-classification.temp.test.ts
+  Result: 1 passed, 7 failed (of 8)
+
+  PASS:  recognizes normal sentence endings
+  FAIL:  preserves DOI decimal punctuation
+  FAIL:  preserves percentage decimal punctuation
+  FAIL:  does not treat Dr. as a sentence boundary
+  FAIL:  does not treat Prof. as a sentence boundary
+  FAIL:  does not treat Vol. as a sentence boundary
+  FAIL:  preserves all canonical tokens in the forensic fixture (77 != 91)
+  FAIL:  preserves decimal and DOI regions as lexical sentence content
+
+G5 DETERMINISTIC SUITE (BEFORE)
+  Suite:  tests/deterministicSimilarityEvidence.test.ts
+  Status: last certified 1 passed (1)
+  (re-run at 7.8 to confirm unchanged)
+
+SAMPLE_TEXT_A TOKEN COVERAGE (BEFORE)
+  Canonical tokens:       91
+  Mapped tokens:          77
+  Missing indices:        14
+  Duplicate indices:      0
+  Out-of-range indices:   0
+
+CERTIFICATION TARGET (AFTER)
+  Legacy matrix:          8/8
+  Expanded matrix:        10/10
+  G5 deterministic suite: 1/1
+  SAMPLE_TEXT_A:          91/91 mapped, 0 missing, 0 duplicate, 0 out-of-range
+
+NEXT STEP
+  Section 7.3 of G5-M02: expand the temp test with E1-E10
+  as ADDITIVE cases. Do not modify L1-L8.

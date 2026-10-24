@@ -1,0 +1,1 @@
+﻿RUNTIME_DIR=C:\Projects\Gradifi\evidence\gate-d-runtime-20261021-133117

@@ -1,0 +1,10 @@
+ e2e/g4-live-provider-certification.spec.ts        |  57 ++++++-
+ package-lock.json                                 | 187 ++++++++++++++++------
+ package.json                                      |   7 +-
+ playwright.config.ts                              |   7 +-
+ src/components/verify/CanonicalDocumentViewer.tsx |   8 +
+ src/services/verify/deterministicEngine.ts        |  38 ++---
+ src/services/verify/documentNormalizer.ts         |  10 +-
+ src/services/verify/universalIngestionService.ts  |  13 +-
+ src/services/verify/verifyCoreService.ts          |   6 +-
+ 9 files changed, 250 insertions(+), 83 deletions(-)

@@ -1,0 +1,44 @@
+G1 UNIVERSAL DOCUMENT INGESTION CERTIFICATION
+
+Status: PASS
+Date: 2026-10-08
+Certified Commit: 9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44
+
+DOCX FIXTURE
+Path: tests/hoeos/g2/golden_test_001.docx
+Size: 1012 bytes
+SHA-256: 098a49a08a70580d985317b4cacf4018e51cd026ea8421bb5798bed9224d230f
+
+BROWSER RUNTIME
+Upload: Real <input type="file"> on commercial upload surface (/verify)
+Handler: handleFileUpload(e) in GradifiVerifyDemoPage.tsx
+Ingestion: ingestDocument(file) in universalIngestionService.ts
+DOCX Extraction: extractDocx(buf) in ingestionAdapters/docxExtractor.ts
+word/document.xml: Successfully parsed Central Directory (3 entries), decompressed story payload (197 chars)
+Canonical Text: "GRADIFI DOCX GOLDEN TEST 001\n\nThis is an authentic structured DOCX document for forensic verification.\nGradifi Universal Ingestion Service extracts text deterministically from word/document.xml.\n"
+Document Hash: f4dde3c7932be24b (FNV-1a 64-bit deterministic hash)
+Verification Handoff: handleExecuteVerification -> verifyCoreService.executeVerifyRun (documentText passed)
+Elapsed Time: 3925ms (Extraction: 282ms, Total: 3925ms)
+Five-Minute Hang: NONE (Completed in 3.925s, well under 300s limit)
+
+EVIDENCE CLASSIFICATION
+STATIC: PASS (GradifiVerifyDemoPage.tsx input[type="file"] element, accept=".docx", ingestDocument import)
+STRUCTURAL: PASS (handleFileUpload calls ingestDocument, parses canonical metadata, executes verification handoff)
+RUNTIME: PASS (Browser Playwright execution e2e/g1-docx-browser-acceptance.spec.ts, Node HOEOS_FOUR_GATES_RUNNER.ts Gate 2)
+CERTIFICATION: PASS (G1.1 DOCX browser runtime acceptance criteria completely satisfied)
+
+ACCEPTANCE
+DOCX Browser Selection: PASS
+DOCX Extraction: PASS
+Canonical Text: PASS
+Document Hash: PASS
+Verification Handoff: PASS
+Browser Completion: PASS
+No Hang: PASS
+Frozen Engine Preserved: PASS (src/services/verify/deterministicEngine.ts UNCHANGED)
+
+G1.1 FINAL:
+PASS
+
+G1 OVERALL:
+PENDING

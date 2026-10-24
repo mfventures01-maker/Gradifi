@@ -1,0 +1,149 @@
+/**
+ * GRADIFI HOEOS GATE 4 - DETERMINISTIC TEST FIXTURES
+ * Independent, authoritative test oracle fixtures for G4 browser and invariant testing.
+ * Contract: HOEOS P4 Visual Evidence Standard
+ */
+
+import type { EvidenceMatch, SimilarityFinding } from '../src/services/verify/types.js';
+
+export const G4_CANONICAL_DOCUMENT_TEXT = `Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks
+By Dr. Aris Thorne, Prof. Elena Rostova, and Dr. Marcus Vance (2024)
+Journal of Advanced Computer Science & Quantum Information Systems, Vol. 14, DOI: 10.1038/s41586-023-00001-x, ISBN: 978-0-123456-78-9.
+
+Abstract:
+Federated learning across decoupled edge networks faces significant communication latency and security challenges. In this paper, we propose a novel quantum-inspired architectural paradigm for high-order evidence-oriented systems. By utilizing deterministic hashing and provenance verification, our model achieves 99.4% accuracy across distributed node topology while preserving complete privacy. We compare our approach against standard Crossref and OpenAlex benchmarks.
+
+Introduction:
+Distributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence. Previous work by Vance et al. demonstrated that probabilistic AI inference cannot serve as sole authority without deterministic evidence grounding.`;
+
+const P1_TEXT = 'Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks';
+const P1_START = G4_CANONICAL_DOCUMENT_TEXT.indexOf(P1_TEXT);
+const P1_END = P1_START + P1_TEXT.length;
+
+const P2_TEXT = 'Distributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence.';
+const P2_START = G4_CANONICAL_DOCUMENT_TEXT.indexOf(P2_TEXT);
+const P2_END = P2_START + P2_TEXT.length;
+
+export interface ExpectedHighlightContract {
+  findingId: string;
+  sourceId: string;
+  startOffset: number;
+  endOffset: number;
+  expectedText: string;
+  matchMethod: 'EXACT_PHRASE' | 'NGRAM' | 'TOKEN_OVERLAP';
+  sourceTitle: string;
+  authors: string[];
+  doi: string;
+  similarityScore: number;
+}
+
+export const G4_FIXTURE_FINDINGS: SimilarityFinding[] = [
+  {
+    findingId: 'finding-g4-quantum-001',
+    sourceDocumentId: 'doc-student-canonical',
+    matchedDocumentId: 'src-crossref-10.1038-001',
+    sourceSegment: P1_TEXT,
+    matchedSegment: P1_TEXT,
+    similarityScore: 96,
+    matchMethod: 'EXACT_PHRASE',
+    sourceStart: P1_START,
+    sourceEnd: P1_END,
+    matchedStart: 0,
+    matchedEnd: P1_TEXT.length,
+    provenance: 'DETERMINISTIC'
+  },
+  {
+    findingId: 'finding-g4-distrib-002',
+    sourceDocumentId: 'doc-student-canonical',
+    matchedDocumentId: 'src-crossref-10.1038-001',
+    sourceSegment: P2_TEXT,
+    matchedSegment: P2_TEXT,
+    similarityScore: 92,
+    matchMethod: 'EXACT_PHRASE',
+    sourceStart: P2_START,
+    sourceEnd: P2_END,
+    matchedStart: 0,
+    matchedEnd: P2_TEXT.length,
+    provenance: 'DETERMINISTIC'
+  }
+];
+
+export const G4_FIXTURE_VERIFIED_SOURCES: EvidenceMatch[] = [
+  {
+    sourceId: 'src-crossref-10.1038-001',
+    title: 'Quantum Information Networks & Entanglement Topology',
+    authors: ['Dr. Aris Thorne', 'Prof. Elena Rostova'],
+    url: 'https://doi.org/10.1038/s41586-023-00001-x',
+    doi: '10.1038/s41586-023-00001-x',
+    isbn: '978-0-123456-78-9',
+    matchedText: P1_TEXT,
+    matchedTextStart: 0,
+    matchedTextEnd: P1_TEXT.length,
+    originalSnippet: P1_TEXT,
+    matchType: 'exact',
+    matchPercentage: 96,
+    relevanceScore: 0.98,
+    provenance: {
+      provider: 'crossref',
+      providerRecordId: 'cr-10.1038-001',
+      retrievedAt: '2026-10-17T12:00:00Z',
+      sourceType: 'crossref',
+      sourceUrl: 'https://doi.org/10.1038/s41586-023-00001-x',
+      title: 'Quantum Information Networks & Entanglement Topology',
+      authors: ['Dr. Aris Thorne', 'Prof. Elena Rostova'],
+      doi: '10.1038/s41586-023-00001-x',
+      provenanceState: 'VERIFIED'
+    }
+  }
+];
+
+export const G4_EXPECTED_HIGHLIGHTS: ExpectedHighlightContract[] = [
+  {
+    findingId: 'finding-g4-quantum-001',
+    sourceId: 'src-crossref-10.1038-001',
+    startOffset: P1_START,
+    endOffset: P1_END,
+    expectedText: P1_TEXT,
+    matchMethod: 'EXACT_PHRASE',
+    sourceTitle: 'Quantum Information Networks & Entanglement Topology',
+    authors: ['Dr. Aris Thorne', 'Prof. Elena Rostova'],
+    doi: '10.1038/s41586-023-00001-x',
+    similarityScore: 96
+  },
+  {
+    findingId: 'finding-g4-distrib-002',
+    sourceId: 'src-crossref-10.1038-001',
+    startOffset: P2_START,
+    endOffset: P2_END,
+    expectedText: P2_TEXT,
+    matchMethod: 'EXACT_PHRASE',
+    sourceTitle: 'Quantum Information Networks & Entanglement Topology',
+    authors: ['Dr. Aris Thorne', 'Prof. Elena Rostova'],
+    doi: '10.1038/s41586-023-00001-x',
+    similarityScore: 92
+  }
+];
+
+export const G4_POSITIVE_FIXTURE = {
+  canonicalText: G4_CANONICAL_DOCUMENT_TEXT,
+  findings: G4_FIXTURE_FINDINGS,
+  verifiedSources: G4_FIXTURE_VERIFIED_SOURCES,
+  expectedHighlights: G4_EXPECTED_HIGHLIGHTS,
+  metadata: {
+    title: 'Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks',
+    authors: ['Dr. Aris Thorne', 'Prof. Elena Rostova', 'Dr. Marcus Vance'],
+    publication: 'Journal of Advanced Computer Science & Quantum Information Systems',
+    year: 2024,
+    doi: '10.1038/s41586-023-00001-x',
+    isbn: '978-0-123456-78-9'
+  },
+  overallSimilarity: 94
+};
+
+export const G4_NEGATIVE_FIXTURE = {
+  condition: 'missing_canonical_raw_text',
+  expectedWarningTitle: 'Authoritative Canonical Document Unavailable',
+  expectedWarningMessage: 'Evidence highlighting has been suppressed because authoritative canonical text was not produced by the verification pipeline.',
+  expectedViewerCount: 0,
+  expectedMarkCount: 0
+};

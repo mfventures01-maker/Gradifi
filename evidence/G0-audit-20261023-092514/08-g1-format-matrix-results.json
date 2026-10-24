@@ -1,0 +1,110 @@
+[
+  {
+    "format": "DOCX",
+    "fixture": "DIGITAL_THERMOMETER_real.docx",
+    "hash": "6B76024857A8722BF17BD4B03456C684E3A04E4AD8AAF7E23F5DF8AC2053E12C",
+    "productionPath": "docx_xml_extractor",
+    "expectedResult": "Successful canonical text extraction",
+    "actualResult": "Success (canonicalReady=true)",
+    "textLength": 37259,
+    "errorBehavior": "None (clean exit)",
+    "evidenceLevel": "RUNTIME & CERTIFICATION (Browser E2E Passed)",
+    "verdict": "PASS"
+  },
+  {
+    "format": "PDF",
+    "fixture": "quantum_federated_learning_paper.pdf",
+    "hash": "0C5860B9D729860DCF3A7480D9EC26D7E5354ADE7353B1D7E8FCD66895C9F4FF",
+    "productionPath": "pdf_stream_extractor",
+    "expectedResult": "Successful canonical text extraction",
+    "actualResult": "Success (canonicalReady=true)",
+    "textLength": 310,
+    "errorBehavior": "None (clean exit)",
+    "evidenceLevel": "RUNTIME & CERTIFICATION (Browser E2E Passed)",
+    "verdict": "PASS"
+  },
+  {
+    "format": "TXT",
+    "fixture": "sample.txt",
+    "hash": "1515CFEC95048C281BAF3837424C65313936F158FBD2C9FBD4140D7CC47EAC58",
+    "productionPath": "txt_text_reader",
+    "expectedResult": "Successful canonical text extraction",
+    "actualResult": "Success (canonicalReady=true)",
+    "textLength": 223,
+    "errorBehavior": "None (clean exit)",
+    "evidenceLevel": "RUNTIME",
+    "verdict": "PASS"
+  },
+  {
+    "format": "RTF",
+    "fixture": "sample.rtf",
+    "hash": "6E50565FA9FBB2E27CD7CBA63B6FF60DCF06B1F9F6AF2BAE0EC46083BC12D55B",
+    "productionPath": "rtf_parser",
+    "expectedResult": "Successful canonical text extraction",
+    "actualResult": "Success (canonicalReady=true)",
+    "textLength": 223,
+    "errorBehavior": "None (clean exit)",
+    "evidenceLevel": "RUNTIME",
+    "verdict": "PASS"
+  },
+  {
+    "format": "HTML",
+    "fixture": "sample.html",
+    "hash": "FB4212B3962A123CE65FE6A2D6E9A8E7E48F0024A22F22564CD7FEE24DA6BCFD",
+    "productionPath": "html_parser",
+    "expectedResult": "Successful canonical text extraction",
+    "actualResult": "Success (canonicalReady=true)",
+    "textLength": 259,
+    "errorBehavior": "None (clean exit)",
+    "evidenceLevel": "RUNTIME",
+    "verdict": "PASS"
+  },
+  {
+    "format": "Markdown",
+    "fixture": "sample.md",
+    "hash": "B173A74C067C45ABC8F96515DB5ED7BD8CDECE34B5985C1FEA1C807469F54DBE",
+    "productionPath": "md_text_reader",
+    "expectedResult": "Successful canonical text extraction",
+    "actualResult": "Success (canonicalReady=true)",
+    "textLength": 269,
+    "errorBehavior": "None (clean exit)",
+    "evidenceLevel": "RUNTIME",
+    "verdict": "PASS"
+  },
+  {
+    "format": "EPUB",
+    "fixture": "image_only.epub",
+    "hash": "9052A5F4D73D43138DB2850DE5DB1DE0B836D61B1DE7D166416D3C4FF6340B3F",
+    "productionPath": "epub_xhtml_extractor",
+    "expectedResult": "Truthful limitation rejection for image-only packaging",
+    "actualResult": "Failed (EMPTY_DOCUMENT: The EPUB file contains no extractable text.)",
+    "textLength": 0,
+    "errorBehavior": "EMPTY_DOCUMENT: The EPUB file contains no extractable text.",
+    "evidenceLevel": "RUNTIME",
+    "verdict": "PASS (SUPPORTED WITH LIMITATION)"
+  },
+  {
+    "format": "Empty TXT (Negative)",
+    "fixture": "empty.txt",
+    "hash": "2106C36011520FE7974AA8C6BCEF5C6F0D150DE197594CD0FA416390BE935D62",
+    "productionPath": "txt_text_reader",
+    "expectedResult": "Deterministic explicit failure / empty rejection",
+    "actualResult": "Failed (EMPTY_DOCUMENT: The uploaded file is empty.)",
+    "textLength": 0,
+    "errorBehavior": "EMPTY_DOCUMENT: The uploaded file is empty.",
+    "evidenceLevel": "RUNTIME",
+    "verdict": "PASS"
+  },
+  {
+    "format": "Invalid JSON (Negative)",
+    "fixture": "invalid.json",
+    "hash": "E0BA2125B5F8ADB752AEBA07465F80556201880A1A22C516DC9B0DCA4E13F985",
+    "productionPath": "json_parser",
+    "expectedResult": "Deterministic explicit failure / syntax rejection",
+    "actualResult": "Failed (MALFORMED_DOCUMENT: Invalid JSON document syntax.)",
+    "textLength": 0,
+    "errorBehavior": "MALFORMED_DOCUMENT: Invalid JSON document syntax.",
+    "evidenceLevel": "RUNTIME",
+    "verdict": "PASS"
+  }
+]

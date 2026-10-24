@@ -369,11 +369,13 @@ export class VerifyCoreService {
     const processingTimeMs = Date.now() - startTime;
 
     // G2 Deterministic Similarity Analysis
+    const similarityWarnings: string[] = [];
     const similarityFindings = extractSimilarityFindingsFromEvidenceMatches(
       documentText,
       canonicalDoc.documentId,
       engineOutput.verifiedMatches,
-      engineOutput.aggregation
+      engineOutput.aggregation,
+      similarityWarnings
     );
 
     const similarityAnalysis: SimilarityAnalysisResult = {
@@ -384,7 +386,7 @@ export class VerifyCoreService {
       engineVersion: engineOutput.engineVersion,
       policyVersion: engineOutput.policyVersion,
       deterministic: true,
-      warnings: []
+      warnings: similarityWarnings
     };
 
     // G3 Plagiarism Evidence & Policy Evaluation (Consumes G2 Similarity)

@@ -1,0 +1,21 @@
+﻿--- coreServerHandler.ts ---
+export async function handleCoreServerSearch(payload: CoreServerRequestPayload): Promise<ProviderResult> {
+--- crossrefServerHandler.ts ---
+export async function handleCrossrefServerSearch(payload: CrossrefServerRequestPayload): Promise<ProviderResult> {
+--- geminiServerHandler.ts ---
+export async function handleGeminiServerReasoning(payload: GeminiServerRequestPayload): Promise<GeminiServerResponse> {
+--- gemmaServerHandler.ts ---
+export async function handleGemmaServerReasoning(payload: GemmaServerRequestPayload): Promise<GemmaServerResponse> {
+--- googleBooksServerHandler.ts ---
+export async function handleGoogleBooksServerSearch(payload: GoogleBooksServerRequestPayload): Promise<ProviderResult> {
+--- nemotronServerHandler.ts ---
+export async function callNvidiaWithRetry(
+export async function handleNemotronServerReasoning(payload: NemotronServerRequestPayload): Promise<NemotronServerResponse> {
+--- openAlexServerHandler.ts ---
+export async function handleOpenAlexServerSearch(payload: OpenAlexServerRequestPayload): Promise<ProviderResult> {
+--- persistenceServerHandler.ts ---
+export async function handlePersistenceServerRequest(
+--- semanticScholarServerHandler.ts ---
+export async function handleSemanticScholarServerSearch(
+--- unpaywallServerHandler.ts ---
+export async function handleUnpaywallServerSearch(payload: UnpaywallServerRequestPayload): Promise<ProviderResult> {

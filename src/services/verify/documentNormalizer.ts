@@ -138,14 +138,20 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
 
     while ((sMatch = sentenceRegex.exec(pText)) !== null) {
       const sText = sMatch[0].trim();
-      if (sText.length < 3) continue;
+      const sTokens = tokenize(sText);
+      // G2 Sub-Defect B: reject pathological short sentences that produce
+      // single-token matches at 100% similarity. Two floors:
+      //   - at least 3 tokens,
+      //   - at least 15 characters.
+      // This prevents numbered section headings like "4 ." or "1 ." from
+      // entering the sentence set and being matched via String.includes.
+      if (sTokens.length < 3 || sText.length < 15) continue;
 
       sInPIdx++;
       globalSentenceIdx++;
       const sId = `SEN-${String(globalSentenceIdx).padStart(3, '0')}`;
       const sStart = pStart + sMatch.index;
       const sEnd = sStart + sMatch[0].length;
-      const sTokens = tokenize(sText);
 
       // Extract sliding window n-gram phrases (N=3, 5, 7)
       const phrases: DocumentPhrase[] = [];

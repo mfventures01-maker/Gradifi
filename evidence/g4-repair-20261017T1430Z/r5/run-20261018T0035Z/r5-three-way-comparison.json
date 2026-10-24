@@ -1,0 +1,68 @@
+{
+  "evaluationTimestamp": "2026-10-18T00:01:18.382Z",
+  "engineVsOracle": {
+    "findingAPresent": false,
+    "findingBPresent": false,
+    "findingAMatchedDocumentId": null,
+    "findingAExpectedDocumentId": "src-crossref-10.1038-001",
+    "findingADocumentIdMatch": false,
+    "findingAStart": null,
+    "findingAExpectedStart": 0,
+    "findingAStartMatch": false,
+    "findingAEnd": null,
+    "findingAExpectedEnd": 85,
+    "findingAEndMatch": false,
+    "findingBMatchedDocumentId": null,
+    "findingBExpectedDocumentId": "src-crossref-10.1038-001",
+    "findingBDocumentIdMatch": false,
+    "findingBStart": null,
+    "findingBExpectedStart": 788,
+    "findingBStartMatch": false,
+    "findingBEnd": null,
+    "findingBExpectedEnd": 935,
+    "findingBEndMatch": false,
+    "verdict": "MISMATCH"
+  },
+  "domVsOracle": {
+    "expectedMarkCount": 2,
+    "observedMarkCount": 2,
+    "markCountMatch": true,
+    "domFindingAPresent": false,
+    "domFindingBPresent": false,
+    "domFindingAStart": null,
+    "domFindingAExpectedStart": 0,
+    "domFindingAEnd": null,
+    "domFindingAExpectedEnd": 85,
+    "domFindingATextMatch": false,
+    "domFindingBStart": null,
+    "domFindingBExpectedStart": 788,
+    "domFindingBEnd": null,
+    "domFindingBExpectedEnd": 935,
+    "domFindingBTextMatch": false,
+    "verdict": "MISMATCH"
+  },
+  "domVsEngine": {
+    "domMarksEvaluated": 2,
+    "allDomMarksResolvedToEngine": true,
+    "mappings": [
+      {
+        "domMarkIndex": 0,
+        "domFindingId": "de51b5db0696a8eb",
+        "domStartOffset": 58,
+        "domEndOffset": 76,
+        "matchedInEngine": true,
+        "engineFindingId": "de51b5db0696a8eb"
+      },
+      {
+        "domMarkIndex": 1,
+        "domFindingId": "a8bf1fe9b46f5759",
+        "domStartOffset": 800,
+        "domEndOffset": 816,
+        "matchedInEngine": true,
+        "engineFindingId": "a8bf1fe9b46f5759"
+      }
+    ],
+    "verdict": "MATCH"
+  },
+  "overallCertificationMatch": false
+}

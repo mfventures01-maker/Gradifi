@@ -1,0 +1,82 @@
+================================================================
+HOEOS FORENSIC INVESTIGATION — FIX SCOPE RECOMMENDATION
+Ordered Repair Plan for Vercel Serverless Function Deployment
+================================================================
+Investigation ID: HOEOS-FORENSIC-VERCEL-BUNDLES-2026-09-25
+Date:             2026-09-25
+
+[1] ORDERED FIX SEQUENCE
+
+  FIX 1: RESTORE CLEAN VERCEL SERVERLESS FUNCTION WRAPPERS
+  --------------------------------------------------------
+  Scope:
+    Rewrite all 11 files under `api/` and `api/verify/` to replace the in-place esbuild
+    bundles with standard 10-15 line Vercel TypeScript wrappers.
+
+  Files Touched:
+    - `api/_probe.ts`
+    - `api/verify/core.ts`
+    - `api/verify/crossref.ts`
+    - `api/verify/googlebooks.ts`
+    - `api/verify/openalex.ts`
+    - `api/verify/unpaywall.ts`
+    - `api/verify/nemotron.ts`
+    - `api/verify/gemini.ts`
+    - `api/verify/gemma.ts`
+    - `api/verify/persist.ts`
+    - `api/verify/semanticscholar.ts`
+
+  Canonical Wrapper Pattern:
+    ```typescript
+    import type { VercelRequest, VercelResponse } from '@vercel/node';
+    import { handleCoreServerSearch } from '../../src/services/verify/server/coreServerHandler';
+
+    export default async function handler(req: VercelRequest, res: VercelResponse) {
+      if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method Not Allowed' });
+      }
+      try {
+        const result = await handleCoreServerSearch(req.body);
+        return res.status(200).json(result);
+      } catch (err: any) {
+        return res.status(500).json({ error: err.message || 'Internal Server Error' });
+      }
+    }
+    ```
+
+  Acceptance Criteria:
+    1. File size of each `api/*.ts` wrapper is ~300 - 600 bytes.
+    2. Zero inlined bundler headers (`// src/`) or minified variable declarations exist in `api/`.
+    3. All 11 files contain clean ESM imports from `../../src/services/verify/server/`.
+    4. HTTP POST requests to `/api/verify/*` return 200 OK with structured JSON result payloads.
+    5. HTTP GET/PUT/DELETE requests return HTTP 405 Method Not Allowed.
+
+  Halt Conditions:
+    - Halt if any source server handler in `src/services/verify/server/` is missing a required named export.
+    - Halt if local `npx vitest run` fails any underlying handler unit test.
+    - Halt if Vercel deployment CLI fails during serverless function compilation.
+
+  Estimated Time: 15 minutes
+  Blocks Demo:     YES (100% of API endpoints currently return 500 / 405 on production)
+
+
+  FIX 2: DEPRECATE IN-PLACE ESBUILD SCRIPT
+  ----------------------------------------
+  Scope:
+    Remove or neutralize `scratch/bundle_api.ps1` to prevent future accidental overwrites of `api/*.ts` wrappers.
+
+  Files Touched:
+    - `scratch/bundle_api.ps1`
+
+  Acceptance Criteria:
+    `scratch/bundle_api.ps1` no longer runs `esbuild --outfile=$f --allow-overwrite` targeting `api/`.
+
+  Estimated Time: 2 minutes
+  Blocks Demo:     NO
+
+[2] SUMMARY TABLE
+
+  Order  Fix Target                             Files Touched  Blocks Demo  Est. Time
+  -----  -------------------------------------  -------------  -----------  ---------
+  1      Restore Clean Serverless Wrappers     11 files in api/  YES          15 mins
+  2      Deprecate bundle_api.ps1 Script        scratch/       NO           2 mins

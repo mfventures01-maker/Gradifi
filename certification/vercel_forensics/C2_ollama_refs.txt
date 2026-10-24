@@ -1,0 +1,12 @@
+﻿
+LineNumber Line                                                                        
+---------- ----                                                                        
+        24    * Probe local Gemma inference runtime (Ollama at http://localhost:11434).
+        29       const isDev = import.meta.env.DEV;                                    
+        30       const ollamaEndpoint = isDev                                          
+        31         ? (import.meta.env.VITE_OLLAMA_HOST ?? 'http://localhost:11434')    
+        34       if (!ollamaEndpoint) {                                                
+        38       const endpoint = `${ollamaEndpoint}/v1/models`;                       
+        55    * Dispatches local Ollama / Gemma reasoning through the server boundary. 
+
+

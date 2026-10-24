@@ -1,0 +1,39 @@
+﻿{
+    "finalizer":  "scratch/finalize_g4_evidence_r4.ps1",
+    "version":  "R4.2",
+    "evaluationTimestamp":  "2026-10-17T23:50:45.6407895+01:00",
+    "evidenceDirectory":  "evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\non_existent_dir_9999",
+    "terminalStatus":  "BLOCKED",
+    "precedenceRank":  1,
+    "exitCode":  2,
+    "statusExplanation":  "Prerequisites or artifacts missing/malformed: Evidence directory does not exist: evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\non_existent_dir_9999; Missing positive browser results artifact: evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\non_existent_dir_9999\\g4-browser-results.json; Missing negative browser results artifact: evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\non_existent_dir_9999\\g4-negative-browser-results.json",
+    "allConditions":  {
+                          "blocked":  [
+                                          "Evidence directory does not exist: evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\non_existent_dir_9999",
+                                          "Missing positive browser results artifact: evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\non_existent_dir_9999\\g4-browser-results.json",
+                                          "Missing negative browser results artifact: evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\non_existent_dir_9999\\g4-negative-browser-results.json"
+                                      ],
+                          "notRun":  [
+
+                                     ],
+                          "failed":  [
+
+                                     ]
+                      },
+    "positiveEvaluation":  {
+                               "passed":  false,
+                               "markCount":  -1,
+                               "screenshotExists":  false,
+                               "primaryHighlight":  null
+                           },
+    "negativeEvaluation":  {
+                               "passed":  false,
+                               "screenshotExists":  false,
+                               "details":  null
+                           },
+    "g4CertificationBoundary":  {
+                                    "finalizerResult":  "BLOCKED",
+                                    "g4VerificationEngineCertification":  "NOT CERTIFIED",
+                                    "certificationNotice":  "G4 verification-engine certification remains NOT CERTIFIED pending independent execution without injected result fixtures (seam hooks)."
+                                }
+}

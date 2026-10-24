@@ -1,0 +1,81 @@
+﻿[WebServer] 
+[WebServer] > gradifi@0.0.0 build
+[WebServer] > npm run build:server && vite build
+[WebServer] 
+[WebServer] 
+[WebServer] > gradifi@0.0.0 build:server
+[WebServer] > npm run clean:runtime && tsc -p tsconfig.server.json
+[WebServer] 
+[WebServer] 
+[WebServer] > gradifi@0.0.0 clean:runtime
+[WebServer] > rimraf runtime
+[WebServer] 
+npx.cmd : [WebServer] ΓÜá∩╕Å  Node.js 20 and below are deprecated and will no longer be supported in future versions 
+of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: 
+https://github.com/orgs/supabase/discussions/45715
+At C:\Projects\Gradifi\scratch\run_r3_production_preview.ps1:68 char:5
++     & npx.cmd playwright test `
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] ΓÜá...scussions/45715:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+[WebServer] Γùç injected env (19) from .env.local // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+[WebServer] Γùç injected env (0) from .env // tip: Γîÿ override existing { override: true }
+[WebServer] vite v6.4.3 building for production...
+[WebServer] transforming...
+[WebServer] [plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by 
+"C:/Projects/Gradifi/src/services/verify/federation/providerLogger.ts". See 
+https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[WebServer] [plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by 
+"C:/Projects/Gradifi/src/services/verify/federation/providerLogger.ts". See 
+https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[WebServer] Γ£ô 2208 modules transformed.
+[WebServer] rendering chunks...
+[WebServer] [plugin vite:reporter] 
+[WebServer] (!) C:/Projects/Gradifi/node_modules/@supabase/supabase-js/dist/index.mjs is dynamically imported by 
+C:/Projects/Gradifi/src/services/verify/verificationPersistenceService.ts but also statically imported by 
+C:/Projects/Gradifi/src/lib/supabase.ts, dynamic import will not move module into another chunk.
+[WebServer] 
+[WebServer] computing gzip size...
+[WebServer] dist/index.html                                      0.79 kB Γöé gzip:   0.38 kB
+[WebServer] dist/assets/pdf.worker.min-BmVo14Nb.mjs          1,317.03 kB
+[WebServer] dist/assets/index-DNf0xc2X.css                      86.47 kB Γöé gzip:  12.98 kB
+[WebServer] dist/assets/__vite-browser-external-BIHI7g3E.js      0.03 kB Γöé gzip:   0.05 kB
+[WebServer] dist/assets/purify.es-DBIK8olT.js                   29.40 kB Γöé gzip:  11.31 kB
+[WebServer] dist/assets/index.es-CkTaBTb7.js                   159.72 kB Γöé gzip:  53.54 kB
+[WebServer] dist/assets/html2canvas.esm-QH1iLAAe.js            202.38 kB Γöé gzip:  48.04 kB
+[WebServer] 
+[WebServer] (!) Some chunks are larger than 500 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rollupOptions.output.manualChunks to improve chunking: 
+https://rollupjs.org/configuration-options/#output-manualchunks
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[WebServer] dist/assets/index-1fW386DD.js                    2,010.43 kB Γöé gzip: 580.20 kB
+[WebServer] Γ£ô built in 28.00s
+[WebServer] 
+[WebServer] > gradifi@0.0.0 preview
+[WebServer] > vite preview --host 127.0.0.1 --port 4173 --strictPort
+[WebServer] 
+[WebServer] ΓÜá∩╕Å  Node.js 20 and below are deprecated and will no longer be supported in future versions of 
+@supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: 
+https://github.com/orgs/supabase/discussions/45715
+[WebServer] ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+[WebServer] Γùç injected env (19) from .env.local // tip: Γîÿ override existing { override: true }
+[WebServer] Γùç injected env (0) from .env // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+[WebServer]   Γ₧£  Local:   http://127.0.0.1:4173/
+
+Running 2 tests using 1 worker
+
+G4_BROWSER_MARK_COUNT: 2
+G4_PRIMARY_MARK_TEXT: "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks"
+G4_PRIMARY_SOURCE_ID: src-crossref-10.1038-001
+G4_PRIMARY_FINDING_ID: finding-g4-quantum-001
+G4_PRIMARY_OFFSETS: [0, 85]
+  ok 1 [chromium] ΓÇ║ e2e\four-gates-g4-browser.spec.ts:19:3 ΓÇ║ HOEOS Gate 4 Real Browser Authoritative Highlighting ΓÇ║ executes verification UI with fixture grounding and asserts deterministic DOM mark elements (19.4s)
+NEGATIVE_TEST_ASSERTION_FAILED_CLOSED: true
+NEGATIVE_TEST_UNAVAILABLE_BANNER_OBSERVED: true
+NEGATIVE_TEST_MARKS_COUNT: 0
+  ok 2 [chromium] ΓÇ║ e2e\four-gates-g4-negative.spec.ts:15:3 ΓÇ║ HOEOS Gate 4 Negative Case: Missing Canonical Document Fails Closed ΓÇ║ proves that missing canonical document suppresses highlights and renders unavailable banner (14.9s)
+
+  2 passed (1.5m)

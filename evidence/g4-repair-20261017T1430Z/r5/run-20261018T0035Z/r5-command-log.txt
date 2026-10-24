@@ -1,0 +1,58 @@
+=== HOEOS R5 COMMAND EXECUTION LOG ===
+Run Identifier: run-20261018T0035Z
+Working Directory: C:\Projects\Gradifi
+Environment: Windows PowerShell (PAGER=cat)
+
+[CMD 1] Initialize R5 Baseline State & Hashes
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/r5_init_baseline.ps1
+Working Directory: C:\Projects\Gradifi
+Exit Code: 0
+Output Artifacts:
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-baseline.txt
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-baseline-hashes.csv
+
+[CMD 2] Standard Production Build & Seam Exclusion Verification
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/r5_seam_audit_and_build.ps1
+Working Directory: C:\Projects\Gradifi
+Child Command: cmd.exe /c npm run build
+Exit Code: 0
+Duration: 56.9s
+Output Artifacts:
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-seam-audit.txt
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-production-build.log
+
+[CMD 3] Construct Independent Oracle Manifest
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/r5_build_independent_oracle.ps1
+Working Directory: C:\Projects\Gradifi
+Exit Code: 0
+Output Artifact:
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-independent-oracle.json
+
+[CMD 4] Execute Adversarial Rejection Controls (8 Scenarios)
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/run_r5_adversarial_controls.ps1
+Working Directory: C:\Projects\Gradifi
+Exit Code: 0
+Output Artifact:
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-adversarial-controls.csv
+
+[CMD 5] Execute Playwright Independent Engine Certification Run
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/run_r5_certification.ps1
+Working Directory: C:\Projects\Gradifi
+Child Command: npx playwright test e2e/g4-independent-engine-certification.spec.ts --config=playwright.r5.standardprod.config.ts --project=chromium
+Exit Code: 1 (Demonstrated mismatch against candidate oracle)
+Duration: 42.13s
+Output Artifacts:
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-engine-result.json
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-dom-observations.json
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-three-way-comparison.json
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/screenshots/r5_real_engine_dom_highlight.png
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-playwright-output.txt
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-playwright-exit-code.txt
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-playwright-results.json
+
+[CMD 6] Execute Phase R5 Finalizer
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/finalize_g4_evidence_r5.ps1
+Working Directory: C:\Projects\Gradifi
+Exit Code: 1 (Terminal Status: FAIL)
+Output Artifact:
+  - evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-summary.json

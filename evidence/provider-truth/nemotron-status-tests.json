@@ -1,0 +1,144 @@
+[
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-09",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "2dc53b80ce901586ab615d42b8461bd07fa020b33500aabf9d512d504811f0f5",
+    "status": "VERIFIED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron valid finding produces VERIFIED state with modelProvider=nemotron and fallback_used=false",
+    "details": {
+      "findingsCount": 1,
+      "modelProvider": "nemotron"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-10",
+    "input_hash": "a71b6f10a119de4c7243f837c665865083f90632c8bfd2d037956e85467e1eaa",
+    "output_hash": "ee5898e3abc4b46eb09043d6edc8938ddaa651e4655be76a9d694637ff33eb60",
+    "status": "EMPTY_RESULT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron empty array produces EMPTY_RESULT without error classification",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-11",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "56f26a5cb8203c6ecba34db072e42c41118e4fa2ef700c07659b1c519f4ea628",
+    "status": "INFERENCE_FAILED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron malformed JSON produces INFERENCE_FAILED",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "Nemotron response could not be parsed as JSON"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-12",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "a1d00267bbf8b0ed282bcc2e022d3806dc345fd99bd74e0d79d713aa598b3a75",
+    "status": "SCHEMA_INVALID",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron findings violating schema produce SCHEMA_INVALID",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "Nemotron JSON contained no valid findings matching schema"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-13",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "14f96f53039b533af4d952f7172c8a745025fe427c8dde5b4a1c1438648a70fa",
+    "status": "AUTHENTICATION_FAILED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron 401/403 produces AUTHENTICATION_FAILED",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "NVIDIA API returned HTTP 401: Unauthorized"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-14",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "923514716708f46e042a5a6dc988bf1038c369d7411c8ce99602b8ebf4be5021",
+    "status": "TIMEOUT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron timeout produces TIMEOUT",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "NVIDIA API timed out: The operation was aborted due to timeout"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-15",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "927c4d7d963042e38310d612dae9c7485533550b072ab9a3cde722fb4d6f38e0",
+    "status": "NETWORK_ERROR",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron connection failure produces NETWORK_ERROR",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "NVIDIA API network error: fetch failed: ECONNREFUSED"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-16",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "aca2065b1a90419301508f0470565f32e0a313fe6156b51c6e8df3174a62ea69",
+    "status": "RUNTIME_UNAVAILABLE",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron 503/429 produces RUNTIME_UNAVAILABLE",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "NVIDIA API unavailable: HTTP 503"
+    }
+  }
+]

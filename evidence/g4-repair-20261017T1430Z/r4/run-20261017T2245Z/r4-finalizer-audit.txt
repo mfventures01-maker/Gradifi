@@ -1,0 +1,137 @@
+=== HOEOS R4.1 FINALIZER AUDIT & DEFECT VERIFICATION ===
+Execution Directory: evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/
+Audited Script: scratch/finalize_g4_evidence.ps1 (19,875 bytes, SHA-256: B99A9E7E3780A1AB53581D7B5556047F2259D4D26E61369C2EE2771B0CCD1DF8)
+Preserved R3 Specs:
+  - e2e/four-gates-g4-browser.spec.ts (7,432 bytes, SHA-256: BEAFAC3618B4A762F1950414EF3A8A15A97DE494066B424F23437BF679DB9452)
+  - e2e/four-gates-g4-negative.spec.ts (4,991 bytes, SHA-256: 9497E73F59D146D8199934F06540E0589C23D8BC7A24F0E9AB8E02E5B25CEFCC)
+
+--------------------------------------------------------------------------------
+FINDING F1: HARDCODED SELF-ATTESTATION
+Status: CONFIRMED
+Location: scratch/finalize_g4_evidence.ps1, Line 307
+Observed Code:
+    hardcodedClaimsRemoved = $true
+Analysis:
+    The finalizer unconditionally inserts `hardcodedClaimsRemoved = $true` into the
+    executionProvenance object without inspecting any evidence or verifying that
+    claims are grounded. This is a self-attestation antipattern under HOEOS rule
+    "Evidence Before Assumption" (Rule 1).
+Root Cause:
+    Author added a boolean flag claiming compliance rather than evaluating evidence.
+Repair Directive:
+    Remove `hardcodedClaimsRemoved` from the schema. Ground all provenance claims
+    exclusively on observed and evaluated artifacts.
+
+--------------------------------------------------------------------------------
+FINDING F2: NEGATIVE EVIDENCE FIELD MISMATCH
+Status: CONFIRMED
+Location: scratch/finalize_g4_evidence.ps1, Line 140
+Observed Required Field in Finalizer:
+    'missingCanonicalPrecondition'
+Observed Emitted Field in R3 Negative Output (g4-negative-browser-results.json, Line 4):
+    "missingCanonicalCondition": "missing_canonical_raw_text"
+Analysis:
+    The negative spec (e2e/four-gates-g4-negative.spec.ts:94) emits `missingCanonicalCondition`
+    sourced from G4_NEGATIVE_FIXTURE.condition. The finalizer expected `missingCanonicalPrecondition`.
+    This causes the finalizer to immediately fail schema validation.
+Root Cause:
+    Field naming divergence between spec author and finalizer author.
+Repair Directive:
+    Update finalizer to require `missingCanonicalCondition`, verify it is a non-empty
+    string, and assert it matches the expected condition contract.
+
+--------------------------------------------------------------------------------
+FINDING F3: STALE-HIGHLIGHT COUNT MISMATCH
+Status: CONFIRMED
+Location: scratch/finalize_g4_evidence.ps1, Lines 143-144, 162, 186-188
+Observed Required Fields in Finalizer:
+    'observedStaleHighlightCount', 'expectedStaleHighlightCount'
+Observed Emitted Fields in R3 Negative Output (g4-negative-browser-results.json, Lines 7-8):
+    "observedHighlightCount": 0,
+    "expectedHighlightCount": 0
+Analysis:
+    The negative spec asserts that zero highlight marks exist in the DOM when canonical
+    document is missing, serializing `observedHighlightCount: 0` and `expectedHighlightCount: 0`.
+    The finalizer searched for `...StaleHighlightCount`, causing missing-field validation errors.
+Root Cause:
+    Inconsistent terminology ("stale highlight" vs "highlight count").
+Repair Directive:
+    Accept the canonical emitted fields `observedHighlightCount` and `expectedHighlightCount`.
+    Enforce integer types and assert both values are strictly equal to 0.
+
+--------------------------------------------------------------------------------
+FINDING F4: ASSERTION-OBJECT MISMATCH
+Status: CONFIRMED
+Location: scratch/finalize_g4_evidence.ps1, Lines 147, 195
+Observed Required Field in Finalizer:
+    'assertions' (nested dictionary containing staleHighlightMarksCountZero and unavailableIndicatorVisible)
+Observed Emitted Structure in R3 Negative Output (g4-negative-browser-results.json):
+    Flat dictionary with boolean and integer fields:
+      "unavailableIndicatorObserved": true,
+      "viewerSuppressed": true,
+      "observedHighlightCount": 0,
+      "expectedHighlightCount": 0,
+      "allMandatoryAssertionsPassed": true
+Analysis:
+    The spec does not produce a nested `assertions` object; it serializes the assertion
+    outcomes as top-level fields. The finalizer's check on line 195 throws an error or fails
+    when `assertions` is null.
+Root Cause:
+    Finalizer was written against an uncoordinated synthetic schema rather than the
+    actual Playwright test serializer.
+Repair Directive:
+    Remove the requirement for a nested `assertions` dictionary. Validate the top-level
+    fields directly with type and truthiness assertions.
+
+--------------------------------------------------------------------------------
+FINDING F5: FOUR-VALUED STATUS
+Status: CONFIRMED
+Location: scratch/finalize_g4_evidence.ps1, Lines 267-280
+Observed Output Statuses:
+    'READY FOR INDEPENDENT CERTIFICATION REVIEW'
+    'NOT CERTIFIED: REPAIRS INCOMPLETE'
+    'NOT CERTIFIED: REMAINING CRITERIA UNPROVEN'
+Analysis:
+    The current finalizer emits verbose informal strings that do not conform to the
+    four-valued machine-readable standard: PASS, FAIL, BLOCKED, NOT RUN.
+Root Cause:
+    Ad-hoc status string construction without deterministic precedence logic.
+Repair Directive:
+    Implement strict four-valued status semantics with the exact HOEOS precedence:
+    1. BLOCKED (missing prerequisites, malformed JSON, unreadable inputs)
+    2. NOT RUN (mandatory test was skipped or not executed)
+    3. FAIL (executed, but one or more assertions or integrity checks failed)
+    4. PASS (all mandatory checks executed, all evidence valid, all assertions passed)
+
+--------------------------------------------------------------------------------
+FINDING F6: PRIMARY-HIGHLIGHT INVARIANT MISMATCH
+Status: CONFIRMED
+Location: scratch/finalize_g4_evidence.ps1, Line 105
+Observed Check in Finalizer:
+    $primaryHighlight.authoritativeTextMatch -ne $true -or
+    $primaryHighlight.offsetInvariant -ne $true -or
+    $primaryHighlight.identityBound -ne $true
+Observed Emitted Structure in R3 Positive Output (g4-browser-results.json, Lines 5-14):
+    "primaryHighlight": {
+      "index": 0,
+      "findingId": "finding-g4-quantum-001",
+      "sourceId": "src-crossref-10.1038-001",
+      "start": 0,
+      "end": 85,
+      "markText": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+      "expectedSlice": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+      "sourceTitle": "Quantum Information Networks & Entanglement Topology"
+    }
+Analysis:
+    The positive spec emits raw invariant components (start, end, markText, expectedSlice,
+    findingId, sourceId), but does NOT emit synthetic boolean flags named
+    `authoritativeTextMatch`, `offsetInvariant`, or `identityBound`.
+Root Cause:
+    Finalizer expected self-attesting boolean flags rather than computing and evaluating
+    the mathematical invariants from the raw evidence.
+Repair Directive:
+    Derive and compute the invariants directly from the evidence:
+    - start and end must be integers with 0 <= start < end.
+    - markText must be non-empty string and strictly equal expectedSlice.
+    - findingId and sourceId must be non-empty strings.
+    - Canonical slice invariant: markText must match expectedSlice.

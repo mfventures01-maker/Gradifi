@@ -1,0 +1,8 @@
+﻿
+
+Algorithm : SHA256
+Hash      : 0E0B0DE72C794E93C6AF392EDB46897B3C41EF6D80A2D6E006162285E3C40418
+Path      : C:\Projects\Gradifi\src\components\verify\CanonicalDocumentViewer.tsx
+
+
+

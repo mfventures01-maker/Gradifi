@@ -1,0 +1,3 @@
+GATE_D=FAIL
+UNMET_CONDITION=Playwright exit 0
+EVIDENCE_PATH=C:\Projects\Gradifi\evidence\gate-d-runtime-20261021-123517\exit-code.txt

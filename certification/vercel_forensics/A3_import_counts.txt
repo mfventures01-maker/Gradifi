@@ -1,0 +1,16 @@
+﻿
+File                                              SizeBytes ImportCount
+----                                              --------- -----------
+C:\Projects\Gradifi\api\_probe.ts                     23147           0
+C:\Projects\Gradifi\api\verify\core.ts                23152           0
+C:\Projects\Gradifi\api\verify\crossref.ts            22762           0
+C:\Projects\Gradifi\api\verify\gemini.ts            1787987          21
+C:\Projects\Gradifi\api\verify\gemma.ts                8047           0
+C:\Projects\Gradifi\api\verify\googlebooks.ts         25121           0
+C:\Projects\Gradifi\api\verify\nemotron.ts             9251           0
+C:\Projects\Gradifi\api\verify\openalex.ts             9298           0
+C:\Projects\Gradifi\api\verify\persist.ts            876966           0
+C:\Projects\Gradifi\api\verify\semanticscholar.ts     23511           0
+C:\Projects\Gradifi\api\verify\unpaywall.ts           22238           0
+
+

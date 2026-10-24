@@ -223,7 +223,11 @@ export function evaluateSentenceMatch(
   let matchType: 'exact_match' | 'lexical_overlap' | 'ngram_overlap' = 'lexical_overlap';
 
   // Exact normalized containment
-  if (normSource.includes(normSent)) {
+  // G2 Sub-Defect B: defence-in-depth. Even if a caller admits a short sentence
+  // into the sentence set, do not let String.includes on a single token produce
+  // a 100% match. Require 3+ tokens AND 10+ characters on the normalized form.
+  const containmentTokenCount = normSent.split(' ').filter((t: string) => t.length > 0).length;
+  if (normSent.length >= 10 && containmentTokenCount >= 3 && normSource.includes(normSent)) {
     similarityPercentage = 100;
     matchType = 'exact_match';
   } else {
@@ -582,10 +586,10 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
     const relevanceScore = Math.min(100, Math.round((sourceCoverage * 0.5 + highestSentenceMatch * 0.5) * 10) / 10);
 
     // Deterministic match classification.
-    // EXACT       — byte-for-byte identical token sequence.
-    // NEAR_EXACT  — token overlap >= 90% with same ordering.
-    // STRUCTURAL  — same syntactic shape, < 90% token overlap.
-    // SEMANTIC    — below structural threshold; retained for AI advisory only.
+    // EXACT       â€” byte-for-byte identical token sequence.
+    // NEAR_EXACT  â€” token overlap >= 90% with same ordering.
+    // STRUCTURAL  â€” same syntactic shape, < 90% token overlap.
+    // SEMANTIC    â€” below structural threshold; retained for AI advisory only.
     let matchCharacter: MatchCharacter;
     if (exactMatch.length > 0 && exactMatch.length === candidateSnippet.length) {
       matchCharacter = 'EXACT';
@@ -822,7 +826,8 @@ export function extractSimilarityFindingsFromEvidenceMatches(
   documentText: string,
   documentHash: string,
   matches: EvidenceMatch[],
-  aggregation?: GlobalSimilarityAggregation
+  aggregation?: GlobalSimilarityAggregation,
+  warningsOut?: string[]
 ): SimilarityFinding[] {
   const findings: SimilarityFinding[] = [];
 
@@ -900,18 +905,15 @@ export function extractSimilarityFindingsFromEvidenceMatches(
     }
 
     if (srcIdx === -1) {
-      findings.push({
-        findingId: computeHash(`${documentHash}:${match.sourceId}:LEXICAL:${match.matchPercentage}`),
-        sourceDocumentId: documentHash,
-        matchedDocumentId: match.sourceId,
-        sourceSegment: (match.originalSnippet || lookupSnippet).slice(0, 200),
-        matchedSegment: '',
-        similarityScore: match.matchPercentage,
-        matchMethod: 'TOKEN_OVERLAP',
-        sourceStart: undefined,
-        sourceEnd: undefined,
-        provenance: 'DETERMINISTIC'
-      });
+      // Match could not be located in the canonical document. Record the
+      // suppression in the caller's warnings array so the analysis result
+      // does not silently drop evidence.
+      const warningMessage =
+        `Sub-threshold match from ${match.sourceId} (similarity ${match.matchPercentage.toFixed(1)}%) ` +
+        `could not be located in the canonical document; suppressed as a finding.`;
+      if (Array.isArray(warningsOut)) {
+        warningsOut.push(warningMessage);
+      }
       continue;
     }
 

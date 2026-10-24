@@ -1,0 +1,130 @@
+﻿{
+    "gate":  "G4",
+    "operation":  "R7 Live-Provider Regression Evaluation",
+    "runId":  "r7-live-provider-20261018T154500Z",
+    "evaluationDateStart":  "2026-10-18T15:45:00Z",
+    "evaluationDateEnd":  "2026-10-18T16:30:00Z",
+    "verdict":  "INCONCLUSIVE",
+    "verdictSummary":  "Unit oracle (33/33) and structural offset invariants (43/43) passed. Real live-provider connectivity confirmed for OpenAlex and Crossref (both returning HTTP 200 with VERIFIED matches). Real browser verification without stubs passed (e2e/matched-text-highlighting.spec.ts: 2/2 passed). However, the checkout\u0027s tracked specification e2e/four-gates-g4-browser.spec.ts contains pre-existing uncommitted R2 modifications injecting G4_POSITIVE_FIXTURE via window.__GRADIFI_TEST_TRANSFORM_VERIFY_RESULT__, resulting in synthetic fixture provenance during that spec rather than live provider provenance. Because altering test code is prohibited and synthetic runs cannot be certified as live-provider execution, R7 is recorded as INCONCLUSIVE.",
+    "repository":  {
+                       "root":  "C:\\Projects\\Gradifi",
+                       "actualHead":  "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+                       "historicalHead":  "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+                       "workingTreeState":  "DIRTY (14 pre-existing modified files preserved, 0 staged changes, 0 application source modifications made during R7)"
+                   },
+    "historicalEvidencePreservation":  {
+                                           "allPreserved":  true,
+                                           "files":  [
+                                                         {
+                                                             "path":  "evidence/g4-closure-20261016T1632Z/G4_RESULT.json",
+                                                             "sha256":  "3A4381D39BFA19DA96E04F12C98A460F77BEFB325AEF53A9D6258B9D5B9215AA",
+                                                             "verifiedUnchanged":  true
+                                                         },
+                                                         {
+                                                             "path":  "evidence/g4-r6-engine-certification/r6-summary.json",
+                                                             "sha256":  "CF862551196498D470E108EC74570F7F47F8B379385FE29FF5CC846FC249A6AB",
+                                                             "verifiedUnchanged":  true
+                                                         },
+                                                         {
+                                                             "path":  "evidence/g4-r6-engine-certification/G4_CLOSURE_REPORT.md",
+                                                             "sha256":  "1B5EF192BF57E9CBEFFDB36E65E7DAF38C8DBD0AAAA53A5A2D97E9AA019B5AAE",
+                                                             "verifiedUnchanged":  true
+                                                         },
+                                                         {
+                                                             "path":  "evidence/g4-r6-engine-certification/r6-summary.json.pre-closure-20261018T161701775.bak",
+                                                             "sha256":  "C87AE06A3A4DC1C87765A476738B6F203CB1C1BC1646FAC546EB3F97C7F8F58F",
+                                                             "verifiedUnchanged":  true
+                                                         }
+                                                     ]
+                                       },
+    "providerReachability":  {
+                                 "openalex":  {
+                                                  "endpoint":  "https://api.openalex.org/works",
+                                                  "status":  "success",
+                                                  "fineGrainedStatus":  "VERIFIED",
+                                                  "matches":  1,
+                                                  "reachability":  "CONFIRMED"
+                                              },
+                                 "crossref":  {
+                                                  "endpoint":  "https://api.crossref.org/works",
+                                                  "status":  "success",
+                                                  "fineGrainedStatus":  "VERIFIED",
+                                                  "matches":  1,
+                                                  "reachability":  "CONFIRMED"
+                                              },
+                                 "unpaywall":  {
+                                                   "endpoint":  "https://api.unpaywall.org/v2/",
+                                                   "status":  "partial",
+                                                   "fineGrainedStatus":  "EMPTY_RESULT",
+                                                   "reachability":  "CONFIRMED_EMPTY"
+                                               },
+                                 "core":  {
+                                              "endpoint":  "https://api.core.ac.uk/v3/search/works",
+                                              "status":  "unavailable",
+                                              "fineGrainedStatus":  "AUTHENTICATION_FAILED",
+                                              "reason":  "CORE_API_KEY absent in environment",
+                                              "reachability":  "BLOCKED"
+                                          },
+                                 "googlebooks":  {
+                                                     "endpoint":  "https://www.googleapis.com/books/v1/volumes",
+                                                     "status":  "error",
+                                                     "fineGrainedStatus":  "AUTHENTICATION_FAILED",
+                                                     "reason":  "GOOGLE_BOOKS_API_KEY absent in environment",
+                                                     "reachability":  "BLOCKED"
+                                                 }
+                             },
+    "executionStages":  {
+                            "stage1_providerConnectivity":  {
+                                                                "command":  "npx tsx scratch/test_all_providers.ts",
+                                                                "exitCode":  0,
+                                                                "status":  "PASS",
+                                                                "logFile":  "provider_connectivity.log"
+                                                            },
+                            "stage2_unitOracle":  {
+                                                      "command":  "npx tsx scratch/g4_audit_deterministic_suite.ts",
+                                                      "exitCode":  0,
+                                                      "status":  "PASS",
+                                                      "assertionsTotal":  33,
+                                                      "assertionsPassed":  33,
+                                                      "assertionsFailed":  0,
+                                                      "logFile":  "unit_oracle.log"
+                                                  },
+                            "stage3_offsetInvariants":  {
+                                                            "command":  "npx tsx tests/g4-offset-invariants.test.ts",
+                                                            "exitCode":  0,
+                                                            "status":  "PASS",
+                                                            "assertionsTotal":  43,
+                                                            "assertionsPassed":  43,
+                                                            "assertionsFailed":  0,
+                                                            "logFile":  "offset_invariants.log"
+                                                        },
+                            "stage4_browserMatchedText":  {
+                                                              "command":  "npx playwright test e2e/matched-text-highlighting.spec.ts --config=playwright.config.ts",
+                                                              "exitCode":  0,
+                                                              "status":  "PASS",
+                                                              "testsTotal":  2,
+                                                              "testsPassed":  2,
+                                                              "logFile":  "browser_matched_text.log"
+                                                          },
+                            "stage5_trackedBrowserSpecs":  {
+                                                               "command":  "npx playwright test e2e/four-gates-g4-browser.spec.ts e2e/four-gates-g4-negative.spec.ts --config=playwright.config.ts",
+                                                               "exitCode":  0,
+                                                               "status":  "PASS (SYNTHETIC FIXTURE GROUNDING)",
+                                                               "testsTotal":  2,
+                                                               "testsPassed":  2,
+                                                               "logFile":  "browser_four_gates.log",
+                                                               "note":  "Executes with window.__GRADIFI_TEST_TRANSFORM_VERIFY_RESULT__ fixture transform seam present in checkout\u0027s modified four-gates-g4-browser.spec.ts."
+                                                           }
+                        },
+    "unrelatedGates":  {
+                           "G8":  "UNVERIFIED WRITE BOUNDARY (Preserved)",
+                           "G12":  "NOT CERTIFIED (Preserved)",
+                           "tenantContract":  "CONTRACT GAP (Preserved)",
+                           "productionCutover":  "NOT GRANTED"
+                       },
+    "supersededBy":  {
+                         "path":  "evidence/g4-live-recertification-20261018T172500Z/G4_RESULT.json",
+                         "timestamp":  "2026-10-18T18:00:25.456Z",
+                         "reason":  "R7 could not certify live-provider provenance on the current worktree because the tracked e2e/four-gates-g4-browser.spec.ts was fixture-grounded. A new seam-free spec (e2e/g4-live-provider-certification.spec.ts) was created and run, producing a fresh live-provider PASS on the same worktree. R7 evidence remains intact and preserved as the record of the blocked attempt."
+                     }
+}

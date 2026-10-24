@@ -1,0 +1,9 @@
+HTTP/1.1 405 Method Not Allowed
+Cache-Control: public, max-age=0, must-revalidate
+Content-Disposition: inline; filename="index.html"
+Date: Fri, 25 Sep 2026 11:54:54 GMT
+Server: Vercel
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+X-Vercel-Cache: BYPASS
+X-Vercel-Id: cpt1::cvfgp-1790337294644-9343aeddd8e8
+Transfer-Encoding: chunked

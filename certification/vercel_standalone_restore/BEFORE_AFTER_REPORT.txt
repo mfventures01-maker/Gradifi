@@ -1,0 +1,71 @@
+================================================================
+HOEOS REPAIR REPORT
+VERCEL STANDALONE FUNCTIONS RESTORATION
+================================================================
+Repair ID:        HOEOS-VERCEL-STANDALONE-RESTORE-2026-09-26
+Commit:           5aa8c68
+Date:             2026-09-26
+
+[BEFORE]
+  vercel.json:
+    has functions.includeFiles:     no
+    has builds key:                 no
+
+  api/ tree:
+    total files:                    69
+    has _lib/:                      yes
+    wrapper imports from _lib:      11/11
+    wrapper imports from src/:      0/11
+
+  scripts/copy-api-deps.js present: yes
+  package.json prebuild present:    yes
+
+  local:
+    tsc --noEmit:                   errors
+    npm run build:                  success
+
+  deployed:
+    core:                           500
+    crossref:                       500
+    googlebooks:                    500
+    openalex:                       500
+    unpaywall:                      500
+    nemotron:                       500 (ERR)
+    gemini:                         500
+    gemma:                          500
+    semanticscholar:                500
+
+  runtime error:                    ERR_MODULE_NOT_FOUND on
+                                    /var/task/api/_lib/<handler>
+
+[AFTER]
+  vercel.json:
+    has functions.includeFiles:     yes
+    has builds key:                 no
+
+  api/ tree:
+    total files:                    11
+    has _lib/:                      no
+    wrapper imports from _lib:      0/11
+    wrapper imports from src/:      11/11
+
+  scripts/copy-api-deps.js present: no
+  package.json prebuild present:    no
+  package.json build gate:          tsc --noEmit && vite build
+
+  local:
+    tsc --noEmit:                   HALTED (H3) — missing modules
+                                    @kessler/gemma & @heyputer/puter.js
+    npm run build:                  exited with code 2 on Vercel due
+                                    to build gate `tsc --noEmit` failing
+                                    on missing external modules.
+
+[CLASSIFICATION]
+  State: HALTED (H3)
+  Reason: Section 6.1 / Halt Condition H3 triggered. `npx tsc --noEmit`
+          failed due to missing external module imports (`@kessler/gemma` in
+          src/services/gemmaService.ts and `@heyputer/puter.js` in
+          src/services/nemotronService.ts) that do not exist in package.json
+          dependencies or anywhere in the repository. Per Section 12 rule H3,
+          modules must not be invented or added, and execution must HALT.
+================================================================

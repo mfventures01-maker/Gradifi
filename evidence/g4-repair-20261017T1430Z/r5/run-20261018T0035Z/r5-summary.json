@@ -1,0 +1,36 @@
+﻿{
+    "runIdentifier":  "run-20261018T0035Z",
+    "evaluationTimestamp":  "2026-10-18T01:02:27.3564088+01:00",
+    "phase":  "R5 Independent Engine Certification",
+    "gate":  "G4",
+    "evidenceDirectory":  "evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z",
+    "terminalStatus":  "FAIL",
+    "precedenceRank":  3,
+    "exitCode":  1,
+    "statusExplanation":  "Certification assertions failed: Playwright certification test exited with non-zero exit code: 1; Engine vs Oracle mismatch: Real engine output does not contain expected findings (Finding A / Finding B); DOM vs Oracle mismatch: Rendered DOM highlights do not match candidate oracle expectations; Overall certification match failed: Real engine does not produce oracle candidate findings without test seam",
+    "allConditions":  {
+                          "blocked":  [
+
+                                      ],
+                          "notRun":  [
+
+                                     ],
+                          "failed":  [
+                                         "Playwright certification test exited with non-zero exit code: 1",
+                                         "Engine vs Oracle mismatch: Real engine output does not contain expected findings (Finding A / Finding B)",
+                                         "DOM vs Oracle mismatch: Rendered DOM highlights do not match candidate oracle expectations",
+                                         "Overall certification match failed: Real engine does not produce oracle candidate findings without test seam"
+                                     ]
+                      },
+    "seamExclusionVerified":  true,
+    "adversarialControlsPassed":  8,
+    "totalAdversarialControls":  8,
+    "threeWayComparison":  {
+                               "engineVsOracle":  "MISMATCH",
+                               "domVsOracle":  "MISMATCH",
+                               "domVsEngine":  "MATCH",
+                               "overallMatch":  false
+                           },
+    "g4CertificationStatus":  "NOT CERTIFIED",
+    "certificationConclusion":  "G4 remains NOT CERTIFIED. The real verification engine executing without the test seam queries external literature dynamically (OpenAlex, Crossref) and produces real-world literature findings rather than the hand-authored fixture findings (finding-g4-quantum-001, src-crossref-10.1038-001)."
+}

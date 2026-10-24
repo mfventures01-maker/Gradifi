@@ -1,0 +1,25 @@
+HOEOS V2 FORENSIC EVIDENCE: G0.6 UNSTAGED TRACKED MODIFICATIONS RECONCILIATION
+Run ID: G0-audit-20261023-092514
+Timestamp: 2026-10-23T09:25:14+01:00
+
+UNSTAGED TRACKED MODIFICATIONS (8 files):
+1. package-lock.json (+187, -46):
+   Updated lockfile reflecting added UI/utility dependencies (clsx, framer-motion, tailwind-merge, zod, zustand).
+2. package.json (+7, -1):
+   Added dependencies: clsx, framer-motion, tailwind-merge, zod, zustand.
+3. playwright.config.ts (+7, -3):
+   Configured webServer to bind to 127.0.0.1:5173, reuseExistingServer: false, timeout: 60000ms.
+4. src/components/verify/CanonicalDocumentViewer.tsx (+8, -0):
+   Injected data-verify-result test attribute on viewer container with serialized findingId, matchedDocumentId, sourceStart, sourceEnd for deterministic E2E assertions.
+5. src/services/verify/deterministicEngine.ts (+18, -20):
+   Implements G2 Sub-Defect B defense-in-depth: sentence containment floor requiring length >= 10, containmentTokenCount >= 3 before admitting exact normalized containment. Also passes similarityWarnings array to capture unlocated evidence match suppressions.
+6. src/services/verify/documentNormalizer.ts (+7, -1):
+   Implements G2 Sub-Defect B sentence length/token floor (rejects sentences with sTokens.length < 3 || sText.length < 15, preventing pathological single-token matches like "4 .").
+7. src/services/verify/universalIngestionService.ts (+12, -1):
+   Hardens DOCX extraction adapter mapping to consume docxExtractor result structure cleanly.
+8. src/services/verify/verifyCoreService.ts (+4, -2):
+   Captures similarityWarnings and surfaces them in SimilarityAnalysisResult.warnings.
+
+PRESERVATION STATUS:
+All 8 unstaged tracked modifications are preserved untouched in the working tree.
+Backup file tests/g1_format_matrix.test.ts.bak is preserved under its existing name per deferred decision P5-a. No rename or deletion performed.

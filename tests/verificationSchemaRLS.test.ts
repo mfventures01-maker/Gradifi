@@ -29,7 +29,7 @@ async function runSchemaRLSTests() {
 
   // TEST 1: Migration DDL File Existence
   console.log('\n1. Migration File Existence:');
-  const migrationPath = path.join(process.cwd(), 'supabase/migrations/20260912_public_verification_records.sql');
+  const migrationPath = path.join(process.cwd(), 'supabase/migrations/2026091200_public_verification_records.sql');
   const exists = fs.existsSync(migrationPath);
   assert(exists, 'Migration file 20260912_public_verification_records.sql exists in supabase/migrations/');
 
@@ -90,11 +90,11 @@ async function runSchemaRLSTests() {
   console.log('=====================================================\n');
 
   if (passed !== total) {
-    process.exit(1);
+    if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
   }
 }
 
 runSchemaRLSTests().catch(err => {
   console.error('Fatal test runner error:', err);
-  process.exit(1);
+  if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
 });

@@ -1,0 +1,64 @@
+{
+  "engineFinding": {
+    "findingId": "4bb6e97e6750dc52",
+    "matchedDocumentId": "core:154692476"
+  },
+  "allMarks": [
+    {
+      "findingId": "de51b5db0696a8eb",
+      "matchedDocumentId": "https://openalex.org/W7163668962",
+      "startOffset": "58",
+      "endOffset": "76",
+      "textContent": "Federated LearningQuantum Key Distribution (QKD) Enabled Secure Model Update Exchange in Federated LearningAuthors: Venkadeshan Ramalingam, Basant Kumar, S Jagadeesan, Vetriselvi T, Sivakumar TDOI/ISBN: 10.54392/irjmt26326TOKEN_OVERLAPScore: 8%"
+    },
+    {
+      "findingId": "a8bf1fe9b46f5759",
+      "matchedDocumentId": "doi:10.21203/rs.3.rs-9358734/v1",
+      "startOffset": "800",
+      "endOffset": "816",
+      "textContent": "machine learningFederated-Inspired Vertically Distributed Quantum Machine Learning: Benchmarking and Hardware EvaluationAuthors: Stefan Klug, Maximilian MollDOI/ISBN: 10.21203/rs.3.rs-9358734/v1TOKEN_OVERLAPScore: 6%"
+    }
+  ],
+  "allFindings": [
+    {
+      "findingId": "4bb6e97e6750dc52",
+      "matchedDocumentId": "core:154692476"
+    },
+    {
+      "findingId": "6780e7243e80bbb4",
+      "matchedDocumentId": "doi:10.20944/preprints202507.0497.v1"
+    },
+    {
+      "findingId": "de51b5db0696a8eb",
+      "matchedDocumentId": "https://openalex.org/W7163668962"
+    },
+    {
+      "findingId": "29f4cd616a598e31",
+      "matchedDocumentId": "https://openalex.org/W7213254097"
+    },
+    {
+      "findingId": "55c874c895e75412",
+      "matchedDocumentId": "core:139116252"
+    },
+    {
+      "findingId": "a8bf1fe9b46f5759",
+      "matchedDocumentId": "doi:10.21203/rs.3.rs-9358734/v1"
+    },
+    {
+      "findingId": "65b1b126a557975e",
+      "matchedDocumentId": "https://openalex.org/W7166922344"
+    },
+    {
+      "findingId": "1974eb76175dc704",
+      "matchedDocumentId": "core:5109632"
+    },
+    {
+      "findingId": "b14cba41d476bbf7",
+      "matchedDocumentId": "https://openalex.org/W4414110589"
+    },
+    {
+      "findingId": "f4759fbe31d2a844",
+      "matchedDocumentId": "https://openalex.org/W7221496201"
+    }
+  ]
+}

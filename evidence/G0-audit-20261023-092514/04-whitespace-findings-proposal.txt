@@ -1,0 +1,38 @@
+HOEOS V2 FORENSIC EVIDENCE: G0.5 STAGED WHITESPACE FINDINGS & PROPOSED REPAIR
+Run ID: G0-audit-20261023-092514
+Timestamp: 2026-10-23T09:25:14+01:00
+
+COMMAND EXECUTED: git diff --cached --check
+EXIT CODE: 2
+
+OFFENDING PATHS AND LINES:
+1. docs/HOEOS/GRADIFI-AI-CONSTITUTION.md
+   Line 2: trailing whitespace
+   Line 3: trailing whitespace
+   Line 4: trailing whitespace
+   Line 12: trailing whitespace (empty line containing 3 spaces)
+   Line 34: trailing whitespace
+   Line 44: trailing whitespace
+   Line 54: trailing whitespace
+
+2. docs/HOEOS/GRADIFI-CONSTITUTION.md
+   Line 2: trailing whitespace
+   Line 3: trailing whitespace
+   Line 4: trailing whitespace
+
+MINIMAL PATCH PROPOSAL:
+Remove only the trailing whitespace characters at the ends of the specified lines in both markdown files. No semantic, structural, or lexical content will be altered.
+
+EXPECTED IMPACT:
+- Eliminates Git whitespace check failures.
+- git diff --cached --check will exit with code 0.
+- Markdown rendering remains visually and semantically identical.
+- Zero impact on runtime TypeScript/JavaScript logic.
+
+ROLLBACK PLAN:
+Original staged versions can be restored directly via `git checkout -- <file>` or restored from Git object store.
+
+REQUIRED AUTHORIZATION:
+Per HOEOS Constitution and Authorization Boundary:
+Explicit user authorization is required to apply the patch and stage the updated files in the Git index (`git add docs/HOEOS/GRADIFI-AI-CONSTITUTION.md docs/HOEOS/GRADIFI-CONSTITUTION.md`).
+Gate G0 remains on HOLD pending this authorization.

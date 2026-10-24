@@ -1,0 +1,23 @@
+HOEOS V2 FORENSIC EVIDENCE: G0.2 & G0.6 UNTRACKED INVENTORY AND BASELINE HASHES
+Run ID: G0-audit-20261023-092514
+Timestamp: 2026-10-23T09:25:14+01:00
+
+INITIAL UNTRACKED PATH INVENTORY:
+Count: 754 paths (measured via `git ls-files --others --exclude-standard` at baseline before run directory creation).
+Inventory details preserved in historical baseline: evidence/G0-audit-20261023-000055/PRE-STAGING-untracked.txt
+
+KEY BASELINE FILE HASHES (SHA-256):
+- tests/fixtures/g1/DIGITAL_THERMOMETER_real.docx:
+  6B76024857A8722BF17BD4B03456C684E3A04E4AD8AAF7E23F5DF8AC2053E12C
+- tests/fixtures/ingestion/quantum_federated_learning_paper.pdf:
+  10530A21EBE9FEFFBDD4F029532588102281DF9BC3BFA7CD7A62243C9514FBC3
+- evidence/G0-G6-INDEX.md:
+  Verified and read at baseline.
+- tests/g1_format_matrix.test.ts.bak:
+  Preserved under existing name; deferred P5-a.
+
+PRESERVATION STATUS:
+No files were cleaned, deleted, reset, force-checked-out, or modified.
+Stash list preserved intact:
+stash@{0}: On clean-deploy: hoeos-pre-repair-4-5-20260923100738
+stash@{1}: On clean-deploy: WIP before Offer-1 frontend demo

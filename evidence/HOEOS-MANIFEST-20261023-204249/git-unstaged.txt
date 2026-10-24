@@ -1,0 +1,8 @@
+M	package-lock.json
+M	package.json
+M	playwright.config.ts
+M	src/components/verify/CanonicalDocumentViewer.tsx
+M	src/services/verify/deterministicEngine.ts
+M	src/services/verify/documentNormalizer.ts
+M	src/services/verify/universalIngestionService.ts
+M	src/services/verify/verifyCoreService.ts

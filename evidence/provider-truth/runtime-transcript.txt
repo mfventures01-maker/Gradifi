@@ -1,0 +1,26 @@
+[2026-09-30T20:21:51.677Z] 
+--- EXECUTING GEMINI TESTS (PT-01 to PT-08) ---
+[2026-09-30T20:21:54.268Z] [PT-01] Gemini: Status=VERIFIED (expect: VERIFIED), FallbackUsed=false (expect: false), Findings=1 -> PASS
+[2026-09-30T20:21:54.274Z] [PT-02] Gemini: Status=EMPTY_RESULT (expect: EMPTY_RESULT), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.292Z] [PT-03] Gemini: Status=INFERENCE_FAILED (expect: INFERENCE_FAILED), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.293Z] [PT-04] Gemini: Status=SCHEMA_INVALID (expect: SCHEMA_INVALID), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.294Z] [PT-05] Gemini: Status=AUTHENTICATION_FAILED (expect: AUTHENTICATION_FAILED), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.298Z] [PT-06] Gemini: Status=TIMEOUT (expect: TIMEOUT), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.299Z] [PT-07] Gemini: Status=NETWORK_ERROR (expect: NETWORK_ERROR), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.300Z] [PT-08] Gemini: Status=RUNTIME_UNAVAILABLE (expect: RUNTIME_UNAVAILABLE), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.300Z] 
+--- EXECUTING NEMOTRON TESTS (PT-09 to PT-16) ---
+[2026-09-30T20:21:54.548Z] [PT-09] Nemotron: Status=VERIFIED (expect: VERIFIED), FallbackUsed=false (expect: false), Findings=1 -> PASS
+[2026-09-30T20:21:54.550Z] [PT-10] Nemotron: Status=EMPTY_RESULT (expect: EMPTY_RESULT), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.552Z] [PT-11] Nemotron: Status=INFERENCE_FAILED (expect: INFERENCE_FAILED), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.553Z] [PT-12] Nemotron: Status=SCHEMA_INVALID (expect: SCHEMA_INVALID), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:54.555Z] [PT-13] Nemotron: Status=AUTHENTICATION_FAILED (expect: AUTHENTICATION_FAILED), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:21:57.623Z] [PT-14] Nemotron: Status=TIMEOUT (expect: TIMEOUT), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:22:00.839Z] [PT-15] Nemotron: Status=NETWORK_ERROR (expect: NETWORK_ERROR), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:22:03.868Z] [PT-16] Nemotron: Status=RUNTIME_UNAVAILABLE (expect: RUNTIME_UNAVAILABLE), FallbackUsed=false (expect: false), Findings=0 -> PASS
+[2026-09-30T20:22:03.869Z] 
+--- EXECUTING FALLBACK & INVARIANT TESTS (PT-17 to PT-20) ---
+[2026-09-30T20:22:03.871Z] [PT-17] Fallback preserves actual failure status (AUTHENTICATION_FAILED), fallback_used=true, modelProvider=deterministic_fallback -> PASS
+[2026-09-30T20:22:03.871Z] [PT-18] Provider failure cannot become VERIFIED -> PASS
+[2026-09-30T20:22:03.876Z] [PT-19] Provider empty result cannot become fallback success (Status=EMPTY_RESULT, fallback_used=false, findings=0) -> PASS
+[2026-09-30T20:22:03.958Z] [PT-20] Federation preserves independent provider truth (Nemotron: EMPTY_RESULT, Gemini: INFERENCE_FAILED) -> PASS

@@ -1,0 +1,29 @@
+# G1 EXTENSION — IMAGE-ONLY EPUB/PDF OCR — CERTIFICATION RECORD
+# Certification ID: G1-EXT-OCR-2026-09-22
+# Classification: G1 EXTENDED RUNTIME PASS
+
+[OBJECTIVE]
+Extend the ingestion engine so that image-only EPUB and DOCX
+extract text via OCR when no text layer exists.
+
+[EVIDENCE]
+certification/g1_extension/G1_EPUB_OCR.txt
+
+[FIXTURE]
+tests/fixtures/ingestion/image_only.epub
+SHA256: 9052A5F4D73D43131F83A1673786912DE82453DC479A0FAD1BF229E81F21F2B1
+
+[FILES CHANGED]
+src/services/verify/ingestionAdapters/officeZipAdapter.ts
+tests/fixtures/ingestion/image_only.epub
+tests/g1_epub_ocr.test.ts
+
+[REGRESSION]
+tests/g1_ocr_scanned.test.ts — PASS
+tests/g1_format_matrix.test.ts — PASS
+
+[COMPOSITE HASH]
+G1_EXTENSION_COMPOSITE: EC1E5DE236EC8E30C21AAE96FBD4C80DFF9E48E8B2E74682B7D9716ACCB18239
+
+[CLASSIFICATION]
+G1 EXTENDED RUNTIME PASS

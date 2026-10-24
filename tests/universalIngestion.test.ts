@@ -169,7 +169,7 @@ describe('HOEOS P2 Universal Ingestion & Canonical Extraction Suite', () => {
     const res = await ingestDocument({ name: 'huge.txt', buffer: hugeBuffer });
 
     expect(res.success).toBe(false);
-    expect(res.error?.code).toBe('FILE_TOO_LARGE');
+    expect(res.error?.code).toBe('TEXT_SIZE_EXCEEDED');
   });
 
   // 11. Deterministic Repeatability Test
@@ -214,7 +214,7 @@ describe('HOEOS P2 Universal Ingestion & Canonical Extraction Suite', () => {
 
     expect(res.success).toBe(false);
     expect(res.error?.code).toBe('TEXT_EXTRACTION_UNAVAILABLE');
-    expect(res.error?.message).toContain('Text extraction unavailable. OCR required.');
+    expect(res.error?.message).toContain('Text extraction unavailable. PDF contains no legible text or OCR failed.');
     expect(res.canonicalReady).toBe(false);
   });
 });

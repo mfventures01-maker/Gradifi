@@ -1,0 +1,9 @@
+PRE-FIX EVIDENCE
+OVERLAP_DEMO_DOC.txt Length: 0
+Verification: VRF-5D60C34F68E8
+Written at:   2026-09-24T10:17:18Z
+Sources:                  15
+Sources with matchedText: 0
+Similarity findings:      0
+Root cause:   input document was 0 bytes
+Classification: RESOLVED — input defect (operator)

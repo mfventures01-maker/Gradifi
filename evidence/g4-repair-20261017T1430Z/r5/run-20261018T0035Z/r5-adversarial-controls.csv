@@ -1,0 +1,9 @@
+﻿ControlId,Description,ExpectedVerdict,ObservedVerdict,RejectionReasons,Status
+"CTRL_VALID","Control: valid engine and DOM matching oracle","PASS","PASS","","PASS"
+"ADV_01_MISMATCHED_SOURCE_ID","Mismatched source ID in engine finding","REJECT","REJECT","REJECT: Mismatched source ID in Finding A: observed 'src-unpaywall-tampered-999', expected 'src-crossref-10.1038-001'","PASS"
+"ADV_02_INCORRECT_OFFSET","Incorrect start/end offset in engine finding","REJECT","REJECT","REJECT: Incorrect offset in Finding A: observed [10, 85], expected [0, 85] | REJECT: Disagreement - DOM mark offset [0, 85] disagrees with engine finding offset [10, 85]","PASS"
+"ADV_03_CANONICAL_SLICE_MISMATCH","Canonical slice mismatch between finding text and expected","REJECT","REJECT","REJECT: Canonical slice mismatch in Finding A text","PASS"
+"ADV_04_MISSING_EXPECTED_FINDING","Missing expected finding in engine output","REJECT","REJECT","REJECT: Missing expected Finding A (finding-g4-quantum-001) in engine result | REJECT: Disagreement - DOM mark with findingId 'finding-g4-quantum-001' does not resolve to any engine finding","PASS"
+"ADV_05_MISSING_DOM_MARK","Missing DOM mark (DOM mark count is 1 instead of 2)","REJECT","REJECT","REJECT: DOM mark count (1) does not match expected (2) | REJECT: Missing DOM mark for Finding A (finding-g4-quantum-001)","PASS"
+"ADV_06_EXTRA_STALE_DOM_MARK","Extra or stale DOM mark rendered (markCount = 3)","REJECT","REJECT","REJECT: DOM mark count (3) does not match expected (2) | REJECT: Disagreement - DOM mark with findingId 'stale-unregistered-mark' does not resolve to any engine finding","PASS"
+"ADV_07_DOM_ENGINE_DISAGREEMENT","Disagreement between engine output offset and DOM attribute","REJECT","REJECT","REJECT: DOM mark A offset mismatch: observed [25, 85] | REJECT: Disagreement - DOM mark offset [25, 85] disagrees with engine finding offset [0, 85]","PASS"

@@ -1,0 +1,118 @@
+﻿STASH_ENTRY_COUNT=2
+
+---- stash@{0} ----
+Line:            stash@{0}: On clean-deploy: hoeos-pre-repair-4-5-20260923100738
+PatchExit:       0
+StatExit:        0
+BaseCommit:      0689bc1158c98e5cf80782c9d6f57422462e4c4e
+PatchBytes:      18066
+PatchSha256:     c9494faaf0196be9178e825dcf6266e035986793dbf853411591f57eb1eead1d
+TouchesSrc:      False
+TouchesVerifySrc: False
+Stat:
+ certification/g1_extension/G1_EXTENSION_RECORD.txt |   9 +-
+ scripts/hoeos/verifyG3Certification.ps1            | 172 ++++++++++++++++-----
+ 2 files changed, 135 insertions(+), 46 deletions(-)
+
+
+---- stash@{1} ----
+Line:            stash@{1}: On clean-deploy: WIP before Offer-1 frontend demo
+PatchExit:       0
+StatExit:        0
+BaseCommit:      4cfd32a92328a6d0193d13e5b7c3e9f4e3de77bf
+PatchBytes:      589150
+PatchSha256:     1ade3b725824ce6cfe3c808e5f27be1a638d065b856386d683138c6a4988109f
+TouchesSrc:      False
+TouchesVerifySrc: False
+Stat:
+ e2e/plagiarism-ui.spec.ts                          |  11 +-
+ package-lock.json                                  |  26 --
+ playwright-report/index.html                       |   2 +-
+ playwright.config.ts                               |  19 +-
+ src/App.tsx                                        | 169 ++++---
+ src/components/plagiarism/PlagiarismChecker.tsx    | 250 ++++++-----
+ src/lib/supabase.ts                                |   5 +-
+ src/pages/bursar/BursarDashboard.tsx               | 338 ++++++++++----
+ src/pages/cbt/CBTExamBuilder.tsx                   | 488 +++++++++++----------
+ src/pages/grading/GradingReview.tsx                |   4 +-
+ src/pages/home/HomePage.tsx                        | 174 +++++---
+ src/pages/onboarding/CreateStudent.tsx             |  36 +-
+ src/pages/onboarding/OnboardingWizard.tsx          |  26 +-
+ src/pages/parent/ParentDashboard.tsx               | 463 +++++++++++--------
+ src/pages/principal/PrincipalDashboard.tsx         | 464 +++++++++-----------
+ src/pages/student/StudentDashboard.tsx             | 340 +++++++++-----
+ src/pages/teacher/TeacherDashboard.tsx             | 414 ++++++++++++-----
+ src/pages/vp/VPDashboard.tsx                       | 338 ++++++++++----
+ src/pages/writing/PlagiarismPage.tsx               |  21 +-
+ src/pages/writing/WritingToolsHubPage.tsx          |   9 +
+ src/services/aiGradingService.ts                   | 452 +++++++++++++++----
+ src/services/authService.ts                        |  10 +-
+ src/services/nemotronService.ts                    |   5 +-
+ src/services/ocrService.ts                         |  13 +-
+ src/services/offlineSyncService.ts                 |  18 +
+ src/services/plagiarismService.ts                  |  70 ++-
+ src/services/summarizerService.ts                  |   2 +-
+ supabase/functions/pin-login/index.ts              |   1 +
+ test-results/.last-run.json                        |  16 +-
+ test-results/.playwright-temp/.last-run.json       |   4 -
+ .../core-api/02-core-api-proxy-working.png         | Bin 1362044 -> 0 bytes
+ .../grading-engine/grading-engine-pipeline.png     | Bin 92022 -> 0 bytes
+ .../error-context.md                               | 330 --------------
+ test-results/phase1/01-homepage-full.png           | Bin 1302521 -> 0 bytes
+ test-results/phase1/02-navigation-bar.png          | Bin 589480 -> 0 bytes
+ test-results/phase1/03-trust-badges.png            | Bin 589480 -> 0 bytes
+ test-results/phase1/04-hero-section.png            | Bin 589480 -> 0 bytes
+ test-results/phase1/05-hero-image.png              | Bin 589480 -> 0 bytes
+ .../phase1/06-principal-time-saved-card.png        | Bin 102452 -> 0 bytes
+ test-results/phase1/07-teacher-approval-card.png   | Bin 77107 -> 0 bytes
+ test-results/phase1/08-cbt-section.png             | Bin 314191 -> 0 bytes
+ test-results/phase1/09-writing-tools-section.png   | Bin 589480 -> 0 bytes
+ test-results/phase1/10-dashboard-dropdown.png      | Bin 560852 -> 0 bytes
+ test-results/phase1/11-login-page.png              | Bin 33328 -> 0 bytes
+ test-results/phase1/12-onboarding-page.png         | Bin 19149 -> 0 bytes
+ test-results/phase1/13-dashboard-navigation.png    | Bin 66084 -> 0 bytes
+ test-results/phase1/14-footer.png                  | Bin 505769 -> 0 bytes
+ test-results/phase1/15-mobile-responsive.png       | Bin 628145 -> 0 bytes
+ test-results/phase1/16-console-errors.png          | Bin 1302523 -> 0 bytes
+ test-results/phase2/01-onboarding-wizard.png       | Bin 19149 -> 0 bytes
+ test-results/phase2/02-institution-created.png     | Bin 22056 -> 0 bytes
+ test-results/phase2/03-teacher-created.png         | Bin 114916 -> 0 bytes
+ test-results/phase2/04-vp-created.png              | Bin 35317 -> 0 bytes
+ test-results/phase2/05-bursar-created.png          | Bin 36084 -> 0 bytes
+ test-results/phase2/06-student-enrolled.png        | Bin 137903 -> 0 bytes
+ test-results/phase2/07-student-number.png          | Bin 137612 -> 0 bytes
+ test-results/phase2/08-pin-copy.png                | Bin 137479 -> 0 bytes
+ test-results/phase2/09-bulk-import.png             | Bin 38783 -> 0 bytes
+ test-results/phase2/10-parent-invite.png           | Bin 34149 -> 0 bytes
+ test-results/phase2/11-console-errors.png          | Bin 19149 -> 0 bytes
+ test-results/phase3/01-bulk-import-page.png        | Bin 38932 -> 0 bytes
+ test-results/phase3/02-csv-template-download.png   | Bin 38926 -> 0 bytes
+ test-results/phase3/03-csv-upload-preview.png      | Bin 52847 -> 0 bytes
+ test-results/phase3/04-import-success.png          | Bin 25030 -> 0 bytes
+ .../phase3/05-import-validation-errors.png         | Bin 55288 -> 0 bytes
+ test-results/phase3/06-invalid-class-error.png     | Bin 28720 -> 0 bytes
+ .../phase3/07-principal-dashboard-real-data.png    | Bin 66097 -> 0 bytes
+ test-results/phase3/08-dashboard-counts.png        | Bin 66097 -> 0 bytes
+ test-results/phase3/09-500-students-import.png     | Bin 25673 -> 0 bytes
+ test-results/phase3/10-console-errors.png          | Bin 66097 -> 0 bytes
+ test-results/phase4/01-parent-invite-form.png      | Bin 37020 -> 0 bytes
+ test-results/phase4/02-student-search.png          | Bin 34424 -> 0 bytes
+ test-results/phase4/03-selected-student-form.png   | Bin 38625 -> 0 bytes
+ test-results/phase4/04-parent-created-pin.png      | Bin 37521 -> 0 bytes
+ test-results/phase4/05-parent-dashboard.png        | Bin 41590 -> 0 bytes
+ test-results/phase4/06-ward-stats.png              | Bin 41590 -> 0 bytes
+ test-results/phase4/07-quick-actions.png           | Bin 41590 -> 0 bytes
+ test-results/phase4/08-console-errors.png          | Bin 41590 -> 0 bytes
+ .../phase5/01-principal-dashboard-real-data.png    | Bin 72934 -> 0 bytes
+ .../phase5/02-principal-dashboard-counts.png       | Bin 72934 -> 0 bytes
+ .../phase5/03-teacher-dashboard-real-data.png      | Bin 41030 -> 0 bytes
+ .../phase5/04-student-dashboard-real-data.png      | Bin 37183 -> 0 bytes
+ .../phase5/05-parent-dashboard-real-data.png       | Bin 46078 -> 0 bytes
+ .../phase5/06-bursar-dashboard-real-data.png       | Bin 55563 -> 0 bytes
+ test-results/phase5/07-vp-dashboard-real-data.png  | Bin 52309 -> 0 bytes
+ .../phase5/08-all-dashboards-console-errors.png    | Bin 52309 -> 0 bytes
+ .../plagiarism-ui/plagiarism-ui-working.png        | Bin 215138 -> 0 bytes
+ tsconfig.json                                      |   6 +-
+ 88 files changed, 2687 insertions(+), 1837 deletions(-)
+
+

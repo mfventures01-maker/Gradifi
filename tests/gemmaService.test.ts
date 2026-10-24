@@ -1,4 +1,5 @@
 import { gemmaService } from '../src/services/gemmaService';
+import { describe, test, expect } from 'vitest';
 
 /**
  * GEMMA SERVICE TEST SUITE

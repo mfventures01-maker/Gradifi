@@ -1,0 +1,88 @@
+/**
+ * G1 DOCX Fidelity Regression Test
+ * Fixture: C:/Users/faith/Downloads/DIGITAL THERMOMETER real.docx
+ * Fixture SHA-256: 6B76024857A8722BF17BD4B03456C684E3A04E4AD8AAF7E23F5DF8AC2053E12C
+ */
+import * as fs from 'fs';
+import { ingestDocument } from '../src/services/verify/universalIngestionService.js';
+
+const FIXTURE = 'C:/Users/faith/Downloads/DIGITAL THERMOMETER real.docx';
+
+let passed = 0;
+let failed = 0;
+const failures: string[] = [];
+
+async function it(name: string, fn: () => Promise<void>) {
+  try { await fn(); passed++; console.log(`  PASS  ${name}`); }
+  catch (err: any) { failed++; failures.push(`${name}: ${err?.message ?? err}`); console.log(`  FAIL  ${name}: ${err?.message ?? err}`); }
+}
+
+function expect(actual: any) {
+  return {
+    toBe(expected: any) {
+      if (actual !== expected) throw new Error(`expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+    },
+    toBeGreaterThan(expected: number) {
+      if (!(actual > expected)) throw new Error(`expected > ${expected}, got ${actual}`);
+    },
+    toContain(substr: string) {
+      if (typeof actual !== 'string' || !actual.includes(substr)) throw new Error(`expected string containing ${JSON.stringify(substr)}`);
+    },
+    notToContain(substr: string) {
+      if (typeof actual === 'string' && actual.includes(substr)) throw new Error(`expected string NOT containing ${JSON.stringify(substr)}`);
+    },
+    toBeTruthy() {
+      if (!actual) throw new Error(`expected truthy, got ${JSON.stringify(actual)}`);
+    },
+  };
+}
+
+(async () => {
+  console.log('\n[G1 DOCX ingestion fidelity]');
+
+  if (!fs.existsSync(FIXTURE)) {
+    console.log(`  SKIP  fixture not found: ${FIXTURE}`);
+    if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(2);
+  }
+
+  const buf = fs.readFileSync(FIXTURE);
+  const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+
+  await it('ingestDocument returns canonicalReady=true', async () => {
+    const r: any = await ingestDocument({ name: 'DIGITAL THERMOMETER real.docx', buffer: ab });
+    expect(r.success).toBe(true);
+    expect(r.canonicalReady).toBe(true);
+    expect(r.canonicalDocument).toBeTruthy();
+  });
+
+  await it('canonical text length > 35000', async () => {
+    const r: any = await ingestDocument({ name: 'DIGITAL THERMOMETER real.docx', buffer: ab });
+    const text = (r.canonicalDocument && r.canonicalDocument.rawText) || r.text || '';
+    expect(text.length).toBeGreaterThan(35000);
+  });
+
+  await it('no word-fragmentation on known boundaries', async () => {
+    const r: any = await ingestDocument({ name: 'DIGITAL THERMOMETER real.docx', buffer: ab });
+    const text = (r.canonicalDocument && r.canonicalDocument.rawText) || r.text || '';
+    expect(text).toContain('Thermometer');
+    expect(text).toContain('digital thermometer');
+    expect(text).toContain('19th century');
+    expect(text).notToContain('T\nhermometer');
+    expect(text).notToContain('thermo\nmeters');
+    expect(text).notToContain('19\nth');
+  });
+
+  await it('deterministic across two runs', async () => {
+    const r1: any = await ingestDocument({ name: 'DIGITAL THERMOMETER real.docx', buffer: ab });
+    const r2: any = await ingestDocument({ name: 'DIGITAL THERMOMETER real.docx', buffer: ab });
+    const t1 = (r1.canonicalDocument && r1.canonicalDocument.rawText) || '';
+    const t2 = (r2.canonicalDocument && r2.canonicalDocument.rawText) || '';
+    expect(t1).toBe(t2);
+  });
+
+  console.log(`\n=== SUMMARY ===`);
+  console.log(`PASS: ${passed}`);
+  console.log(`FAIL: ${failed}`);
+  if (failed > 0) { failures.forEach(f => console.log(`  - ${f}`)); if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1); }
+  if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(0);
+})();

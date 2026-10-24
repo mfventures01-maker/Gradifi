@@ -464,4 +464,4 @@ console.log('\n[Category 15: Provenance Filtering & Suppression]');
 console.log(`\n======================================================`);
 console.log(`HOEOS G4 STRUCTURAL OFFSET INVARIANTS: ALL ${assertionCount} ASSERTIONS PASSED.`);
 console.log(`======================================================`);
-process.exit(0);
+if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(0);

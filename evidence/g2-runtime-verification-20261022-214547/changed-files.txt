@@ -1,0 +1,8 @@
+﻿Changed tracked files:
+e2e/g4-live-provider-certification.spec.ts
+package-lock.json
+package.json
+src/components/verify/CanonicalDocumentViewer.tsx
+src/services/verify/deterministicEngine.ts
+src/services/verify/documentNormalizer.ts
+src/services/verify/verifyCoreService.ts

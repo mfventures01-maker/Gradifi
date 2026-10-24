@@ -1,0 +1,65 @@
+﻿TEST EXECUTION REPORT: verificationPersistence.test.ts
+======================================================
+Command:      npx tsx tests/verificationPersistence.test.ts
+Working Dir:  C:\Projects\Gradifi
+Git HEAD:     9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44
+Test Hash:    4D2FA88709C0B8961A3B88DC1E178BE62A299493B521AA377CFCADEA84BB2699
+Start Time:   2026-10-16T03:44:52+01:00
+End Time:     2026-10-16T03:45:10+01:00
+Exit Code:    0
+
+CONSOLE OUTPUT:
+------------------------------------------------------
+ΓÜá∩╕Å  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+Γùç injected env (19) from .env.local // tip: Γîÿ enable debugging { debug: true }
+≡ƒº¬ GRADIFI VERIFY - HOEOS G6.2 PERSISTENCE TEST SUITE
+====================================================
+
+1. Verification ID Derivation:
+  Γ£à PASS: Current derived ID matches VRF-8AFCFF609B01
+  Γ£à PASS: ID adheres to VRF- prefix contract
+  Γ£à PASS: Current ID length is exactly 16 characters
+  Γ£à PASS: Legacy derived ID matches VRF-8AFCFF6056B0
+  Γ£à PASS: Legacy ID length is exactly 16 characters
+  Γ£à PASS: Throws VerificationValidationError when evidenceHash is omitted
+
+2. Persistence Record Construction & Integrity:
+  Γ£à PASS: Record contains correct two-hash verification_id
+  Γ£à PASS: Record preserves document_hash 100% unchanged
+  Γ£à PASS: Record preserves evidence_hash 100% unchanged
+  Γ£à PASS: Record preserves overall_similarity score
+  Γ£à PASS: Record preserves total_sources_found
+  Γ£à PASS: Record preserves engine_version
+  Γ£à PASS: Record preserves policy_version
+  Γ£à PASS: Record contains evidence_envelope object
+
+3. Missing Document Hash Rejection:
+  Γ£à PASS: Throws VerificationValidationError for missing documentHash
+  Γ£à PASS: Error message describes missing documentHash
+
+4. Missing Evidence Hash Rejection:
+  Γ£à PASS: Throws VerificationValidationError for missing evidenceHash
+  Γ£à PASS: Error message describes missing evidenceHash
+
+5. Mismatched Verification ID Rejection:
+  Γ£à PASS: Throws VerificationValidationError for forged verification ID
+  Γ£à PASS: Error message describes mismatched ID
+
+6. Idempotency Contract Verification:
+  Γ£à PASS: Identical results yield identical verification_id
+  Γ£à PASS: Identical results yield identical document_hash
+  Γ£à PASS: Identical results yield identical evidence_hash
+
+7. Hash Conflict Rejection Contract:
+  Γ£à PASS: Distinct evidence hashes yield distinct verification IDs
+  Γ£à PASS: Conflicting evidence hash is detected
+
+8. Live Environment Status Probe:
+  Γ£à PASS: Live Supabase anon key configured
+
+====================================================
+≡ƒôè G6.2 PERSISTENCE TEST SUMMARY: 26/26 checks passed.
+====================================================
+
+------------------------------------------------------

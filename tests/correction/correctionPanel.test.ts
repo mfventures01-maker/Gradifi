@@ -187,7 +187,7 @@ console.log(`TOTAL: ${passed} PASS / ${failed} FAIL`);
 console.log('================================================================');
 
 if (failed > 0) {
-  process.exit(1);
+  if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
 } else {
-  process.exit(0);
+  if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(0);
 }

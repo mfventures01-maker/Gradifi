@@ -1,0 +1,26 @@
+{
+  "project": "Gradifi",
+  "gate": "Production Provider Truth",
+  "sourceSha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+  "deploymentId": "dpl_6e72Mzm54igyycpCGzeEcd6w6Hfs",
+  "deploymentUrl": "https://gradifi-222abe1o8-raphael-taires-projects.vercel.app",
+  "productionAlias": "https://gradifi.vercel.app",
+  "typescript": "PASS",
+  "tests": "PASS",
+  "build": "PASS",
+  "freshRuntime": "PASS",
+  "geminiProbe": {
+    "status": "EMPTY_RESULT",
+    "modelProvider": "gemini",
+    "fallback_used": false
+  },
+  "nemotronProbe": {
+    "status": "RUNTIME_UNAVAILABLE",
+    "modelProvider": "nemotron",
+    "fallback_used": false
+  },
+  "providerTruthInvariant": "PASS",
+  "fallbackProvenance": "PASS",
+  "sourceRuntimeDeploymentIntegrity": "PASS",
+  "certificationStatus": "CERTIFIED"
+}

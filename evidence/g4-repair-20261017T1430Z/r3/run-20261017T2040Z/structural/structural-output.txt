@@ -1,0 +1,74 @@
+﻿=== HOEOS G4 OFFSET INVARIANTS STRUCTURAL TEST SUITE ===
+
+[Category 1: Valid Exact Offsets]
+  [PASS #1] verifyOffsetSlice returns true for exact valid slice
+  [PASS #2] Direct canonical slice strictly equals expectedText
+  [PASS #3] resolveMatchedEvidenceSpans resolves valid spans
+  [PASS #4] Primary span startOffset and endOffset match fixture
+  [PASS #5] Primary span matchedText strictly equals canonical slice
+  [PASS #6] applyHighlights renders highlighted segments for valid findings
+  [PASS #7] Highlighted segment text strictly equals canonical slice
+
+[Category 2: Negative Start Offset]
+  [PASS #8] verifyOffsetSlice rejects negative start offset
+  [PASS #9] resolveMatchedEvidenceSpans excludes finding with negative start offset
+  [PASS #10] applyHighlights suppresses mark with negative start offset
+
+[Category 3: Negative End Offset]
+  [PASS #11] verifyOffsetSlice rejects negative end offset
+  [PASS #12] resolveMatchedEvidenceSpans excludes finding with negative end offset
+
+[Category 4: Start Beyond Canonical Text]
+  [PASS #13] verifyOffsetSlice rejects start offset beyond canonical length
+  [PASS #14] resolveMatchedEvidenceSpans excludes finding with start offset beyond canonical length
+
+[Category 5: End Beyond Canonical Text]
+  [PASS #15] verifyOffsetSlice rejects end offset beyond canonical length
+  [PASS #16] resolveMatchedEvidenceSpans excludes finding with end offset beyond canonical length
+
+[Category 6: Reversed Offsets]
+  [PASS #17] verifyOffsetSlice rejects reversed offsets (start > end)
+  [PASS #18] resolveMatchedEvidenceSpans excludes finding with reversed offsets
+
+[Category 7, 8 & 9: Missing, Malformed Offsets & Fallback]
+  [PASS #19] applyHighlights resolves segment offsets from sourceSegment fallback
+  [PASS #20] Fallback resolved start offset matches text location
+  [PASS #21] Fallback resolved end offset matches text location
+  [PASS #22] Fallback resolved segment text preserves exact canonical slice
+  [PASS #23] Missing offsets without valid sourceSegment are suppressed
+  [PASS #24] resolveMatchedEvidenceSpans filters out NaN offsets
+
+[Category 10: Empty or Invalid Matched Text]
+  [PASS #25] resolveMatchedEvidenceSpans returns empty array for empty canonical text
+  [PASS #26] resolveMatchedEvidenceSpans ignores empty matchedText in verified sources
+  [PASS #27] findTextSpans returns empty array for whitespace-only query
+
+[Category 11: Canonical Slice Mismatch]
+  [PASS #28] verifyOffsetSlice returns false when text does not match canonical slice
+  [PASS #29] applyHighlights suppresses finding whose sourceSegment conflicts with canonical slice
+
+[Category 12: Multiple Independent Findings]
+  [PASS #30] Multiple independent findings emit discrete marks
+  [PASS #31] Marks are ordered ascending by start offset
+  [PASS #32] Segment concatenation equals canonical document text exactly
+
+[Category 13: Overlapping Findings]
+  [PASS #33] Overlapping findings preserve exact text reconstruction invariant
+  [PASS #34] Overlapping findings are merged into a single non-fragmented highlighted range
+  [PASS #35] Merged range start equals earliest start (0)
+  [PASS #36] Merged range end equals furthest end (34)
+  [PASS #37] Stronger method (EXACT_PHRASE) is preserved over TOKEN_OVERLAP
+
+[Category 14: Canonical Text Round-Trip Invariant]
+  [PASS #38] renderHighlightedHtml produces <mark> tags
+  [PASS #39] stripHighlightingMarkup(renderHighlightedHtml(text, spans)) === canonicalText
+  [PASS #40] escapeHtml escapes angle brackets and ampersands
+  [PASS #41] unescapeHtml recovers original raw characters
+
+[Category 15: Provenance Filtering & Suppression]
+  [PASS #42] filterVerifiedFindings drops findings mapped to UNVERIFIED provenanceState
+  [PASS #43] filterVerifiedFindings retains findings mapped to VERIFIED provenanceState
+
+======================================================
+HOEOS G4 STRUCTURAL OFFSET INVARIANTS: ALL 43 ASSERTIONS PASSED.
+======================================================

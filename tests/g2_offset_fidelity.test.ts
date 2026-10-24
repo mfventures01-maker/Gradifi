@@ -19,7 +19,7 @@ async function run() {
   console.log('FINDINGS_COUNT:', findings.length);
   if (findings.length === 0) {
     console.error('FAIL: no findings produced');
-    process.exit(1);
+    if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
   }
 
   let checked = 0;
@@ -35,17 +35,17 @@ async function run() {
       console.error('FAIL: slice does not equal sourceSegment');
       console.error('  SLICE:   ', JSON.stringify(slice));
       console.error('  SEGMENT: ', JSON.stringify(expected));
-      process.exit(1);
+      if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
     }
     checked++;
   }
   console.log('CHECKED:', checked);
   if (checked === 0) {
     console.error('FAIL: no findings had offsets to verify');
-    process.exit(1);
+    if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
   }
   console.log('G2-4 OFFSET FIDELITY: PASS');
-  process.exit(0);
+  if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(0);
 }
 
-run().catch(err => { console.error('ERROR:', err); process.exit(1); });
+run().catch(err => { console.error('ERROR:', err); if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1); });

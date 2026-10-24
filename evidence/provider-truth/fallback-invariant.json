@@ -1,0 +1,15 @@
+[
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "invariants": {
+      "invariant_1_deterministic_similarity_unmutated": true,
+      "invariant_2_evidence_hashes_unmutated": true,
+      "invariant_3_failure_cannot_create_originality": true,
+      "invariant_4_empty_result_cannot_become_original": true,
+      "invariant_5_fallback_cannot_masquerade": true,
+      "invariant_6_audit_metadata_persisted": true,
+      "invariant_7_zero_secrets_exposed": true
+    },
+    "result": "PASS"
+  }
+]

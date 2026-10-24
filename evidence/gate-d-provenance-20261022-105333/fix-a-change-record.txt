@@ -1,0 +1,5 @@
+﻿Fix: suppress unlocatable evidence without an out-of-scope warning variable
+File: src\services\verify\deterministicEngine.ts
+SHA256 before: 44BB456EEE14EC19F8DC14698D2EF9E69C6984ABB84AE4129DEF3EFDE3189DCC
+SHA256 after:  52A44B97888D543ABEFEBDCA61999D3D4E635228B66AC2072DEFFCB9172E1BBB
+Change scope: erroneous warnings.push branch replaced by continue

@@ -1,0 +1,7 @@
+﻿
+Path                                                                  Hash                                                        
+----                                                                  ----                                                        
+C:\Projects\Gradifi\src\components\verify\CanonicalDocumentViewer.tsx 8419DC5FEB45997434F6CB78604EBAFB7D28688DB7A8F189AC9A4AF8F...
+C:\Projects\Gradifi\e2e\g4-live-provider-certification.spec.ts        160126837EC457A66A885F2952DADF6F235D96760642999098AD1F261...
+
+

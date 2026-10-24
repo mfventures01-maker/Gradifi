@@ -1,0 +1,30 @@
+HOEOS V2 FORENSIC EVIDENCE: G0.7 REPRODUCIBILITY DISCOVERY & RUNTIME VERIFICATION
+Run ID: G0-audit-20261023-092514
+Timestamp: 2026-10-23T09:25:14+01:00
+
+DISCOVERED SCRIPTS (package.json):
+- clean:runtime: rimraf runtime
+- build:server: npm run clean:runtime && tsc -p tsconfig.server.json
+- typecheck:client: tsc -p tsconfig.json --noEmit
+- typecheck:server: tsc -p tsconfig.server.json --noEmit
+- typecheck: npm run typecheck:client && npm run typecheck:server
+- dev: vite
+- build: npm run build:server && vite build
+- vercel-build: npm run build:server && vite build
+- preview: vite preview
+- lint: tsc -p tsconfig.json --noEmit
+
+TEST RUNNERS DISCOVERED:
+- Vitest: vitest/5.0.5 win32-x64 node-v22.23.3 (invoked via `npx vitest run <file>`)
+- Playwright: @playwright/test ^1.62.1 (invoked via `npx playwright test`)
+
+EXECUTED VERIFICATION COMMANDS:
+1. `npm run typecheck`
+   Exit code: 0
+   Duration: ~19s
+   Result: PASS (Both client and server TypeScript type checks emit zero errors against the current working tree).
+
+2. `npx vitest run tests/g5m02-sentinel-collision.temp.test.ts`
+   Exit code: 1
+   Duration: 1.42s
+   Result: FAIL (1 passed, 1 failed: prospective G5-M02 sentinel contract not implemented in baseline documentNormalizer.ts).

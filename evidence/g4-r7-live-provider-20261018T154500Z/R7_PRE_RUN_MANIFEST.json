@@ -1,0 +1,115 @@
+{
+  "runId": "r7-live-provider-20261018T154500Z",
+  "utcStartTime": "2026-10-18T15:45:00Z",
+  "repository": {
+    "root": "C:\\Projects\\Gradifi",
+    "actualHead": "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+    "historicalHead": "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+    "headMatchesHistorical": true,
+    "workingTreeState": "DIRTY",
+    "trackedModifiedCount": 14,
+    "stagedChangesCount": 0,
+    "untrackedPathsCount": 74
+  },
+  "runtimeToolchain": {
+    "nodeVersion": "v20.20.2",
+    "npmVersion": "10.8.2",
+    "os": "Windows"
+  },
+  "historicalEvidenceIntegrity": [
+    {
+      "path": "evidence/g4-closure-20261016T1632Z/G4_RESULT.json",
+      "exists": true,
+      "sha256": "3A4381D39BFA19DA96E04F12C98A460F77BEFB325AEF53A9D6258B9D5B9215AA",
+      "recordedMatch": true
+    },
+    {
+      "path": "evidence/g4-r6-engine-certification/r6-summary.json",
+      "exists": true,
+      "sha256": "CF862551196498D470E108EC74570F7F47F8B379385FE29FF5CC846FC249A6AB",
+      "recordedMatch": true
+    },
+    {
+      "path": "evidence/g4-r6-engine-certification/G4_CLOSURE_REPORT.md",
+      "exists": true,
+      "sha256": "1B5EF192BF57E9CBEFFDB36E65E7DAF38C8DBD0AAAA53A5A2D97E9AA019B5AAE",
+      "recordedMatch": true
+    },
+    {
+      "path": "evidence/g4-r6-engine-certification/r6-summary.json.pre-closure-20261018T161701775.bak",
+      "exists": true,
+      "sha256": "C87AE06A3A4DC1C87765A476738B6F203CB1C1BC1646FAC546EB3F97C7F8F58F",
+      "recordedMatch": true
+    }
+  ],
+  "providerPrerequisites": {
+    "crossref": {
+      "endpoint": "https://api.crossref.org/works",
+      "status": "AVAILABLE",
+      "testResult": "success",
+      "fineGrained": "VERIFIED"
+    },
+    "openalex": {
+      "endpoint": "https://api.openalex.org/works",
+      "status": "AVAILABLE",
+      "testResult": "success",
+      "fineGrained": "VERIFIED"
+    },
+    "unpaywall": {
+      "endpoint": "https://api.unpaywall.org/v2/",
+      "status": "AVAILABLE",
+      "testResult": "partial",
+      "fineGrained": "EMPTY_RESULT"
+    },
+    "core": {
+      "endpoint": "https://api.core.ac.uk/v3/search/works",
+      "status": "UNAVAILABLE",
+      "testResult": "unavailable",
+      "fineGrained": "AUTHENTICATION_FAILED",
+      "reason": "Missing CORE_API_KEY"
+    },
+    "googlebooks": {
+      "endpoint": "https://www.googleapis.com/books/v1/volumes",
+      "status": "UNAVAILABLE",
+      "testResult": "error",
+      "fineGrained": "AUTHENTICATION_FAILED",
+      "reason": "Missing GOOGLE_BOOKS_API_KEY"
+    },
+    "supabase": {
+      "status": "FALLBACK_MODE",
+      "reason": "Supabase credentials not configured in local environment"
+    }
+  },
+  "intendedTestCommands": [
+    {
+      "stage": "Provider Truth & Connectivity Battery",
+      "command": "npx tsx scratch/test_all_providers.ts",
+      "scope": "Verifies live network requests against OpenAlex, Crossref, Unpaywall, CORE, Google Books"
+    },
+    {
+      "stage": "G4 Unit & Integration Invariant Oracle",
+      "command": "npx tsx scratch/g4_audit_deterministic_suite.ts",
+      "scope": "33 contract assertions for canonical text slicing, offset invariants, and negative boundaries"
+    },
+    {
+      "stage": "G4 Offset Invariants Structural Suite",
+      "command": "npx tsx tests/g4-offset-invariants.test.ts",
+      "scope": "43 assertions across 16 contract categories"
+    },
+    {
+      "stage": "Real Browser Matched-Text Highlighting (No Stubs / No Transform Seam)",
+      "command": "npx playwright test e2e/matched-text-highlighting.spec.ts --config=playwright.config.ts",
+      "scope": "Executes live UI verification against dev server with authentic DOM mark inspection"
+    },
+    {
+      "stage": "Tracked Browser Highlighting Spec & Negative Boundary",
+      "command": "npx playwright test e2e/four-gates-g4-browser.spec.ts e2e/four-gates-g4-negative.spec.ts --config=playwright.config.ts",
+      "scope": "Historical tracked specifications"
+    }
+  ],
+  "forensicObservations": {
+    "fixtureTransformSeamDetected": true,
+    "fixtureTransformSeamDetails": "In current checkout, e2e/four-gates-g4-browser.spec.ts lines 51-72 configure window.__GRADIFI_TEST_TRANSFORM_VERIFY_RESULT__ with G4_POSITIVE_FIXTURE. Although the real UI triggers executeVerifyRun, the rendered payload in this spec is transformed via fixture. e2e/matched-text-highlighting.spec.ts runs without any transform seam.",
+    "historicalPreservationAssurance": "All 4 historical evidence files are frozen and shall not be modified."
+  }
+}

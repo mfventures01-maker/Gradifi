@@ -1,4 +1,5 @@
 import { ocrService } from '../src/services/ocrService';
+import { describe, test, expect } from 'vitest';
 
 /**
  * OCR SERVICE TEST SUITE

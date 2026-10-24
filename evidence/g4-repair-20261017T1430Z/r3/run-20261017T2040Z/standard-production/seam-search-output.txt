@@ -1,0 +1,9 @@
+﻿SEARCH_PATTERN: __GRADIFI_TEST_TRANSFORM_VERIFY_RESULT__
+SEARCH_SCOPE: dist/assets/*.js (5 files)
+FILES_SEARCHED:
+  - dist/assets/html2canvas.esm-QH1iLAAe.js (202379 bytes)
+  - dist/assets/index-BSCxyAcr.js (2010229 bytes)
+  - dist/assets/index.es-D6O0LuO_.js (159715 bytes)
+  - dist/assets/purify.es-DBIK8olT.js (29400 bytes)
+  - dist/assets/__vite-browser-external-BIHI7g3E.js (33 bytes)
+SEAM_HITS_COUNT: 0

@@ -1,0 +1,10 @@
+﻿
+LineNumber Line                                                                               
+---------- ----                                                                               
+       496 async function handleSemanticScholarServerSearch(payload) {                        
+       516   const apiKey = process.env.SEMANTIC_SCHOLAR_API_KEY;                             
+       524       errorMessage: "SEMANTIC_SCHOLAR_API_KEY server configuration is unavailable",
+       579             sourceId: paperId ? `s2:${paperId}` : `s2_${doi || "record"}`,         
+       648     const result = await handleSemanticScholarServerSearch(req.body);              
+
+

@@ -1,0 +1,625 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261020235554
+Username: DESKTOP-I1QS7AU\faith
+RunAs User: DESKTOP-I1QS7AU\faith
+Configuration Name: 
+Machine: DESKTOP-I1QS7AU (Microsoft Windows NT 10.0.19045.0)
+Host Application: C:\WINDOWS\system32\WindowsPowerShell\v1.0\PowerShell.exe
+Process ID: 13876
+PSVersion: 5.1.19041.6456
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.6456
+BuildVersion: 10.0.19041.6456
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\Projects\Gradifi\evidence\baseline-20261020T225554Z\BASELINE_TRANSCRIPT.txt
+
+=== 1. REPOSITORY IDENTITY ===
+3a144f3e62277b472c47706e84a2ad2a57a9c656
+clean-deploy
+?? certification/federation_complete/AFTER_deployed_probes.txt
+?? certification/federation_logs/2026-09-23/unpaywall.jsonl
+?? certification/federation_logs/2026-09-24/
+?? certification/federation_logs/2026-09-25/
+?? certification/federation_logs/2026-09-27/
+?? certification/federation_logs/2026-09-29/
+?? certification/federation_logs/2026-10-03/
+?? certification/federation_logs/2026-10-04/
+?? certification/federation_logs/2026-10-05/
+?? certification/federation_logs/2026-10-07/
+?? certification/federation_logs/2026-10-08/
+?? certification/federation_logs/2026-10-15/
+?? certification/federation_logs/2026-10-16/
+?? certification/federation_logs/2026-10-17/
+?? certification/federation_logs/2026-10-18/
+?? certification/forensic/
+?? certification/g1_browser_fix/stream_extractor_preview_result.png
+?? certification/g1_browser_fix/stream_extractor_prod_result.png
+?? certification/g1_browser_fix/stream_extractor_verification_log.json
+?? certification/g1_extension/G1_EXTENSION_COMPOSITE.txt
+?? certification/g7_public_verification/
+?? certification/mirror_archive_2026-09-23T08-48-35Z/
+?? certification/provider_passage/OVERLAP_DEMO_DOC.txt
+?? certification/provider_passage/PASSAGE_DEMO_PRE_FIX.txt
+?? certification/provider_predictability/
+?? certification/repairs/
+?? certification/vercel_forensics/
+?? certification/vercel_logger_build_repair/verification/
+?? certification/vercel_repair/
+?? certification/vercel_server_compile/AFTER_deployed_probes.txt
+?? certification/vercel_standalone_restore/BEFORE_AFTER_REPORT.txt
+?? certification/vercel_ungate_deploy/AFTER_deployed_probes.txt
+?? certification/vercel_ungate_deploy/AFTER_runtime_error.txt
+?? certification/vercel_ungate_deploy/AFTER_supabase_rows.txt
+?? certification/vercel_ungate_deploy/BEFORE_AFTER_REPORT.txt
+?? certification/vercel_wrapper_repair/05_preview_probes.txt
+?? e2e/_quarantine/
+?? e2e/four-gates-g4-negative.spec.ts
+?? e2e/g1-docx-browser-acceptance.spec.ts
+?? e2e/g1-pdf-browser-acceptance.spec.ts
+?? e2e/g4-fixtures.ts
+?? e2e/g4-independent-engine-certification.spec.ts
+?? e2e/golden-path-demo-e2e.spec.ts
+?? e2e/public-verification-g7.spec.ts
+?? evidence/ai/provider-truth/
+?? evidence/baseline-20261020T225554Z/
+?? evidence/commercial-mvp/
+?? evidence/forensic-20261016T0240Z/
+?? evidence/g4-independent-20261017T232431/
+?? evidence/g4-r6-trace-20261018/
+?? evidence/g4-r7-live-provider-20261018T154500Z/
+?? evidence/g4-r7-unit-recheck-20261018T192836Z/
+?? evidence/g4-repair-20261017T1404Z/
+?? evidence/g4-repair-20261017T1415Z/
+?? evidence/g4-repair-20261017T1430Z/r2-preserved/
+?? evidence/g4-repair-20261017T1430Z/r2/
+?? evidence/g4-repair-20261017T1430Z/r3/
+?? evidence/g4-repair-20261017T1430Z/r4/
+?? evidence/g4-repair-20261017T1430Z/r5/
+?? evidence/g5_baseline/2026-10-06_g5m02_before_state.txt
+?? evidence/g5_baseline/2026-10-06_g5m02_rejection_evidence.txt
+?? evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt
+?? evidence/g9/
+?? evidence/phase0/
+?? evidence/phase1/
+?? evidence/phase2/
+?? evidence/provider-truth/
+?? gap-c-test.mjs
+?? playwright.localprod.config.ts
+?? playwright.prod.config.ts
+?? playwright.r5.standardprod.config.ts
+?? playwright.r6.config.ts
+?? sales-engine-production.png
+?? sales-geometry-test.mjs
+?? scripts/probeLiveProduction.ts
+?? scripts/probeMatchingEvidence.ts
+?? scripts/providerTruthSuite.ts
+?? tests/fixtures/ingestion/quantum_federated_learning_paper.pdf
+?? tests/fixtures/providers/
+?? tests/g1_certification.test.ts
+?? tests/g1_format_matrix.test.ts
+?? tests/g1_format_matrix.test.ts.bak
+?? tests/g1_format_matrix.test.ts.before-docx-buffer-fix-20261015-030530.bak
+?? tests/g1_format_matrix.test.ts.before-docx-buffer-fix-20261015-030537.bak
+?? tests/g1_ocr_branch_forensic.test.ts
+?? tests/g1_ocr_complete_forensic_runtime.test.ts
+?? tests/g5m02-baseline-check.temp.test.ts
+?? tests/g5m02-partial-diagnostic.temp.test.ts
+?? tests/g5m02-sentinel-collision.temp.test.ts
+?? tests/hoeos-n5-r4-runtime.ts
+?? tests/hoeos-n5-runtime.ts
+?? tests/pipeline/pipelineAuditFailClosed.test.ts
+
+
+DIFF_CHECK_EXIT=0
+
+=== 2. RELEVANT FILE HASHES ===
+
+
+Path             : src/pages/verify/GradifiVerifyDemoPage.tsx
+SHA256           : BA0BC5C125C6CD370B11854D85B883B746F27E26D2D6A6CDE468FCD53D2470A5
+LastWriteTimeUtc : 2026-10-18T23:42:28.7025216Z
+Exists           : True
+
+
+
+LAST_COMMIT=f08db42b01d1511211212a8ef83f95e3fade2a1b
+LAST_COMMIT_DATE=2026-10-01T09:53:54+01:00
+LAST_COMMIT_SUBJECT=fix(persist): slim DTO under Vercel limit, fail closed on persistence error
+
+
+Path             : src/services/verify/verifyCoreService.ts
+SHA256           : 8407CB951F1CFCDF5F9A18BF7550CC6A7C3FE6A3FEE1AFD0F8040349B4BC7F52
+LastWriteTimeUtc : 2026-10-07T10:33:01.0878684Z
+Exists           : True
+
+
+
+LAST_COMMIT=a62b19d652c40dea6fbe9fe7a5c601a343a0ee1a
+LAST_COMMIT_DATE=2026-10-07T13:06:00+01:00
+LAST_COMMIT_SUBJECT=feat(verify): G5-M05A expose paragraph and sentence evidence
+
+
+Path             : src/services/verify/plagiarismPolicy.ts
+SHA256           : 94D5EC5982C1AD3B52FF96BE0E27F220B136F824485C9FC8BCB08DD475B6B14C
+LastWriteTimeUtc : 2026-09-27T00:41:12.9965074Z
+Exists           : True
+
+
+
+LAST_COMMIT=504deb8dacac2ce0dffed74ca846b4c923345ead
+LAST_COMMIT_DATE=2026-09-27T02:37:30+01:00
+LAST_COMMIT_SUBJECT=vercel: compile server dependency graph to runtime/
+
+
+Path             : src/services/verify/matchedTextHighlightingService.ts
+SHA256           : 8E8D21DAFDA474F78F3FCC86808856DB202F66870B60A74135F9DB44868DF7EB
+LastWriteTimeUtc : 2026-09-27T00:41:12.9610073Z
+Exists           : True
+
+
+
+LAST_COMMIT=504deb8dacac2ce0dffed74ca846b4c923345ead
+LAST_COMMIT_DATE=2026-09-27T02:37:30+01:00
+LAST_COMMIT_SUBJECT=vercel: compile server dependency graph to runtime/
+
+
+Path             : e2e/g4-live-provider-certification.spec.ts
+SHA256           : 12767C80A3F6D0328324082BF7F06CBF465A76517A88E7DB3BE747D925A034E2
+LastWriteTimeUtc : 2026-10-18T17:59:32.7973061Z
+Exists           : True
+
+
+
+LAST_COMMIT=3a144f3e62277b472c47706e84a2ad2a57a9c656
+LAST_COMMIT_DATE=2026-10-19T09:25:21+01:00
+LAST_COMMIT_SUBJECT=﻿G4 certification: live-provider recertification + hermetic engine pillars
+
+=== 3. GATE EVIDENCE INVENTORY ===
+
+Root                         Path
+----                         ----
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\commercial-mvp\g1_ingestion_certification.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\artifact-sha256.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\baseline-summary.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4-assertion-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4-browser-canonical-identity.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4-browser-mark-assertions.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4-browser-network-console.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4-browser-runtime.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4-test-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\g4_browser_highlight.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\G4_RESULT.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\git-diff-before.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\git-status.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\investigation-target-hashes.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\playwright-stdout.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\preserved-previous-evidence-hashes.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-audit-20261016T1526Z\unit-stdout.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\artifact-sha256.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\baseline-summary.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4-assertion-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4-browser-canonical-identity.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4-browser-mark-assertions.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4-browser-network-console.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4-browser-runtime.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4-test-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4_browser_highlight.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\G4_BROWSER_RUNTIME.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\G4_CANONICAL_IDENTITY.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\G4_MARK_ASSERTIONS.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\G4_NETWORK_CONSOLE.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\G4_RESULT.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\git-diff-after.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\git-status-before-closure.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\playwright-negative-stdout.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\playwright-positive-stdout.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\unit-stdout.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-closure-20261016T1632Z\g4\g4_browser_highlight.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\artifact-sha256.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\baseline-summary.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-assertion-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-browser-canonical-identity.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-browser-mark-assertions.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-browser-network-console.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-browser-runtime.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-evidence-audit.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-g1-dependency-report.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-production-path-trace.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4-test-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\g4_browser_highlight.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\G4_RESULT.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\git-diff-after.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\git-diff-before.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\git-status.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\independent-powershell-audit-followup...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\independent-powershell-audit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-deterministic-20261016T1415Z\source-integrity.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\e2e_four-gates-g4-browser.spec.ts.full...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\e2e_four-gates-g4-browser.spec.ts.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\e2e_four-gates-g4-negative.spec.ts.ful...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\e2e_g4-fixtures.ts.full.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\e2e_g4-fixtures.ts.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\evidence-hashes.csv
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\g4-source-trace.csv
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\git-commit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\git-diff-check-exit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\git-diff-check.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\git-status.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\package-scripts.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\src_pages_verify_GradifiVerifyDemoPage...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\src_services_verify_server_verifyServe...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\vite.config.ts.full.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-independent-20261017T232431\vite.config.ts.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\ASSERTION_RESULTS.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\BASELINE.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\CERTIFICATION_CONTRACT.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\command.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\ENVIRONMENT_STATUS.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\exit-code.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\FINAL_REPORT.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\g4-live-provider-certificati...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\G4_RESULT.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\git-diff-tracked.patch
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\RUN_MANIFEST.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\sha256-manifest.csv
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\SOURCE_TRACE.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\stdout.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-live-recertification-20261018T172500Z\screenshots\g4_live_dom_high...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-engine-certification\G4_CLOSURE_REPORT.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-engine-certification\r6-engine-result.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-engine-certification\r6-run.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-engine-certification\r6-summary.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-engine-certification\r6-summary.json.pre-closure-20261018T16170...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-engine-certification\r6-trace.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-trace-20261018\baseline-branch.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-trace-20261018\baseline-commit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-trace-20261018\baseline-hashes.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-trace-20261018\baseline-status.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-trace-20261018\baseline-worktree.patch
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-trace-20261018\r6-failure-context.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r6-trace-20261018\r6-failure-trace.zip
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\browser_four_gates.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\browser_matched_text.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\g4-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\g4-negative-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\g4_browser_highlight.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\g4_negative_browser_unavailable.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\offset_invariants.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\provider_connectivity.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\r7-manifest-sha256.csv
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\R7_MANIFEST.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\R7_PRE_RUN_MANIFEST.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\R7_REPORT.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\R7_RESULT.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\R7_RESULT.json.pre-supersession.bak
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\unit-assertion-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-live-provider-20261018T154500Z\unit_oracle.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-unit-recheck-20261018T192836Z\g4-assertion-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-r7-unit-recheck-20261018T192836Z\g4-test-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\canonical-source-locations.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\config-hashes.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\finalizer-head.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\git-head.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\git-status.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\global-references.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\npm-scripts.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\prior-g4-evidence-hashes.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\r0-baseline.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\success-literal-scan.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\tracked-diff.patch
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1404Z\untracked-test-adjacent.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1415Z\r1\before-head.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1415Z\r1\before-status.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1415Z\r1\before-worktree.patch
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1415Z\r1\four-gates-g4-negative.spec.ts.before
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1415Z\r1\GradifiVerifyDemoPage.tsx.before
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1415Z\r1\GradifiVerifyDemoPage.tsx.gated-20261017T...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1415Z\r1\GradifiVerifyDemoPage.tsx.gated-mojibake-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1415Z\r1\r1-execution.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\before-head.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\before-worktree.patch
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\build-controlled-20261017T192138Z.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\build-controlled-20261017T192138Z.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\build.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\dist-asset-hashes-verified.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\dist-asset-hashes.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\four-gates-g4-negative.spec.ts.before
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\GradifiVerifyDemoPage.tsx.after-6112AA7E
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\GradifiVerifyDemoPage.tsx.before
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\r1-execution.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\r1-patch.patch
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\r1-summary.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\R1_INTEGRITY_AUDIT_REPORT_20261017T1942Z.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r1\seam-diff-size.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\browser-output.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\browser-output.txt.exit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\four-gates-g4-browser.spec.ts.before
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\g4-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\g4-negative-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\g4_browser_highlight.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\g4_negative_browser_unavailable.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\R2_EXECUTION_REPORT.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\structural-output.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2\structural-output.txt.exit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\browser-output.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\browser-output.txt.exit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\four-gates-g4-browser.spec.ts.b...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\g4-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\g4-negative-browser-results.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\g4_browser_highlight.png
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\g4_negative_browser_unavailable...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\R2_EXECUTION_REPORT.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\structural-output.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r2-preserved\structural-output.txt.exit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\GradifiVerifyDemoPage.tsx.before-r3
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\r3-apply-gate.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\r3-seam-diff-size.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\r3-source-hashes.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\environment.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\evidence-path...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\four-gates-g4...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\four-gates-g4...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\git-diff-befo...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\git-diff-cach...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\git-status-be...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\playwright.lo...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\port-listener...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\r2-inventory-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\r2-preservati...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\r2-preserved-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\r3-run-specs....
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\runner-review...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\source-hashes...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\baseline\verifyServerP...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\final\change-manifest.csv
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\final\evidence-manifes...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\final\final-gate-matri...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\final\final-git-diff.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\final\final-git-status...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\final\final-report.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\bro...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\bui...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\bui...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\bui...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\g4-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\g4-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\g4_...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\g4_...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\pla...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\pla...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\pla...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\pre...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\run...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\scr...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\scr...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview\tra...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\standard-production\bu...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\standard-production\bu...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\standard-production\bu...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\standard-production\bu...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\standard-production\bu...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\standard-production\g4...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\standard-production\se...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\standard-production\se...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\structural\diff-check-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\structural\diff-check-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\structural\g5-structur...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\structural\structural-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\structural\structural-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\structural\structural-...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\structural\typecheck-s...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\structural\typecheck-s...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-baseline-hashes.csv
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-baseline.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-command-log.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-finalizer-audit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-finalizer-patched-h...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-finalizer-patched.ps1
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-patch.diff
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-r3-reconciliation.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-r3-reconciliation.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-status-semantics.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-summary.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-summary.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-process-exit-tests\...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\rej...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\rej...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r4\run-20261017T2245Z\r4-rejection-tests\cas...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-adversarial-control...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-baseline-hashes.csv
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-baseline.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-command-log.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-dom-observations.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-engine-result.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-independent-oracle....
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-playwright-exit-cod...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-playwright-output.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-playwright-results....
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-production-build.log
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-report.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-seam-audit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-sha256-manifest.csv
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-summary.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\r5-three-way-compariso...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r5\run-20261018T0035Z\screenshots\r5_real_en...
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g5_baseline\2026-10-05_migration_g5m01_spec.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g5_baseline\2026-10-05_phase1_record.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g5_baseline\2026-10-05_segmentation_v2_candidate.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g5_baseline\2026-10-06_g5m02_before_state.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g5_baseline\2026-10-06_g5m02_rejection_evidence.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\g5_baseline\2026-10-06_migration_g5m02_spec.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\HOEOS_G2_DETERMINISTIC_CANONICAL_AUTHORITY_FINAL.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G1_REMEDIATION_SUMMARY.md
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_BROWSER_RECONCILIATION.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\HOEOS_48H_G0_BASELINE_EVIDENCE.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\HOEOS_48H_G1_DOCUMENT_INGESTION_EVIDENCE.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\HOEOS_48H_G2_DETERMINISTIC_AUTHORITY_EVIDENCE.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\HOEOS_G2_INDEPENDENT_POWERSHELL_EVIDENCE.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_CLOSURE\A1-source-context.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_CLOSURE\A2-consumers.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_CLOSURE\B1-normalizer.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_CLOSURE\B2-ingestion.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_CLOSURE\F-ten-runs.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_CLOSURE\G-three-procs.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_CLOSURE\H-build-output.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\repeatability.ts
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\runner.mjs
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\runner.ts
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\runner.ts.bak
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_1.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_1.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_10.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_10.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_2.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_2.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_3.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_3.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_4.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_4.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_5.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_5.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_6.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_6.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_7.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_7.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_8.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_8.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_9.err
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g2\historical\G2_INDEPENDENT\run_9.json
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\hoeos\g3\HOEOS_G3_DETERMINISTIC_EVIDENCE_AUTHORITY_FINAL.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\phase2\g1_extractor_audit.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\phase3\g5m03_certification.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\phase3\g5m03_spec.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\phase4\g5m05a_amendment.txt
+C:\Projects\Gradifi\evidence C:\Projects\Gradifi\evidence\phase4\g5m05a_certification.txt
+
+
+
+=== 4. BUILD ===
+
+> gradifi@0.0.0 build
+> npm run build:server && vite build
+
+
+> gradifi@0.0.0 build:server
+> npm run clean:runtime && tsc -p tsconfig.server.json
+
+
+> gradifi@0.0.0 clean:runtime
+> rimraf runtime
+
+>> TerminatingError(node.exe): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: ΓÜá∩╕Å Supabase credentials not found. Using fallback mode."
+>> TerminatingError(node.exe): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: ΓÜá∩╕Å Supabase credentials not found. Using fallback mode."
+>> TerminatingError(node.exe): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: ΓÜá∩╕Å Supabase credentials not found. Using fallback mode."
+**********************
+Windows PowerShell transcript end
+End time: 20261020235817
+**********************

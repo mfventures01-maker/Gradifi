@@ -1,0 +1,28 @@
+﻿DECISION REQUIRED: GRADIFI TENANT MODEL
+=======================================
+Timestamp: 2026-10-16T04:13:06+01:00
+
+UNRESOLVED QUESTION:
+  Should Gradifi public verification records operate as:
+  OPTION A: A Global Public Verification Notary (Certificate Transparency Ledger)
+            - Verification records are public receipts linked to document and evidence hashes.
+            - Receipts are publicly resolvable by anyone with the verification_id / QR code.
+            - No tenant_id or user_id required on public_verification_records.
+            - Identity privacy preserved by storing only cryptographic hashes and evidence summaries.
+  OPTION B: An Institutional Multi-Tenant Partitioned Ledger
+            - Submissions are owned by specific institutional tenants (schools, universities).
+            - Records require tenant_id / institution_id foreign keys.
+            - Tenant access controls determine whether a receipt is public, private, or institutional-only.
+
+CONSEQUENCES OF OPTION A (Global Notary):
+  - Current schema (public_verification_records) requires zero structural modifications.
+  - Fixes only need to harden the persistence boundary (/api/verify/persist caller authentication or signed engine execution).
+  - Matches the current HOEOS G6.1/G6.2/G6.3 implementation.
+
+CONSEQUENCES OF OPTION B (Multi-Tenant Partitioned):
+  - Requires database migration adding institution_id / tenant_id and tenant policies.
+  - Requires updating VerificationPersistenceService, PublicVerificationService, and persistence handlers.
+  - Requires institutional user authentication before submitting verification runs.
+
+APPROVAL REQUIRED:
+  Product and engineering stakeholders must formally approve Option A or Option B before any schema alteration is initiated.

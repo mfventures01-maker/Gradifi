@@ -1,0 +1,18 @@
+﻿{
+  "status": "PASS",
+  "realBrowser": true,
+  "markCount": 2,
+  "primaryHighlight": {
+    "index": 0,
+    "findingId": "",
+    "sourceId": "src-crossref-10.1038-001",
+    "start": 0,
+    "end": 85,
+    "markText": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+    "expectedSlice": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+    "sourceTitle": "Quantum Information Networks & Entanglement Topology"
+  },
+  "verifiedHighlights": [],
+  "screenshotPath": "screenshots/g4_browser_highlight.png",
+  "timestamp": "2026-10-17T21:13:59.467Z"
+}

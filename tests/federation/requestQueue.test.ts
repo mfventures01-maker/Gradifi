@@ -121,5 +121,5 @@ async function runRequestQueueTests() {
 
 runRequestQueueTests().catch(err => {
   console.error('RequestQueue test failed:', err);
-  process.exit(1);
+  if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
 });

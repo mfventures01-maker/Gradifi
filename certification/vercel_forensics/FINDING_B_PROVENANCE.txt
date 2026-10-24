@@ -1,0 +1,40 @@
+================================================================
+HOEOS FORENSIC INVESTIGATION — FINDING B CLASSIFICATION
+Provenance of Bundles and Execution Window Analysis
+================================================================
+Investigation ID: HOEOS-FORENSIC-VERCEL-BUNDLES-2026-09-25
+Date:             2026-09-25
+
+[1] ROOT CAUSE CLASSIFICATION
+
+  ROOT CAUSE: BUILD OF COMMITTED TREE AT COMMIT c67235a / 00b48cf
+
+  The bundle artifacts in `api/` were generated from the committed source code
+  at HEAD (`c67235a` / `00b48cf`). They include all provider integrations, including
+  the newly added Semantic Scholar handler (`handleSemanticScholarServerSearch`).
+
+[2] EVIDENCE BASE
+
+  1. Commits in Execution Window (B1):
+     - `c67235a` (2026-09-25 12:14:12 +0100): `providers: add Semantic Scholar integration`
+     - `00b48cf` (2026-09-25 16:02:00 +0100): `g5: republish composite hash with sorted file list`
+
+  2. Reflog Tracking (B2):
+     - HEAD transitions confirm `clean-deploy` branch remained active throughout the bundle generation window.
+
+  3. Semantic Scholar (S2) String Presence (B4):
+     - `api/verify/semanticscholar.ts` contains exact string matches from `c67235a`:
+       - Line 496: `async function handleSemanticScholarServerSearch(payload)`
+       - Line 516: `const apiKey = process.env.SEMANTIC_SCHOLAR_API_KEY;`
+       - Line 579: `sourceId: paperId ? "s2:" + paperId : "s2_" + (doi || "record")`
+       - Line 648: `const result = await handleSemanticScholarServerSearch(req.body);`
+
+  4. Header Comments & Function Definitions (B5):
+     - Inlined header comments in `api/*.ts` match the exact function signatures and comments in `src/services/verify/server/*ServerHandler.ts`.
+
+[3] SUMMARY CLASSIFICATION
+
+  ROOT CAUSE:               Clean build of committed tree at c67235a / 00b48cf
+  DEPLOYMENT MATCHES:       Committed tree
+  IMPLICATION:              Bundles accurately represent current source code logic, but in-place bundling breaks Vercel's serverless function runtime loader.
+  ACTION:                   Follow-up repair required to restore clean source wrappers.

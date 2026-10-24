@@ -1,0 +1,13 @@
+﻿=== HOEOS R3 EVIDENCE PATH & SPEC AUDIT ===
+1. e2e/four-gates-g4-browser.spec.ts:
+   - Line 25: Previously hardcoded evidenceDir = path.resolve(repoRoot, 'evidence/g4-repair-20261017T1430Z/r2').
+   - Line 70: Previously hardcoded page.goto('/verify').
+   - Remediation: Updated to process.env.HOEOS_EVIDENCE_DIR || ... and process.env.TARGET_ROUTE || '/tools/plagiarism'.
+   - Saved baseline before-image: baseline/four-gates-g4-browser.spec.ts.before-g1
+2. e2e/four-gates-g4-negative.spec.ts:
+   - Line 21: Previously hardcoded evidenceDir = path.resolve(repoRoot, 'evidence/g4-repair-20261017T1430Z/r2').
+   - Line 36: Previously hardcoded page.goto('/verify').
+   - Remediation: Updated to process.env.HOEOS_EVIDENCE_DIR || ... and process.env.TARGET_ROUTE || '/tools/plagiarism'.
+   - Saved baseline before-image: baseline/four-gates-g4-negative.spec.ts.before-g1
+3. Oracle Inspection:
+   - Grep for __GRADIFI_VERIFY_RESULT__ returned 0 hits in specs and fixtures. Oracle independence confirmed.

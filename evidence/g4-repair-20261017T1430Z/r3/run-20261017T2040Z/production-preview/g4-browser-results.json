@@ -1,0 +1,39 @@
+﻿{
+  "status": "PASS",
+  "realBrowser": true,
+  "markCount": 2,
+  "primaryHighlight": {
+    "index": 0,
+    "findingId": "finding-g4-quantum-001",
+    "sourceId": "src-crossref-10.1038-001",
+    "start": 0,
+    "end": 85,
+    "markText": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+    "expectedSlice": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+    "sourceTitle": "Quantum Information Networks & Entanglement Topology"
+  },
+  "verifiedHighlights": [
+    {
+      "index": 0,
+      "findingId": "finding-g4-quantum-001",
+      "sourceId": "src-crossref-10.1038-001",
+      "start": 0,
+      "end": 85,
+      "markText": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+      "expectedSlice": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+      "sourceTitle": "Quantum Information Networks & Entanglement Topology"
+    },
+    {
+      "index": 1,
+      "findingId": "finding-g4-distrib-002",
+      "sourceId": "src-crossref-10.1038-001",
+      "start": 788,
+      "end": 935,
+      "markText": "Distributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence.",
+      "expectedSlice": "Distributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence.",
+      "sourceTitle": "Quantum Information Networks & Entanglement Topology"
+    }
+  ],
+  "screenshotPath": "evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview/g4_browser_highlight.png",
+  "timestamp": "2026-10-17T21:13:59.467Z"
+}

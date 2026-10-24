@@ -1,0 +1,113 @@
+================================================================
+HOEOS FORENSIC INVESTIGATION — FINDING B CLASSIFICATION
+Valid DOCX Package Rejected by officeZipAdapter.ts (Line 208)
+================================================================
+Investigation ID: HOEOS-VERCEL-FORENSIC-2026-09-25
+Target File:      Design and Construction of a Joystick-Controlled Industrial automation System.docx
+Target Size:      793,649 bytes (21 ZIP entries)
+Date:             2026-09-25
+
+[1] ROOT CAUSE CLASSIFICATION
+
+  ROOT CAUSE: NAIVE PKZIP LOCAL-HEADER PARSER FAILS ON STREAMING DATA DESCRIPTORS
+
+  The function `unzipPackageTextFile` (and `unzipPackageMediaFiles`) in
+  `src/services/verify/ingestionAdapters/officeZipAdapter.ts` implements a custom,
+  hand-written PKZIP header byte scanner.
+
+  The parser assumes that every ZIP entry's compressed size (`compSize`) and
+  uncompressed size (`uncompSize`) are non-zero numbers stored directly inside
+  bytes 18-25 of the entry's Local File Header (`PK\x03\x04`).
+
+  Per the PKZIP File Format Specification (ISO/IEC 19822 & PKWARE APPNOTE section 4.3.9),
+  when bit 3 of the General Purpose Bit Flag is set (`flags & 0x0008`), the fields for
+  `compSize`, `uncompSize`, and `crc32` in the Local File Header MUST BE SET TO ZERO (0).
+  The true sizes are stored either in a Data Descriptor following the compressed payload
+  or in the Central Directory at the end of the file.
+
+  In the rejected DOCX file, ALL 21 entries were encoded with `flags = 0x808` (bit 3 set),
+  meaning `compSize = 0` and `uncompSize = 0` in every Local File Header.
+
+  When `officeZipAdapter.ts` parses this file:
+  1. It reads `compSize = 0` and `uncompSize = 0` from bytes 18-25 of the Local File Header.
+  2. It calculates `payloadSize = compSize > 0 ? compSize : uncompSize;` -> `payloadSize = 0`.
+  3. It extracts 0 bytes (`compressedBytes = zipBytes.subarray(dataStart, dataStart + 0)`).
+  4. It advances `pos = dataStart + 0`, placing `pos` directly at the beginning of the compressed
+     Deflate binary data payload (e.g. byte 30 of `_rels/.rels`), NOT at a `PK\x03\x04` header.
+  5. In subsequent loop iterations, `zipBytes[pos]` fails the `PK\x03\x04` check, triggering `pos++`.
+  6. The scanner searches byte-by-byte through compressed binary data, encountering false-positive
+     signature matches, corrupting the archive traversal state, and failing to locate or decompress
+     `word/document.xml`.
+  7. `unzipPackageTextFile` returns `null`.
+  8. `extractDocxText` catches `xmlContent === null` at line 196 and emits line 208:
+     `"The uploaded file is not a valid DOCX package."`
+
+[2] EVIDENCE BASE
+
+  1. Source Code in `src/services/verify/ingestionAdapters/officeZipAdapter.ts`:
+     - Lines 24-28 & 114-118:
+       `const compSize = zipBytes[pos + 18] | (zipBytes[pos + 19] << 8) | ...;`
+       `const uncompSize = zipBytes[pos + 22] | (zipBytes[pos + 23] << 8) | ...;`
+     - Lines 33 & 134:
+       `const payloadSize = compSize > 0 ? compSize : uncompSize;`
+     - Line 149:
+       `pos = dataStart + (compSize > 0 ? compSize : uncompSize);`
+     - Line 208:
+       `message: 'The uploaded file is not a valid DOCX package.'`
+
+  2. Isolated Execution Output (`certification/forensic/docx_adapter_isolated.txt`):
+     - Executed via `npx tsx scratch/test_office_zip_adapter.ts`.
+     - Inspection output of target file `Design and Construction of a Joystick-Controlled Industrial automation System.docx`:
+       `[Entry 1] name="_rels/.rels", flags=0x808, method=8, compSize=0, uncompSize=0, pos=0`
+       `[Entry 18] name="[Content_Types].xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=289170`
+       `[Entry 21] name="word/document.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=773870`
+     - Invocation of `extractDocxText(fileBytes)` returned:
+       `{`
+       `  "success": false,`
+       `  "extractionMethod": "docx_xml_extractor",`
+       `  "warnings": ["Could not extract word/document.xml from DOCX package."],`
+       `  "error": { "code": "INVALID_PACKAGE", "message": "The uploaded file is not a valid DOCX package." }`
+       `}`
+
+  3. Universal Router Dispatch (`src/services/verify/universalIngestionService.ts`):
+     - Line 251-255:
+       `case 'docx': {`
+       `  const buf = payload.buffer || ...;`
+       `  adapterResult = await extractDocxText(buf);`
+       `  break;`
+       `}`
+
+  4. All Invocation Sites of `extractDocxText`:
+     - `universalIngestionService.ts`: Line 13 (import) & Line 253 (call).
+     - `officeZipAdapter.ts`: Line 183 (definition).
+
+[3] AFFECTED INPUTS
+
+  - Any Office Open XML or ZIP archive (`.docx`, `.odt`, `.epub`, `.pptx`, `.xlsx`) created using streaming zip encoders that write Data Descriptors (general purpose bit flag 3 / `0x0008` set).
+  - Common producers emitting streaming ZIPs:
+    - Microsoft Word (under specific web/cloud save workflows)
+    - Google Docs export to DOCX
+    - Java `java.util.zip.ZipOutputStream`
+    - Node.js `archiver` / `zip-stream`
+    - Python `zipfile` (when compiled/streamed without seek)
+    - LibreOffice / Apache OpenOffice export
+
+[4] EXPLICIT NON-DEFECTS
+
+  - The input file is a 100% valid ISO/IEC 29500-1 OOXML DOCX package.
+  - The file size (793,649 bytes) is well under the 100MB decompression limit.
+  - Magic bytes (`PK\x03\x04` at offset 0) are valid.
+  - Extension and MIME-type routing in `universalIngestionService.ts` are correct.
+  - The high-level intent and XML element parser (`extractTextFromXmlElements`) are correct.
+
+[5] FIX LOCATION
+
+  - `src/services/verify/ingestionAdapters/officeZipAdapter.ts` (specifically `unzipPackageTextFile`, `unzipPackageMediaFiles`, and `decompressDeflate`).
+
+[6] FIX SCOPE
+
+  - Replace custom naive byte scanner with a robust, spec-compliant ZIP parser library (e.g. `fflate` or `jszip` or `yauzl`), OR update `officeZipAdapter.ts` to read Central Directory headers at the end of the ZIP archive where true `compressedSize` and `uncompressedSize` are always present regardless of streaming flags.
+
+================================================================
+END FINDING B CLASSIFICATION
+================================================================

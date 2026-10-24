@@ -1,0 +1,10 @@
+﻿Gate,RequiredCondition,Status,EvidencePath
+G0,Baseline captured and readable,PASS,baseline/
+G1,Runner and evidence paths reviewed before execution,PASS,baseline/runner-review.txt; baseline/evidence-path-review.txt
+G2,R2 evidence preservation verified by file hashes,PASS,baseline/r2-preservation-manifest.csv
+G3.1,Positive production-preview browser test passed,PASS,production-preview/g4-browser-results.json; production-preview/g4_browser_highlight.png
+G3.2,Negative production-preview browser test passed,PASS,production-preview/g4-negative-browser-results.json; production-preview/g4_negative_browser_unavailable.png
+G3.3,Both browser tests have authentic saved execution evidence,PASS,production-preview/playwright-output.txt; production-preview/playwright-exit-code.txt
+G4,Standard production build succeeds without test-seam enablement and bundle evidence supports seam exclusion,PASS,standard-production/seam-exclusion-verdict.txt; standard-production/seam-search-output.txt
+G5,Structural checks and repository integrity checks recorded,PASS,structural/structural-output.txt; structural/diff-check-output.txt; structural/typecheck-server-output.txt
+G6,Final report and manifests exist are readable and have verified hashes,PASS,final/final-report.md; final/evidence-manifest.csv

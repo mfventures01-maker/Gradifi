@@ -1,0 +1,1 @@
+﻿npx playwright test e2e/four-gates-g4-browser.spec.ts e2e/four-gates-g4-negative.spec.ts --config=playwright.localprod.config.ts

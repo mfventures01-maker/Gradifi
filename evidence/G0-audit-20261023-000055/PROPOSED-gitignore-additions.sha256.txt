@@ -1,0 +1,11 @@
+﻿Frozen proposal:      C:\Projects\Gradifi\evidence\G0-audit-20261023-000055\PROPOSED-gitignore-additions.txt
+Frozen at:            2026-10-23T00:49:31.3987694+01:00
+Bytes before amend 2: 23322
+Hash  before amend 2: a0a9c48eb0759f50a1ab83f0ef7e6b0da0a0418bbeecc301b684ff3b4e69b9a3
+Bytes after amend 2:  34748
+Hash  after amend 2:  6ddf5ebda1bde64a3661b89581f40d9eb9385bc5a0d6e1f76726e0a23af9f16f
+Note: the __HASH_AFTER__ line embedded in the proposal records the
+pre-substitution hash (e3ed08a88d769249d8948e219eabeb4aa3342ac88ab3a42fc7a031e0e63948ea) and is informational only. The
+authoritative identity of the frozen proposal is the Hash after amend 2
+above, and this companion file's own SHA-256:
+  

@@ -1,0 +1,56 @@
+﻿{
+    "finalizer":  "scratch/finalize_g4_evidence_r4.ps1",
+    "version":  "R4.2",
+    "evaluationTimestamp":  "2026-10-17T23:50:55.5528413+01:00",
+    "evidenceDirectory":  "evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\case_09_missing_neg_screenshot",
+    "terminalStatus":  "FAIL",
+    "precedenceRank":  3,
+    "exitCode":  1,
+    "statusExplanation":  "Verification assertions failed: Negative browser test screenshot missing in evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\case_09_missing_neg_screenshot",
+    "allConditions":  {
+                          "blocked":  [
+
+                                      ],
+                          "notRun":  [
+
+                                     ],
+                          "failed":  [
+                                         "Negative browser test screenshot missing in evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\case_09_missing_neg_screenshot"
+                                     ]
+                      },
+    "positiveEvaluation":  {
+                               "passed":  false,
+                               "markCount":  2,
+                               "screenshotExists":  true,
+                               "primaryHighlight":  {
+                                                        "findingId":  "finding-g4-quantum-001",
+                                                        "sourceId":  "src-crossref-10.1038-001",
+                                                        "start":  0,
+                                                        "end":  85,
+                                                        "markText":  "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+                                                        "expectedSlice":  "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+                                                        "offsetInvariantPassed":  true,
+                                                        "textMatchPassed":  true,
+                                                        "identityBoundPassed":  true,
+                                                        "canonicalMatchPassed":  true
+                                                    }
+                           },
+    "negativeEvaluation":  {
+                               "passed":  false,
+                               "screenshotExists":  false,
+                               "details":  {
+                                               "testIdentity":  "e2e/four-gates-g4-negative.spec.ts",
+                                               "missingCanonicalCondition":  "missing_canonical_raw_text",
+                                               "unavailableIndicatorObserved":  true,
+                                               "viewerSuppressed":  true,
+                                               "observedHighlightCount":  0,
+                                               "expectedHighlightCount":  0,
+                                               "allMandatoryAssertionsPassed":  true
+                                           }
+                           },
+    "g4CertificationBoundary":  {
+                                    "finalizerResult":  "FAIL",
+                                    "g4VerificationEngineCertification":  "NOT CERTIFIED",
+                                    "certificationNotice":  "G4 verification-engine certification remains NOT CERTIFIED pending independent execution without injected result fixtures (seam hooks)."
+                                }
+}

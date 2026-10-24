@@ -1,0 +1,16 @@
+﻿
+Name               SizeBytes RatioToWrapper
+----               --------- --------------
+gemini.ts            1787987           2980
+persist.ts            876966         1461.6
+googlebooks.ts         25121           41.9
+semanticscholar.ts     23511           39.2
+core.ts                23152           38.6
+_probe.ts              23147           38.6
+crossref.ts            22762           37.9
+unpaywall.ts           22238           37.1
+openalex.ts             9298           15.5
+nemotron.ts             9251           15.4
+gemma.ts                8047           13.4
+
+

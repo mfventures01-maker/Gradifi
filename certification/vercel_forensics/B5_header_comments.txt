@@ -1,0 +1,58 @@
+﻿--- C:\Projects\Gradifi\api\_probe.ts ---
+
+api\_probe.ts:1:// src/services/verify/federation/providerQuotas.ts
+api\_probe.ts:57:// src/services/verify/federation/rateLimiter.ts
+api\_probe.ts:146:// src/services/verify/federation/providerLogger.ts
+
+--- C:\Projects\Gradifi\api\verify\core.ts ---
+api\verify\core.ts:1:// src/services/verify/federation/providerQuotas.ts
+api\verify\core.ts:57:// src/services/verify/federation/rateLimiter.ts
+api\verify\core.ts:146:// src/services/verify/federation/providerLogger.ts
+
+--- C:\Projects\Gradifi\api\verify\crossref.ts ---
+api\verify\crossref.ts:1:// src/services/verify/federation/providerQuotas.ts
+api\verify\crossref.ts:57:// src/services/verify/federation/rateLimiter.ts
+api\verify\crossref.ts:146:// src/services/verify/federation/providerLogger.ts
+
+--- C:\Projects\Gradifi\api\verify\gemini.ts ---
+api\verify\gemini.ts:40:// node_modules/retry/lib/retry_operation.js
+api\verify\gemini.ts:175:// node_modules/retry/lib/retry.js
+api\verify\gemini.ts:261:// node_modules/retry/index.js
+
+--- C:\Projects\Gradifi\api\verify\gemma.ts ---
+api\verify\gemma.ts:1:// src/services/verify/server/geminiServerHandler.ts
+api\verify\gemma.ts:66:// src/services/verify/server/gemmaServerHandler.ts
+api\verify\gemma.ts:190:// api/verify/gemma.ts
+
+--- C:\Projects\Gradifi\api\verify\googlebooks.ts ---
+api\verify\googlebooks.ts:1:// src/services/verify/federation/providerQuotas.ts
+api\verify\googlebooks.ts:57:// src/services/verify/federation/rateLimiter.ts
+api\verify\googlebooks.ts:146:// src/services/verify/federation/providerLogger.ts
+
+--- C:\Projects\Gradifi\api\verify\nemotron.ts ---
+api\verify\nemotron.ts:1:// src/services/verify/server/geminiServerHandler.ts
+api\verify\nemotron.ts:66:// src/services/verify/server/nemotronServerHandler.ts
+api\verify\nemotron.ts:229:// api/verify/nemotron.ts
+
+--- C:\Projects\Gradifi\api\verify\openalex.ts ---
+api\verify\openalex.ts:1:// src/services/verify/server/passageExtractor.ts
+api\verify\openalex.ts:94:// src/services/verify/server/openAlexServerHandler.ts
+api\verify\openalex.ts:238:// api/verify/openalex.ts
+
+--- C:\Projects\Gradifi\api\verify\persist.ts ---
+api\verify\persist.ts:36:// node_modules/@supabase/supabase-js/dist/tracingRegistry.mjs
+api\verify\persist.ts:47:// node_modules/tslib/tslib.es6.mjs
+api\verify\persist.ts:572:// node_modules/@supabase/functions-js/dist/main/helper.js
+
+--- C:\Projects\Gradifi\api\verify\semanticscholar.ts ---
+api\verify\semanticscholar.ts:1:// src/services/verify/federation/providerQuotas.ts
+api\verify\semanticscholar.ts:57:// src/services/verify/federation/rateLimiter.ts
+api\verify\semanticscholar.ts:146:// src/services/verify/federation/providerLogger.ts
+
+--- C:\Projects\Gradifi\api\verify\unpaywall.ts ---
+api\verify\unpaywall.ts:1:// src/services/verify/federation/providerQuotas.ts
+api\verify\unpaywall.ts:57:// src/services/verify/federation/rateLimiter.ts
+api\verify\unpaywall.ts:146:// src/services/verify/federation/providerLogger.ts
+
+
+

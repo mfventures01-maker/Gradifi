@@ -1,0 +1,431 @@
+FILE: src\pages\verify\GradifiVerifyDemoPage.tsx
+
+  /**
+>  * GRADIFI VERIFY - 2-HOUR DEMO CRITICAL PATH WORKBENCH
+   * Complete visually polished, evidence-backed end-to-end verification workflow page.
+   * HOEOS Standard: Absolute Determinism, Provenance Transparency, Zero Secret Leakage.
+   */
+  import React, { useState, useEffect } from 'react';
+  import { useNavigate, useParams } from 'react-router-dom';
+> import { publicVerificationService, PublicVerificationResolution } from '../../services/verify/publicVerificationService';
+  import {
+    FileUp,
+    FileText,
+    FileCheck
+  } from 'lucide-react';
+> import { verifyCoreService } from '../../services/verify/verifyCoreService';
+> import { verificationPersistenceService } from '../../services/verify/verificationPersistenceService';
+> import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument } from 
+'../../services/verify/types';
+> import { toPublicVerificationResult, PublicVerificationResult } from '../../services/verify/publicVerificationResult';
+> import { ingestDocument } from '../../services/verify/universalIngestionService';
+> import { resolveMatchedEvidenceSpans } from '../../services/verify/matchedTextHighlightingService';
+> import { CanonicalDocumentViewer } from '../../components/verify/CanonicalDocumentViewer';
+> import { CorrectionPanel } from '../../components/verify/CorrectionPanel';
+> import { SourceDetailPanel } from '../../components/verify/SourceDetailPanel';
+> import { getStatusStyle } from '../../services/verify/statusColorMapping';
+  import { extractDocumentText, ExtractedDocument, validateDocumentFile, formatFileSize } from '../../utils/pdfExtractor';
+  import { generateQRCodeSVG } from '../../utils/qrGenerator';
+  import { generateVerificationReportPDF } from '../../utils/pdfReportGenerator';
+  import { jsPDF } from 'jspdf';
+> import { buildCanonicalAnalysisDocument } from '../../services/verify/documentNormalizer';
+  
+  const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
+    core: 'CORE',
+  }
+  
+> export const GradifiVerifyDemoPage: React.FC = () => {
+    const navigate = useNavigate();
+  
+    // Workflow state
+  
+    // Verification result state
+>   const [verifying, setVerifying] = useState(false);
+    const [result, setResult] = useState<EvidenceEngineResult | null>(null);
+    const { verificationId: routeParamId } = useParams<{ verificationId?: string }>();
+    const [verificationId, setVerificationId] = useState<string>('');
+    const [resolvingPublic, setResolvingPublic] = useState(false);
+    const [publicResolution, setPublicResolution] = useState<PublicVerificationResolution | null>(null);
+>   const [selectedSourceId, setSelectedSourceId] = useState<string | undefined>(undefined);
+  
+    // Canonical Public Result Boundary (Presentation Firewall)
+    const publicResult: PublicVerificationResult | null = result
+  
+    // Resolved Matched Evidence Spans for Visual Evidence Viewer (strictly bound to authoritative canonical text)
+>   const evidenceSpans = result?.canonicalDocument?.rawText
+>     ? resolveMatchedEvidenceSpans(result.canonicalDocument.rawText, result.verifiedSources, result.similarityAnalysis?.findings)
+      : [];
+  
+    useEffect(() => {
+    useEffect(() => {
+      if (verificationId) {
+>       generateQRCodeSVG(`${window.location.origin}/verify/${verificationId}`, 130)
+          .then(setQrSvgHtml)
+          .catch(() => setQrSvgHtml(''));
+      }
+        setUploadProgress(100);
+        setUploadStatus('EXTRACTED');
+>       if (res.canonicalDocument) {
+>         setCanonicalDoc(res.canonicalDocument);
+          setNormalizedDoc({
+>           title: res.canonicalDocument.title,
+>           authors: res.canonicalDocument.authors,
+>           abstract: res.canonicalDocument.abstract,
+>           publication: res.canonicalDocument.publication || 'Journal of Advanced Computer Science',
+>           year: res.canonicalDocument.year || 2024,
+>           doi: res.canonicalDocument.doi,
+>           isbn: res.canonicalDocument.isbn,
+>           url: res.canonicalDocument.doi ? `https://doi.org/${res.canonicalDocument.doi}` : undefined,
+>           identifiers: res.canonicalDocument.identifiers
+          });
+        } else {
+          parseNormalizedMetadata(res.text);
+    const handleExecuteVerification = async () => {
+      if (!documentText.trim()) {
+>       setUploadError('Please select or enter document text to verify.');
+        return;
+      }
+  
+>     setVerifying(true);
+      setCurrentStep('federation');
+  
+      try {
+>       let res = await verifyCoreService.executeVerifyRun(documentText);
+>       if ((import.meta.env.DEV || import.meta.env.VITE_ENABLE_TEST_SEAM === 'true') && typeof window !== 'undefined') {
+>         const hook = (window as any).__GRADIFI_TEST_TRANSFORM_VERIFY_RESULT__;
+          if (typeof hook === 'function') {
+            res = hook(res);
+          }
+          policyVersion: res.policyVersion,
+          overallSimilarity: res.overallSimilarity,
+>         totalSourcesFound: res.totalSourcesFound
+        };
+  
+        const persistEnvelope = {
+>         findingCount: res.findings?.length ?? 0,
+>         sourceCount: res.verifiedSources?.length ?? 0,
+>         firstSourceIds: (res.verifiedSources ?? []).slice(0, 10).map(s => s.sourceId),
+          uniqueMatchedCoverage: res.uniqueMatchedCoverage ?? res.overallSimilarity,
+>         highestSourceMatch: res.highestSourceMatch ?? 0,
+          timestamp: res.timestamp ?? new Date().toISOString()
+        };
+  
+        setResult(res);
+        if (typeof window !== 'undefined') {
+>         (window as any).__GRADIFI_VERIFY_RESULT__ = res;
+        }
+        setCurrentStep('result');
+      } catch (err: any) {
+        setResult(null);
+        if (typeof window !== 'undefined') {
+>         (window as any).__GRADIFI_VERIFY_RESULT__ = null;
+        }
+      } finally {
+>       setVerifying(false);
+      }
+    };
+  
+      doc.text(`Overall Similarity: ${result.overallSimilarity}%`, 14, 48);
+  
+>     doc.text('Academic Evidence Sources', 14, 60);
+      let y = 68;
+>     const sources = result.verifiedSources || [];
+>     for (const source of sources.slice(0, 15)) {
+>       const line = `${source.title || 'Untitled'} — ${source.doi || source.isbn || 'no id'}`;
+        doc.text(line, 14, y);
+        y += 6;
+        if (y > 280) {
+  
+    // Derive Google Books matches for evidence panel and hub consistency
+>   const googleBooksMatches = (result?.verifiedSources || []).filter(
+      m => m.provenance?.provider === 'googlebooks'
+    );
+    const googleBooksProvenance: ProviderProvenance | undefined = googleBooksMatches[0]?.provenance;
+              </p>
+              <p className="text-xs text-slate-500">
+>               Querying authoritative public system of record and verifying cryptographic hash grounding...
+              </p>
+            </div>
+          </div>
+        const envelope = rec.evidence_envelope || {};
+        const envResult = envelope.result || {};
+>       const sources: any[] = envResult.verifiedSources || envelope.verifiedSources || [];
+>       const findings: any[] = envResult.similarityAnalysis?.findings || envelope.findings || [];
+  
+        return (
+          <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-6 md:p-8 selection:bg-blue-600 
+selection:text-white">
+                <div>
+                  <button
+>                   onClick={() => navigate('/verify')}
+                    className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 font-medium mb-2 cursor-pointer 
+transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" /> Open Verification Workbench
+  
+                      <div className="bg-slate-950/50 border border-slate-800/80 rounded-xl p-4">
+>                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Sources Found</span>
+                        <span className="text-2xl font-black text-white tracking-tight">
+>                         {rec.total_sources_found}
+                        </span>
+                      </div>
+                    </div>
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+>                       Independent parties can verify this identity against the immutable system of record.
+                      </div>
+                      <div className="text-[10px] font-mono text-slate-500 break-all">
+>                       {window.location.origin}/verify/{rec.verification_id}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+>               {/* Authoritative Verified Evidence Sources */}
+>               {sources.length > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+>                     <BookOpen className="w-4 h-4 text-blue-400" /> Authoritative Verified Evidence Sources ({sources.length})
+                    </h3>
+                    <div className="divide-y divide-slate-800/60 border border-slate-800/80 rounded-xl overflow-hidden 
+bg-slate-950/30">
+>                     {sources.map((src: any, idx: number) => (
+                        <div key={idx} className="p-3.5 space-y-1.5 text-xs hover:bg-slate-800/20 transition-colors">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-bold text-slate-200">
+>                             {src.title || src.provenance?.title || `Source #${idx + 1}`}
+                            </span>
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-500/10 border 
+border-blue-500/20 text-blue-400 shrink-0">
+>                             {src.sourceId || src.provider || 'ACADEMIC_SOURCE'}
+                            </span>
+                          </div>
+                          {src.authors && Array.isArray(src.authors) && (
+                              className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 
+hover:underline pt-1"
+                            >
+>                             <ExternalLink className="w-3 h-3" /> View Source Evidence
+                            </a>
+                          )}
+                        </div>
+                )}
+  
+>               {/* Authoritative Findings */}
+>               {findings.length > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+>                     <Search className="w-4 h-4 text-indigo-400" /> Evidence Engine Findings ({findings.length})
+                    </h3>
+                    <div className="space-y-2">
+>                     {findings.map((f: any, idx: number) => (
+                        <div key={idx} className="p-3 bg-slate-950/50 border border-slate-800/80 rounded-xl text-xs space-y-1">
+                          <div className="flex items-center justify-between">
+>                           <span className="font-semibold text-slate-200">{f.findingType || 'Academic Match Finding'}</span>
+                            <span className="font-mono text-[10px] text-slate-400">Score: {f.confidence || f.similarity || 
+'100%'}</span>
+                          </div>
+                          <p className="text-slate-400 text-[11px]">{f.description || f.snippet || f.text}</p>
+              </button>
+              <button
+>               onClick={() => navigate('/verify')}
+                className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white 
+rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
+              >
+                <ArrowLeft className="w-4 h-4" /> Go to Verification Hub
+                  <ShieldCheck className="w-8 h-8 text-white" />
+                </span>
+>               GRADIFI VERIFY
+                <span className="text-xs font-bold px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-full 
+uppercase tracking-wider">
+                  HOEOS 2-Hour Demo Critical Path
+                </span>
+                { id: '02 EXTRACT', step: 'upload', icon: FileText },
+                { id: '03 NORMALIZE', step: 'normalization', icon: Layers },
+>               { id: '04 VERIFY', step: 'federation', icon: Search },
+                { id: '05 FEDERATE', step: 'federation', icon: Cpu },
+                { id: '06 RESULT', step: 'result', icon: ShieldCheck },
+                { id: '07 RECEIPT', step: 'result', icon: QrCode }
+                </div>
+  
+>               {/* Verify Action Button */}
+                <button
+                  type="button"
+                  onClick={handleExecuteVerification}
+>                 disabled={verifying || !documentText.trim()}
+                  className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg 
+transition-all cursor-pointer ${
+>                   verifying || !documentText.trim()
+                      ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                      : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white 
+shadow-blue-500/25 active:scale-[0.99]'
+                  }`}
+                >
+>                 {verifying ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Querying Academic Federation...
+                    </>
+                    </h2>
+                    <div className="flex items-center gap-1.5">
+>                     {canonicalDoc?.source.isFixture ? (
+                        <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 
+py-0.5 rounded-full">
+                          PROVENANCE: FIXTURE
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 
+px-2 py-0.5 rounded-full">
+>                         PROVENANCE: {canonicalDoc?.source.origin || 'EXTRACTED'}
+                        </span>
+                      )}
+                    </div>
+                          const prov = match.provenance;
+                          return (
+>                           <div key={match.sourceId || idx} className="space-y-3 pb-3 border-b border-slate-800/60 last:border-0 
+last:pb-0">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-950/60 p-4 rounded-xl border 
+border-slate-800/80">
+                                <div>
+                                  <span className="text-slate-500 font-bold uppercase text-[10px] block">Title</span>
+                                <span className="text-slate-500">Google Books Record ID: <code 
+className="text-slate-300">{prov.providerRecordId}</code></span>
+                                <a
+>                                 href={prov.sourceUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1"
+                                >
+>                                 Google Books Source <ExternalLink className="w-3 h-3" />
+                                </a>
+                              </div>
+                            </div>
+                        </div>
+                        <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-center">
+>                         <div className="text-slate-500 uppercase font-bold text-[10px]">N-Gram Findings</div>
+>                         <div className="font-extrabold text-sm text-slate-200 
+mt-0.5">{result.plagiarismEvidence.ngramFindingCount}</div>
+                        </div>
+                        <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-center">
+                          <div className="text-slate-500 uppercase font-bold text-[10px]">Human Review</div>
+                    </div>
+  
+>                   {result.canonicalDocument?.rawText ? (
+>                     <CanonicalDocumentViewer
+>                       documentText={result.canonicalDocument.rawText}
+>                       findings={result.similarityAnalysis?.findings ?? []}
+>                       matches={result.verifiedSources}
+>                       onFindingClick={(id) => {
+>                         document.getElementById(`finding-${id}`)
+                            ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }}
+                      />
+                  {/* Correction Guidance Panel */}
+                  <CorrectionPanel
+>                   findings={result.similarityAnalysis?.findings ?? []}
+>                   matches={result.verifiedSources}
+                    onActionClick={(id, action) => {
+                      // optional: wire to existing scroll behaviour
+                    }}
+                  />
+  
+>                 {/* Source Attribution & Citation Hub (P5) */}
+                  {publicResult && (
+>                   <SourceDetailPanel
+                      publicResult={publicResult}
+                      spans={evidenceSpans}
+>                     selectedSourceId={selectedSourceId}
+>                     onSelectSource={setSelectedSourceId}
+                    />
+                  )}
+  
+                      </div>
+  
+>                     {/* Dual Authority Metrics: Unique Matched Coverage vs Highest Source Match */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="text-center py-2.5 bg-slate-950/60 rounded-xl border border-slate-800">
+                          <div className="text-2xl font-black text-white">
+                        <div className="text-center py-2.5 bg-slate-950/60 rounded-xl border border-slate-800">
+                          <div className="text-2xl font-black text-emerald-400">
+>                           {(result.aggregation?.highestSourceMatch ?? result.overallSimilarity).toFixed(1)}%
+                          </div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mt-0.5">
+>                           Highest Source Match
+                          </div>
+                        </div>
+                      </div>
+                        <div className="bg-slate-950/40 border border-slate-800/80 rounded-lg p-1.5">
+                          <div className="font-bold text-slate-200">
+>                           {result.aggregation?.totalSourceMatches ?? result.verifiedSources.length}
+                          </div>
+>                         <div className="text-[9px] text-slate-400 uppercase">Sources</div>
+                        </div>
+                        <div className="bg-slate-950/40 border border-slate-800/80 rounded-lg p-1.5">
+                          <div className="font-bold text-amber-400">
+                      <div className="space-y-2 text-xs">
+                        <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
+>                         <span className="text-slate-400 font-semibold">Evidence Breakdown (Source → Unit):</span>
+                          <span className="font-mono text-[10px] text-slate-400">
+>                           {result.aggregation?.sourceReports?.length ?? 0} Matched Sources
+                          </span>
+                        </div>
+  
+>                       {result.aggregation?.sourceReports && result.aggregation.sourceReports.length > 0 ? (
+                          <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+>                           {result.aggregation.sourceReports.map((src, sIdx) => (
+>                             <details key={src.sourceId || sIdx} className="bg-slate-950/60 border border-slate-800 rounded-lg 
+p-2 group text-[11px]">
+                                <summary className="cursor-pointer font-bold text-slate-200 flex items-center justify-between 
+hover:text-emerald-400">
+                                  <span className="truncate max-w-[200px]">
+                                    {src.title}
+                                <div className="mt-2 pt-2 border-t border-slate-800 space-y-2 pl-2">
+                                  <div className="text-[10px] text-slate-400 flex justify-between">
+>                                   <span>ID: {src.sourceId}</span>
+                                    <span>P: {src.paragraphMatches} | S: {src.sentenceMatches} | Phr: {src.phraseMatches}</span>
+                                  </div>
+  
+                                      </div>
+                                      <div className="text-slate-400 text-[9px]">
+>                                       Source: "{sent.sourceText.slice(0, 90)}..."
+                                      </div>
+                                    </div>
+                                  ))}
+                        ) : (
+                          <div className="text-[11px] text-slate-500 italic py-2">
+>                           No text overlap findings detected across external academic sources.
+                          </div>
+                        )}
+  
+                        <div className="p-3 bg-purple-950/20 border border-purple-800/30 rounded-xl space-y-1">
+                          <div className="font-bold text-purple-300 text-[11px] flex items-center gap-1.5">
+>                           <Sparkles className="w-3.5 h-3.5 text-purple-400" /> AI Findings Interpretation
+                          </div>
+                          {anyAiVerified ? (
+                            <p className="text-slate-300 text-[11px] leading-relaxed">
+>                             {result.findings?.[0]?.explanation || 'AI evidence analysis verified.'}
+                            </p>
+                          ) : (
+                            <p className="text-slate-500 text-[11px] leading-relaxed">
+>                             AI Federation unavailable. No AI-derived signals were produced. Deterministic similarity findings 
+above remain authoritative.
+                            </p>
+                          )}
+                        </div>
+                      </h2>
+                      <span className="text-xs font-bold text-slate-400">
+>                       {publicResult ? `${publicResult.totalVerifiedSources} Verified Academic Sources` : 
+`${result.verifiedSources.length} Verified Academic Sources`}
+                      </span>
+                    </div>
+  
+                        <thead>
+                          <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
+>                           <th className="py-2.5 px-3">Provider / Source</th>
+                            <th className="py-2.5 px-3">Credential</th>
+                            <th className="py-2.5 px-3">Request</th>
+                            <th className="py-2.5 px-3">Response</th>
+  };
+  
+> export default GradifiVerifyDemoPage;
+
+
+

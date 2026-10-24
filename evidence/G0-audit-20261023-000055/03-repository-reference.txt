@@ -1,0 +1,30 @@
+﻿# SECTION 3 — Repository reference state
+
+## .gitignore
+Exists:       True
+SHA-256:      7338216c7655a6f68cc8ca27d04099cc1b244d8e38ae24d271e5a4374e21e833
+Line count:   35
+
+## Tracked files
+Count:        784
+Sorted-list SHA-256: 61998eab1f6b9a2286c5be3c37d6e527c7a0c9fec201405613ce0189ca142674
+
+## Explicitly ignored files
+Count:        21107
+
+## Tracked modifications
+  e2e/g4-live-provider-certification.spec.ts
+  package-lock.json
+  package.json
+  playwright.config.ts
+  src/components/verify/CanonicalDocumentViewer.tsx
+  src/services/verify/deterministicEngine.ts
+  src/services/verify/documentNormalizer.ts
+  src/services/verify/universalIngestionService.ts
+  src/services/verify/verifyCoreService.ts
+
+## Tracked deletions
+  (none)
+
+## Staged (must be empty)
+  (empty — nothing staged)

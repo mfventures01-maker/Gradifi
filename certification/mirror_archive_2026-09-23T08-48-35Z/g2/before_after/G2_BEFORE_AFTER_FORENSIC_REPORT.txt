@@ -1,0 +1,109 @@
+﻿# HOEOS G2 DETERMINISTIC SIMILARITY EVIDENCE — BEFORE/AFTER FORENSIC REPORT
+
+## Identification
+
+| Field | Value |
+|---|---|
+| Gate | G2 Deterministic Similarity Evidence |
+| BEFORE Commit | 24ac365 (certify G1 scanned PDF OCR ingestion) |
+| AFTER Commit | 8c7303d (G1 CERTIFIED PASS: add fixture and certification record) |
+| Branch | clean-deploy |
+| Timestamp | 2026-09-22T16:15:00Z |
+| Environment | Windows PowerShell, Node v24.18.1, npm 11.16.0 |
+
+---
+
+## 1. SCOPE OF CHANGE BETWEEN COMMITS
+
+RUNTIME command:
+  git diff 24ac365 8c7303d --name-only
+
+RUNTIME output:
+  certification/g1/G1_CERTIFICATION_RECORD.txt
+  certification/g1/G1_CERTIFICATION_TEST_OUTPUT.txt
+  tests/fixtures/ingestion/scanned_page_001.pdf
+
+CLASSIFICATION: STATIC
+Only three files changed between BEFORE and AFTER:
+- Two new G1 certification evidence files (documentation artifacts).
+- One new fixture file (tests/fixtures/ingestion/scanned_page_001.pdf) used exclusively by G1 OCR test.
+No G2 engine source files were modified.
+
+---
+
+## 2. G2 ENGINE FILE HASH COMPARISON
+
+Method: git show <commit>:<file> content hashed via SHA-256 (UTF-8 encoded).
+
+File                                                  | BEFORE (24ac365)                   | AFTER (8c7303d)                    | Status
+------------------------------------------------------|-------------------------------------|-------------------------------------|----------
+src/services/verify/deterministicEngine.ts            | C66DFA7D...FF7063                   | C66DFA7D...FF7063                   | UNCHANGED
+src/services/verify/plagiarismPolicy.ts               | D36BE06A...3085E                    | D36BE06A...3085E                    | UNCHANGED
+src/services/verify/matchedTextHighlightingService.ts | B9AA8F1E...E42A                     | B9AA8F1E...E42A                     | UNCHANGED
+src/services/verify/canonicalTextOffsetService.ts     | 9B61561...B9CCC                     | 9B61561...B9CCC                     | UNCHANGED
+tests/deterministicSimilarityEvidence.test.ts         | 5487E749...A4A0                     | 5487E749...A4A0                     | UNCHANGED
+
+Full hashes:
+
+BEFORE (24ac365):
+src/services/verify/deterministicEngine.ts          = C66DFA7D6F5105CB7414EC566B3C291FC14E03558C0C0F61DA74C92D87FF7063
+src/services/verify/plagiarismPolicy.ts             = D36BE06A6C2E1E79C05B8104AA265FFF19B237737528402DC2BD68AC20B3085E
+src/services/verify/matchedTextHighlightingService.ts = B9AA8F1EED9E8A85173D2CCFE9E1B5F67657CBBAC11C26FB789DE64BA4A8E42A
+src/services/verify/canonicalTextOffsetService.ts   = 9B61561588EF15E5C3A8C85BC6192307CD8543B9E5FA3AF503AC7C452B5B9CCC
+tests/deterministicSimilarityEvidence.test.ts       = 5487E74992CC5636919419CA97668C16B629F547754D93098BB3FDA91C57A4A0
+
+AFTER (8c7303d):
+src/services/verify/deterministicEngine.ts          = C66DFA7D6F5105CB7414EC566B3C291FC14E03558C0C0F61DA74C92D87FF7063
+src/services/verify/plagiarismPolicy.ts             = D36BE06A6C2E1E79C05B8104AA265FFF19B237737528402DC2BD68AC20B3085E
+src/services/verify/matchedTextHighlightingService.ts = B9AA8F1EED9E8A85173D2CCFE9E1B5F67657CBBAC11C26FB789DE64BA4A8E42A
+src/services/verify/canonicalTextOffsetService.ts   = 9B61561588EF15E5C3A8C85BC6192307CD8543B9E5FA3AF503AC7C452B5B9CCC
+tests/deterministicSimilarityEvidence.test.ts       = 5487E74992CC5636919419CA97668C16B629F547754D93098BB3FDA91C57A4A0
+
+CLASSIFICATION: STATIC
+All five G2 engine source files are byte-for-byte identical between BEFORE and AFTER.
+Hash equality proven by git show extraction + SHA-256.
+
+---
+
+## 3. G2 TEST SUITE RUNTIME EVIDENCE
+
+The G2 test suite (tests/deterministicSimilarityEvidence.test.ts) was executed at both states.
+
+BEFORE result (certification/g2/before/G2_SUITE_BEFORE.txt):
+  G2 SIMILARITY TEST SUITE RESULTS: 40 PASSED, 0 FAILED.
+
+AFTER result (certification/g2/after/G2_SUITE_AFTER.txt):
+  G2 SIMILARITY TEST SUITE RESULTS: 40 PASSED, 0 FAILED.
+
+CLASSIFICATION: RUNTIME
+G2 suite produced 40/40 PASS at both states. No divergence.
+
+---
+
+## 4. DIVERGENCE ANALYSIS
+
+Where the engine diverges between BEFORE and AFTER: NONE.
+
+The G1 OCR certification only added:
+  1. Evidence artifacts (certification/g1/)
+  2. A scanned PDF fixture (tests/fixtures/ingestion/scanned_page_001.pdf)
+Neither file is imported, referenced, or reachable by the G2 engine code path.
+
+Where the engine is provably unchanged:
+All five G2 source/test files carry identical SHA-256 hashes at both commits.
+git diff 24ac365 8c7303d --name-only returns zero G2 file paths.
+Disk-verifiable by repeating the command.
+
+---
+
+## 5. SUMMARY VERDICT
+
+Finding                                              | Classification | Result
+-----------------------------------------------------|----------------|-----------------------------
+G2 engine source files changed between BEFORE/AFTER  | STATIC         | UNCHANGED (hash-equal)
+G2 test suite results diverged between BEFORE/AFTER  | RUNTIME        | UNCHANGED (40/40 PASS both)
+G1 certification scope affected G2 engine code       | STATIC         | NOT AFFECTED
+G2 determinism contract preserved after G1 cert      | STRUCTURAL     | PRESERVED
+
+G2 BEFORE/AFTER STATUS: INVARIANT
+G2 engine and test suite are provably unchanged by the G1 OCR certification.

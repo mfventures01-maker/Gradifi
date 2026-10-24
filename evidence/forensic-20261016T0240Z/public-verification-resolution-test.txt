@@ -1,0 +1,89 @@
+﻿TEST EXECUTION REPORT: publicVerificationResolution.test.ts
+===========================================================
+Command:      npx tsx tests/publicVerificationResolution.test.ts
+Working Dir:  C:\Projects\Gradifi
+Git HEAD:     9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44
+Test Hash:    0DA92F5F2012C98D8C79AF17CD3EC291DED320C25720A9867006B8AFD53D4B8D
+Start Time:   2026-10-16T03:45:37+01:00
+End Time:     2026-10-16T03:45:56+01:00
+Exit Code:    0
+
+CONSOLE OUTPUT:
+------------------------------------------------------
+ΓÜá∩╕Å  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+Γùç injected env (19) from .env.local // tip: Γîü auth for agents [www.vestauth.com]
+≡ƒº¬ GRADIFI VERIFY - HOEOS G6.3 PUBLIC RESOLUTION SUITE
+======================================================
+
+1. Verification ID Format Validation:
+  Γ£à PASS: VRF-8AFCFF6056B0 is valid format
+  Γ£à PASS: Case insensitive format is valid
+  Γ£à PASS: Current two-hash format is valid
+  Γ£à PASS: Short ID rejected
+  Γ£à PASS: Invalid prefix rejected
+  Γ£à PASS: Empty string rejected
+
+2. Invalid Format Resolution Handling:
+  Γ£à PASS: Returns INVALID_FORMAT status
+  Γ£à PASS: No record returned for invalid format
+  Γ£à PASS: Contains descriptive error message
+
+3. Document Hash Integrity Grounding:
+  Γ£à PASS: Derived two-hash ID matches VRF-8AFCFF609B01
+  Γ£à PASS: Derived legacy ID matches VRF-8AFCFF6056B0
+
+4. Integrity Failure Detection (Mismatched Document Hash):
+  Γ£à PASS: Mismatched document hash produces different derived ID
+
+5. No Fabricated Results Boundary:
+Public verification query returned error: TypeError: fetch failed
+  Γ£à PASS: Does not fabricate a valid result on missing record
+  Γ£à PASS: Record remains undefined for missing ID
+
+6. Public Read Boundary Specification:
+  Γ£à PASS: Public SELECT policy permits anonymous verification resolution
+  Γ£à PASS: Anonymous write permissions (INSERT/UPDATE/DELETE) strictly denied
+
+7. Route Resolution Contract:
+  Γ£à PASS: Route /verify/:verificationId maps to GradifiVerifyDemoPage
+  Γ£à PASS: useParams() extracts verificationId parameter from URL
+
+--- Controlled Database Compatibility & Integrity Scenarios ---
+
+8. Valid Current Two-Hash Record:
+  Γ£à PASS: Current two-hash record resolves with VALID status
+  Γ£à PASS: Preserves exact current verification ID
+
+9. Valid Historical Legacy Record:
+  Γ£à PASS: Historical legacy record resolves with VALID status
+  Γ£à PASS: Preserves exact historical verification ID
+
+10. Stored-ID / Requested-ID Mismatch:
+  Γ£à PASS: Rejects when stored verification_id differs from requested ID
+
+11. Tampered / Incorrect Document Hash:
+  Γ£à PASS: Rejects when document hash does not derive the verification ID
+
+12. Tampered / Incorrect Evidence Hash:
+  Γ£à PASS: Rejects when evidence hash does not match two-hash derivation
+
+13. Missing Document Hash Rejection:
+  Γ£à PASS: Rejects record with missing document_hash as MALFORMED_RECORD
+
+14. Missing Evidence Envelope Rejection:
+  Γ£à PASS: Rejects record with missing evidence_envelope as MALFORMED_RECORD
+
+15. Database Error Handling:
+Public verification query returned error: Connection timeout
+  Γ£à PASS: Returns RESOLUTION_ERROR on database failure
+  Γ£à PASS: Includes database error message in response
+
+16. Live Environment Status Probe:
+  Γ£à PASS: Live Supabase anon key configured
+
+======================================================
+≡ƒôè G6.3 PUBLIC RESOLUTION TEST SUMMARY: 30/30 checks passed.
+======================================================
+
+------------------------------------------------------

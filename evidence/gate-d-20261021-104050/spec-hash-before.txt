@@ -1,0 +1,8 @@
+﻿
+
+Algorithm : SHA256
+Hash      : 12767C80A3F6D0328324082BF7F06CBF465A76517A88E7DB3BE747D925A034E2
+Path      : C:\Projects\Gradifi\e2e\g4-live-provider-certification.spec.ts
+
+
+

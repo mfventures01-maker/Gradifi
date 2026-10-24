@@ -1,0 +1,911 @@
+CHAPTER ONE
+
+1.0INTRODUCTION	
+
+Thermometer In the seventeenth century, it was difficult to quantify heat which makes it difficult for people to measure their body temperature when they get sick. This became a concern to humanity thereby several researches were done in this regard. Instruments invented include a wind gauge, a water current meter, the âpulsilogiumâ, and a thermoscope, a precursor to the thermometer. In 1612, Santorio (physicians) an Italian inventor was the first to apply a numerical scale to his thermoscope which later evolved into various thermometers (which is a means of measuring âthe degree of hotness or coldnessâ (temperature) of an object or a fluid). At the time thermometers or heat meter was highly regarded as a medical equipment, for it could justify the human temperature at different stages (whether normal or abnormal) accurately. As a result of rapid technological development, thermometers are vastly used as medical equipment since the 19th century.
+
+As time goes by, thermometers of different types, shapes and sizes were invented and manufactured for both industrial and domestic use. There are ears, baby, basal, and instant-read thermometers too.
+
+However, the digital thermometer of interest in this projects work could be regarded as among the latest thermometers. It is highly efficient because of its fast response, accuracy and easy to read tendency; it has indicators for easier use. This thermometer is a digital type and as such, this makes it different and more sophisticated than the analogue type. It is a multipurpose, portable cheap and user friendly.
+
+1.1BACKGROUND OF THE STUDY	
+
+From the research carried out, today digital thermometers have almost entirely replaced the liquid in gas thermometer in the consumer market. Before the introduction of the digital thermometer, thermometer uses liquid or gas to measure temperature and lacked standards for readings. The first consistent standard came when mercury is being used. Daniel Gabriele A Fahrenheit created a temperature scale that could reproduce reliable temperatures.
+
+In the 1990s scientists deemed the mercury based thermometer was risky to handle. It had to be swung sharply to be reset. Since then, mercury thermometers have been replaced in stores with digital ones. The basic principle for measuring temperature, however still remains the same. All heat meters require a temperature sensor and a means of translating a change in temperature into a numerical value for example, in a mercury thermometer the temperature sensor is the mercury. The change in numerical value registers on the scale on the thermometer.
+
+The most common way for a digital thermometer to measure temperature is via a thermal resistor or transistor. When a change in temperature occurs the device chan ges its resistance or conductivity, then a circuit translates that resistance into a reading.
+
+The consumer market for the digital thermometer has expanded in the past 20years. We use to rely upon gas or liquid thermometer to provide body temperature readings; temperature outdoors. However, businesses have met consumer demands and substituted gas and liquid thermometers with digital ones.
+
+1.2	 AIMS AND OBJECTIVES
+
+The aim and objective of the design and construction of digital thermometer are as follows:
+
+1.To study already existing method of heat sensing and measurement.	
+
+2.To be able to build a modern digital heat sensing device.	
+
+3.To design and implement a heat meter which can easily be integrated to large systems.	
+
+ 1.3SCOPE/LIMITATION OF THE STUDY	
+
+The scope of this project is to design and implement a digital thermometer that can measure/sense temperature and display its output numerically. There are various possible ways to achieve this design. However, the type of design in this material is as preferred to others, for the fact that it is cheap and the components are readily available.
+
+This digital thermometer circuit uses LM35 sensor for sensing heat, the sensed heat is then sent to micro processor of PIC series named PIC16F877A which then process the sent temperature data. Furthermore the processed data displayed on 2X16 Liquid Crystal Display Screen.
+
+
+
+
+
+
+CHAPTER TWO
+
+2.0 		          	LITERATURE REVIEW
+
+2.1	DIGITAL THERMOMETER
+
+According to Mehta, (1980), a heat meter is a device used to measure temperature (i.e. it is a means of measuring âthe degree of hotness or coldness of a fluid (liquid)) usually in the Celsius scale. A heat meter can use any of the following several methods to register temperature. These include mercury, liquid âin- glass, electronic with digital display, infrared and tympanic and disposable dot matrix. Digital heat rate meter is an instrument that senses temperature or heat and have a digital display. It is highly efficient because of its fast response, accuracy and easy to read tendency. It is potable, cheap, multipurpose and user friendly and more so, the digital thermometer is self calibrating and needs relatively little care.     
+
+A Beckmann heat meter for example is a device used to measure small differences of heats, but not absolute temperature values. It was invented by Ernest Otto Beckmann (1853â1923), a German chemist, for his measurement of colligative properties in 1905. Today its use has largely been (Gupta, 2010). 
+
+Beckmann thermometerâs length is usually 40â50cm. the temperature scale typically covers about 50C and it is divided into hundredths of a degree. With a magnifier, it is possible to estimate temperature changes to 0.0010C. The peculiarity of Beckmann thermometer design is a reservoir at the upper end of the tube, by means of which the quantity of mercury in the bulb can be increased or diminished so that the instrument can be set to measure temperature differences at either high or low temperature values. In contrast, the range of a typical mercury in glass thermometer is fixed, being set by the calibration marks etched on the glass or the marks on the printed scale.
+
+In setting the thermometer, a sufficient amount of mercury must be left in the bulb and stem to give readings between the required temperatures. First, the thermometer is inverted and gently tapped so that the mercury in the reservoir lodges in the bend at the end of the stem. Next, the bulb is heated until the mercury in the stem joins the mercury in the reservoir. The thermometer is then placed in a bath one or two degrees above the upper limit of the temperature to be measured.
+
+The upper end of the tube is gently tapped with the finger, and the mercury suspended in the upper part of the reservoir will be jarred down, thus separating it from the thread at the bend. 
+
+2.2	THE EXISTING SYSTEM
+
+The following are among the various types of existing heat sensing device. 
+
+
+
+
+
+2.2.1	MERCURY -IN -GLASS THERMOMETER (MERCURY 	THERMOMETER): 
+
+According to Horowitz (1989), It was invented by German physicist Daniel Gabriel Fahrenheit and it is a thermometer which provides temperature readings through the expansion and contraction of mercury inside a calibrated tube. This device was extensively used to measure temperatures in a wide variety of settings from the 1700s until the 20th century, when concerns about the health risks of mercury exposure led many nations to place restrictions on mercury in glass thermometers. Medical use of this instrument is largely banned, with remaining manufacture of mercury- in- glass thermometers being aimed primarily at meteorological researchers.
+
+This device works by having a large bulb filled with mercury at the bottom of the thermometer, attached to a thin tube. As temperature rises, the mercury expands, travelling up the tube. One can read the temperature with mercury- in- glass thermometer by finding the marking which correlates with the height of the mercury. As the temperature reduces (lowers), the mercury contracts, shrinking back down into the bulb. In extremely cold temperatures, the mercury in glass thermometer will not function, because the mercury itself will be frozen, with a maximum thermometer, the mercury will be held at the highest point until the thermometer is shaken, allowing someone to read the maximum temperature registered on the thermometer.
+
+The developers of the Fahrenheit and Celsius scale both used the mercury- in- glass- thermometer in their research, and created a system of calibration which allowed for the development of standardized temperature scales. To calibrate a mercury-in-glass thermometer, people use known temperature conditions, such as boiling water, to confirm that the thermometer is reading correctly. 
+
+
+
+
+
+
+
+Fig 2.1 mercury-in-glass thermometer
+
+2.2.2	ALCOHOL THERMOMETER
+
+The alcohol thermometer or spirit thermometer is an alternative to the mercury- in- glass thermometer, and function in a similar way as stated by Theraja, (2005). But unlike the mercury âin- glass thermometer, the content of an alcohol thermometer are less toxic and will evaporate away fairly quickly. An organic liquid is contained in a glass bulb which is connected to a capillary of the same glass and the end is sealed with an expansion bulb. The space above the liquid is a mixture of nitrogen and vapour of the liquid.  For the working temperature range, the meniscus or interface between the liquid is within the capillary. With increasing temperature, the volume of liquid expands and the meniscus moves up the capillary. The position of the meniscus shows the temperature against an inscribed scale. It is an important need for science experiments.
+
+The liquid used can be pure ethanol, toluene, kerosene, or isoamyl acetate, depending on manufacturer and working temperature range. Since these are transparent, the liquid is made more visible by the addition of a red or blue dye. One half of the glass containing the capillary enameled white or yellow is to give a background for reading the scale.
+
+
+
+
+
+
+
+2.2.3CLINICAL THERMOMETER	
+
+A clinical thermometer is a thermometer which is designed for clinical use in humans or animals.  There are number of considerations integrated into the design of clinical thermometers, including the need to reduce the risk of cross contamination between patients. Many drug stores carry clinical thermometer which are designed for home use by people who want to be able to monitor their temperature (Gupta, ,2010). These products are also available from medical supply catalogs.
+
+Historically, clinical thermometers were made with mercury, but today mercury thermometers are rarely seen in clinical use. The issue with a mercury clinical thermometer is that the thermometer can break spilling mercury and posing a risk of human or animal health. Such thermometers can also be difficult to use, as they need to be held in place for several minutes, and they need to be swung to reset, as the thermometer is designed to hold the mercury in place once a maximum temperature has been reached so that the thermometer can be taken out for an accurate reading.
+
+Clinical thermometers can be inserted into the mouth, ear, or armpit, depending on the design. Some are also designed to attach to the forehead. Given the fact that clinical thermometers are inserted into rather intimate locations, sterilization is important. Another important issue is calibration, as it is important to get an accurate reading when a few degrees can make a big difference. Clinical thermometers must also be easy to use and read to ensure that people are likely to get proper/ accurate readings.
+
+2.2.4	BECKMANN THERMOMETER
+
+A Beckmann thermometer is a device used to measure small differences of temperatures, but not absolute temperature values. It was invented by Ernest Otto Beckmann (1853â1923), a German chemist, for his measurement of colligative properties in 1905. Today its use has largely been. 
+
+Beckmann thermometerâs length is usually 40â50cm. the temperature scale typically covers about 50C and it is divided into hundredths of a degree. With a magnifier, it is possible to estimate temperature changes to 0.0010C. The peculiarity of Beckmann thermometer design is a reservoir at the upper end of the tube, by means of which the quantity of mercury in the bulb can be increased or diminished so that the instrument can be set to measure temperature differences at either high or low temperature values. In contrast, the range of a typical mercury in glass thermometer is fixed, being set by the calibration marks etched on the glass or the marks on the printed scale.
+
+In setting the thermometer, a sufficient amount of mercury must be left in the bulb and stem to give readings between the required temperatures. First, the thermometer is inverted and gently tapped so that the mercury in the reservoir lodges in the bend at the end of the stem. Next, the bulb is heated until the mercury in the stem joins the mercury in the reservoir. The thermometer is then placed in a bath one or two degrees above the upper limit of the temperature to be measured.
+
+The upper end of the tube is gently tapped with the finger, and the mercury suspended in the upper part of the reservoir will be jarred down, thus separating it from the thread at the bend. The thermometer will then be set for reading between the required temperatures.
+
+
+
+
+
+Fig 2.3 Beckmann thermometer
+
+2.2.5	LIQUID CRYSTAL THERMOMETER
+
+A Liquid Crystal thermometer or plastic strip thermometer is a type of thermometer that contains heat-Sensitive (thermochromic) liquid crystals in a plastic strip that changes colour to indicate different temperatures Mehta, (1980). Liquid crystals posses the mechanical properties of a liquid, but have the optical properties of a single crystal. Temperature changes can affect the colour of a liquid crystal, which makes them useful for temperature measurements. The resolution of liquid crystal sensors is in the 0.10C range. Disposable liquid crystal thermometers have been developed for home and medical use. For example, if the thermometer is black and it is put unto some ones forehead it will change colour depending on the temperature of the person.
+
+There are two stages in the liquid crystals, 
+
+1.The hot nematic stage which is the closest to the liquid phase where the molecules are freely moving around and only partly ordered.	
+
+2.The cold smetic stage which is closest to the solid phase where the molecules align themselves into highly wound chiral matrixes.	
+
+Liquid crystal thermometers portray temperatures as colours and can be used to follow temperature changes caused by heat flows. They can be used to observe that heat flows by conduction, convection and radiation. In medical applications, liquid crystal thermometers may be used to read body temperatures by placing it against the forehead. These are safer than in mercury -in- glass thermometers, and may be advantageous in some patients, but donât always give an exact result, especially the smaller ones. Liquid crystal thermometers are also commonly used in aquariums and home brewing.
+
+
+
+
+
+Fig 2.4 liquid crystal thermometer
+
+2.3 	APPLICATION AREA OF THE TEMPERATURE SENSING 	DEVICE 
+
+Various existing thermometer has been put to use in places like the hospitals, clinics, sciences and research laboratories. The designed project can be used to measure/sense temperature in the following places:
+
+1.	Laboratory: to monitor the temperature of test or experiment that has to do with how cold or hot it will be.
+
+2.	Industry Automation: can serve as a temperature sensing interface to a complex system in the production industries.
+
+3.	Robotics: since the project is based on a micro-controller, it can easily be interface to a robot to monitor temperature.
+
+4.	Hospital: A well packaged temperature sensing/monitoring device can be used in the hospital to check temperature of patients.
+
+5.	Schools: it can also be used in school as a practical guide to engineering and computer science student who offer hardware programming and circuitry. 
+
+2.4COMPONENT DESCRIPTION:	
+
+The components used in the design and implementation of the work are as follows;
+
+1.Resistors.	
+
+2.LM35 Sensor.	
+
+3.Ceramic Resonator	
+
+4.2X16 LCD Display.	
+
+5.Micro Controller. (PIC16F877A)	
+
+    6.	5volts regulator IC (7805)	
+
+   7.	Battery	
+
+2.4.1	RESISTORS
+
+A Resistor is a passive two- terminal electrical component that implements electrical resistance as a circuit element (i.e. it is a device that resists the flow of current and it is designed to have a specific value of resistance) Tokhian, R.(2001). The current through a resistor is in direct proportional to the voltage across the resistorâs terminals to the intensity of current through the circuit is called resistance. This relation is represented by ohmâs law;    I = V / R;
+
+Where I is the current through the conductor in units of amperes, V is the potential difference measured across the conductor in units of volts, and R is the resistance of the conductor in units of ohms. More specifically, ohmâs law states that the R in this relation is constant, independent of the current.
+
+Resistance refers to the opposition offered to the flow of current or the property of electric circuit, which opposes the flow of current. Example of a resistive material is a resistance wire. The flow of current depends on the temperature and applied voltage while the value of resistance depends on factors like.
+
+The resistivity of the wire  R I
+
+The cross- sectional area  A
+
+The length of the wire or conductor  L
+
+From ohmâs law, resistance of a material varies directly with the length and inversely with cross- sectional area of a given conductor.
+
+A.DIFFERENT TYPES OF RESISTORS 	
+
+I.VARIABLE TYPE (CARBON):	 This type of resistors is made up of carbon extract. These resistors are mostly used in radio receivers, volume tone and lower power electronic equipments such as radio circuit and in measuring equipments. The symbols are as shown below.
+
+
+
+
+
+
+
+                    Fig.2.5 Circuit symbols of variable resistors
+
+II.CARBON ROD:	 This type of resistor has a high power circuit of 	about 10KW. It is mostly used than the carbon variable and wire 	wound variable. And also it is used in high power dissipation up to 	10KW rating and 100ohm values. More so, it is used in radio 	transition and electrical power circuit. The symbol of the carbon rod 	resistor is as shown below.
+
+
+
+
+
+
+
+
+
+Fig.2.6 Circuit symbol of carbon rod resistor
+
+There are other types of resistors such as the carbon types fixed, wire wound fixed and wire wound variable, both have power rating of 2Wâ100watts. They are used in high power circuits for meter shunt and multiplier bridge circuit.
+
+In this project, the carbon type is used because of their favorable power ratings which are suited for this project and their cheap cost. Resistors used are 1Kohm, 2.2Kohm, 5Kohm variable. Resistors have their values written on their body colour, while their colour coding indicates others.
+
+B.RESISTORS COLOUR CODE	
+
+ In resistor colour coding, colour bands are used. There are four basic colour bands used in a resistor colour coding. The first band represents the first (1st) digit, while the second band represent the second  (2nd) digit, the third band represent the number of zeros that will follow the second digit, while the fourth band represent the tolerance.
+
+
+
+
+
+
+
+
+
+
+
+Table 1.0The table above is for a four band resistor.	
+
+2.4.2LM35 TEMPERATURE SENSOR	
+
+The LM35 series are precision integrated-circuit temperature sensors, whose output voltage is linearly proportional to the Celsius (Centigrade) temperature. The LM35 thus has an advantage over linear temperature sensors calibrated in Ë Kelvin, as the user is not required to subtract a large constant voltage from its output to obtain convenient Centigrade scaling. The LM35 does not require any external calibration or trimming to provide typical accuracies ofÂ±1â4ËC at room temperature andÂ±3â4ËC over a full â55 to +150ËC temperature range. Low cost is assured by trimming and calibration at the wafer level. The LM35âs low output impedance, linear output, and precise inherent calibration make interfacing to readout or control circuitry especially easy. It can be used with single power supplies, or with plus and minus supplies. As it draws only 60 ÂµA from its supply, it has very low self-heating, less than 0.1ËC in still air. The LM35 is rated to operate over a â55Ë to +150ËC temperature range, while the LM35C is rated for a â40Ë to +110ËC range (â10Ëwith improved accuracy). The LM35 series is available packaged in hermetic TO-46 transistor packages, while the
+
+LM35C, LM35CA, and LM35D are also available in the plastic TO-92 transistor package. The LM35D is also available in an 8-lead surface mount small outline package and a plastic TO-220 package.
+
+
+
+A.FEATURES	
+
+Calibrated directly in Ë Celsius (Centigrade)
+
+Linear + 10.0 mV/ËC scale factor
+
+0.5ËC accuracy guaranteeable (at +25ËC)
+
+Rated for full â55Ë to +150ËC range
+
+Suitable for remote applications
+
+Low cost due to wafer-level trimming
+
+Operates from 4 to 30 volts
+
+Less than 60 ÂµA current drain
+
+Low self-heating, 0.08ËC in still air
+
+Nonlinearity onlyÂ±1â4ËC typical
+
+Low impedance output, 0.1â¦for 1 mA load
+
+B.TYPICAL APPLICATIONS
+
+
+
+
+
+
+
+
+
+
+
+Fig. 2.7 Basic Centigrade Temperature Sensor (+2ËC to +150ËC)
+
+2.4.3CERAMIC RESONATOR 	
+
+A ceramic resonator is an electronic component consisting of a piece of a piezoelectric ceramic material with two or more metal electrodes attached. When connected in an electronic oscillator circuit, resonant mechanical vibrations in the device generate an oscillating signal of a specific frequency. Like the similar quartz crystal, they are used in crystal oscillators for purposes such as generating the clock signal used to control timing in computers and other digital logic devices.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Fig 2.8 16MHZ Resonator
+
+Ceramic resonators are made of high-stability piezoelectric ceramics, generally lead zirconium titanate (PZT) which functions as a mechanical resonator. In operation, mechanical vibrations induce an oscillating voltage in the attached electrodes due to the piezoelectricity of the material. The thickness of the ceramic substrate determines the resonant frequency of the device.
+
+2.4.3.1	APPLICATIONS
+
+Ceramic resonators can be found in many circuit boards as they can be used as the source of the clock signal for digital circuits such as microprocessors where the frequency accuracy is not critical. Quartz has a 0.001% frequency tolerance, while PZT has a 0.5% tolerance.
+
+They are also likely to be found in timing circuitry for a wide array of applications such as TVs, VCRs, automotive electronic devices, telephones, copiers, cameras, voice synthesizers, communication equipment, remote controls and toys. A ceramic resonator is often used in place of quartz crystals as a reference clock or signal generator in electronic circuitry due to its low cost and smaller size.
+
+2.4.42x16 LIQUID CRYSTAL DISPLAY (LCD)	
+
+LCD stands for Liquid Crystal Display. An LCD is a passive device. It does not produce any light and simply alters the light travelling through it. With a voltage applied to it, the liquid crystal polarizes transmitted light in a different direction to when no voltage is applied. A polarizing filter in front of the display then blocks one of the two polarizations (i.e. the areas in which a voltage was applied or the ones where no voltage was applied) and therefore in some areas of the screen appear âblackâ, this effect is used to draw the characters and graphics displayed by an LCD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Fig. 2.9 Liquid Crystal Display Used.
+
+Pin1 Ground 
+
+Pin2 VCC (+5) 
+
+Pin3 Contrast 
+
+Pin4 Data/Command (R/S) 
+
+Pin5 Read/Write (W) 
+
+Pin6 Enable (E1) 
+
+Pin7 D0 (Not Used) 
+
+Pin8 D1 (Not Used) 
+
+Pin9 D2 (Not Used)
+
+Pin10 D3 (Not Used)
+
+Pin11 D4
+
+Pin12 D5
+
+Pin13 D6
+
+Pin14 D7
+
+Pin15 VCC (LEDSV+)
+
+Pin16 Ground
+
+2.4.5MICRO CONTROLLER	
+
+A Microcontroller is an inexpensive single-chip computer. The microcontrollerâs most important feature is its capabilities of storing and running a program.
+
+Every Microcontroller (also MCU) consists of several major units:
+
+Input / Output Ports
+
+Control Pins: reset, power, clock
+
+Processor (CPU)
+
+Memory (RAM, ROM, EEPROM)
+
+Serial and parallel ports
+
+Timers
+
+Analog-to-digital (A/D) and digital-to-analog (D/A) converters
+
+CHARACTERISTICS OF THE RISK (REDUCE INSTRUCTION SET CONTROL) SYSTEM
+
+Instruction set of 35 commands
+
+Instructions are carried out in 2 clock cycles
+
+You can calculate the execution time of the command in accordance with the frequency clock (if the frequency clock is 20Mhz, execution time of a command is 200ns)
+
+The ports of 28/40/44 pins microcontrollers are the same 
+
+Microcontrollers PICmicro MCU from Microchip Company divided into 4 large families. Each family has a variety of components that provide built-in special features:
+
+The first family, PIC10 (10FXXX) - is called Low End.
+
+The PIC10FXXX devices from Microchip Technology are low-cost, high-performance, 8-bit, fully static, Flash-based CMOS microcontrollers. They employ a RISC architecture with only 33 single-word/ single-cycle instructions. The 12-bit wide instructions are highly symmetrical. The easy-to-use and easy to remember instruction set reduces development time significantly. The PIC10FXXX devices contain an 8-bit ALU and working register.
+
+The second family, PIC12 (PIC12FXXX)â is called Mid-Range.
+
+The PIC12FXXX most popular among these starter their way in this field. Mid-Range devices feature 14-bit program word architecture and are available in 8 to 64-pin packages that offer an operating voltage range of 1.8-5.5V, small package footprints, interrupt handling, an 8-level hardware stack, multiple A/D channels and EEPROM data memory. Mid-range devices offer a wide range of package options and a wide range of peripheral integration. These devices feature various serial analog and digital peripherals, such as: SPI, I2Câ¢, USART, LCD and A/D converters.
+
+The third family is PIC16(16FXXX).
+
+With six variants ranging from 3.5K-14 Kbytes of Flash memory, up to 256 bytes of RAM and a mix of peripherals including EUSART, CCP and onboard analog comparators. These devices are well suited for designers with applications that need more code space or I/O than 14-pin variants supply, and are looking to increase system performance and code efficiency by employing hardware motor control and communications capability.
+
+The fourth family is PIC 17/18(18FXXX).
+
+The PIC18 family utilizes 16-bit program word architecture and incorporates an advanced RISC architecture with 32 level-deep stack, 8x8 hardware multiplier, and multiple internal and external interrupts. With the highest performance in Microchipâs 8-bit portfolio, the PIC18 family provides up to 16 MIPS and linear memory. PIC18 is the most popular architecture for new 8-bit designs where customers want to program in C language.
+
+THE MICRO CONTROLLER USED
+
+The micro controller used for this project is PIC16F877A
+
+
+
+
+
+
+
+
+
+
+
+
+
+Fig. 2.10 Micro controller used (16F877A)
+
+2.4.6	 THE VOLTAGE REGULATOR (78L05)
+
+A voltage regulator is an electronic device that provides a constant dc output voltage that is essentially independent of the input voltage, output load current and temperature. The voltage regulator is one part of power supply; its input voltage comes from the filtered output of a rectifier derived from an ac voltage or from a battery in the case of portable systems. It is a family of self contained fixed linear voltage regulator integrated circuit and it is commonly used in electronic circuits requiring a regulated power supply due to their ease of use and low cost.
+
+Most voltage regulators fall into two broad categories: linear regulators and switching regulators. In the linear regulator category two general types are the series regulator and the shunt regulator. These are normally available for either positive or negative outputs. In the switching regulator category, three general configurations are step-down, step-up, and inverting.
+
+Many types of integrated circuit (IC) regulator are available. The most popular types of linear regulator are. Three terminal fixed voltage regulators, and the three terminal adjustable voltage regulators. Switching regulators are also widely used. But for this project work, it was the fixed linear voltage regulator type encapsulated in a single chip/package (IC) that was used. The 78L05 is a positive voltage D.C. regulator that has three terminals; they are input, output, and ground terminal, its diagram is shown below.
+
+
+
+
+
+
+
+Fig. 2.3.6: Voltage regulator
+
+
+
+
+2.4.7     BATTERY
+
+The Hi-watt 6f22, 9v battery is an affordable, reliable, dedicated, low-power solution to provide sufficient energy to applications ideally used in circuits with low power consumption so that it can work for longer duration. It can also be used as a power source for testing. It is non-rechargeable.
+
+This battery is a high capacity and low cost solution for many electronic devices. It is not rechargeable but can run for longer hours; it has to be used with its specific battery snap/connector, which can be bought along with the battery.
+
+
+
+
+CHAPTER THREE
+
+3.0                           	MATERIALS AND METHODS 
+
+3.1TOOLS USED	
+
+The tools used during the construction of the Digital Thermometer are shown below:
+
+Soldering iron
+
+Soldering sucker or lead sucker cutter 
+
+Razor blade &amp; scissor 
+
+Digital multimeter 
+
+Cutter 
+
+Pliers 
+
+Hand brush 
+
+Bread board 
+
+3.2 MATERIALS USED	
+
+Table 3.1
+
+3.3 	CONSTRUCTION REQUIREMENT AND PROCEDURE
+
+Construction is done ranging from the assemblage, integration and coordination of the component part. The construction of the work requires carefulness and skills.
+
+The procedure taken during the construction includes the uses of tools such as soldering iron, lead sucker, long nose pliers, hand drilling machine for the circuit board and the various components for entire design of the circuit.
+
+Before the circuit was constructed on a Vero- board, it was first mounted on a bread board to see if it actually perform it required function, some difficulties were however encounter and necessary correction were made and the circuit worked properly before it was transferred to the Vero board according to the design circuit diagram. 
+
+The Vero board was first cleaned thoroughly to bring out the copper surface. The component was fixed into holes provided on the board and they were soldered at specific point. The different units were mounted on a Vero board and they were properly soldered. The circuit was once again tested for its reliability.
+
+3.4OPERATIONAL PROCEDURE 	 
+
+To convert temperature into numerical readout, the use of LM35 temperature sensor was adopted. Based onLM35 Temperature Sensor that has Zero offset voltage, which means that the Output = 0V, at 0 Â°C. Thus for the maximum temperature value (150 Â°C), the maximum output voltage of the sensor would be 150 * 10 mV = 1.5V.  If we use the supply voltage (5V) as the Vref+ for Analog to Digital Conversion (ADC) the resolution will be poor as the input voltage will goes only up to 1.5V and the power supply voltage variations may affects ADC output. So it is better to use a stable low voltage above 1.5 as Vref+. We should supply Negative voltage instead of GND to LM35 for measuring negative Temperatures.
+
+
+
+
+
+
+
+
+
+
+CHAPTER FOUR
+
+4.0	                        	TESTING AND RESULT 
+
+4.1   CIRCUIT DIAGRAM
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Fig 4.1 Circuit diagram of digital thermometer 
+
+4.2TEST	ING
+
+Different test were carried out during the construction of the display digital thermometer. The purpose is to ensure that all the components used are properly connected in the right way so as to avoid the destruction of the project work. The test conducted on this project work includes the following:
+
+Before the components e.g. resistors, transistor, capacitor, diode etc, was used, each of them was tested with a multimeter to ensure that they are in good working condition 
+
+The circuit was switched on to monitor the battery charging voltage using a digital multimeter
+
+The solar panel was tested to achieve the minimum and maximum voltage reading according to the specification of the project 
+
+After the entire casing and installation, test was finally carried out to ensure that the project is in a good working condition
+
+Different types of test were carried out on the system to ensure the efficiency of the system, LDR (Light Dependent Resistor) is used as sensor light switch in this Digital Thermometer. 
+
+4.3   RESULT
+
+To convert temperature into numerical readout, the use of LM35 temperature sensor was adopted. Based on LM35 Temperature Sensor that has Zero offset voltage, which means that the Output = 0V, at 0 Â°C. Thus for the maximum temperature value (150 Â°C), the maximum output voltage of the sensor would be 150 * 10 mV = 1.5V.  If we use the supply voltage (5V) as the Vref+ for Analog to Digital Conversion (ADC) the resolution will be poor as the input voltage will goes only up to 1.5V and the power supply voltage variations may affects ADC output. So it is better to use a stable low voltage above 1.5 as Vref+. We should supply Negative voltage instead of GND to LM35 for measuring negative Temperatures.
+
+4.4	 PROBLEM ENCOUNTERED 
+
+In order to meet the demand of this project, some problems and changes were encountered along the line. The major problem faced or encountered before and during the implementation of this project was the purchasing of the right components, especially the ICs. Most of the ICs bought initially did not give the required result when the component were breadboard. The IC pin identification and soldering of components to the veroboard was also another problem that we experienced. At first construction, the circuit failed to work properly, but with more research and help from our supervisor and colleagues, we were able to rectify it. However, our overwhelming joy was that despite the challenges, these problems were overcome. 
+
+
+
+
+
+
+
+
+
+
+CHAPTER FIVE
+
+5.0 	 	CONCLUSION AND RECOMMENDATION
+
+5.1CONCLUSION	
+
+The Digital Thermometer which could be regarded as among the latest heat meter that can sense temperature and gives output in a digital display; it is highly efficient because of its fast response, accuracy and easy to read tendency. It displays temperature in centigrade or Celsius.
+
+During the design and implementation of this project work, a lot of experiences were acquired as regards the working principle of basic electronic circuit. The digital thermometer performance proved very satisfactory.
+
+5.2 RECOMMENDATION:	
+
+In the general analysis, the device has the advantages and features which can make it possible to be ported to large or complex computerized system. To this end, I which to recommend that Government and the general public should encourage its utilization in our home, hospitals, clinic and other places where it is  applicable.
+
+
+
+
+
+
+
+
+
+REFERENCES
+
+Anyakoha M.W (1999). New school physics for secondary school 2nd edition Nigeria. Macimillam press Ltd. Nigeria 	
+
+
+
+
+
+Ashiquzzaman 2011]). Modern digital Electronics 3rd edition.: M.W â Hill Ltd. Singapore
+
+Basso, Christophe (2008),ÂSwitch-Mode Power Supplies: SPICE 	Simulations and 	Practical Designs, McGraw-Hill, Austria 
+
+
+
+
+
+Bird (1999): Electronic Designs 1st edition: Pitman Publishing Ltd., London, U.K. 	plublisher, 	
+
+Edeko F.O (2005) Lecture Notes on Advanced Electronics and Integrated 	Circuits Unpublished. Pp 34
+
+
+
+Flooyd T.L. (2004). Electrical Fundamental Circuits, Devices and 	Application. 4th Edition Prentice Hall Inc.,. Canada
+
+Gupta J.B.(2010), Essential of Electronic.1st edition, New York, Glencoe McGraw Hill
+
+Horowitz, p. and Hill, w. (1989).The act of Electronics. Cambridge, Cambridge university press.
+
+Mehta, V.K and Mehta R. (1980). Principle of Electronics. New Delhi, S. Chand and Company ltd.
+
+Theraja, B.L. and Theraja A.K .(2005). A Textbook of Electrical Technology,24th Revised edition, New Delhi, S.Chand and company ltd.
+
+Tokhian, R.(2001).Digital Electronics principles and Application 5th Edition, Glance McGraw Hill.
+
+Micro c (2014). Hardware programming concepts. Retrieved from micro c webseite url: www.mikroe.com/microcc/pic
+
+
+
+COLOUR
+
+
+
+SIGNIFICANT FIGURE
+
+
+
+MULTIPLIER
+
+
+
+TOLERANCE
+
+
+
+TEMPERATURE
+
+
+
+COEFFICIENT
+
+Black
+
+0
+
+X10O
+
+-
+
+250
+
+U
+
+Brown
+
+1
+
+X101
+
+Â±1%
+
+100
+
+S
+
+Red
+
+2
+
+X102
+
+Â±2%
+
+50
+
+R
+
+Orange
+
+3
+
+X103
+
+-
+
+15
+
+P
+
+Yellow
+
+4
+
+X104
+
+Â±5%
+
+25
+
+Q
+
+ Green
+
+5
+
+X105
+
+Â±0.5%
+
+20
+
+Z
+
+Blue
+
+6
+
+X106
+
+Â±0.25%
+
+10
+
+Z
+
+Violet
+
+7
+
+X107
+
+Â±0.1%
+
+5
+
+M
+
+Gray
+
+8
+
+X108
+
+Â±0.05%
+
+1
+
+K
+
+White
+
+9
+
+X109
+
+-
+
+
+
+
+
+Gold
+
+-
+
+X10-1
+
+Â±5%
+
+
+
+
+
+Silver
+
+-
+
+X10-2
+
+Â±10%
+
+
+
+
+
+None
+
+-
+
+-
+
+Â±20%
+
+
+
+
+
+
+
+Item
+
+Rating 
+
+Quantity
+
+1.
+
+Vero board
+
+1
+
+1
+
+2.
+
+Rectified diode
+
+KPF 20
+
+1
+
+3.
+
+Resistor
+
+100â¦, 1k â¦, 10k â¦
+
+20
+
+4.
+
+Transformer
+
+220V, 12VAC
+
+1
+
+5.
+
+Decade counter
+
+CD 4017
+
+1
+
+6.
+
+Diode 
+
+IN 4001
+
+15
+
+7.
+
+Transistor
+
+NPN
+
+8
+
+8.
+
+Relays
+
+12 volts
+
+3
+
+9.
+
+Light emitting diode
+
+2.2v-3.6v
+
+10
+
+10.
+
+Polarized capacitor
+
+1ÂµF, 47ÂµF, 1000ÂµF
+
+12
+
+11.
+
+Non-polarized capacitor
+
+2 ÂµF, 0.5ÂµF
+
+4
+
+12.
+
+Socket outlet
+
+220v, 13Amp
+
+1
+
+13.
+
+Voltage regulator
+
+7812, 7805
+
+4
+

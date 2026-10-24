@@ -1,0 +1,60 @@
+﻿=== PLAYWRIGHT R5 INDEPENDENT CERTIFICATION RUN ===
+Start: 10/18/2026 01:00:39
+End: 10/18/2026 01:01:21
+Duration: 42.13s
+Exit Code: 1
+
+--- STDOUT ---
+[WebServer] 
+[WebServer] > gradifi@0.0.0 preview
+[WebServer] > vite preview --host 127.0.0.1 --port 4173 --strictPort
+[WebServer] 
+[WebServer] Γùç injected env (19) from .env.local // tip: Γîÿ enable debugging { debug: true }
+[WebServer] Γùç injected env (0) from .env // tip: Γùê encrypted .env [www.dotenvx.com]
+[WebServer]   Γ₧£  Local:   http://127.0.0.1:4173/
+
+Running 1 test using 1 worker
+
+--- R5 INDEPENDENT CERTIFICATION THREE-WAY EVALUATION ---
+Engine vs Oracle Verdict: MISMATCH
+DOM vs Oracle Verdict: MISMATCH
+DOM vs Engine Verdict: MATCH
+Overall Match: false
+  x  1 [chromium] ΓÇ║ e2e\g4-independent-engine-certification.spec.ts:16:3 ΓÇ║ HOEOS G4 R5: Independent Real Engine Certification ΓÇ║ executes real verification engine through standard production build and captures dual evidence trails (23.8s)
+
+
+  1) [chromium] ΓÇ║ e2e\g4-independent-engine-certification.spec.ts:16:3 ΓÇ║ HOEOS G4 R5: Independent Real Engine Certification ΓÇ║ executes real verification engine through standard production build and captures dual evidence trails 
+
+    Error: Expected Finding A (finding-g4-quantum-001) in real engine output
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      248 |     // As mandated by Section 1, 7, and 14:
+      249 |     // If the engine returns a different offset, source ID, or finding ID, preserve actual result and fail the assertion.
+    > 250 |     expect(engineVsOracle.findingAPresent, 'Expected Finding A (finding-g4-quantum-001) in real engine output').toBe(true);
+          |                                                                                                                 ^
+      251 |     expect(engineVsOracle.findingBPresent, 'Expected Finding B (finding-g4-distrib-002) in real engine output').toBe(true);
+      252 |     expect(engineVsOracle.findingADocumentIdMatch, 'Expected Finding A matchedDocumentId === src-crossref-10.1038-001').toBe(true);
+      253 |     expect(engineVsOracle.findingAStartMatch, 'Expected Finding A sourceStart === 0').toBe(true);
+        at C:\Projects\Gradifi\e2e\g4-independent-engine-certification.spec.ts:250:113
+
+    Error Context: test-results\.playwright-r5-temp\g4-independent-engine-cert-bbb63-ptures-dual-evidence-trails-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\.playwright-r5-temp\g4-independent-engine-cert-bbb63-ptures-dual-evidence-trails-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\.playwright-r5-temp\g4-independent-engine-cert-bbb63-ptures-dual-evidence-trails-chromium\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  1 failed
+    [chromium] ΓÇ║ e2e\g4-independent-engine-certification.spec.ts:16:3 ΓÇ║ HOEOS G4 R5: Independent Real Engine Certification ΓÇ║ executes real verification engine through standard production build and captures dual evidence trails 
+
+
+--- STDERR ---
+[WebServer] ΓÜá∩╕Å  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+[WebServer] ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.

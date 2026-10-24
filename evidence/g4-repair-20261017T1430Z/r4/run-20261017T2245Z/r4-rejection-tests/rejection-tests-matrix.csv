@@ -1,0 +1,23 @@
+﻿CaseId,Description,ExpectedStatus,ObservedStatus,ExpectedExitCode,ObservedExitCode,ExitCodeMatch,StatusMatch,Verdict
+case_00_control_valid,"Control fixture with valid authentic evidence",PASS,PASS,0,0,True,True,PASS
+case_01_missing_positive,"Missing required positive browser results artifact",BLOCKED,BLOCKED,2,2,True,True,PASS
+case_02_missing_negative,"Missing required negative browser results artifact",BLOCKED,BLOCKED,2,2,True,True,PASS
+case_03_missing_directory,"Non-existent evidence directory",BLOCKED,BLOCKED,2,2,True,True,PASS
+case_04_malformed_json,"Malformed JSON in positive browser results",BLOCKED,BLOCKED,2,2,True,True,PASS
+case_05_empty_json,"Empty JSON file in negative browser results",BLOCKED,BLOCKED,2,2,True,True,PASS
+case_06_missing_field,"Required field missing (missingCanonicalCondition omitted)",FAIL,FAIL,1,1,True,True,PASS
+case_07_wrong_type,"Required field present with wrong type",FAIL,FAIL,1,1,True,True,PASS
+case_08_missing_pos_screenshot,"Referenced positive screenshot artifact missing",FAIL,FAIL,1,1,True,True,PASS
+case_09_missing_neg_screenshot,"Referenced negative screenshot artifact missing",FAIL,FAIL,1,1,True,True,PASS
+case_10_subprocess_nonzero,"Positive browser subprocess returns non-zero exit code",FAIL,FAIL,1,1,True,True,PASS
+case_11_zero_marks_positive,"Subprocess succeeds but emits zero marks in positive test",FAIL,FAIL,1,1,True,True,PASS
+case_12_reversed_offsets,"Highlight with start >= end (reversed offsets)",FAIL,FAIL,1,1,True,True,PASS
+case_13_negative_offset,"Negative start offset in highlight",FAIL,FAIL,1,1,True,True,PASS
+case_14_mark_text_mismatch,"Highlight text does not match expected slice",FAIL,FAIL,1,1,True,True,PASS
+case_15_offset_out_of_bounds,"Highlight end offset exceeds canonical document length",FAIL,FAIL,1,1,True,True,PASS
+case_16_empty_identity,"Finding ID or Source ID is empty",FAIL,FAIL,1,1,True,True,PASS
+case_17_contradictory_negative,"Contradictory negative assertions (unavailableIndicatorObserved: false)",FAIL,FAIL,1,1,True,True,PASS
+case_18_stale_marks_in_negative,"Negative test observed stale highlights > 0 (fail-closed violated)",FAIL,FAIL,1,1,True,True,PASS
+case_19_test_not_run,"Required positive test was not run (exit code = -1)",NOT RUN,NOT RUN,3,3,True,True,PASS
+case_20_precedence_blocked_over_fail,"Precedence test: BLOCKED (missing file) overrides FAIL (pwExit = 1)",BLOCKED,BLOCKED,2,2,True,True,PASS
+case_21_precedence_notrun_over_fail,"Precedence test: NOT RUN (pwExit = -1) overrides FAIL (assertion failure)",NOT RUN,NOT RUN,3,3,True,True,PASS

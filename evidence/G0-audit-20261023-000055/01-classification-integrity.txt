@@ -1,0 +1,18 @@
+﻿# SECTION 1 — Classification file integrity
+
+CSV file:             C:\Projects\Gradifi\evidence\G0-reconciliation-20261022-233110\untracked-classification-final.csv
+CSV SHA-256:          0bafa8fff0f1729898e4dcf1462befc1e67f4b8d4d0c5ad6b959a76e7fd65d0a
+CSV row count:        742
+CSV unique paths:     742
+CSV duplicate rows:   0
+
+V1 file:              C:\Projects\Gradifi\evidence\G0-reconciliation-20261022-233110\inv-v1.txt
+V1 SHA-256:           7a71c9ec0b5a17e470f3f1f790373ae9c9f136b858572c36cac2eaf773cde3aa
+V1 record count:      742
+V1 unique paths:      742
+
+CSV_PATHS_NOT_IN_V1:  0
+V1_PATHS_NOT_IN_CSV:  0
+
+Paths in CSV whose on-disk object does not exist: 0
+

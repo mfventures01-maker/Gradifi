@@ -1,0 +1,37 @@
+HOEOS V2 FORENSIC EVIDENCE: G0.3 STAGING DISCREPANCY RECONCILIATION
+Run ID: G0-audit-20261023-092514
+Timestamp: 2026-10-23T09:25:14+01:00
+
+HISTORICAL DISCREPANCY:
+- Staging log (evidence/G0-audit-20261023-000055/STAGING-log-20261023-010125.txt) recorded ADDED_COUNT=44, FAILED_COUNT=0.
+- Staged index diff contained only 32 paths.
+- Only 1 of 13 ingestion fixtures (quantum_federated_learning_paper.pdf) appeared in git diff --cached.
+
+FORENSIC VERIFICATION:
+The staging script executed `git add` sequentially on 44 targeted paths.
+Inspection of the 13 fixtures under `tests/fixtures/ingestion/` against HEAD (d339a488debecbf420a96a5f2d6956f6c2e2effd):
+
+Fixture Name                           In HEAD?  Diff HEAD  Diff Cached  Diff WorkTree
+------------------------------------   --------  ---------  -----------  -------------
+empty.txt                              True      0          0            0
+image_only.epub                        True      0          0            0
+invalid.json                           True      0          0            0
+malformed.xml                          True      0          0            0
+quantum_federated_learning_paper.pdf   False     1          1            0
+sample.csv                             True      0          0            0
+sample.html                            True      0          0            0
+sample.json                            True      0          0            0
+sample.md                              True      0          0            0
+sample.rtf                             True      0          0            0
+sample.txt                             True      0          0            0
+sample.xml                             True      0          0            0
+scanned_page_001.pdf                   True      0          0            0
+
+ROOT CAUSE:
+12 fixtures were already committed to HEAD and bit-for-bit identical across disk, index, and HEAD.
+Running `git add` on these 12 files was an idempotent no-op that did not mutate the index or introduce new staged changes.
+The script unconditionally logged `ADDED: <path>` whenever `git add` completed with exit code 0.
+Calculation: 44 targeted paths - 12 pre-existing unchanged fixtures = 32 staged changes in index.
+
+CLASSIFICATION:
+Resolved and verified. The discrepancy was caused by optimistic logging in the staging script, not missing files or index corruption.

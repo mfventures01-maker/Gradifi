@@ -1,0 +1,394 @@
+﻿# SECTION 6 — Potential ignore-pattern blind spots
+# Generated: 2026-10-23T00:07:57.8535622+01:00
+
+Paths under evidence/, certification/, or test-results/ whose names
+suggest they may be fixtures or test inputs — which a broad .gitignore
+pattern would hide. Flagged for human review only.
+
+CANDIDATE_COUNT: 96
+
+  certification/g1_browser_fix/stream_extractor_preview_result.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/g1_browser_fix/stream_extractor_prod_result.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/g1_browser_fix/stream_extractor_verification_log.json
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/g1_extension/G1_EXTENSION_COMPOSITE.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/g7_public_verification/g7_failure_branch_verified.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g7_
+  certification/g7_public_verification/g7_valid_receipt_verified.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g7_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1/G1_CERTIFICATION_RECORD.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1/G1_CERTIFICATION_TEST_OUTPUT.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_browser_fix/G1_BROWSER_FIX_COMPOSITE.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_browser_fix/G1_BROWSER_FIX_RECORD.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_browser_fix/STREAM_EXTRACTOR_FIX_COMPOSITE.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_browser_fix/STREAM_EXTRACTOR_FIX_RECORD.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_browser_fix/STREAM_EXTRACTOR_INDEPENDENT_VERIFICATION.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_browser_fix/browser_verification_log.json
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_browser_fix/browser_verification_result.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_extension/G1_EPUB_OCR.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g1_extension/G1_EXTENSION_RECORD.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g1_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g2/G2_CERTIFICATION_RECORD.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g2_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g2/after/G2_ENGINE_HASHES.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g2_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g2/after/G2_OCR_DETERMINISM.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g2_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g2/after/G2_OFFSET_FIDELITY.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g2_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g2/after/G2_SUITE_AFTER.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g2_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g2/before/G2_ENGINE_HASHES.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g2_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g2/before/G2_SUITE_BEFORE.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g2_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g2/before_after/G2_BEFORE_AFTER_FORENSIC_REPORT.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g2_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g3/G3_COMPOSITE.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g3_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g3/G3_FULL_SUITE.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g3_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g5_7/contentValidation.test.snapshot.ts
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g5_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g5_7/contentValidationService.snapshot.ts
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g5_
+  certification/mirror_archive_2026-09-23T08-48-35Z/g5_7/g5_7_failure_output.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      g5_
+  certification/provider_passage/OVERLAP_DEMO_DOC.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      overlap;passage;demo
+  certification/provider_passage/PASSAGE_DEMO_PRE_FIX.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  certification/
+    Hints:      passage;demo
+  evidence/G1-repair-20261022-221144/universalIngestionService.ts.before
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      ingestion
+  evidence/commercial-mvp/g1_ingestion_certification.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g1_;ingestion
+  evidence/g0-g3-repair-20261022-214140/universalIngestionService.ts.before
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      ingestion
+  evidence/g4-independent-20261017T232431/e2e_g4-fixtures.ts.full.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      fixture
+  evidence/g4-independent-20261017T232431/e2e_g4-fixtures.ts.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      fixture
+  evidence/g4-independent-20261017T232431/src_pages_verify_GradifiVerifyDemoPage.tsx.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      demo
+  evidence/g4-r7-live-provider-20261018T154500Z/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-r7-live-provider-20261018T154500Z/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1415Z/r1/GradifiVerifyDemoPage.tsx.before
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      demo
+  evidence/g4-repair-20261017T1415Z/r1/GradifiVerifyDemoPage.tsx.gated-20261017T131534Z
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      demo
+  evidence/g4-repair-20261017T1415Z/r1/GradifiVerifyDemoPage.tsx.gated-mojibake-20261017T131534Z
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      demo
+  evidence/g4-repair-20261017T1430Z/r2-preserved/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r2-preserved/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r2/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r2/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r3/GradifiVerifyDemoPage.tsx.before-r3
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      demo
+  evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_00_control_valid/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_00_control_valid/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_01_missing_positive/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_01_missing_positive/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_02_missing_negative/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_02_missing_negative/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_04_malformed_json/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_04_malformed_json/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_05_empty_json/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_05_empty_json/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_06_missing_field/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_06_missing_field/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_07_wrong_type/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_07_wrong_type/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_08_missing_pos_screenshot/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_09_missing_neg_screenshot/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_10_subprocess_nonzero/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_10_subprocess_nonzero/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_11_zero_marks_positive/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_11_zero_marks_positive/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_12_reversed_offsets/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_12_reversed_offsets/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_13_negative_offset/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_13_negative_offset/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_14_mark_text_mismatch/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_14_mark_text_mismatch/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_15_offset_out_of_bounds/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_15_offset_out_of_bounds/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_16_empty_identity/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_16_empty_identity/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_17_contradictory_negative/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_17_contradictory_negative/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_18_stale_marks_in_negative/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_18_stale_marks_in_negative/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_19_test_not_run/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_19_test_not_run/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_20_precedence_blocked_over_fail/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_20_precedence_blocked_over_fail/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_21_precedence_notrun_over_fail/screenshots/g4_browser_highlight.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/case_21_precedence_notrun_over_fail/screenshots/g4_negative_browser_unavailable.png
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g4_
+  evidence/g5_baseline/2026-10-06_g5m02_before_state.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g5_
+  evidence/g5_baseline/2026-10-06_g5m02_rejection_evidence.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g5_
+  evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g5_
+  evidence/phase2/g1_extractor_audit.txt
+    Class:      EVIDENCE_GENERATED
+    BroadRoot:  evidence/
+    Hints:      g1_
+

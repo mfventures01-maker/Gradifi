@@ -1,0 +1,43 @@
+﻿Testing file: C:\Users\faith\Downloads\Design and Construction of a Joystick-Controlled Industrial automation System.docx
+File size in bytes: 793649
+
+--- ZIP ENTRY INSPECTION ---
+[Entry 1] name="_rels/.rels", flags=0x808, method=8, compSize=0, uncompSize=0, pos=0
+[Entry 2] name="docProps/core.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=289
+[Entry 3] name="docProps/app.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=710
+[Entry 4] name="docProps/custom.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=1086
+[Entry 5] name="word/_rels/document.xml.rels", flags=0x808, method=8, compSize=0, uncompSize=0, pos=1599
+[Entry 6] name="word/media/image1.png", flags=0x808, method=8, compSize=0, uncompSize=0, pos=2327
+[Entry 7] name="word/media/image9.jpeg", flags=0x808, method=8, compSize=0, uncompSize=0, pos=98951
+[Entry 8] name="word/media/image4.jpeg", flags=0x808, method=8, compSize=0, uncompSize=0, pos=136339
+[Entry 9] name="word/media/image5.jpeg", flags=0x808, method=8, compSize=0, uncompSize=0, pos=151051
+[Entry 10] name="word/media/image10.jpeg", flags=0x808, method=8, compSize=0, uncompSize=0, pos=168909
+[Entry 11] name="word/media/image6.jpeg", flags=0x808, method=8, compSize=0, uncompSize=0, pos=190024
+[Entry 12] name="word/media/image7.jpeg", flags=0x808, method=8, compSize=0, uncompSize=0, pos=229424
+[Entry 13] name="word/media/image8.jpeg", flags=0x808, method=8, compSize=0, uncompSize=0, pos=255405
+[Entry 14] name="word/styles.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=285562
+[Entry 15] name="word/numbering.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=286934
+[Entry 16] name="word/fontTable.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=288448
+[Entry 17] name="word/settings.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=288866
+[Entry 18] name="[Content_Types].xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=289170
+[Entry 19] name="word/media/image3.png", flags=0x808, method=8, compSize=0, uncompSize=0, pos=289647
+[Entry 20] name="word/media/image2.png", flags=0x808, method=8, compSize=0, uncompSize=0, pos=424109
+[Entry 21] name="word/document.xml", flags=0x808, method=8, compSize=0, uncompSize=0, pos=773870
+
+--- CALLING extractDocxText ---
+Result: {
+  "success": false,
+  "text": "",
+  "wordCount": 0,
+  "characterCount": 0,
+  "extractionMethod": "docx_xml_extractor",
+  "ocrUsed": false,
+  "ocrStatus": "NOT_REQUIRED",
+  "warnings": [
+    "Could not extract word/document.xml from DOCX package."
+  ],
+  "error": {
+    "code": "INVALID_PACKAGE",
+    "message": "The uploaded file is not a valid DOCX package."
+  }
+}

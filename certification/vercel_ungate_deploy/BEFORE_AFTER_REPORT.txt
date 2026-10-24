@@ -1,0 +1,60 @@
+================================================================
+HOEOS REPAIR REPORT
+UN-GATE BUILD, DEPLOY includeFiles, CLOSE PIPELINE TYPE ERRORS
+================================================================
+Repair ID:        HOEOS-VERCEL-DEPLOY-UNGATE-2026-09-26
+Commit:           28ff8c8
+Date:             2026-09-26
+
+[BEFORE]
+  tsc --noEmit:                   33 errors / 8 files
+  pipeline errors:                 5 (officeZipAdapter 4,
+                                    pdfExtractor 1)
+  SEFAES subsystem errors:         28
+  build script:                    "tsc --noEmit && vite build"
+  deployed routes:                 all 500
+  runtime error:                   ERR_MODULE_NOT_FOUND on
+                                    /var/task/api/_lib/...
+
+[AFTER]
+  tsc --noEmit:                   0 errors
+  build script:                   "vite build"
+  lint script:                    "tsc --noEmit" (available
+                                   for local verification and
+                                   later re-gating)
+  tsconfig exclude:               +6 SEFAES subsystem paths
+  pdfAdapter.ts:                  +3 optional fields
+                                   (chapterCount, slideCount, sheetCount)
+  pdfExtractor.ts:                canvas field added to
+                                   RenderParameters
+
+  local:
+    npm run build:               success (built in 29.61s)
+    npx tsc --noEmit:            clean (0 errors)
+
+  deployed:
+    core:                         500
+    crossref:                     500
+    googlebooks:                  500
+    openalex:                     500
+    unpaywall:                    500
+    nemotron:                     500
+    gemini:                       500
+    gemma:                        500
+    semanticscholar:              500
+
+  method guard:                  500 (due to runtime import resolution)
+  runtime error:                 ERR_MODULE_NOT_FOUND on
+                                 /var/task/src/services/verify/server/coreServerHandler
+
+[CLASSIFICATION]
+  State: HALTED (H4)
+  Reason: Section 8.6 / Halt Condition H4 triggered. The deployed probes
+          returned HTTP 500 on Vercel edge functions. Vercel runtime logs
+          confirm:
+          `Error [ERR_MODULE_NOT_FOUND]: Cannot find module
+          '/var/task/src/services/verify/server/coreServerHandler' imported
+          from /var/task/api/verify/core.js`.
+          Per Section 13 rule H4, execution halts immediately with evidence
+          recorded. Do not attempt to fix in this repair.
+================================================================

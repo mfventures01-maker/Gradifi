@@ -1,0 +1,110 @@
+/**
+ * GRADIFI HOEOS GATE 4 - NEGATIVE REAL BROWSER SPECIFICATION
+ * Proves that missing canonical document fails closed in real browser UI.
+ * Oracle: Strictly fixture-defined expectations from e2e/g4-fixtures.ts.
+ * Governance: HOEOS P4 Standard (Pure Deterministic Visual Evidence)
+ * Independent fixture-grounded test oracle without application result global
+ */
+
+import { test, expect } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+import { G4_NEGATIVE_FIXTURE } from './g4-fixtures.js';
+
+test.describe('HOEOS Gate 4 Negative Case: Missing Canonical Document Fails Closed', () => {
+  test('proves that missing canonical document suppresses highlights and renders unavailable banner', async ({ page }) => {
+    test.setTimeout(90000);
+
+    const consoleLogs: string[] = [];
+    const networkFailures: string[] = [];
+
+    page.on('console', msg => {
+      consoleLogs.push(`[${msg.type()}] ${msg.text()}`);
+    });
+
+    page.on('requestfailed', req => {
+      networkFailures.push(`FAILED: ${req.method()} ${req.url()} - ${req.failure()?.errorText}`);
+    });
+
+    // 1. Navigate to verification route
+    await page.goto('/verify');
+    await page.waitForLoadState('networkidle');
+
+    // 2. Pre-load document
+    const preloadBtn = page.locator('button:has-text("Pre-load Demo Document")');
+    await expect(preloadBtn).toBeVisible();
+    await preloadBtn.click();
+
+    // Verify textarea is populated
+    const textarea = page.locator('textarea[placeholder*="Paste academic paper"]');
+    await expect(textarea).toBeVisible();
+    const documentText = await textarea.inputValue();
+    expect(documentText.length).toBeGreaterThan(50);
+    expect(documentText).toContain('Quantum Entanglement');
+
+    // 3. Configure test seam to simulate pipeline failure to provide canonicalDocument
+    await page.evaluate(() => {
+      (window as any).__GRADIFI_TEST_TRANSFORM_VERIFY_RESULT__ = (res: any) => {
+        return {
+          ...res,
+          canonicalDocument: null
+        };
+      };
+    });
+
+    // 4. Trigger verification run through real user interaction
+    const checkBtn = page.locator('button:has-text("Run Academic Evidence Verification")');
+    await expect(checkBtn).toBeEnabled();
+    await checkBtn.click();
+
+    // 5. Wait for result view container to render
+    await page.waitForSelector('text=Canonical Document Evidence Payload', { timeout: 60000 });
+
+    // 6. Assert rendered UI fail-closed contract through actual React rendering path
+    // 6a. Unavailable banner must be visible with required fail-closed messaging from fixture
+    const unavailableBanner = page.locator('[data-testid="canonical-document-viewer-unavailable"]');
+    await expect(unavailableBanner).toBeVisible();
+    await expect(unavailableBanner).toContainText(G4_NEGATIVE_FIXTURE.expectedWarningTitle);
+    await expect(unavailableBanner).toContainText(G4_NEGATIVE_FIXTURE.expectedWarningMessage);
+
+    // 6b. Canonical document viewer must be suppressed (not present in DOM)
+    const viewer = page.locator('[data-testid="canonical-document-viewer"]');
+    await expect(viewer).toHaveCount(G4_NEGATIVE_FIXTURE.expectedViewerCount);
+
+    // 6c. Zero misleading marks rendered in viewer or globally on the page
+    const viewerMarks = page.locator('[data-testid="canonical-document-viewer"] mark[data-finding-id]');
+    await expect(viewerMarks).toHaveCount(G4_NEGATIVE_FIXTURE.expectedMarkCount);
+
+    const allMarks = page.locator('mark[data-finding-id]');
+    await expect(allMarks).toHaveCount(G4_NEGATIVE_FIXTURE.expectedMarkCount);
+
+    // 7. Capture screenshot artifact
+    const evidenceDir = path.join(process.cwd(), 'evidence', 'g4-repair-20261017T1430Z', 'r2');
+    fs.mkdirSync(evidenceDir, { recursive: true });
+    const screenshotPath = path.join(evidenceDir, 'g4_negative_browser_unavailable.png');
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+
+    // 8. Record deterministic negative evidence JSON
+    const negativeEvidence = {
+      testIdentity: 'e2e/four-gates-g4-negative.spec.ts',
+      executionStatus: 'PASS',
+      missingCanonicalCondition: G4_NEGATIVE_FIXTURE.condition,
+      unavailableIndicatorObserved: true,
+      viewerSuppressed: true,
+      observedHighlightCount: 0,
+      expectedHighlightCount: G4_NEGATIVE_FIXTURE.expectedMarkCount,
+      allMandatoryAssertionsPassed: true,
+      screenshotArtifact: 'evidence/g4-repair-20261017T1430Z/r2/g4_negative_browser_unavailable.png',
+      timestamp: new Date().toISOString()
+    };
+
+    fs.writeFileSync(
+      path.join(evidenceDir, 'g4-negative-browser-results.json'),
+      JSON.stringify(negativeEvidence, null, 2)
+    );
+
+    console.log('NEGATIVE_TEST_ASSERTION_FAILED_CLOSED: true');
+    console.log('NEGATIVE_TEST_UNAVAILABLE_BANNER_OBSERVED: true');
+    console.log('NEGATIVE_TEST_MARKS_COUNT: 0');
+  });
+});

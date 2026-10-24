@@ -1,0 +1,49 @@
+================================================================
+HOEOS FORENSIC INVESTIGATION — FINDING C CLASSIFICATION
+Ollama Guard Status in aiFederation.ts
+================================================================
+Investigation ID: HOEOS-FORENSIC-VERCEL-BUNDLES-2026-09-25
+Date:             2026-09-25
+
+[1] ROOT CAUSE CLASSIFICATION
+
+  CLASSIFICATION: GUARD PRESENT, EARLIER GREP MISSED IT
+
+  The localhost:11434 probe in `src/services/verify/aiFederation.ts` is explicitly
+  guarded behind an environment check (`import.meta.env.DEV`).
+
+  In production builds (`import.meta.env.DEV === false`), the endpoint evaluates to
+  `undefined`, triggering an immediate short-circuit exit before any network fetch.
+
+[2] EVIDENCE BASE
+
+  1. `src/services/verify/aiFederation.ts` Code Inspection (C1, C2):
+     - Lines 29-31:
+       `const isDev = import.meta.env.DEV;`
+       `const ollamaEndpoint = isDev`
+       `  ? (import.meta.env.VITE_OLLAMA_HOST ?? 'http://localhost:11434')`
+       `  : undefined;`
+
+     - Lines 34-35:
+       `if (!ollamaEndpoint) {`
+       `  return null;`
+       `}`
+
+     - Line 38:
+       `const endpoint = \`\${ollamaEndpoint}/v1/models\`;`
+
+  2. Explanation for Previous Grep Miss:
+     - The previous grep searched for an unconditional literal string assignment.
+     - The actual implementation uses a conditional ternary operator bound to `import.meta.env.DEV` followed by an explicit `if (!ollamaEndpoint) return null;` fail-safe guard.
+
+  3. Callers Audit (C3):
+     - `aiFederation.ts` is called by `federationOrchestrator.ts` and `verifyCoreService.ts`.
+     - When running in production browser builds, `isDev` resolves to `false`, disabling local Ollama probes cleanly.
+
+[3] SUMMARY CLASSIFICATION
+
+  CLASSIFICATION:           Guard present, earlier grep missed it
+  EVIDENCE:                 Lines 29-35 of src/services/verify/aiFederation.ts
+  IMPACT ON DEMO:           NO (No localhost:11434 browser console network errors in production)
+  FIX LOCATION:             None required
+  FIX SCOPE:                N/A

@@ -1,0 +1,32 @@
+﻿Optimizing queries over multimedia repositories requires a query
+engine to decide which repositories to contact, how to reformulate
+the query for each repository's native interface, and how to merge
+the results that come back. This paper proposes a framework for
+answering queries over a federation of text and image repositories
+where each repository exposes its own schema, its own ranking
+function, and its own coverage characteristics.
+
+The central problem is that a query engine cannot afford to contact
+every repository for every query. Some repositories will have no
+relevant documents, and contacting them wastes both network bandwidth
+and the repository's processing capacity. The engine must therefore
+estimate, before dispatch, whether each repository is likely to
+contain documents that match the query.
+
+The proposed approach has three components. First, a query
+reformulation layer maps the canonical query into the query language
+of each repository. Second, a coverage estimator uses summary
+statistics maintained by each repository to predict the number of
+matching documents. Third, a result merger combines the returned
+ranked lists into a single ranking using a rank-fusion operator that
+does not require access to the underlying document contents.
+
+Experiments on a testbed of five repositories drawn from different
+domains show that the coverage estimator reduces wasted dispatches
+by a substantial fraction without materially degrading recall. The
+result merger preserves the top-k precision of the best individual
+repository while extending recall to include documents that no
+single repository would have returned in isolation. The framework
+generalizes to repositories whose schemas differ, whose ranking
+functions are unknown, and whose coverage characteristics change
+over time.

@@ -1,0 +1,10 @@
+﻿REPOSITORY BASELINE SUMMARY
+===========================
+Date / Timestamp: 2026-10-16T03:41:34+01:00
+Repository Root: C:\Projects\Gradifi
+Branch:          clean-deploy
+HEAD Commit SHA: 9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44
+Node.js Version: v20.20.2
+npm Version:     10.8.2
+Working Tree:    DIRTY (13 tracked modified files, untracked evidence & test files)
+Previous State Match: MATCHES commit 9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44 on clean-deploy.

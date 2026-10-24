@@ -1,0 +1,1 @@
+{"timestamp":"2026-10-24T10:23:09.257Z","correlationId":"corr_test_2","providerId":"test_429","url":"https://test_429.api/","attempt":1,"durationMs":0,"outcome":"RETRY","errorCode":"HTTP_429","errorMessage":"Rate limit exceeded","matchesReturned":0}

@@ -1,0 +1,121 @@
+﻿PHASE 2 - G1 DOCX EXTRACTOR AUDIT
+Status: COMPLETE
+Date: 2026-10-06
+
+TARGET
+src/services/verify/ingestionAdapters/officeZipAdapter.ts (570 lines)
+
+VERDICT
+The extractor CANNOT satisfy the G1 contract as specified. It must
+be replaced, not repaired. Three findings below.
+
+--------------------------------------------------------------------
+FINDING 1 - ZIP BOMB LIMIT IS DECLARED BUT NOT ENFORCED
+--------------------------------------------------------------------
+Line 36 declares:
+  export const MAX_UNCOMPRESSED_ZIP_BYTES = 100 * 1024 * 1024;
+
+The constant is exported but not used anywhere in this file.
+unzipPackageTextFile (lines 42-62) calls:
+  const files = unzipSync(zipBytes);
+
+fflate unzipSync decompresses the entire archive into memory with no
+per-entry or total byte limit. A ZIP bomb (a small compressed archive
+that expands to gigabytes) will exhaust process memory before any
+size check can run.
+
+The comment on line 40 claims "Enforces strict zip decompression bomb
+payload size limit (100MB max)." The comment is false.
+
+G1 REQUIRES: decompressed size limit enforced BEFORE materialization.
+CURRENT STATE: not enforced.
+ACTION: replace unzipSync with fflate's streaming unzip and check the
+sum of entry sizes before decompression.
+
+--------------------------------------------------------------------
+FINDING 2 - XML IS PARSED BY REGEX, NOT BY AN XML PARSER
+--------------------------------------------------------------------
+extractTextFromXmlElements (lines 67-82) uses:
+  const regex = new RegExp(`<${tag}(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'gi');
+
+This is a regex, not an XML parser. It cannot:
+  - Decode XML entity references (&amp;, &lt;, &gt;, &#xNNNN;)
+  - Distinguish CDATA sections from element content
+  - Handle self-closing tags (<w:t/>)
+  - Reject DOCTYPE declarations or external entity references
+  - Handle namespace scoping
+  - Preserve xml:space="preserve" whitespace semantics
+
+Consequences for DOCX extraction:
+  - <w:t xml:space="preserve"> text</w:t> loses leading/trailing spaces.
+  - <w:br/> (line break) is discarded silently.
+  - <w:tab/> (tab) is discarded silently.
+  - <w:ins> (tracked insertion) and <w:del> (tracked deletion) are
+    treated as plain text without any policy distinction.
+  - Nested <w:p> elements are matched by both the 'w:t' and 'w:p'
+    regexes, producing duplicated text.
+  - Tables (<w:tbl>) are treated as a flat sequence of paragraphs,
+    with cell boundaries lost.
+  - XML-escaped ampersands appear as the literal string '&amp;'.
+
+G1 REQUIRES: DTD and external entity processing disabled; DOCTYPE
+rejected; safe XML parsing.
+CURRENT STATE: no XML parser is used at all.
+ACTION: adopt a strict XML parser (fast-xml-parser with
+processEntities: false and DOCTYPE rejection, or equivalent) and
+implement an explicit WordprocessingML walker.
+
+--------------------------------------------------------------------
+FINDING 3 - SILENT OCR FALLBACK VIOLATES DETERMINISM
+--------------------------------------------------------------------
+Lines 124-158: when extracted XML text is empty OR shorter than 50
+characters, extractDocxText calls unzipPackageMediaFiles and then
+runs OCR (ocrService.extractText) on up to 10 embedded images. If
+any OCR text is produced, the result is returned with:
+  success: true
+  extractionMethod: 'docx_ocr_tesseract'
+  ocrUsed: true
+
+This silently substitutes OCR text for the DOCX text layer. Two
+problems:
+  1. OCR is not the DOCX text. A DOCX with a 40-character header
+     and no body text will be reported as containing the OCR'd
+     content of its embedded images.
+  2. Tesseract OCR is not guaranteed bit-for-bit deterministic
+     across runs, platforms, or versions. If the substitution is
+     silent, the canonical text hash for the same DOCX bytes can
+     differ between runs.
+
+G1 REQUIRES: identical bytes produce identical extraction artifact.
+CURRENT STATE: OCR fallback can produce nondeterministic output
+without surfacing a warning to the caller.
+ACTION: either (a) remove the OCR fallback entirely and return
+EMPTY_DOCUMENT, or (b) make the fallback explicit and require the
+caller to opt in with a non-default flag, and record the OCR
+method in the artifact so determinism can be verified per-method.
+
+--------------------------------------------------------------------
+REMAINING GAPS NOT COVERED BY THIS AUDIT
+--------------------------------------------------------------------
+The following G1 requirements are not addressed by officeZipAdapter.ts
+at all and must be built in the replacement:
+
+  - Path traversal rejection (../, absolute paths, drive letters)
+  - Duplicate critical entry rejection
+  - Maximum entry count
+  - Maximum single-entry decompressed size
+  - Maximum raw file size (checked before parse)
+  - Typed failure codes: CORRUPT_PACKAGE, SECURITY_REJECTED,
+    UNSUPPORTED_FEATURE, OVERSIZED
+  - Segment-level output with source-map spans (for G4 highlighting)
+
+--------------------------------------------------------------------
+CONCLUSION
+--------------------------------------------------------------------
+Phase 2 does not "repair" officeZipAdapter.ts. It replaces the DOCX
+extraction path with a new module that meets the G1 contract.
+
+The new module is a separate migration with its own specification.
+It is G5-M03 or higher.
+
+No production change is made by this audit. This file is evidence.

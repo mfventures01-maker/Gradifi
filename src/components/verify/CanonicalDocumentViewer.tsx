@@ -58,6 +58,14 @@ export const CanonicalDocumentViewer: React.FC<CanonicalDocumentViewerProps> = (
   return (
     <div
       data-testid="canonical-document-viewer"
+      data-verify-result={JSON.stringify(
+        verifiedFindings.map(f => ({
+          findingId: f.findingId,
+          matchedDocumentId: f.matchedDocumentId,
+          sourceStart: f.sourceStart,
+          sourceEnd: f.sourceEnd
+        }))
+      )}
       className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs text-slate-200 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto selection:bg-blue-600 selection:text-white"
     >
       {segments.map((seg, idx) => {

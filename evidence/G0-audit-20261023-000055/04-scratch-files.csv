@@ -1,0 +1,62 @@
+﻿"Path","Exists","Bytes","LastModified","Sha256","InGitHistory","IsBinary","Preview"
+"measure-document.ts","True","2123","2026-10-22T23:19:43.4260084+01:00","48e49b06f1865e56a133923309d98a1465559a3c4ab6e69a392806df4913bb7e","False","False","import * as fs from 'fs';
+import { extractDocx } from './src/services/verify/ingestionAdapters/docxExtractor';
+import { segmentDocument } from './src/services/verify/documentNormalizer';
+
+async function main() {
+  const docxPath = process.argv[2];
+  if (!docxPath) { console.error('USAGE: tsx measure-document.ts <docx-path>'); process.exit(1); }
+
+  const raw = fs.readFileSync(docxPath);
+  const bytes = new Uint8Array(raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.byteLength));
+
+  const extraction = await extractDocx(bytes);
+  console.log('EXTRACTED_LENGTH:', extraction.canonicalText.length);
+  console.log('CANONICAL_HASH:', extraction.canonicalTextHash);
+  console.log('SUCCESS:', extraction.success);
+
+  const seg = segmentDocument(extraction.canonicalText, 'DOC-MEASURE');
+  const totalParagraphs = seg.paragraphs.length;
+  const totalSentences = seg.paragraphs.reduce((n, p) => n + p.sentences.length, 0);
+  const totalPhrases = seg.paragraphs.reduce("
+"gap-c-test.mjs","True","1134","2026-09-29T16:32:06.6225770+01:00","356cc50a989bc34938552291c69dad6a65fc92c91afd826c3fd0d90c174987df","False","False","import { chromium } from ""playwright"";
+
+const url = ""https://gradifi.vercel.app/verify/VRF-ABCDEF121234"";
+
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage();
+
+const consoleErrors = [];
+page.on(""console"", msg => {
+  if (msg.type() === ""error"") {
+    consoleErrors.push(msg.text());
+  }
+});
+
+const responses = [];
+page.on(""response"", response => {
+  const u = response.url();
+  if (
+    u.includes(""/api/"") ||
+    u.includes(""supabase"") ||"
+"sales-engine-production.png","True","233234","2026-10-07T09:14:43.8110724+01:00","162f8009d5544cb183a1bc26b25588bb8145fad7cd5457fb199d9e19b76de34f","False","True",""
+"sales-geometry-test.mjs","True","1690","2026-10-07T09:14:14.5398378+01:00","b78e5a5e40169495cb2aeeff6e7827956a83df3bc6b4b2c1bbadc11f74bd7e18","False","False","import { chromium } from ""playwright"";
+
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({
+  viewport: { width: 1440, height: 900 }
+});
+
+await page.goto(""https://cp-splash-nine.vercel.app/sports"", {
+  waitUntil: ""networkidle"",
+  timeout: 30000
+});
+
+await page.waitForTimeout(2000);
+
+const engine = page.getByText(""COMMERCIAL ACQUISITION ENGINE"").first();
+
+console.log(""=== SALES ENGINE VISUAL GEOMETRY ==="");
+
+console.log(""Visible:"", await engine.isVisible());
+"

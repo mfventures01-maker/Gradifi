@@ -1,0 +1,2 @@
+﻿00b48cf HEAD@{2026-09-25 12:41:04 +0100}: commit: g5: republish composite hash with sorted file list
+c67235a HEAD@{2026-09-25 12:14:12 +0100}: commit: providers: add Semantic Scholar integration

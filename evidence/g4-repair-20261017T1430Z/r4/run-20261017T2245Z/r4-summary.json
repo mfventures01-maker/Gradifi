@@ -1,0 +1,62 @@
+{
+  "runIdentifier": "run-20261017T2245Z",
+  "utcTimestamp": "2026-10-18T00:00:00Z",
+  "repository": {
+    "root": "C:\\Projects\\Gradifi",
+    "branch": "main",
+    "commit": "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44"
+  },
+  "findingsVerification": {
+    "F1_hardcodedSelfAttestation": "CONFIRMED",
+    "F2_negativeEvidenceFieldMismatch": "CONFIRMED",
+    "F3_staleHighlightCountMismatch": "CONFIRMED",
+    "F4_assertionObjectMismatch": "CONFIRMED",
+    "F5_fourValuedStatus": "CONFIRMED",
+    "F6_primaryHighlightInvariantMismatch": "CONFIRMED"
+  },
+  "repairedFinalizer": {
+    "path": "scratch/finalize_g4_evidence_r4.ps1",
+    "preservedCopy": "evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-finalizer-patched.ps1",
+    "sha256": "9C0A43015DD66A3345A282FF80AA44E4B4DE6C01CAC3A988DB8570202863C7B2",
+    "bytes": 15842
+  },
+  "preservedR3Specs": {
+    "positiveSpec": {
+      "path": "e2e/four-gates-g4-browser.spec.ts",
+      "sha256": "BEAFAC3618B4A762F1950414EF3A8A15A97DE494066B424F23437BF679DB9452",
+      "bytes": 7432,
+      "matchesBaseline": true
+    },
+    "negativeSpec": {
+      "path": "e2e/four-gates-g4-negative.spec.ts",
+      "sha256": "9497E73F59D146D8199934F06540E0589C23D8BC7A24F0E9AB8E02E5B25CEFCC",
+      "bytes": 4991,
+      "matchesBaseline": true
+    }
+  },
+  "adversarialRejectionSuite": {
+    "totalCases": 22,
+    "passed": 22,
+    "failed": 0,
+    "status": "PASS",
+    "matrixArtifact": "evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/rejection-tests-matrix.csv"
+  },
+  "r3Reconciliation": {
+    "targetDirectory": "evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview",
+    "reconciledTerminalStatus": "PASS",
+    "exitCode": 0,
+    "precedenceRank": 4,
+    "resultArtifact": "evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-r3-reconciliation.json"
+  },
+  "r5DeferredItems": [
+    {
+      "file": "e2e/four-gates-g4-negative.spec.ts",
+      "lines": [93, 95, 96, 97, 99],
+      "defect": "Hardcoded success claims in serialized negativeEvidence JSON (e.g. unavailableIndicatorObserved: true, observedHighlightCount: 0) instead of dynamically queried Playwright locator values.",
+      "risk": "Serialized negative evidence object relies on self-attested literals, although enclosing Playwright expect() assertions were validated.",
+      "acceptanceCriteria": "Replace literals with dynamic DOM evaluation (await allMarks.count(), await unavailableBanner.isVisible()) in R5."
+    }
+  ],
+  "finalR4Status": "PASS",
+  "g4CertificationStatus": "NOT CERTIFIED"
+}

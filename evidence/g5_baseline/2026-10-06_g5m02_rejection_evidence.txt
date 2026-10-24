@@ -1,0 +1,79 @@
+﻿G5-M02 REJECTION EVIDENCE
+Date: 2026-10-06
+Status: REJECTED, REVERTED
+Related spec: evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt
+Related before-state: evidence/g5_baseline/2026-10-06_g5m02_before_state.txt
+
+SUMMARY
+The G5-M02 two-pass protected-period masking repair was
+implemented, tested, and rejected. It is not installed in
+production. This file preserves the runtime evidence that
+motivated the rejection and records the open question the
+rejection exposes.
+
+WHAT WAS DEMONSTRATED (RUNTIME EVIDENCE, NOT INSTALLED)
+1. The 18-case punctuation/segmentation matrix passed 18/18
+   when the two-pass masking fix was applied to
+   documentNormalizer.ts:134.
+2. The sentinel collision test passed 2/2:
+   - segmentDocument throws on a raw document containing U+E000.
+   - segmentDocument does not throw for a raw document without U+E000.
+3. SAMPLE_TEXT_A token coverage reached 91/91 with zero
+   missing, zero duplicate, zero out-of-range indices.
+
+WHAT WAS DISPROVED (RUNTIME EVIDENCE, C5 VIOLATION)
+The G5 baseline gate C5 requires these values to be UNCHANGED:
+  resIdentical.overallSimilarity  = 84.6  -> observed 100.0  (expected)
+  resUnrelated.overallSimilarity  = 0     -> observed 0      (unchanged)
+  resPartial.overallSimilarity    = 54.9  -> observed 76.9   (VIOLATION)
+  resPartial firstFinding.matchMethod = TOKEN_OVERLAP
+                                          -> observed NGRAM (VIOLATION)
+
+The diagnostic printed all three partial findings. All three
+matched against the SAME location in SAMPLE_TEXT_B_PARTIAL:
+  matched="An Analysis of High-Order Evidence Systems in Edge
+  Computing Topology\nBy Prof. E..."
+That location is the header block of the comparison document.
+It shares no text with the source sentences it purports to
+match. The NGRAM method and the 76.9 score are spurious.
+
+ROOT CAUSE
+documentNormalizer.ts:134's sentence regex:
+  /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g
+cannot split a paragraph that contains only protected periods.
+The header block of SAMPLE_TEXT_B_PARTIAL contains exactly two
+periods (after "Prof." and after "Dr."). Both are masked by the
+two-pass fix. When both periods are masked, the paragraph has
+no unmasked terminators, so the regex consumes the entire
+paragraph as one sentence. That single giant sentence is then
+used as the comparison segment for every source sentence,
+producing spurious matches at the header location.
+
+WHAT THIS MEANS FOR THE NEXT MIGRATION
+The scoring engine is not implicated. It was not modified in
+G5-M02 and remains the same code that produced the frozen
+baseline. The defect belongs entirely to the segmentation
+layer. The next migration (G5-M03 or higher) must address the
+paragraph-with-only-protected-periods case.
+
+REMEDIATION OPTIONS FOR THE NEXT MIGRATION
+A. Second-pass sentence split on newlines after the period-
+   based split.
+B. Mask newlines as protected characters alongside periods,
+   then restore them after segmentation.
+C. Split paragraphs on single newlines before sentence
+   segmentation.
+D. Reconsider the fixture: if a header block with only
+   abbreviation periods is pathological, remove it from the
+   acceptance matrix and document the limitation.
+
+None of these options has been selected. The next migration
+must choose one, write its own specification, and be certified
+independently.
+
+STATE OF THE PRODUCTION BRANCH
+documentNormalizer.ts is reverted to its pre-M02 form. git diff
+against HEAD is empty. The G5 baseline remains
+84.6 / 0 / 54.9 / TOKEN_OVERLAP.
+
+NO SCORING-ENGINE CHANGE IS JUSTIFIED BY THIS EVIDENCE.

@@ -1,0 +1,2 @@
+﻿00b48cf g5: republish composite hash with sorted file list
+c67235a providers: add Semantic Scholar integration

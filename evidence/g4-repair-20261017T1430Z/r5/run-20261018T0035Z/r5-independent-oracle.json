@@ -1,0 +1,41 @@
+﻿{
+    "version":  "HOEOS-G4-R5-ORACLE-v1.0",
+    "timestamp":  "2026-10-18T00:41:53.9219591+01:00",
+    "canonicalDocument":  {
+                              "title":  "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+                              "textLength":  1083,
+                              "textSha256":  "B49E3900688024E84148EA7B58C3D009D306476A6431ADFABE83ED11E4F30712",
+                              "inputHash":  "B49E3900688024E84148EA7B58C3D009D306476A6431ADFABE83ED11E4F30712"
+                          },
+    "candidateFindings":  [
+                              {
+                                  "candidateFindingId":  "finding-g4-quantum-001",
+                                  "label":  "Finding A",
+                                  "expectedSourceId":  "src-crossref-10.1038-001",
+                                  "expectedStart":  0,
+                                  "expectedEnd":  85,
+                                  "expectedText":  "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+                                  "canonicalSliceMatches":  true,
+                                  "provenanceType":  "HAND_AUTHORED_R2_R3_FIXTURE",
+                                  "provenanceSource":  "e2e/g4-fixtures.ts:40-54",
+                                  "provenanceAuthority":  "Candidate fixture expectation from Phase R2/R3 repair orders. Synthesized for demo document simulation.",
+                                  "independenceStatus":  "INDEPENDENT_TEST_ORACLE",
+                                  "engineGenerated":  false
+                              },
+                              {
+                                  "candidateFindingId":  "finding-g4-distrib-002",
+                                  "label":  "Finding B",
+                                  "expectedSourceId":  "src-crossref-10.1038-001",
+                                  "expectedStart":  788,
+                                  "expectedEnd":  935,
+                                  "expectedText":  "Distributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence.",
+                                  "canonicalSliceMatches":  true,
+                                  "provenanceType":  "HAND_AUTHORED_R2_R3_FIXTURE",
+                                  "provenanceSource":  "e2e/g4-fixtures.ts:55-69",
+                                  "provenanceAuthority":  "Candidate fixture expectation from Phase R2/R3 repair orders. Synthesized for demo document simulation.",
+                                  "independenceStatus":  "INDEPENDENT_TEST_ORACLE",
+                                  "engineGenerated":  false
+                              }
+                          ],
+    "evaluationMandate":  "Assert real engine output against candidate oracle. If engine output diverges (e.g. dynamic finding IDs or live provider sources), preserve discrepancy and fail/block per HOEOS rules."
+}

@@ -1,0 +1,53 @@
+=== HOEOS R4 COMMAND EXECUTION LOG ===
+Run Identifier: run-20261017T2245Z
+Working Directory: C:\Projects\Gradifi
+Environment: Windows PowerShell (PAGER=cat)
+
+[CMD 1] Initialize R4 Directory & Capture Baseline State
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/r4_init_baseline.ps1
+Working Directory: C:\Projects\Gradifi
+Exit Code: 0
+Output Artifacts:
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-baseline.txt
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-baseline-hashes.csv
+
+[CMD 2] Audit Authoritative Files & Findings F1-F6
+Command: Internal inspection & analysis of scratch/finalize_g4_evidence.ps1 and R3 output artifacts
+Exit Code: 0
+Output Artifact:
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-finalizer-audit.txt
+
+[CMD 3] Write & Prepare Repaired Finalizer (Direction A)
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/prepare_r4_patch_deliverables.ps1
+Working Directory: C:\Projects\Gradifi
+Exit Code: 0
+Output Artifacts:
+  - scratch/finalize_g4_evidence_r4.ps1
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-finalizer-patched.ps1
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-finalizer-patched-hash.txt
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-patch.diff
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-status-semantics.json
+
+[CMD 4] Execute Adversarial Rejection & Process Exit Suite (22 Cases)
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/run_r4_rejection_suite.ps1
+Working Directory: C:\Projects\Gradifi
+Exit Code: 0
+Output Artifacts:
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/rejection-tests-matrix.csv
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-rejection-tests/rejection-tests.log
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-process-exit-tests/process-exit-tests.log
+
+[CMD 5] Execute Repaired Finalizer Against Preserved R3 Evidence
+Command: powershell.exe -ExecutionPolicy Bypass -File scratch/finalize_g4_evidence_r4.ps1 -EvidenceDir "evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview" -PlaywrightExitCode 0 -NegativeExitCode 0 -StructuralExitCode 0 -OutputFile "evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-r3-reconciliation.json"
+Working Directory: C:\Projects\Gradifi
+Exit Code: 0
+Output Artifact:
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-r3-reconciliation.json
+
+[CMD 6] Generate Summary and Reconciliation Reports
+Command: Artifact compilation & verification
+Exit Code: 0
+Output Artifacts:
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-r3-reconciliation.md
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-summary.json
+  - evidence/g4-repair-20261017T1430Z/r4/run-20261017T2245Z/r4-summary.md

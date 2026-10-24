@@ -1,0 +1,21 @@
+diff --git a/src/services/verify/aiFederation.ts b/src/services/verify/aiFederation.ts
+index 8780051..39d5b72 100644
+--- a/src/services/verify/aiFederation.ts
++++ b/src/services/verify/aiFederation.ts
+@@ -26,7 +26,16 @@ export class AIFederationService {
+    */
+   async probeLocalGemma(): Promise<'RUNTIME_AVAILABLE' | 'RUNTIME_UNAVAILABLE'> {
+     try {
+-      const endpoint = 'http://localhost:11434/v1/models';
++      const isDev = import.meta.env.DEV;
++      const ollamaEndpoint = isDev
++        ? (import.meta.env.VITE_OLLAMA_HOST ?? 'http://localhost:11434')
++        : null;
++
++      if (!ollamaEndpoint) {
++        return 'RUNTIME_UNAVAILABLE';
++      }
++
++      const endpoint = `${ollamaEndpoint}/v1/models`;
+       const controller = new AbortController();
+       const timeoutId = setTimeout(() => controller.abort(), 1200);

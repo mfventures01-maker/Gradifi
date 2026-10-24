@@ -1,0 +1,12 @@
+﻿=== HOEOS R3 RUNNER AUDIT: scratch/r3-run-specs.ps1 ===
+1. Parser Check: Passed (syntax valid).
+2. Exit Code Propagation: The script captured $LASTEXITCODE into an array, but did not use $ErrorActionPreference = 'Stop'.
+3. Port Conflict: The candidate runner tested port 4173 with Test-NetConnection, but if occupied, it did not fail closed deterministically.
+4. Hardcoded Paths: The runner invoked e2e specs that had hardcoded route /verify and wrote evidence into R2 directory evidence/g4-repair-20261017T1430Z/r2.
+5. Audit Decision: Replaced execution with controlled runner scratch/run_r3_production_preview.ps1 enforcing:
+   - $ErrorActionPreference = 'Stop'
+   - Port 4173 pre-execution isolation check
+   - Target route parameterized via TARGET_ROUTE (/tools/plagiarism)
+   - Evidence redirection via HOEOS_EVIDENCE_DIR (run-20261017T2040Z/production-preview)
+   - Deterministic process shutdown of Vite preview server
+   - Preserving R2 evidence without mutation

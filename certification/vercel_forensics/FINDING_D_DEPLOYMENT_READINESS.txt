@@ -1,0 +1,37 @@
+================================================================
+HOEOS FORENSIC INVESTIGATION — FINDING D CLASSIFICATION
+Deployment Readiness and Live Vercel Route Probe Audit
+================================================================
+Investigation ID: HOEOS-FORENSIC-VERCEL-BUNDLES-2026-09-25
+Target Domain:    https://gradifi.vercel.app
+Date:             2026-09-25
+
+[1] ROUTE PROBE AUDIT
+
+  Method: HTTP POST to production endpoints on `https://gradifi.vercel.app`
+  Payload: {"query":"federated learning","limit":3}
+
+  PROBE RESULTS:
+    /api/verify/core            -> 500 Internal Server Error
+    /api/verify/crossref        -> 500 Internal Server Error
+    /api/verify/googlebooks     -> 500 Internal Server Error
+    /api/verify/openalex        -> 500 Internal Server Error
+    /api/verify/unpaywall       -> 500 Internal Server Error
+    /api/verify/nemotron        -> 500 Internal Server Error
+    /api/verify/gemini          -> 500 Internal Server Error
+    /api/verify/gemma           -> 500 Internal Server Error
+    /api/verify/semanticscholar -> 500 Internal Server Error
+    /api/_probe                 -> 405 Method Not Allowed
+
+[2] FRONTEND & STATIC ASSET DELIVERY
+
+  Method: HTTP GET to `https://gradifi.vercel.app/tools/plagiarism`
+  Result: 200 OK (Content Length: 786 bytes - static index.html SPA entry point)
+
+[3] SUMMARY CLASSIFICATION
+
+  ROUTES OK:                0 of 10 API routes
+  ROUTES FAILED:            9 routes return 500, 1 route returns 405
+  BROWSER PIPELINE:         Static UI loads (200 OK), but verification API calls fail at Stage 1 (API POST rejection)
+  DEMO READY ON VERCEL:     NO
+  REASON:                   In-place esbuild bundles in `api/` fail during Vercel serverless function invocation with HTTP 500 errors.

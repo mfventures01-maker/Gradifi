@@ -1,0 +1,30 @@
+﻿{
+    "framework":  "HOEOS G4 R4 Four-Valued Status Model",
+    "precedenceRules":  [
+                            {
+                                "rank":  1,
+                                "status":  "BLOCKED",
+                                "exitCode":  2,
+                                "condition":  "Required evidence or prerequisites are missing, inaccessible, malformed, empty, or cannot be safely evaluated."
+                            },
+                            {
+                                "rank":  2,
+                                "status":  "NOT RUN",
+                                "exitCode":  3,
+                                "condition":  "A mandatory test or check was not executed (e.g. exit code = -1 or reported status = NOT_RUN / SKIPPED)."
+                            },
+                            {
+                                "rank":  3,
+                                "status":  "FAIL",
+                                "exitCode":  1,
+                                "condition":  "Required checks executed and at least one assertion or integrity check failed (e.g. process exit != 0, assertions failed, mark count \u003c= 0, offset invariant violated)."
+                            },
+                            {
+                                "rank":  4,
+                                "status":  "PASS",
+                                "exitCode":  0,
+                                "condition":  "Every mandatory check executed, all required evidence is valid, all assertions passed, and all required process exits and hash checks succeeded."
+                            }
+                        ],
+    "g4CertificationStatusNotice":  "G4 verification-engine certification remains NOT CERTIFIED until independent execution without injected fixtures is demonstrated."
+}

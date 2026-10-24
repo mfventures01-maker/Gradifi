@@ -1,0 +1,21 @@
+%PDF-1.4
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kinds [3 0 R] /Count 1 >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj
+4 0 obj << /Length 200 >>
+stream
+BT
+/F1 12 Tf
+(Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks) Tj
+(By Dr. Aris Thorne and Prof. Elena Rostova 2024 Journal of Advanced Computer Science) Tj
+(Federated learning across edge networks faces latency challenges. We propose quantum inspired architecture for high order evidence systems.) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f
+trailer << /Size 5 /Root 1 0 R >>
+startxref
+500
+%%EOF

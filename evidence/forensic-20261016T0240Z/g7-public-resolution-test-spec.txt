@@ -1,0 +1,58 @@
+﻿G7 TEST SPECIFICATION: PUBLIC VERIFICATION STORED-DATA EQUALITY
+==============================================================
+Classification: PLANNED TEST SPECIFICATION (NOT RUNTIME EVIDENCE)
+Target Gate:    G7 (Receipt and Public Verification)
+
+1. TEST OBJECTIVE:
+   Verify that navigating to /verify/{verificationId} in a real browser retrieves the
+   authoritative persisted database fixture from Supabase and renders exact field-by-field
+   matching values in the DOM, failing closed on mismatched or tampered fields.
+
+2. SEEDED CONTROLLED FIXTURE:
+   - Target Table: public.public_verification_records
+   - Fixture Record:
+     {
+       "verification_id": "VRF-A1B2C3D4E5F6",
+       "document_hash": "a1b2c3d4e5f60718293a4b5c6d7e8f90",
+       "evidence_hash": "e5f60718293a4b5c6d7e8f90a1b2c3d4",
+       "engine_version": "G5-DETERMINISTIC-v1",
+       "policy_version": "G3-POLICY-v1",
+       "overall_similarity": 37.4,
+       "total_sources_found": 2,
+       "evidence_envelope": {
+         "findingCount": 2,
+         "sourceCount": 2,
+         "uniqueMatchedCoverage": 37.4,
+         "highestSourceMatch": 25.1,
+         "timestamp": "2026-10-16T00:00:00.000Z"
+       }
+     }
+
+3. PLAYWRIGHT BROWSER ASSERTION SPECIFICATION:
+   Step 1: Navigate to /verify/VRF-A1B2C3D4E5F6.
+   Step 2: Intercept network response from */rest/v1/public_verification_records*.
+           Assert response.status() === 200.
+           Assert response.json()[0].verification_id === "VRF-A1B2C3D4E5F6".
+   Step 3: Assert DOM Receipt Card elements:
+           - [data-testid="verification-id"]: exact text "VRF-A1B2C3D4E5F6".
+           - [data-testid="document-hash"]: exact text "a1b2c3d4e5f60718293a4b5c6d7e8f90".
+           - [data-testid="evidence-hash"]: exact text "e5f60718293a4b5c6d7e8f90a1b2c3d4".
+           - [data-testid="overall-similarity"]: exact text "37.4%".
+           - [data-testid="total-sources"]: exact text "2".
+           - [data-testid="engine-version"]: exact text "G5-DETERMINISTIC-v1".
+           - [data-testid="policy-version"]: exact text "G3-POLICY-v1".
+           - [data-testid="integrity-badge"]: exact text "INTEGRITY: VALID".
+   Step 4: Assert absence of unexpected private fields:
+           - Assert page body does not contain database primary key UUID, service keys, or user IDs.
+
+4. NEGATIVE & BOUNDARY ASSERTIONS:
+   Test Case 4a: Non-existent record (/verify/VRF-000000000000)
+                 - Assert network response returns empty or 404.
+                 - Assert DOM displays [data-testid="status-badge"] === "STATUS: NOT_FOUND".
+   Test Case 4b: Malformed record (/verify/VRF-BAD_FORMAT)
+                 - Assert DOM displays "STATUS: INVALID_FORMAT".
+   Test Case 4c: Tampered hash fixture (Seed DB row with mismatched verification_id)
+                 - Assert DOM displays "STATUS: INTEGRITY_FAILED".
+
+5. CLEANUP REQUIREMENT:
+   - Automated fixture teardown: DELETE FROM public.public_verification_records WHERE verification_id = 'VRF-A1B2C3D4E5F6'.

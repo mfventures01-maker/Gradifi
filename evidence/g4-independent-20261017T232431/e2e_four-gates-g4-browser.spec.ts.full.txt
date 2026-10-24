@@ -1,0 +1,190 @@
+FILE: e2e\four-gates-g4-browser.spec.ts
+/**
+ * GRADIFI HOEOS GATE 4 - POSITIVE REAL BROWSER SPECIFICATION
+ * Exercises real verification UI against development server.
+ * Oracle: Strictly fixture-defined expectations from e2e/g4-fixtures.ts.
+ * Governance: HOEOS P4 Standard (Pure Deterministic Visual Evidence)
+ * Independent fixture-grounded test oracle without application result global
+ */
+
+import { test, expect } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+import {
+  G4_POSITIVE_FIXTURE,
+  G4_EXPECTED_HIGHLIGHTS,
+  G4_CANONICAL_DOCUMENT_TEXT
+} from './g4-fixtures.js';
+
+test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
+  test('executes verification UI with fixture grounding and asserts deterministic DOM mark elements', async ({ page }) => {
+    test.setTimeout(90000);
+
+    const consoleLogs: string[] = [];
+    const networkFailures: string[] = [];
+
+    page.on('console', msg => {
+      consoleLogs.push(`[${msg.type()}] ${msg.text()}`);
+    });
+
+    page.on('requestfailed', req => {
+      networkFailures.push(`FAILED: ${req.method()} ${req.url()} - ${req.failure()?.errorText}`);
+    });
+
+    // 1. Navigate to verification route
+    const targetRoute = process.env.TARGET_ROUTE || '/tools/plagiarism';
+    await page.goto(targetRoute);
+    await page.waitForLoadState('networkidle');
+
+    // 2. Pre-load document text via UI interaction
+    const preloadBtn = page.locator('button:has-text("Pre-load Demo Document")');
+    await expect(preloadBtn).toBeVisible();
+    await preloadBtn.click();
+
+    // Verify textarea is populated with canonical document text
+    const textarea = page.locator('textarea[placeholder*="Paste academic paper"]');
+    await expect(textarea).toBeVisible();
+    const loadedText = await textarea.inputValue();
+    expect(loadedText.length).toBeGreaterThan(50);
+    expect(loadedText).toContain('Quantum Entanglement');
+
+    // 3. Configure authorized dev-only transform seam to inject deterministic fixture payload
+    await page.evaluate((fixture) => {
+      (window as any).__GRADIFI_TEST_TRANSFORM_VERIFY_RESULT__ = (res: any) => {
+        return {
+          ...res,
+          canonicalDocument: {
+            ...res?.canonicalDocument,
+            rawText: fixture.canonicalText,
+            title: fixture.metadata.title,
+            authors: fixture.metadata.authors,
+            doi: fixture.metadata.doi,
+            isbn: fixture.metadata.isbn
+          },
+          verifiedSources: fixture.verifiedSources,
+          similarityAnalysis: {
+            ...res?.similarityAnalysis,
+            analysisType: 'DETERMINISTIC_SIMILARITY',
+            findings: fixture.findings,
+            overallSimilarity: fixture.overallSimilarity
+          }
+        };
+      };
+    }, G4_POSITIVE_FIXTURE);
+
+    // 4. Trigger verification action
+    const checkBtn = page.locator('button:has-text("Run Academic Evidence Verification")');
+    await expect(checkBtn).toBeEnabled();
+    await checkBtn.click();
+
+    // 5. Wait for analysis result and Canonical Document Evidence Payload
+    await page.waitForSelector('text=Canonical Document Evidence Payload', { timeout: 60000 });
+
+    // 6. Assert Human Academic Review Boundary disclaimer
+    await expect(page.locator('text=Human Academic Review Boundary')).toBeVisible();
+
+    // 7. Assert forbidden verdict words are absent from viewer
+    const viewerContainer = page.locator('[data-testid="canonical-document-viewer"]');
+    await expect(viewerContainer).toBeVisible();
+    const viewerHtml = await viewerContainer.innerHTML();
+    expect(viewerHtml).not.toContain('PLAGIARIZED');
+    expect(viewerHtml).not.toContain('GUILTY');
+    expect(viewerHtml).not.toContain('PROVEN PLAGIARISM');
+
+    // 8. Assert rendered mark elements against independent fixture contract
+    const markElements = viewerContainer.locator('mark[data-finding-id]');
+    const markCount = await markElements.count();
+    console.log(`G4_BROWSER_MARK_COUNT: ${markCount}`);
+    expect(markCount).toBe(G4_EXPECTED_HIGHLIGHTS.length);
+
+    const verifiedDetails: Array<{
+      index: number;
+      findingId: string;
+      sourceId: string;
+      start: number;
+      end: number;
+      markText: string;
+      expectedSlice: string;
+      sourceTitle: string;
+    }> = [];
+
+    for (let i = 0; i < G4_EXPECTED_HIGHLIGHTS.length; i++) {
+      const expected = G4_EXPECTED_HIGHLIGHTS[i];
+      const mark = markElements.nth(i);
+
+      const textSpan = mark.locator('[data-highlight-text]');
+      const markText = (await textSpan.count()) > 0
+        ? ((await textSpan.textContent()) || '')
+        : ((await mark.innerText()) || '');
+
+      const findingId = await mark.getAttribute('data-finding-id');
+      const sourceId = await mark.getAttribute('data-source-id');
+      const startOffsetAttr = await mark.getAttribute('data-start-offset');
+      const endOffsetAttr = await mark.getAttribute('data-end-offset');
+      const methodAttr = await mark.getAttribute('data-method');
+      const tooltipTitle = await mark.getAttribute('title');
+
+      const start = parseInt(startOffsetAttr!, 10);
+      const end = parseInt(endOffsetAttr!, 10);
+
+      // Identity assertions from fixture
+      expect(findingId).toBe(expected.findingId);
+      expect(sourceId).toBe(expected.sourceId);
+      expect(methodAttr).toBe(expected.matchMethod);
+
+      // Offset assertions from fixture
+      expect(start).toBe(expected.startOffset);
+      expect(end).toBe(expected.endOffset);
+
+      // Canonical text slice calculation
+      const expectedSlice = G4_CANONICAL_DOCUMENT_TEXT.slice(expected.startOffset, expected.endOffset);
+      expect(markText).toBe(expectedSlice);
+      expect(markText).toBe(expected.expectedText);
+
+      // Provenance metadata assertions
+      expect(tooltipTitle).toContain(expected.sourceTitle);
+      expect(tooltipTitle).toContain(expected.authors.join(', '));
+      expect(tooltipTitle).toContain(expected.doi);
+      expect(tooltipTitle).toContain(`${expected.similarityScore}%`);
+
+      verifiedDetails.push({
+        index: i,
+        findingId: findingId!,
+        sourceId: sourceId!,
+        start,
+        end,
+        markText,
+        expectedSlice,
+        sourceTitle: expected.sourceTitle
+      });
+    }
+
+    const primaryMark = verifiedDetails[0];
+    console.log(`G4_PRIMARY_MARK_TEXT: "${primaryMark.markText}"`);
+    console.log(`G4_PRIMARY_SOURCE_ID: ${primaryMark.sourceId}`);
+    console.log(`G4_PRIMARY_FINDING_ID: ${primaryMark.findingId}`);
+    console.log(`G4_PRIMARY_OFFSETS: [${primaryMark.start}, ${primaryMark.end}]`);
+
+    // 9. Capture screenshot artifact
+    const evidenceDir = process.env.HOEOS_EVIDENCE_DIR || path.join(process.cwd(), 'evidence', 'g4-repair-20261017T1430Z', 'r2');
+    fs.mkdirSync(evidenceDir, { recursive: true });
+    const screenshotPath = path.join(evidenceDir, 'g4_browser_highlight.png');
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+
+    const relScreenshot = path.relative(process.cwd(), screenshotPath).replace(/\\/g, '/');
+
+    // 10. Record runtime evidence artifact
+    fs.writeFileSync(
+      path.join(evidenceDir, 'g4-browser-results.json'),
+      JSON.stringify({
+        status: 'PASS',
+        realBrowser: true,
+        markCount,
+        primaryHighlight: primaryMark,
+        verifiedHighlights: verifiedDetails,
+        screenshotPath: relScreenshot,
+        timestamp: new Date().toISOString()
+      }, null, 2)
+    );
+  });
+});

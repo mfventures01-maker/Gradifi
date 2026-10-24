@@ -1,0 +1,189 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "C:\\Projects\\Gradifi\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "e2e/g4-independent-engine-certification.spec.ts",
+      "--config=playwright.r5.standardprod.config.ts",
+      "--project=chromium"
+    ],
+    "configFile": "C:\\Projects\\Gradifi\\playwright.r5.standardprod.config.ts",
+    "rootDir": "C:/Projects/Gradifi/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/Gradifi/test-results/.playwright-r5-temp",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Projects/Gradifi/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/g4-repair-20261017T1430Z/r5/run-20261018T0035Z/r5-playwright-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run preview -- --host 127.0.0.1 --port 4173 --strictPort",
+      "url": "http://127.0.0.1:4173",
+      "reuseExistingServer": false,
+      "timeout": 120000,
+      "stdout": "pipe",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "g4-independent-engine-certification.spec.ts",
+      "file": "g4-independent-engine-certification.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "HOEOS G4 R5: Independent Real Engine Certification",
+          "file": "g4-independent-engine-certification.spec.ts",
+          "line": 15,
+          "column": 6,
+          "specs": [
+            {
+              "title": "executes real verification engine through standard production build and captures dual evidence trails",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 23769,
+                      "error": {
+                        "message": "Error: Expected Finding A (finding-g4-quantum-001) in real engine output\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: Expected Finding A (finding-g4-quantum-001) in real engine output\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at C:\\Projects\\Gradifi\\e2e\\g4-independent-engine-certification.spec.ts:250:113",
+                        "location": {
+                          "file": "C:\\Projects\\Gradifi\\e2e\\g4-independent-engine-certification.spec.ts",
+                          "column": 113,
+                          "line": 250
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 248 |\u001b[39m     \u001b[90m// As mandated by Section 1, 7, and 14:\u001b[39m\n \u001b[90m 249 |\u001b[39m     \u001b[90m// If the engine returns a different offset, source ID, or finding ID, preserve actual result and fail the assertion.\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 250 |\u001b[39m     expect(engineVsOracle\u001b[33m.\u001b[39mfindingAPresent\u001b[33m,\u001b[39m \u001b[32m'Expected Finding A (finding-g4-quantum-001) in real engine output'\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                                                                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 251 |\u001b[39m     expect(engineVsOracle\u001b[33m.\u001b[39mfindingBPresent\u001b[33m,\u001b[39m \u001b[32m'Expected Finding B (finding-g4-distrib-002) in real engine output'\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 252 |\u001b[39m     expect(engineVsOracle\u001b[33m.\u001b[39mfindingADocumentIdMatch\u001b[33m,\u001b[39m \u001b[32m'Expected Finding A matchedDocumentId === src-crossref-10.1038-001'\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 253 |\u001b[39m     expect(engineVsOracle\u001b[33m.\u001b[39mfindingAStartMatch\u001b[33m,\u001b[39m \u001b[32m'Expected Finding A sourceStart === 0'\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Projects\\Gradifi\\e2e\\g4-independent-engine-certification.spec.ts",
+                            "column": 113,
+                            "line": 250
+                          },
+                          "message": "Error: Expected Finding A (finding-g4-quantum-001) in real engine output\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  248 |     // As mandated by Section 1, 7, and 14:\n  249 |     // If the engine returns a different offset, source ID, or finding ID, preserve actual result and fail the assertion.\n> 250 |     expect(engineVsOracle.findingAPresent, 'Expected Finding A (finding-g4-quantum-001) in real engine output').toBe(true);\n      |                                                                                                                 ^\n  251 |     expect(engineVsOracle.findingBPresent, 'Expected Finding B (finding-g4-distrib-002) in real engine output').toBe(true);\n  252 |     expect(engineVsOracle.findingADocumentIdMatch, 'Expected Finding A matchedDocumentId === src-crossref-10.1038-001').toBe(true);\n  253 |     expect(engineVsOracle.findingAStartMatch, 'Expected Finding A sourceStart === 0').toBe(true);\n    at C:\\Projects\\Gradifi\\e2e\\g4-independent-engine-certification.spec.ts:250:113"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "--- R5 INDEPENDENT CERTIFICATION THREE-WAY EVALUATION ---\n"
+                        },
+                        {
+                          "text": "Engine vs Oracle Verdict: MISMATCH\n"
+                        },
+                        {
+                          "text": "DOM vs Oracle Verdict: MISMATCH\n"
+                        },
+                        {
+                          "text": "DOM vs Engine Verdict: MATCH\n"
+                        },
+                        {
+                          "text": "Overall Match: \u001b[33mfalse\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-18T00:00:54.974Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Projects\\Gradifi\\test-results\\.playwright-r5-temp\\g4-independent-engine-cert-bbb63-ptures-dual-evidence-trails-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\Gradifi\\test-results\\.playwright-r5-temp\\g4-independent-engine-cert-bbb63-ptures-dual-evidence-trails-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Projects\\Gradifi\\e2e\\g4-independent-engine-certification.spec.ts",
+                        "column": 113,
+                        "line": 250
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e788210a76a63fdfd0af-7a12be065600d8d999ee",
+              "file": "g4-independent-engine-certification.spec.ts",
+              "line": 16,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T00:00:44.848Z",
+    "duration": 36449.123999999996,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,34 @@
+﻿EFFECTIVE TABLE PRIVILEGES & RLS STATUS
+=======================================
+Target Project Ref: ehkmfnaqkdgkjmdxxbwj (Gradifi SSOT)
+Timestamp:          2026-10-16T04:09:55+01:00
+Table:              public.public_verification_records
+
+RLS CONFIGURATION:
+  relname:             public_verification_records
+  relrowsecurity:      true (Row Level Security is ENABLED)
+  relforcerowsecurity: false (Force RLS is NOT enabled)
+  tableowner:          postgres
+
+ROLE ATTRIBUTES:
+  anon:          rolcanlogin: false, rolbypassrls: false
+  authenticated: rolcanlogin: false, rolbypassrls: false
+  service_role:  rolcanlogin: false, rolbypassrls: true
+  postgres:      rolcanlogin: true,  rolbypassrls: true
+
+TABLE-LEVEL GRANTS (information_schema.role_table_grants):
+  All roles (anon, authenticated, postgres, service_role) possess table-level grants
+  (DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE).
+
+EFFECTIVE ACCESS DETERMINATION:
+  1. anon:
+     - Governed by RLS (rolbypassrls = false).
+     - SELECT: PERMITTED via 'Public Verification Record Select Policy' (USING: true).
+     - INSERT / UPDATE / DELETE: DENIED by PostgreSQL default-deny (0 matching policies).
+  2. authenticated:
+     - Governed by RLS (rolbypassrls = false).
+     - SELECT: PERMITTED via 'Public Verification Record Select Policy' (USING: true).
+     - INSERT / UPDATE / DELETE: DENIED by PostgreSQL default-deny (0 matching policies).
+  3. service_role:
+     - Bypasses RLS (rolbypassrls = true).
+     - SELECT, INSERT, UPDATE, DELETE: PERMITTED via table grants.

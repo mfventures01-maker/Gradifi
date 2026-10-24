@@ -1,0 +1,23 @@
+﻿PHASE 0 — GIT STATE
+Date: 2026-10-06 11:20:38
+
+=== HEAD ===
+9d1a17b45716ef6fb2f8e41945f3fb70efe70f93
+
+=== BRANCH ===
+clean-deploy
+
+=== REMOTE ===
+origin/clean-deploy
+
+=== HEAD VS REMOTE ===
+9d1a17b (HEAD -> clean-deploy, origin/clean-deploy) test(g2): expand punctuation classification matrix with E1-E10 6f3e776 docs(evidence): freeze Phase 1 baseline; record G5-M01 rejection 598d0a7 chore(plagiarism): remove legacy plagiarism module e540124 test(g2): accept TOKEN_OVERLAP in matchMethod assertion f6e9a0f fix(verify): enforce Google Books credential boundary and close hardening suite failures
+
+=== STATUS --short ===
+?? $null ?? certification/federation_complete/AFTER_deployed_probes.txt ?? certification/federation_logs/2026-09-23/unpaywall.jsonl ?? certification/federation_logs/2026-09-24/ ?? certification/federation_logs/2026-09-25/ ?? certification/federation_logs/2026-09-27/ ?? certification/federation_logs/2026-09-29/ ?? certification/federation_logs/2026-10-03/ ?? certification/federation_logs/2026-10-04/ ?? certification/federation_logs/2026-10-05/ ?? certification/forensic/ ?? certification/g1_browser_fix/stream_extractor_preview_result.png ?? certification/g1_browser_fix/stream_extractor_prod_result.png ?? certification/g1_browser_fix/stream_extractor_verification_log.json ?? certification/g1_extension/G1_EXTENSION_COMPOSITE.txt ?? certification/g7_public_verification/ ?? certification/mirror_archive_2026-09-23T08-48-35Z/ ?? certification/provider_passage/OVERLAP_DEMO_DOC.txt ?? certification/provider_passage/PASSAGE_DEMO_PRE_FIX.txt ?? certification/provider_predictability/ ?? certification/repairs/ ?? certification/vercel_forensics/ ?? certification/vercel_logger_build_repair/verification/ ?? certification/vercel_repair/ ?? certification/vercel_server_compile/AFTER_deployed_probes.txt ?? certification/vercel_standalone_restore/BEFORE_AFTER_REPORT.txt ?? certification/vercel_ungate_deploy/AFTER_deployed_probes.txt ?? certification/vercel_ungate_deploy/AFTER_runtime_error.txt ?? certification/vercel_ungate_deploy/AFTER_supabase_rows.txt ?? certification/vercel_ungate_deploy/BEFORE_AFTER_REPORT.txt ?? certification/vercel_wrapper_repair/05_preview_probes.txt ?? e2e/public-verification-g7.spec.ts ?? evidence/ai/provider-truth/ ?? evidence/g5_baseline/2026-10-06_g5m02_before_state.txt ?? evidence/g5_baseline/2026-10-06_g5m02_rejection_evidence.txt ?? evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt ?? evidence/g9/ ?? evidence/phase0/ ?? evidence/provider-truth/ ?? gap-c-test.mjs ?? playwright.prod.config.ts ?? scripts/probeLiveProduction.ts ?? scripts/probeMatchingEvidence.ts ?? scripts/providerTruthSuite.ts ?? tests/g1_certification.test.ts ?? tests/g1_format_matrix.test.ts ?? tests/g1_ocr_branch_forensic.test.ts ?? tests/g1_ocr_complete_forensic_runtime.test.ts ?? tests/g5m02-baseline-check.temp.test.ts ?? tests/g5m02-partial-diagnostic.temp.test.ts ?? tests/g5m02-sentinel-collision.temp.test.ts ?? tests/hoeos-n5-r4-runtime.ts ?? tests/hoeos-n5-runtime.ts ?? tests/pipeline/pipelineAuditFailClosed.test.ts
+
+=== LOG -10 ===
+9d1a17b (HEAD -> clean-deploy, origin/clean-deploy) test(g2): expand punctuation classification matrix with E1-E10 6f3e776 docs(evidence): freeze Phase 1 baseline; record G5-M01 rejection 598d0a7 chore(plagiarism): remove legacy plagiarism module e540124 test(g2): accept TOKEN_OVERLAP in matchMethod assertion f6e9a0f fix(verify): enforce Google Books credential boundary and close hardening suite failures 34b8450 fix(pipeline): fail closed on persistence failure 50a3b5c docs(gemini): record live production probe and browser certification pass 5b34377 fix(verify): allocate 14s reasoning window for gemini-3.5-flash server adapter 06ea2c1 feat(verify): integrate server-only gemini-3.5-flash API-key provider adapter 399ad48 docs(verify): commit attribution and AI optimization evidence artifacts and certification
+
+=== TRACKED MODIFICATIONS ===
+

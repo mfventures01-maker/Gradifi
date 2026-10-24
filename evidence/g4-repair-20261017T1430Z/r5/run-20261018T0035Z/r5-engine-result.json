@@ -1,0 +1,545 @@
+{
+  "capturedAt": "2026-10-18T00:01:13.566Z",
+  "documentHash": "b63738fb51c2f655",
+  "evidenceHash": "2b5c507457377e6a",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 0,
+  "uniqueMatchedCoverage": 0,
+  "highestSourceMatch": 9,
+  "totalSourcesFound": 10,
+  "canonicalTextLength": 1083,
+  "similarityFindingsCount": 10,
+  "similarityFindings": [
+    {
+      "findingId": "6780e7243e80bbb4",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "doi:10.20944/preprints202507.0497.v1",
+      "sourceSegment": "The increasing digitization and decentralization of modern energy systems have heightened their vulnerability to sophisticated cyber threats, necessitating advanced, scalable, and privacy-preserving d",
+      "matchedSegment": "",
+      "similarityScore": 9,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "de51b5db0696a8eb",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "https://openalex.org/W7163668962",
+      "sourceSegment": "Federated Learning (FL) allows the model to be trained cooperatively and retain the locality of data, but the exchange of model updates between dispersed clients and a central server can be compromise",
+      "matchedSegment": "",
+      "similarityScore": 7.9,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "29f4cd616a598e31",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "https://openalex.org/W7213254097",
+      "sourceSegment": "In wireless federated learning (FL), data heterogeneity and multiple local updates induce client drift, degrading model convergence. It is further affected by unreliable wireless links, as transmissio",
+      "matchedSegment": "",
+      "similarityScore": 7.7,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "ab1305b4dfa3fbf0",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "s2:7f2a3ecaaf27bf8e3b83d5cce2a83bec8c0ec3fd",
+      "sourceSegment": "Quantum field theory (QFT)-enabled sensor networks are revolutionizing precision disease detection by exploiting quantum–classical correlations to achieve sensitivity and specificity beyond classical ",
+      "matchedSegment": "",
+      "similarityScore": 7.5,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "6806aad07d7e7392",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "s2:7d4229937004f37fb97332836741c8431965beff",
+      "sourceSegment": "Federated Learning (FL) has emerged as an effective paradigm for collaborative model development in privacy-sensitive domains such as healthcare and finance. While FL avoids direct data sharing, exist",
+      "matchedSegment": "",
+      "similarityScore": 6.3,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "a8bf1fe9b46f5759",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "doi:10.21203/rs.3.rs-9358734/v1",
+      "sourceSegment": "Abstract\n                Distributed quantum machine learning (QML) provides a natural framework for studying variational quantum models under distributed and feature-partitioned execution, but the ac",
+      "matchedSegment": "",
+      "similarityScore": 6,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "65b1b126a557975e",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "https://openalex.org/W7166922344",
+      "sourceSegment": "Network Traffic Classification (NTC) is essential for network management and security; however, it faces challenges such as label scarcity, pseudo-label noise, privacy concerns, non-independent and no",
+      "matchedSegment": "",
+      "similarityScore": 5.4,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "2327b498f1dbafd2",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "s2:a7083fe2df1f07c21790c354d730cd41773c49e0",
+      "sourceSegment": "Federated Learning (FL), as an efficient decentralized distributed learning approach, enables multiple institutions to collaboratively train a model without sharing their local data. Despite its advan",
+      "matchedSegment": "",
+      "similarityScore": 4.8,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "b14cba41d476bbf7",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "https://openalex.org/W4414110589",
+      "sourceSegment": "In recent years, the integration of Uncrewed Aerial Vehicles (UAVs) into Multi-Access Edge Computing (MEC) systems has emerged as a transformative paradigm revolutionizing the landscape of data proces",
+      "matchedSegment": "",
+      "similarityScore": 4.5,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    },
+    {
+      "findingId": "f4759fbe31d2a844",
+      "sourceDocumentId": "c00b201fabfb98d9",
+      "matchedDocumentId": "https://openalex.org/W7221496201",
+      "sourceSegment": "Federated learning (FL) enables collaborative model training across distributed IoT devices without sharing raw data, but introduces a fundamental verification gap: malicious clients can submit fabric",
+      "matchedSegment": "",
+      "similarityScore": 4.1,
+      "matchMethod": "TOKEN_OVERLAP",
+      "provenance": "DETERMINISTIC"
+    }
+  ],
+  "verifiedSourcesCount": 10,
+  "verifiedSources": [
+    {
+      "sourceId": "doi:10.20944/preprints202507.0497.v1",
+      "title": "Federated Quantum Machine Learning for Distributed Cybersecurity in Multi-Agent Energy Systems",
+      "authors": [
+        "Kwabena Addo",
+        "Musasa Kabeya",
+        "Evans Eshiemogie Ojo"
+      ],
+      "url": "https://doi.org/10.20944/preprints202507.0497.v1",
+      "doi": "10.20944/preprints202507.0497.v1",
+      "matchedText": "",
+      "originalSnippet": "The increasing digitization and decentralization of modern energy systems have heightened their vulnerability to sophisticated cyber threats, necessitating advanced, scalable, and privacy-preserving detection frameworks. This paper introduces a novel Federated Quantum Machine Learning (FQML) framework tailored for anomaly detection in multi-agent energy environments.",
+      "matchType": "citation",
+      "matchPercentage": 9,
+      "relevanceScore": 7.5,
+      "provenance": {
+        "provider": "crossref",
+        "providerRecordId": "10.20944/preprints202507.0497.v1",
+        "retrievedAt": "2026-10-18T00:01:02.776Z",
+        "sourceType": "posted-content",
+        "sourceUrl": "https://doi.org/10.20944/preprints202507.0497.v1",
+        "title": "Federated Quantum Machine Learning for Distributed Cybersecurity in Multi-Agent Energy Systems",
+        "authors": [
+          "Kwabena Addo",
+          "Musasa Kabeya",
+          "Evans Eshiemogie Ojo"
+        ],
+        "doi": "10.20944/preprints202507.0497.v1",
+        "publishedYear": 2025,
+        "publisher": "MDPI AG",
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.400Z",
+        "responseTimestamp": "2026-10-18T00:01:02.776Z",
+        "correlationId": "cr_1792281659400_dcd67fb1",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "https://openalex.org/W7163668962",
+      "title": "Quantum Key Distribution (QKD) Enabled Secure Model Update Exchange in Federated Learning",
+      "authors": [
+        "Venkadeshan Ramalingam",
+        "Basant Kumar",
+        "S Jagadeesan",
+        "Vetriselvi T",
+        "Sivakumar T"
+      ],
+      "url": "https://doi.org/10.54392/irjmt26326",
+      "doi": "10.54392/irjmt26326",
+      "matchedText": "",
+      "originalSnippet": "Federated Learning (FL) allows the model to be trained cooperatively and retain the locality of data, but the exchange of model updates between dispersed clients and a central server can be compromised and manipulated. In this paper, a secure communication system of federated learning integrating quantum key distribution with the use of the BB84 protocol to enhance the establishment of secure keys is introduced.",
+      "matchType": "citation",
+      "matchPercentage": 7.9,
+      "relevanceScore": 6.6,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "https://openalex.org/W7163668962",
+        "retrievedAt": "2026-10-18T00:01:01.237Z",
+        "sourceType": "openalex_work",
+        "sourceUrl": "https://doi.org/10.54392/irjmt26326",
+        "title": "Quantum Key Distribution (QKD) Enabled Secure Model Update Exchange in Federated Learning",
+        "authors": [
+          "Venkadeshan Ramalingam",
+          "Basant Kumar",
+          "S Jagadeesan",
+          "Vetriselvi T",
+          "Sivakumar T"
+        ],
+        "doi": "10.54392/irjmt26326",
+        "publishedYear": 2026,
+        "publisher": "International Research Journal of Multidisciplinary Technovation",
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.582Z",
+        "responseTimestamp": "2026-10-18T00:01:01.237Z",
+        "correlationId": "oa_1792281659582_2fa13b5a",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "https://openalex.org/W7213254097",
+      "title": "Joint Optimization for Federated Learning and Transmission over Unreliable Wireless Networks with Heterogeneous Data",
+      "authors": [
+        "Changheng Wang",
+        "Xianchao Zhang",
+        "Zhiqing Wei",
+        "Lingzhu Zhao",
+        "Zhongming Yang",
+        "Zhiyong Feng"
+      ],
+      "url": "https://doi.org/10.48550/arxiv.2609.14246",
+      "doi": "10.48550/arxiv.2609.14246",
+      "matchedText": "",
+      "originalSnippet": "In wireless federated learning (FL), data heterogeneity and multiple local updates induce client drift, degrading model convergence. It is further affected by unreliable wireless links, as transmission errors may invalidate model updates. To address these challenges, we propose a federated random walk averaging (FedRW) framework, which is a variant of federated averaging (FedAvg) that mitigates data heterogeneity by updating models along random walk (RW) paths and aggregating them at the server.",
+      "matchType": "citation",
+      "matchPercentage": 7.7,
+      "relevanceScore": 6.4,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "https://openalex.org/W7213254097",
+        "retrievedAt": "2026-10-18T00:01:01.237Z",
+        "sourceType": "openalex_work",
+        "sourceUrl": "https://doi.org/10.48550/arxiv.2609.14246",
+        "title": "Joint Optimization for Federated Learning and Transmission over Unreliable Wireless Networks with Heterogeneous Data",
+        "authors": [
+          "Changheng Wang",
+          "Xianchao Zhang",
+          "Zhiqing Wei",
+          "Lingzhu Zhao",
+          "Zhongming Yang",
+          "Zhiyong Feng"
+        ],
+        "doi": "10.48550/arxiv.2609.14246",
+        "publishedYear": 2026,
+        "publisher": "arXiv (Cornell University)",
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.582Z",
+        "responseTimestamp": "2026-10-18T00:01:01.237Z",
+        "correlationId": "oa_1792281659582_2fa13b5a",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "s2:7f2a3ecaaf27bf8e3b83d5cce2a83bec8c0ec3fd",
+      "title": "Machine Learning for Advancing Quantum Field Theory-Enabled Sensor Networks in Precision Disease Detection: A Review",
+      "authors": [
+        "Khanal Pratik",
+        "A. Khanal"
+      ],
+      "url": "https://www.semanticscholar.org/paper/7f2a3ecaaf27bf8e3b83d5cce2a83bec8c0ec3fd",
+      "doi": "10.3126/cjost.v1i1.88577",
+      "matchedText": "",
+      "originalSnippet": "Quantum field theory (QFT)-enabled sensor networks are revolutionizing precision disease detection by exploiting quantum–classical correlations to achieve sensitivity and specificity beyond classical limits. Their diagnostic power, however, depends critically on machine learning (ML) for denoising, fusion, and interpretation of high-dimensional, entangled, and multimodal data streams.",
+      "matchType": "citation",
+      "matchPercentage": 7.5,
+      "relevanceScore": 6.3,
+      "provenance": {
+        "provider": "semanticscholar",
+        "providerRecordId": "7f2a3ecaaf27bf8e3b83d5cce2a83bec8c0ec3fd",
+        "retrievedAt": "2026-10-18T00:01:02.472Z",
+        "sourceType": "semantic_scholar_paper",
+        "sourceUrl": "https://www.semanticscholar.org/paper/7f2a3ecaaf27bf8e3b83d5cce2a83bec8c0ec3fd",
+        "title": "Machine Learning for Advancing Quantum Field Theory-Enabled Sensor Networks in Precision Disease Detection: A Review",
+        "authors": [
+          "Khanal Pratik",
+          "A. Khanal"
+        ],
+        "doi": "10.3126/cjost.v1i1.88577",
+        "publishedYear": 2025,
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.648Z",
+        "responseTimestamp": "2026-10-18T00:01:02.472Z",
+        "correlationId": "s2_1792281659648_05a34a33",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "s2:7d4229937004f37fb97332836741c8431965beff",
+      "title": "Quantum-Safe Neuro-Symbolic Intelligence: A Lossless Framework for Vertical Federated Learning in Decoupled Data Silos",
+      "authors": [
+        "P. Meenadharshini",
+        "S. Parkavi",
+        "M. Manjuladevi",
+        "B. Mohan",
+        "B. K. Devi",
+        "V. S. Hari Krishna"
+      ],
+      "url": "https://www.semanticscholar.org/paper/7d4229937004f37fb97332836741c8431965beff",
+      "doi": "10.1109/icnwc68145.2026.11518212",
+      "matchedText": "",
+      "originalSnippet": "Federated Learning (FL) has emerged as an effective paradigm for collaborative model development in privacy-sensitive domains such as healthcare and finance. While FL avoids direct data sharing, existing frameworks struggle to simultaneously support rich feature representation, high predictive accuracy, and durable cryptographic security.",
+      "matchType": "citation",
+      "matchPercentage": 6.3,
+      "relevanceScore": 5.3,
+      "provenance": {
+        "provider": "semanticscholar",
+        "providerRecordId": "7d4229937004f37fb97332836741c8431965beff",
+        "retrievedAt": "2026-10-18T00:01:02.472Z",
+        "sourceType": "semantic_scholar_paper",
+        "sourceUrl": "https://www.semanticscholar.org/paper/7d4229937004f37fb97332836741c8431965beff",
+        "title": "Quantum-Safe Neuro-Symbolic Intelligence: A Lossless Framework for Vertical Federated Learning in Decoupled Data Silos",
+        "authors": [
+          "P. Meenadharshini",
+          "S. Parkavi",
+          "M. Manjuladevi",
+          "B. Mohan",
+          "B. K. Devi",
+          "V. S. Hari Krishna"
+        ],
+        "doi": "10.1109/icnwc68145.2026.11518212",
+        "publishedYear": 2026,
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.648Z",
+        "responseTimestamp": "2026-10-18T00:01:02.472Z",
+        "correlationId": "s2_1792281659648_05a34a33",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "doi:10.21203/rs.3.rs-9358734/v1",
+      "title": "Federated-Inspired Vertically Distributed Quantum Machine Learning: Benchmarking and Hardware Evaluation",
+      "authors": [
+        "Stefan Klug",
+        "Maximilian Moll"
+      ],
+      "url": "https://doi.org/10.21203/rs.3.rs-9358734/v1",
+      "doi": "10.21203/rs.3.rs-9358734/v1",
+      "matchedText": "",
+      "originalSnippet": "Abstract\n                Distributed quantum machine learning (QML) provides a natural framework for studying variational quantum models under distributed and feature-partitioned execution, but the accuracy-practicality trade-offs of vertical partitioning in the near-term regime remain insufficiently quantified.",
+      "matchType": "citation",
+      "matchPercentage": 6,
+      "relevanceScore": 5,
+      "provenance": {
+        "provider": "crossref",
+        "providerRecordId": "10.21203/rs.3.rs-9358734/v1",
+        "retrievedAt": "2026-10-18T00:01:02.776Z",
+        "sourceType": "posted-content",
+        "sourceUrl": "https://doi.org/10.21203/rs.3.rs-9358734/v1",
+        "title": "Federated-Inspired Vertically Distributed Quantum Machine Learning: Benchmarking and Hardware Evaluation",
+        "authors": [
+          "Stefan Klug",
+          "Maximilian Moll"
+        ],
+        "doi": "10.21203/rs.3.rs-9358734/v1",
+        "publishedYear": 2026,
+        "publisher": "Springer Science and Business Media LLC",
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.400Z",
+        "responseTimestamp": "2026-10-18T00:01:02.776Z",
+        "correlationId": "cr_1792281659400_dcd67fb1",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "https://openalex.org/W7166922344",
+      "title": "Network Traffic Classification Under Label Scarcity and Privacy Constraints Using Federated Self-Supervised and Confident Learning",
+      "authors": [
+        "Ehsan Eslami"
+      ],
+      "url": "https://openalex.org/W7166922344",
+      "matchedText": "",
+      "originalSnippet": "Network Traffic Classification (NTC) is essential for network management and security; however, it faces challenges such as label scarcity, pseudo-label noise, privacy concerns, non-independent and non-identically distributed (non-IID) data, and class imbalance in distributed environments. This thesis proposes two interconnected frameworks to address these issues.",
+      "matchType": "citation",
+      "matchPercentage": 5.4,
+      "relevanceScore": 4.5,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "https://openalex.org/W7166922344",
+        "retrievedAt": "2026-10-18T00:01:01.237Z",
+        "sourceType": "openalex_work",
+        "sourceUrl": "https://openalex.org/W7166922344",
+        "title": "Network Traffic Classification Under Label Scarcity and Privacy Constraints Using Federated Self-Supervised and Confident Learning",
+        "authors": [
+          "Ehsan Eslami"
+        ],
+        "publishedYear": 2025,
+        "publisher": "Spectrum Research Repository (Concordia University)",
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.582Z",
+        "responseTimestamp": "2026-10-18T00:01:01.237Z",
+        "correlationId": "oa_1792281659582_2fa13b5a",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "s2:a7083fe2df1f07c21790c354d730cd41773c49e0",
+      "title": "Reliable Federated Disentangling Network for Non-IID Domain Feature",
+      "authors": [
+        "M. Wang",
+        "Kai-An Yu",
+        "Chun-Mei Feng",
+        "Yiming Qian",
+        "K. Zou",
+        "Lian-Yu Wang",
+        "R. Goh",
+        "Xin-Xing Xu",
+        "Yong Liu",
+        "H. Fu"
+      ],
+      "url": "http://arxiv.org/pdf/2301.12798",
+      "doi": "10.1109/TBDATA.2024.3423694",
+      "matchedText": "",
+      "originalSnippet": "Federated Learning (FL), as an efficient decentralized distributed learning approach, enables multiple institutions to collaboratively train a model without sharing their local data. Despite its advantages, the performance of FL models is substantially impacted by the domain feature shift arising from different acquisition devices/clients.",
+      "matchType": "citation",
+      "matchPercentage": 4.8,
+      "relevanceScore": 4,
+      "provenance": {
+        "provider": "semanticscholar",
+        "providerRecordId": "a7083fe2df1f07c21790c354d730cd41773c49e0",
+        "retrievedAt": "2026-10-18T00:01:02.472Z",
+        "sourceType": "semantic_scholar_paper",
+        "sourceUrl": "http://arxiv.org/pdf/2301.12798",
+        "title": "Reliable Federated Disentangling Network for Non-IID Domain Feature",
+        "authors": [
+          "M. Wang",
+          "Kai-An Yu",
+          "Chun-Mei Feng",
+          "Yiming Qian",
+          "K. Zou",
+          "Lian-Yu Wang",
+          "R. Goh",
+          "Xin-Xing Xu",
+          "Yong Liu",
+          "H. Fu"
+        ],
+        "doi": "10.1109/TBDATA.2024.3423694",
+        "publishedYear": 2023,
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.648Z",
+        "responseTimestamp": "2026-10-18T00:01:02.472Z",
+        "correlationId": "s2_1792281659648_05a34a33",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "https://openalex.org/W4414110589",
+      "title": "Federated Learning in UAV-Assisted MEC Systems: A Comprehensive Survey",
+      "authors": [
+        "Youssra Cheriguene",
+        "Wael Jaafar",
+        "Halim Yanıkömeroğlu"
+      ],
+      "url": "https://doi.org/10.1109/ojcoms.2025.3608657",
+      "doi": "10.1109/ojcoms.2025.3608657",
+      "matchedText": "",
+      "originalSnippet": "In recent years, the integration of Uncrewed Aerial Vehicles (UAVs) into Multi-Access Edge Computing (MEC) systems has emerged as a transformative paradigm revolutionizing the landscape of data processing and analysis. By leveraging UAVs as MEC platforms, computing and storage capabilities are extended closer to data sources, thus facilitating real-time data processing and enabling smooth decision-making.",
+      "matchType": "citation",
+      "matchPercentage": 4.5,
+      "relevanceScore": 3.8,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "https://openalex.org/W4414110589",
+        "retrievedAt": "2026-10-18T00:01:01.237Z",
+        "sourceType": "openalex_work",
+        "sourceUrl": "https://doi.org/10.1109/ojcoms.2025.3608657",
+        "title": "Federated Learning in UAV-Assisted MEC Systems: A Comprehensive Survey",
+        "authors": [
+          "Youssra Cheriguene",
+          "Wael Jaafar",
+          "Halim Yanıkömeroğlu"
+        ],
+        "doi": "10.1109/ojcoms.2025.3608657",
+        "publishedYear": 2025,
+        "publisher": "IEEE Open Journal of the Communications Society",
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.582Z",
+        "responseTimestamp": "2026-10-18T00:01:01.237Z",
+        "correlationId": "oa_1792281659582_2fa13b5a",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    },
+    {
+      "sourceId": "https://openalex.org/W7221496201",
+      "title": "Verifiable Local Training for IoT Federated Learning: A Resource-Aware ZKP Approach",
+      "authors": [
+        "Hector Miguel Martinez Sanchez"
+      ],
+      "url": "https://openalex.org/W7221496201",
+      "matchedText": "",
+      "originalSnippet": "Federated learning (FL) enables collaborative model training across distributed IoT devices without sharing raw data, but introduces a fundamental verification gap: malicious clients can submit fabricated gradient updates to corrupt the global model without the server being able to verify honest computation.",
+      "matchType": "citation",
+      "matchPercentage": 4.1,
+      "relevanceScore": 3.5,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "https://openalex.org/W7221496201",
+        "retrievedAt": "2026-10-18T00:01:01.237Z",
+        "sourceType": "openalex_work",
+        "sourceUrl": "https://openalex.org/W7221496201",
+        "title": "Verifiable Local Training for IoT Federated Learning: A Resource-Aware ZKP Approach",
+        "authors": [
+          "Hector Miguel Martinez Sanchez"
+        ],
+        "publishedYear": 2026,
+        "publisher": "Spectrum Research Repository (Concordia University)",
+        "provenanceState": "VERIFIED",
+        "query": "evidence learning quantum decoupled deterministic distributed federated network",
+        "requestTimestamp": "2026-10-18T00:00:59.582Z",
+        "responseTimestamp": "2026-10-18T00:01:01.237Z",
+        "correlationId": "oa_1792281659582_2fa13b5a",
+        "fineGrainedStatus": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "providerStatuses": {
+    "openalex": "success",
+    "crossref": "success",
+    "unpaywall": "partial",
+    "core": "error",
+    "googlebooks": "error",
+    "semanticscholar": "success"
+  },
+  "fineGrainedStatuses": {
+    "openalex": "VERIFIED",
+    "crossref": "VERIFIED",
+    "unpaywall": "EMPTY_RESULT",
+    "core": "EMPTY_RESULT",
+    "googlebooks": "REQUEST_FAILED",
+    "semanticscholar": "VERIFIED"
+  },
+  "aiFindings": [
+    {
+      "type": "writing_signal",
+      "severity": "low",
+      "confidence": 90,
+      "explanation": "No significant academic overlap detected. Document appears original based on federated database search.",
+      "requiresHumanReview": false,
+      "modelProvider": "deterministic_fallback"
+    }
+  ]
+}

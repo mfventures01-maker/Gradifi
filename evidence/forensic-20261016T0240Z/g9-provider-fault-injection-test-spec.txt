@@ -1,0 +1,45 @@
+﻿G9 TEST SPECIFICATION: MULTI-PROVIDER TIMEOUT AND FAILURE ISOLATION
+===================================================================
+Classification: PLANNED TEST SPECIFICATION (NOT RUNTIME EVIDENCE)
+Target Gate:    G9 (Provider Federation Failure Isolation)
+
+1. TEST OBJECTIVE:
+   Verify that when multiple external academic providers (e.g. Crossref and OpenAlex)
+   experience network timeouts or HTTP 500 failures, the Federation Orchestrator isolates
+   the failures, records accurate degraded provider statuses, prevents cascade failure,
+   and allows deterministic similarity calculation to complete truthfully.
+
+2. TARGET PROVIDERS & CONFIGURED TIMEOUT POLICY:
+   Extracted from src/services/verify/federationOrchestrator.ts:
+   - Crossref:      8,000 ms (PROVIDER_TIMEOUTS_MS.crossref)
+   - OpenAlex:      8,000 ms (PROVIDER_TIMEOUTS_MS.openalex)
+   - CORE:         10,000 ms (PROVIDER_TIMEOUTS_MS.core)
+   - Unpaywall:    10,000 ms (PROVIDER_TIMEOUTS_MS.unpaywall)
+   - Google Books:  8,000 ms (PROVIDER_TIMEOUTS_MS.googlebooks)
+
+3. FAULT INJECTION HARNESS SPECIFICATION:
+   - Execution Context: Local node test environment (tsx) with mocked HTTP layer via MSW / nock.
+   - Zero Production Traffic: No live requests dispatched to external APIs.
+   - Fault Scenarios:
+     Scenario A: Crossref delayed by 12,000 ms (exceeds 8s timeout).
+     Scenario B: OpenAlex returns HTTP 504 Gateway Timeout after 9,000 ms.
+     Scenario C: CORE returns HTTP 200 with 3 valid candidate records within 1,200 ms.
+     Scenario D: Google Books returns empty results ({ items: [] }) within 800 ms.
+
+4. EXPECTED SYSTEM BEHAVIOR & TIMING BOUNDS:
+   - Maximum Execution Time: Must complete within Math.max(8000, 8000, 10000) + 1000ms buffer <= 11,000 ms.
+   - Promise Handling: Promise.allSettled ensures Scenario A & B do not reject the orchestrator run.
+   - Provider Status Matrix:
+     * Crossref:      fineGrainedStatus === 'TIMEOUT', status === 'error'
+     * OpenAlex:      fineGrainedStatus === 'REQUEST_FAILED' / 'TIMEOUT', status === 'error'
+     * CORE:          fineGrainedStatus === 'VERIFIED', status === 'success', resultCount === 3
+     * Google Books:  fineGrainedStatus === 'EMPTY_RESULT', status === 'success', resultCount === 0
+   - Circuit Breaker Transitions:
+     * Consecutive failure counter increments for Crossref and OpenAlex.
+     * Circuit breaker state remains HEALTHY until threshold (consecutiveFailures >= 3).
+
+5. DETERMINISTIC ENGINE ISOLATION ASSERTION:
+   - Assert overallSimilarity is computed strictly from verified matches (CORE in this run).
+   - Assert that Crossref and OpenAlex timeouts do NOT produce fabricated matches or zero-match overrides.
+   - Assert evidenceHash serializes only CORE results:
+     computeHash(${documentHash}:core:12.5:...).

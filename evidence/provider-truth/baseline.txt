@@ -1,0 +1,55 @@
+HOEOS PROVIDER TRUTH-STATE REPAIR BASELINE
+==========================================
+TIMESTAMP: 2026-09-30T20:21:51.672Z
+COMMIT_SHA: 0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5
+GIT_STATUS:
+?? certification/federation_complete/AFTER_deployed_probes.txt
+?? certification/federation_logs/2026-09-23/unpaywall.jsonl
+?? certification/federation_logs/2026-09-24/
+?? certification/federation_logs/2026-09-25/
+?? certification/federation_logs/2026-09-27/
+?? certification/federation_logs/2026-09-29/
+?? certification/forensic/
+?? certification/g1_browser_fix/stream_extractor_preview_result.png
+?? certification/g1_browser_fix/stream_extractor_prod_result.png
+?? certification/g1_browser_fix/stream_extractor_verification_log.json
+?? certification/g1_extension/G1_EXTENSION_COMPOSITE.txt
+?? certification/g7_public_verification/
+?? certification/mirror_archive_2026-09-23T08-48-35Z/
+?? certification/provider_passage/OVERLAP_DEMO_DOC.txt
+?? certification/provider_passage/PASSAGE_DEMO_PRE_FIX.txt
+?? certification/provider_predictability/
+?? certification/repairs/
+?? certification/vercel_forensics/
+?? certification/vercel_logger_build_repair/verification/
+?? certification/vercel_repair/
+?? certification/vercel_server_compile/AFTER_deployed_probes.txt
+?? certification/vercel_standalone_restore/BEFORE_AFTER_REPORT.txt
+?? certification/vercel_ungate_deploy/AFTER_deployed_probes.txt
+?? certification/vercel_ungate_deploy/AFTER_runtime_error.txt
+?? certification/vercel_ungate_deploy/AFTER_supabase_rows.txt
+?? certification/vercel_ungate_deploy/BEFORE_AFTER_REPORT.txt
+?? certification/vercel_wrapper_repair/05_preview_probes.txt
+?? e2e/public-verification-g7.spec.ts
+?? evidence/ai/
+?? evidence/g9/
+?? evidence/provider-truth/
+?? gap-c-test.mjs
+?? playwright.prod.config.ts
+?? scripts/providerTruthSuite.ts
+?? tests/g1_certification.test.ts
+?? tests/g1_format_matrix.test.ts
+?? tests/g1_ocr_branch_forensic.test.ts
+?? tests/g1_ocr_complete_forensic_runtime.test.ts
+?? tests/hoeos-n5-r4-runtime.ts
+?? tests/hoeos-n5-runtime.ts
+SCOPE:
+  - src/services/verify/types.ts
+  - src/services/verify/server/geminiServerHandler.ts
+  - src/services/verify/server/nemotronServerHandler.ts
+  - src/services/verify/aiFederation.ts
+OBJECTIVE:
+  Repair provider truth-state semantics for Gemini + Nemotron.
+  Separate provider execution status from finding cardinality.
+  Eliminate false INFERENCE_FAILED on valid [] empty results.
+  Prevent deterministic fallback from masquerading as provider verification.

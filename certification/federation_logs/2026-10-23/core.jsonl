@@ -1,0 +1,1 @@
+{"timestamp":"2026-10-23T10:07:55.188Z","correlationId":"core_1792750068515_a9479d4a","providerId":"core","url":"https://api.core.ac.uk/v3/search/works?q=thermometer%20temperature%20digital%20heat%20regulator%20resistor%20power%20range&limit=5","attempt":1,"durationMs":6671,"outcome":"SUCCESS","matchesReturned":5,"fineGrainedStatus":"VERIFIED"}

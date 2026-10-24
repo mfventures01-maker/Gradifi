@@ -1,0 +1,21 @@
+﻿LIVE REMOTE DATABASE POLICY DUMP (pg_policies)
+==============================================
+Target Project Ref: ehkmfnaqkdgkjmdxxbwj (Gradifi SSOT)
+Timestamp:          2026-10-16T04:09:55+01:00
+Table:              public.public_verification_records
+
+Active Policies Count: 1
+
+POLICY 1:
+  Schema:      public
+  Table:       public_verification_records
+  Policy Name: Public Verification Record Select Policy
+  Permissive:  PERMISSIVE
+  Command:     SELECT
+  Roles:       {anon, authenticated}
+  USING (qual): true
+  WITH CHECK:  null
+
+INSERT Policies: NONE
+UPDATE Policies: NONE
+DELETE Policies: NONE

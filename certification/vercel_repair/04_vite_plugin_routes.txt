@@ -1,0 +1,25 @@
+verifyServerPlugin.ts route table:
+- /api/verify/persist         -> handlePersistenceServerRequest
+- /api/verify/core            -> handleCoreServerSearch
+- /api/verify/crossref        -> handleCrossrefServerSearch
+- /api/verify/googlebooks     -> handleGoogleBooksServerSearch
+- /api/verify/openalex        -> handleOpenAlexServerSearch
+- /api/verify/unpaywall       -> handleUnpaywallServerSearch
+- /api/verify/semanticscholar -> handleSemanticScholarServerSearch
+- /api/verify/gemini          -> handleGeminiServerReasoning
+- /api/verify/nemotron        -> handleNemotronServerReasoning
+- /api/verify/gemma           -> handleGemmaServerReasoning
+
+Vercel API function wrappers (api/verify/*.ts):
+- api/verify/persist.ts         -> handlePersistenceServerRequest
+- api/verify/core.ts            -> handleCoreServerSearch
+- api/verify/crossref.ts        -> handleCrossrefServerSearch
+- api/verify/googlebooks.ts     -> handleGoogleBooksServerSearch
+- api/verify/openalex.ts        -> handleOpenAlexServerSearch
+- api/verify/unpaywall.ts       -> handleUnpaywallServerSearch
+- api/verify/semanticscholar.ts -> handleSemanticScholarServerSearch
+- api/verify/gemini.ts          -> handleGeminiServerReasoning
+- api/verify/nemotron.ts        -> handleNemotronServerReasoning
+- api/verify/gemma.ts           -> handleGemmaServerReasoning
+
+Parity status: 10/10 routes match exactly. No plugin changes required.

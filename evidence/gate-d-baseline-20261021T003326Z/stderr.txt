@@ -1,0 +1,1 @@
+[WebServer] ⚠️ Supabase credentials not found. Using fallback mode.

@@ -1,0 +1,30 @@
+
+
+Running 1 test using 1 worker
+
+[1/1] [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams
+[chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams
+CERTIFICATION_DOM_MARK_COUNT: 2
+
+  1) [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams 
+
+    Error: Mark 0 must have data-start-offset
+
+    expect(received).toBeTruthy()
+
+    Received: null
+
+      179 |       expect(findingId, `Mark ${i} must have data-finding-id`).toBeTruthy();
+      180 |       expect(sourceId, `Mark ${i} must have data-source-id`).toBeTruthy();
+    > 181 |       expect(startAttr, `Mark ${i} must have data-start-offset`).toBeTruthy();
+          |                                                                  ^
+      182 |       expect(endAttr, `Mark ${i} must have data-end-offset`).toBeTruthy();
+      183 |
+      184 |       const start = parseInt(startAttr!, 10);
+        at C:\Projects\Gradifi\e2e\g4-live-provider-certification.spec.ts:181:66
+
+    Error Context: test-results\.playwright-temp\g4-live-provider-certifica-f213c-hts-without-synthetic-seams-chromium\error-context.md
+
+
+  1 failed
+    [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams 

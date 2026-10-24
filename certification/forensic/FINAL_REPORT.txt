@@ -1,0 +1,73 @@
+================================================================
+HOEOS FORENSIC INVESTIGATION — FINAL SUMMARY REPORT
+Vercel Production Failures + Persistent/Deterministic Engine Proposal
+================================================================
+Investigation ID: HOEOS-VERCEL-FORENSIC-2026-09-25
+Date:             2026-09-25
+Status:           COMPLETED (Read-Only Forensics)
+
+[1] FINDING A CLASSIFICATION SUMMARY (HTTP 405 ON VERCEL)
+
+  Classification: MIDDLEWARE NOT DEPLOYED TO PRODUCTION
+  Root Cause:     API handlers exist solely as Vite dev-server middleware inside
+                  `verifyServerPlugin.ts` (`configureServer` hook). During production
+                  `vite build`, no backend serverless functions are produced. Vercel
+                  SPA rewrite routes POST `/api/verify/*` to static `/index.html`,
+                  which returns HTTP 405 Method Not Allowed.
+  Secondary:      Configuration leak in `aiFederation.ts` attempting browser-side
+                  probe to `http://localhost:11434/v1/models` in production.
+
+[2] FINDING B CLASSIFICATION SUMMARY (DOCX REJECTION AT LINE 208)
+
+  Classification: PKZIP LOCAL-HEADER PARSER DEFECT (STREAMING DATA DESCRIPTORS)
+  Root Cause:     Custom byte scanner in `officeZipAdapter.ts` reads compressed &
+                  uncompressed sizes from Local File Headers (bytes 18-25). For files
+                  encoded with streaming Data Descriptors (`flags = 0x808`), these
+                  header fields are 0 per PKZIP spec. `officeZipAdapter.ts` calculates
+                  `payloadSize = 0`, corrupts archive traversal, fails to extract
+                  `word/document.xml`, and triggers line 208 rejection: "The uploaded
+                  file is not a valid DOCX package."
+
+[3] RECOMMENDED DEPLOYMENT OPTION
+
+  Option (b): Vercel Serverless Functions (`api/verify/*.ts`).
+  - Converts `/api/verify/*` handlers into Vercel Node.js serverless function endpoints.
+  - Guarantees 100% route availability parity between dev and production.
+  - Zero additional server costs; native integration with current Vercel deployment.
+
+[4] FIX COMMIT BOUNDARIES AND SEQUENCE
+
+  Fixes MUST be committed as separate HOEOS repair commits in the following sequence:
+
+  Sequence 1: HOEOS-REPAIR-DOCX-INGESTION
+    - Scope: Replace custom PKZIP parser in `src/services/verify/ingestionAdapters/officeZipAdapter.ts`
+      with `fflate` ZIP decoder supporting streaming Data Descriptors.
+    - Files: `src/services/verify/ingestionAdapters/officeZipAdapter.ts`.
+    - Verification: Re-run `scratch/test_office_zip_adapter.ts` on target file; confirm 100% extraction.
+
+  Sequence 2: HOEOS-REPAIR-VERCEL-SERVERLESS-ROUTES
+    - Scope: Create Vercel Serverless Function entry points in `api/verify/[provider].ts` mapping
+      to server handlers (`coreServerHandler.ts`, `geminiServerHandler.ts`, etc.). Update `vercel.json`
+      and Vite dev proxy configuration.
+    - Files: `api/verify/*.ts`, `vercel.json`, `vite.config.ts`.
+    - Verification: Run `npm run build` and probe endpoints locally & on Vercel preview.
+
+  Sequence 3: HOEOS-REPAIR-OLLAMA-CONFIG-LEAK
+    - Scope: Guard local Ollama inference runtime probe in `src/services/verify/aiFederation.ts`
+      so it only runs in local development mode or when explicitly configured.
+    - Files: `src/services/verify/aiFederation.ts`.
+    - Verification: Verify browser console in production build remains free of localhost:11434 errors.
+
+[5] PRESERVED EVIDENCE ARTIFACTS LIST
+
+  1. certification/forensic/FINDING_A_VERCEL_405.txt
+  2. certification/forensic/FINDING_B_DOCX_REJECTION.txt
+  3. certification/forensic/ARCHITECTURE_PROPOSAL.txt
+  4. certification/forensic/FINAL_REPORT.txt
+  5. certification/forensic/vercel_build_output.txt
+  6. certification/forensic/docx_adapter_isolated.txt
+  7. scratch/test_office_zip_adapter.ts
+
+================================================================
+END FINAL REPORT
+================================================================

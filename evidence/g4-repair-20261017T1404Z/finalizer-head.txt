@@ -1,0 +1,120 @@
+﻿param(
+    [string]$EvidenceDir = 'evidence/g4-closure-20261016T1632Z',
+    [int]$PlaywrightExitCode = -1,
+    [double]$PlaywrightDurationSec = 0.0,
+    [int]$UnitExitCode = -1,
+    [double]$UnitDurationSec = 0.0,
+    [int]$NegativeExitCode = -1,
+    [double]$NegativeDurationSec = 0.0
+)
+
+Write-Host "=========================================================="
+Write-Host "HOEOS G4 EVIDENCE FINALIZER & CERTIFICATION ORACLE"
+Write-Host "Evidence directory: $EvidenceDir"
+Write-Host "=========================================================="
+
+if (-not (Test-Path $EvidenceDir)) {
+    New-Item -ItemType Directory -Path $EvidenceDir -Force | Out-Null
+}
+
+$validationErrors = @()
+
+# -----------------------------------------------------------------------------
+# 1. Capture current git diff
+# -----------------------------------------------------------------------------
+$diffAfter = git diff
+[System.IO.File]::WriteAllText("$EvidenceDir/git-diff-after.txt", ($diffAfter -join "`n"))
+
+# -----------------------------------------------------------------------------
+# 2. Inspect and validate Unit/Integration results (scratch/g4_audit_deterministic_suite.ts)
+# -----------------------------------------------------------------------------
+$unitResultsPath = Join-Path $EvidenceDir 'g4-test-results.json'
+$unitPassed = $false
+$unitTotalAssertions = 0
+$unitPassedAssertions = 0
+$unitFailedAssertions = 0
+$unitStatusReason = ''
+
+if (-not (Test-Path $unitResultsPath)) {
+    $validationErrors += "Missing unit results artifact: $unitResultsPath"
+    $unitStatusReason = 'Artifact missing'
+} else {
+    try {
+        $unitData = Get-Content $unitResultsPath -Raw | ConvertFrom-Json
+        $unitTotalAssertions = [int]$unitData.totalAssertions
+        $unitPassedAssertions = [int]$unitData.passedAssertions
+        $unitFailedAssertions = [int]$unitData.failedAssertions
+
+        if ($UnitExitCode -ne 0) {
+            $validationErrors += "Unit test process exited with non-zero code: $UnitExitCode"
+            $unitStatusReason = "Process exit code $UnitExitCode"
+        } elseif ($unitData.status -ne 'PASS') {
+            $validationErrors += "Unit test reported status '$($unitData.status)' instead of 'PASS'"
+            $unitStatusReason = "Status was $($unitData.status)"
+        } elseif ($unitFailedAssertions -gt 0) {
+            $validationErrors += "Unit test reported $unitFailedAssertions failed assertions"
+            $unitStatusReason = "$unitFailedAssertions failed assertions"
+        } elseif ($unitPassedAssertions -le 0) {
+            $validationErrors += "Unit test reported 0 passed assertions"
+            $unitStatusReason = "0 passed assertions"
+        } else {
+            $unitPassed = $true
+            $unitStatusReason = "All $unitPassedAssertions/$unitTotalAssertions unit oracle assertions passed (Exit 0)"
+        }
+    } catch {
+        $validationErrors += "Malformed JSON in unit results: $_"
+        $unitStatusReason = "Malformed JSON: $_"
+    }
+}
+
+# -----------------------------------------------------------------------------
+# 3. Inspect and validate Positive Browser results (e2e/four-gates-g4-browser.spec.ts)
+# -----------------------------------------------------------------------------
+$browserResultsPath = Join-Path $EvidenceDir 'g4-browser-results.json'
+$browserPassed = $false
+$markCount = 0
+$primaryHighlight = $null
+$verifiedHighlights = @()
+$browserStatusReason = ''
+
+if (-not (Test-Path $browserResultsPath)) {
+    $validationErrors += "Missing positive browser results artifact: $browserResultsPath"
+    $browserStatusReason = 'Artifact missing'
+} else {
+    try {
+        $browserData = Get-Content $browserResultsPath -Raw | ConvertFrom-Json
+        $markCount = [int]$browserData.markCount
+        $primaryHighlight = $browserData.primaryHighlight
+        $verifiedHighlights = $browserData.verifiedHighlights
+
+        $screenshotPath = Join-Path $EvidenceDir 'g4_browser_highlight.png'
+        $screenshotExists = Test-Path $screenshotPath
+
+        if ($PlaywrightExitCode -ne 0) {
+            $validationErrors += "Positive browser test process exited with non-zero code: $PlaywrightExitCode"
+            $browserStatusReason = "Process exit code $PlaywrightExitCode"
+        } elseif ($browserData.status -ne 'PASS') {
+            $validationErrors += "Positive browser test reported status '$($browserData.status)' instead of 'PASS'"
+            $browserStatusReason = "Status was $($browserData.status)"
+        } elseif ($markCount -le 0) {
+            $validationErrors += "Positive browser test observed markCount $markCount (expected > 0)"
+            $browserStatusReason = "markCount $markCount <= 0"
+        } elseif (-not $screenshotExists) {
+            $validationErrors += "Positive browser test screenshot missing: $screenshotPath"
+            $browserStatusReason = "Screenshot missing"
+        } elseif ($primaryHighlight.authoritativeTextMatch -ne $true -or $primaryHighlight.offsetInvariant -ne $true -or $primaryHighlight.identityBound -ne $true) {
+            $validationErrors += "Positive browser highlight invariants failed in primary highlight"
+            $browserStatusReason = "Highlight invariants failed"
+        } else {
+            $browserPassed = $true
+            $browserStatusReason = "Authentic browser execution passed with $markCount verified marks and exact canonical slices (Exit 0)"
+        }
+    } catch {
+        $validationErrors += "Malformed JSON in browser results: $_"
+        $browserStatusReason = "Malformed JSON: $_"
+    }
+}
+
+# -----------------------------------------------------------------------------
+# 4. Inspect and validate Negative Browser results (G4-T06 Structured Evidence Oracle)
+# -----------------------------------------------------------------------------

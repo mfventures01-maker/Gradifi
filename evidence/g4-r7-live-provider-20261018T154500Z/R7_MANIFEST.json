@@ -1,0 +1,39 @@
+{
+  "runId": "r7-live-provider-20261018T154500Z",
+  "utcStartTime": "2026-10-18T15:45:00Z",
+  "utcEndTime": "2026-10-18T16:31:00Z",
+  "repository": {
+    "root": "C:\\Projects\\Gradifi",
+    "headCommit": "9b70b62190c6a739c84ccc8f4c4c9cd9470e9e44",
+    "workingTreeState": "DIRTY",
+    "modifiedFilesCount": 14,
+    "stagedFilesCount": 0
+  },
+  "runtimeVersions": {
+    "node": "v20.20.2",
+    "npm": "10.8.2"
+  },
+  "historicalEvidenceHashes": {
+    "evidence/g4-closure-20261016T1632Z/G4_RESULT.json": "3A4381D39BFA19DA96E04F12C98A460F77BEFB325AEF53A9D6258B9D5B9215AA",
+    "evidence/g4-r6-engine-certification/r6-summary.json": "CF862551196498D470E108EC74570F7F47F8B379385FE29FF5CC846FC249A6AB",
+    "evidence/g4-r6-engine-certification/G4_CLOSURE_REPORT.md": "1B5EF192BF57E9CBEFFDB36E65E7DAF38C8DBD0AAAA53A5A2D97E9AA019B5AAE",
+    "evidence/g4-r6-engine-certification/r6-summary.json.pre-closure-20261018T161701775.bak": "C87AE06A3A4DC1C87765A476738B6F203CB1C1BC1646FAC546EB3F97C7F8F58F"
+  },
+  "evidenceFiles": [
+    "R7_PRE_RUN_MANIFEST.json",
+    "R7_MANIFEST.json",
+    "R7_RESULT.json",
+    "R7_REPORT.md",
+    "provider_connectivity.log",
+    "unit_oracle.log",
+    "unit-assertion-results.json",
+    "offset_invariants.log",
+    "browser_matched_text.log",
+    "browser_four_gates.log",
+    "g4-browser-results.json",
+    "g4-negative-browser-results.json",
+    "g4_browser_highlight.png",
+    "g4_negative_browser_unavailable.png",
+    "r7-manifest-sha256.csv"
+  ]
+}

@@ -1,0 +1,45 @@
+﻿# G2 DETERMINISTIC SIMILARITY EVIDENCE - CERTIFICATION RECORD
+# Certification ID: G2-CERT-SIM-2026-09-22
+# Classification: G2 CERTIFIED PASS (RUNTIME)
+# Status: FROZEN
+# Timestamp: 2026-09-22T17:01:40Z
+# Environment: Windows PowerShell, Node v24.18.1, npm 11.16.0
+
+[CRITERIA]
+G2-1 Determinism under identical input    RUNTIME PASS
+G2-2 G1 compatibility                      RUNTIME PASS
+G2-3 OCR-path determinism                  RUNTIME PASS
+G2-4 Offset fidelity                       RUNTIME PASS
+G2-5 No AI in G2                           RUNTIME PASS
+
+[EVIDENCE]
+certification/g2/after/G2_OCR_DETERMINISM.txt
+certification/g2/after/G2_OFFSET_FIDELITY.txt
+certification/g2/before_after/G2_BEFORE_AFTER_FORENSIC_REPORT.txt
+
+[REPAIR]
+G2-4 required a repair to tests/g2_offset_fidelity.test.ts:
+  DEFECT: test sliced docA.normalizedText but engine stores offsets against rawText
+  FIX: changed test to slice docA.rawText - aligning with engine offset contract
+  ENGINE: src/services/verify/deterministicEngine.ts was NOT modified
+  DIFF: certification/g2/repair/DIFF.txt
+
+[G2 ENGINE FILES - HASHES AT CERTIFICATION HEAD]
+src/services/verify/deterministicEngine.ts
+src/services/verify/matchedTextHighlightingService.ts
+src/services/verify/canonicalTextOffsetService.ts
+tests/deterministicSimilarityEvidence.test.ts
+tests/g2_ocr_determinism.test.ts
+tests/g2_offset_fidelity.test.ts
+
+[COMMANDS]
+npx tsx tests/deterministicSimilarityEvidence.test.ts
+npx tsx tests/g2_ocr_determinism.test.ts
+npx tsx tests/g2_offset_fidelity.test.ts
+
+[CLASSIFICATION]
+G2 CERTIFIED PASS (RUNTIME)
+
+[CERTIFICATION]
+CERTIFICATION requires fresh-clone reproduction of the three commands above.
+This record documents RUNTIME PASS in the current environment.

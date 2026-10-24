@@ -1,0 +1,29 @@
+﻿PHASE 0 — FORENSIC BASELINE FREEZE
+Date: 2026-10-06 11:20:37
+Purpose: Freeze the exact repository and runtime state before G1 work begins.
+
+FROZEN ITEMS
+- Git HEAD (branch, commit, remote)
+- Working tree status
+- Production file hashes (documentNormalizer, deterministicEngine, verifyCoreService, canonicalTextOffsetService)
+- Package manifest and lockfile hashes
+- Existing G1/G2/G5 test results
+- G5-M02 status (rejected, reverted, evidence preserved)
+
+G5-M02 STATUS
+- G2 regression matrix under the fix: 18/18 PASS
+- G5 baseline gate C5 under the fix: VIOLATED (resPartial 54.9 -> 76.9; matchMethod TOKEN_OVERLAP -> NGRAM)
+- Diagnostic result: all three partial findings matched the header block of the comparison document
+- Production: reverted to pre-M02 state
+- Scoring engine: unchanged
+- Rejection evidence: evidence/g5_baseline/2026-10-06_g5m02_rejection_evidence.txt
+- Rejection spec: evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt (Section 11)
+
+DELIVERABLE SET
+- baseline.txt (this file)
+- hashes.txt
+- git_state.txt
+- test_state.txt
+
+CERTIFICATION
+P0 PASS is claimed when all four files exist and reproduce the current state.

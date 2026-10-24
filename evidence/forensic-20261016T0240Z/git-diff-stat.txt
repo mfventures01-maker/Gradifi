@@ -1,0 +1,14 @@
+﻿ e2e/four-gates-g4-browser.spec.ts                  | 209 +++++++++++++++++----
+ e2e/matched-text-highlighting.spec.ts              |  50 ++---
+ playwright.config.ts                               |   7 +-
+ src/components/verify/CanonicalDocumentViewer.tsx  |  12 +-
+ src/lib/supabase.ts                                |   5 +
+ src/pages/verify/GradifiVerifyDemoPage.tsx         |  23 ++-
+ .../verify/ingestionAdapters/docxExtractor.ts      |   5 +-
+ src/services/verify/publicVerificationService.ts   |  51 ++++-
+ src/services/verify/universalIngestionService.ts   |  53 +++++-
+ .../verify/verificationPersistenceService.ts       |  18 +-
+ tests/publicVerificationResolution.test.ts         | 138 +++++++++++++-
+ tests/verificationPersistence.test.ts              |  30 ++-
+ vite.config.ts                                     |   5 +-
+ 13 files changed, 507 insertions(+), 99 deletions(-)

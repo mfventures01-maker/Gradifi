@@ -1,0 +1,220 @@
+================================================================================
+HOEOS FORENSIC CERTIFICATION RECORD — PHASE 1 CORRECTED CERTIFICATION
+================================================================================
+Date:       2026-10-06
+Standard:   House of Oroh Engineering Operating System (HOEOS)
+Task:       Phase 1 Corrected Certification Record
+
+1. REPOSITORY AND COMMIT BASELINE
+--------------------------------------------------------------------------------
+Repository:             C:\Projects\Gradifi
+Branch:                 clean-deploy
+Authoritative Baseline: 9d1a17b test(g2): expand punctuation classification matrix with E1-E10
+Head Hash:              9d1a17b8df5f560e7f72ebfcf1e29e84bb5f73d0
+Verification Mode:      Read-only forensic audit and documentation certification.
+Evidence Classification:
+  - Repository Mapping:                 [A. STATIC]
+  - Source AST & Import Tracing:        [B. STRUCTURAL]
+  - Test Suite & Dispatch Evaluation:   [C. RUNTIME]
+  - HOEOS Contract Status:              [D. CERTIFICATION]
+
+2. ORIGINAL PHASE 1 STATUS
+--------------------------------------------------------------------------------
+Original Status: CONDITIONAL PASS
+Evidence Base:   evidence/phase1/repo_map.txt (2026-10-06 12:24:32)
+Evaluation:      Upload UI, pdfjs/OCR paths, normalization regex boundaries,
+                 verification services, and Supabase RPC persistence were
+                 mapped. However, a production DOCX extraction implementation
+                 was not established at that time.
+
+3. ORIGINAL CONDITIONAL FINDING (HISTORICALLY PRESERVED)
+--------------------------------------------------------------------------------
+The original Phase 1 finding is preserved in full substance without alteration:
+
+"Phase 1 was initially marked CONDITIONAL PASS because the forensic
+repository mapping did not establish a production DOCX extraction
+implementation.
+
+The repository contained a DOCX extraction path in test context,
+including Mammoth-based extraction, but a production DOCX extraction
+implementation had not yet been established by the evidence available
+during the original Phase 1 review."
+
+Preservation Note: This finding was the valid conclusion supported by the
+evidence available during the initial Phase 1 forensic pass. It is preserved
+as historical fact.
+
+4. LATER EVIDENCE RESOLVING THE SPECIFIC UNCERTAINTY
+--------------------------------------------------------------------------------
+Subsequent repository forensic investigation identified an extant production
+adapter located at:
+  src/services/verify/ingestionAdapters/officeZipAdapter.ts (571 lines, 17,971 bytes)
+
+Implementation Evidence Discovered [B. STRUCTURAL]:
+  - ZIP Handling: Uses `fflate` (`unzipSync`, `strFromU8`) to decompress PKZIP packages.
+  - Target Path: Explicitly targets `word/document.xml` within the archive.
+  - Element Extraction: Implements `extractTextFromXmlElements` scanning for
+    WordprocessingML tags `['w:t', 'w:p']`.
+  - Specific DOCX Function: Exports `extractDocxText(input: ArrayBuffer | Uint8Array | string)`.
+  - OCR Fallback: Implements image extraction via `unzipPackageMediaFiles`
+    matching `\.(png|jpe?g)$` and executes fallback OCR via
+    `ocrService.extractText` when XML text is empty or < 50 characters.
+  - Return Schema: Conforms to `AdapterExtractionResult` contract.
+
+Proof Scope:
+  - The later evidence proves [B. STRUCTURAL]: A production DOCX extraction
+    implementation exists in the repository.
+  - The later evidence DOES NOT prove [D. CERTIFICATION]: It does NOT prove
+    that this implementation satisfies the G1 extraction contract.
+
+5. PRODUCTION DOCX PATH VERIFICATION (REACHABILITY)
+--------------------------------------------------------------------------------
+Forensic tracing established full structural reachability from UI to adapter:
+
+  1. Production UI Entrypoint [B. STRUCTURAL]:
+     src/pages/verify/GradifiVerifyDemoPage.tsx
+     - Line 39: `import { ingestDocument } from '../../services/verify/universalIngestionService';`
+     - Line 222: Invoked inside `handleFileUpload` upon user file selection:
+       `const res = await ingestDocument(file);`
+
+  2. Production Universal Dispatcher [B. STRUCTURAL]:
+     src/services/verify/universalIngestionService.ts
+     - Line 13: `import { extractDocxText, ... } from './ingestionAdapters/officeZipAdapter.js';`
+     - Lines 68-100: `detectFileFormat` resolves `.docx` extension / MIME to format `'docx'`.
+     - Lines 251-255: Dispatch switch branch for `'docx'`:
+       ```typescript
+       case 'docx': {
+         const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
+         adapterResult = await extractDocxText(buf);
+         break;
+       }
+       ```
+
+  3. Extraction Implementation [B. STRUCTURAL]:
+     src/services/verify/ingestionAdapters/officeZipAdapter.ts
+     - Lines 87-191: `extractDocxText` executes extraction against `word/document.xml`.
+
+Conclusion: The DOCX adapter is structurally reachable and actively wired
+into the production ingestion service dispatcher.
+
+6. CORRECTED PHASE 1 STATUS
+--------------------------------------------------------------------------------
+PHASE 1 CORRECTED STATUS: PASS WITH G1 CERTIFICATION OPEN
+
+Breakdown:
+  - Phase 1 repository mapping:             PASS
+  - Production DOCX implementation existence: PASS
+  - G1 DOCX contract compliance:             OPEN / NOT CERTIFIED
+
+REQUIRED PHASE 1 CERTIFICATION MATRIX:
++------------------------------------------+-------------------------------+-------------------------------------------+-------------------+
+| Phase 1 finding                          | Original status               | Later evidence                            | Corrected status  |
++------------------------------------------+-------------------------------+-------------------------------------------+-------------------+
+| Repository architecture mapped           | PASS                          | Existing forensic map                     | PASS              |
+| Authoritative verification path found    | PASS                          | Existing forensic evidence                | PASS              |
+| G2/G5 deterministic engine identified    | PASS                          | Existing forensic evidence                | PASS              |
+| Production ingestion services identified | PASS                          | Later source trace                        | PASS              |
+| Production DOCX implementation exist     | CONDITIONAL / NOT ESTABLISHED | officeZipAdapter.ts + dispatcher evidence | PASS              |
+| DOCX implementation satisfies G1         | OPEN                          | Phase 2 audit proves contrary             | OPEN / FAIL       |
+| Scoring engine certification affected    | NO                            | No evidence of scoring defect             | UNCHANGED         |
+| Production code modified during correction| NO                            | Git diff verification                     | PASS: NONE        |
++------------------------------------------+-------------------------------+-------------------------------------------+-------------------+
+
+7. G1 CERTIFICATION BOUNDARY
+--------------------------------------------------------------------------------
+Resolving the existence of `officeZipAdapter.ts` does not certify it against
+the G1 ingestion contract. Structural presence is distinct from contract
+conformance:
+  - Presence: A callable module exists in `src/` and is dispatched by `universalIngestionService.ts`.
+  - Certification: The implementation conforms to all security, parsing, and
+    determinism specifications defined by G1.
+G1 contract certification remains OPEN / UNQUALIFIED.
+
+8. PHASE 2 AUDIT RELATIONSHIP
+--------------------------------------------------------------------------------
+Phase 2 independently executed the G1 extractor audit documented in:
+  evidence/phase2/g1_extractor_audit.txt (Status: COMPLETE, Date: 2026-10-06)
+
+The Phase 2 audit established three fatal defects in `officeZipAdapter.ts`:
+  1. Zip Bomb Vulnerability:
+     `MAX_UNCOMPRESSED_ZIP_BYTES = 100 * 1024 * 1024` is declared at line 36
+     but never referenced or enforced. `fflate.unzipSync` unpacks without limit.
+  2. Regex XML Parsing:
+     Lines 67-82 use regex patterns rather than an XML parser, failing on entity
+     decoding, namespace scopes, self-closing tags, `<w:tab/>`, `<w:br/>`,
+     and `xml:space="preserve"`.
+  3. Silent OCR Substitution:
+     Lines 124-158 silently substitute nondeterministic Tesseract OCR text for
+     DOCX payloads when XML content is < 50 characters, breaking byte-level determinism.
+
+Boundary Separation:
+  - Phase 1 establishes repository architecture and existence of components.
+  - Phase 2 evaluates compliance against the G1 contract.
+The Phase 2 failure findings are not retroactively inserted into Phase 1, but
+confirm that Phase 1 must close with G1 compliance marked OPEN / FAIL.
+
+9. G5-M03 BOUNDARY
+--------------------------------------------------------------------------------
+The subsequent migration G5-M03 (documented in evidence/phase3/g5m03_spec.txt)
+is an independent migration phase.
+
+This Phase 1 certification correction explicitly DOES NOT authorize:
+  - Creation of `docxExtractor.ts`
+  - Modification of `officeZipAdapter.ts`
+  - Modification of `universalIngestionService.ts`
+  - Modification of `documentNormalizer.ts`
+  - Modification of the G2/G5 scoring engine
+  - Modification of production schemas or RPCs
+  - Modification of runtime production behavior
+
+10. PRODUCTION INTEGRITY VERIFICATION
+--------------------------------------------------------------------------------
+Command: git diff -- src/services/verify/
+Output:  EMPTY (0 bytes)
+
+Command: git diff -- src/
+Output:  EMPTY (0 bytes)
+
+Command: git status --short
+Output:  No production source files modified. All untracked items belong to
+         evidence, test fixtures, or forensic logs.
+
+11. FINAL HOEOS CERTIFICATION STATEMENT
+--------------------------------------------------------------------------------
+HOEOS PHASE 1 CORRECTED CERTIFICATION
+
+Phase 1 repository forensic mapping is certified PASS.
+
+The original CONDITIONAL PASS finding concerning the absence of an
+established production DOCX extraction path is preserved as the
+historical conclusion supported by the evidence available during the
+original Phase 1 review.
+
+Subsequent repository forensic evidence established that
+src/services/verify/ingestionAdapters/officeZipAdapter.ts provides a
+production DOCX extraction implementation and that the implementation
+is connected to the production ingestion architecture.
+
+Therefore the specific Phase 1 uncertainty concerning the existence of
+a production DOCX implementation is resolved.
+
+This resolution does not certify the DOCX implementation against the
+G1 contract.
+
+The subsequent Phase 2 audit established that the existing DOCX
+implementation has G1 compliance failures. G1 therefore remains
+uncertified and is outside the scope of this Phase 1 closure.
+
+No evidence from this Phase 1 correction justifies modification of the
+G2/G5 scoring engine.
+
+No production source code is changed by this certification activity.
+
+FINAL STATUS:
+
+PHASE 1 = PASS
+G1 DOCX CONTRACT = OPEN / NOT CERTIFIED
+G2/G5 SCORING ENGINE = UNCHANGED
+PRODUCTION TREE = CLEAN
+G5-M03 = SEPARATE MIGRATION
+================================================================================

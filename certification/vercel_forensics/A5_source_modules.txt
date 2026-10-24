@@ -1,0 +1,69 @@
+﻿--- C:\Projects\Gradifi\api\_probe.ts ---
+// src/services/verify/federation/providerQuotas.ts
+// src/services/verify/federation/rateLimiter.ts
+// src/services/verify/federation/providerLogger.ts
+// src/services/verify/federation/requestQueue.ts
+// src/services/verify/server/passageExtractor.ts
+// src/services/verify/server/coreServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\core.ts ---
+// src/services/verify/federation/providerQuotas.ts
+// src/services/verify/federation/rateLimiter.ts
+// src/services/verify/federation/providerLogger.ts
+// src/services/verify/federation/requestQueue.ts
+// src/services/verify/server/passageExtractor.ts
+// src/services/verify/server/coreServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\crossref.ts ---
+// src/services/verify/federation/providerQuotas.ts
+// src/services/verify/federation/rateLimiter.ts
+// src/services/verify/federation/providerLogger.ts
+// src/services/verify/federation/requestQueue.ts
+// src/services/verify/server/passageExtractor.ts
+// src/services/verify/server/crossrefServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\gemini.ts ---
+// src/services/verify/server/geminiServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\gemma.ts ---
+// src/services/verify/server/geminiServerHandler.ts
+// src/services/verify/server/gemmaServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\googlebooks.ts ---
+// src/services/verify/federation/providerQuotas.ts
+// src/services/verify/federation/rateLimiter.ts
+// src/services/verify/federation/providerLogger.ts
+// src/services/verify/federation/requestQueue.ts
+// src/services/verify/server/passageExtractor.ts
+// src/services/verify/server/googleBooksServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\nemotron.ts ---
+// src/services/verify/server/geminiServerHandler.ts
+// src/services/verify/server/nemotronServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\openalex.ts ---
+// src/services/verify/server/passageExtractor.ts
+// src/services/verify/server/openAlexServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\persist.ts ---
+// src/services/verify/server/persistenceServerHandler.ts
+// src/lib/supabase.ts
+// src/services/verify/verificationPersistenceService.ts
+// src/services/verify/server/persistenceServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\semanticscholar.ts ---
+// src/services/verify/federation/providerQuotas.ts
+// src/services/verify/federation/rateLimiter.ts
+// src/services/verify/federation/providerLogger.ts
+// src/services/verify/federation/requestQueue.ts
+// src/services/verify/server/passageExtractor.ts
+// src/services/verify/server/semanticScholarServerHandler.ts
+
+--- C:\Projects\Gradifi\api\verify\unpaywall.ts ---
+// src/services/verify/federation/providerQuotas.ts
+// src/services/verify/federation/rateLimiter.ts
+// src/services/verify/federation/providerLogger.ts
+// src/services/verify/federation/requestQueue.ts
+// src/services/verify/server/passageExtractor.ts
+// src/services/verify/server/unpaywallServerHandler.ts
+

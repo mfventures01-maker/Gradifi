@@ -1,0 +1,42 @@
+HOEOS V2 FORENSIC EVIDENCE: G1 BROWSER RUNTIME ACCEPTANCE
+Run ID: G0-audit-20261023-092514
+Timestamp: 2026-10-23T09:25:14+01:00
+
+1. DOCX REAL BROWSER ACCEPTANCE:
+Command: npx playwright test e2e/g1-docx-browser-acceptance.spec.ts
+Exit Code: 0
+Duration: 1.3m
+Target Fixture: C:\Users\faith\Downloads\DIGITAL THERMOMETER real.docx
+SHA-256: 6B76024857A8722BF17BD4B03456C684E3A04E4AD8AAF7E23F5DF8AC2053E12C
+Execution Trace:
+- Navigated to http://127.0.0.1:5173/verify
+- Uploaded DIGITAL THERMOMETER real.docx via real <input type="file">
+- State transitioned to STATUS: EXTRACTED in 795ms
+- Method displayed: docx_xml_extractor
+- Extracted Canonical Text length: 37,259 characters
+- Assertions verified:
+  * Contains 'Thermometer'
+  * Contains 'Digital'
+  * Contains 'LM35'
+  * Contains 'PIC16F877A'
+  * Zero word fragmentation on formatting boundaries
+- Handoff to verification executed:
+  * Button "Run Academic Evidence Verification" clicked
+  * Handoff reached terminal state in 18,161ms
+  * Screenshot saved to tests/hoeos/g2/evidence/g1_browser/g1_docx_browser_completion.png
+- Verdict: PASS (CERTIFICATION LEVEL)
+
+2. PDF REAL BROWSER ACCEPTANCE:
+Command: npx playwright test e2e/g1-pdf-browser-acceptance.spec.ts
+Exit Code: 0
+Duration: 30.1s
+Target Fixture: tests/fixtures/ingestion/quantum_federated_learning_paper.pdf
+SHA-256: 0C5860B9D729860DCF3A7480D9EC26D7E5354ADE7353B1D7E8FCD66895C9F4FF
+Execution Trace:
+- Uploaded quantum_federated_learning_paper.pdf via browser input
+- Status transitioned to STATUS: EXTRACTED in 5,369ms
+- Method displayed: pdf_stream_extractor
+- Extracted characters: 310
+- Screenshot saved to tests/hoeos/four_gates/evidence/g1/g1_pdf_browser_extracted.png
+- Negative boundary verified: invalid format rejected fail-closed
+- Verdict: PASS (CERTIFICATION LEVEL)

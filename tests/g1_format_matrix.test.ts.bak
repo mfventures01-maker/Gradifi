@@ -1,0 +1,231 @@
+import { describe, it, expect } from 'vitest';
+import fs from 'fs';
+import path from 'path';
+import { ingestDocument } from '../src/services/verify/universalIngestionService';
+import { VerificationPersistenceService } from '../src/services/verify/verificationPersistenceService';
+
+function createZipArchive(files: Record<string, string | Uint8Array>): Uint8Array {
+  const parts: Uint8Array[] = [];
+  const centralDirectoryHeaders: Uint8Array[] = [];
+  let offset = 0;
+
+  for (const [filename, content] of Object.entries(files)) {
+    const fileBytes = typeof content === 'string' ? new TextEncoder().encode(content) : content;
+    const nameBytes = new TextEncoder().encode(filename);
+
+    const header = new Uint8Array(30 + nameBytes.length);
+    const view = new DataView(header.buffer);
+    view.setUint32(0, 0x04034b50, true);
+    view.setUint16(4, 20, true);
+    view.setUint16(6, 0, true);
+    view.setUint16(8, 0, true);
+    view.setUint16(10, 0, true);
+    view.setUint16(12, 0, true);
+    view.setUint32(14, 0, true);
+    view.setUint32(18, fileBytes.length, true);
+    view.setUint32(22, fileBytes.length, true);
+    view.setUint16(26, nameBytes.length, true);
+    view.setUint16(28, 0, true);
+    header.set(nameBytes, 30);
+
+    const cdHeader = new Uint8Array(46 + nameBytes.length);
+    const cdView = new DataView(cdHeader.buffer);
+    cdView.setUint32(0, 0x02014b50, true);
+    cdView.setUint16(4, 20, true);
+    cdView.setUint16(6, 20, true);
+    cdView.setUint16(8, 0, true);
+    cdView.setUint16(10, 0, true);
+    cdView.setUint16(12, 0, true);
+    cdView.setUint16(14, 0, true);
+    cdView.setUint32(16, 0, true);
+    cdView.setUint32(20, fileBytes.length, true);
+    cdView.setUint32(24, fileBytes.length, true);
+    cdView.setUint16(28, nameBytes.length, true);
+    cdView.setUint16(30, 0, true);
+    cdView.setUint16(32, 0, true);
+    cdView.setUint16(34, 0, true);
+    cdView.setUint16(36, 0, true);
+    cdView.setUint32(38, 0, true);
+    cdView.setUint32(42, offset, true);
+    cdHeader.set(nameBytes, 46);
+
+    centralDirectoryHeaders.push(cdHeader);
+    parts.push(header);
+    parts.push(fileBytes);
+
+    offset += header.length + fileBytes.length;
+  }
+
+  const cdStart = offset;
+  let cdSize = 0;
+  for (const cd of centralDirectoryHeaders) {
+    parts.push(cd);
+    cdSize += cd.length;
+  }
+
+  const eocd = new Uint8Array(22);
+  const eocdView = new DataView(eocd.buffer);
+  eocdView.setUint32(0, 0x06054b50, true);
+  eocdView.setUint16(4, 0, true);
+  eocdView.setUint16(6, 0, true);
+  eocdView.setUint16(8, centralDirectoryHeaders.length, true);
+  eocdView.setUint16(10, centralDirectoryHeaders.length, true);
+  eocdView.setUint32(12, cdSize, true);
+  eocdView.setUint32(16, cdStart, true);
+  eocdView.setUint16(20, 0, true);
+  parts.push(eocd);
+
+  const totalLength = parts.reduce((acc, p) => acc + p.length, 0);
+  const result = new Uint8Array(totalLength);
+  let pos = 0;
+  for (const part of parts) {
+    result.set(part, pos);
+    pos += part.length;
+  }
+  return result;
+}
+
+async function runFormatMatrixTests() {
+  console.log('============================================================');
+  console.log('GRADIFI G1 UNIVERSAL INGESTION DETERMINISTIC FORMAT MATRIX');
+  console.log('============================================================\n');
+
+  // TEST 1: Golden DOCX
+  console.log('--- TEST 1: DOCX (golden_test_001.docx) ---');
+  const docxPath = path.resolve(process.cwd(), 'tests/hoeos/g2/golden_test_001.docx');
+  const docxBuffer = fs.readFileSync(docxPath);
+
+  const docxRes1 = await ingestDocument({ name: 'golden_test_001.docx', buffer: docxBuffer.buffer });
+  const docxRes2 = await ingestDocument({ name: 'golden_test_001.docx', buffer: docxBuffer.buffer });
+
+  console.log(`Success: ${docxRes1.success}`);
+  console.log(`Method: ${docxRes1.extractionMethod}`);
+  console.log(`Char Count: ${docxRes1.characterCount}`);
+  console.log(`Word Count: ${docxRes1.wordCount}`);
+  console.log(`Doc ID / Hash 1: ${docxRes1.canonicalDocument?.documentId}`);
+  console.log(`Doc ID / Hash 2: ${docxRes2.canonicalDocument?.documentId}`);
+
+  if (!docxRes1.success || !docxRes1.canonicalDocument) {
+    throw new Error('TEST 1 FAILED: DOCX ingestion failed.');
+  }
+  if (docxRes1.canonicalDocument.documentId !== docxRes2.canonicalDocument?.documentId) {
+    throw new Error('TEST 1 FAILED: DOCX determinism check failed.');
+  }
+
+  // TEST 2: Text-Native PDF
+  console.log('\n--- TEST 2: Text-Native PDF ---');
+  const pdfStreamText = '%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kinds [3 0 R] /Count 1 >> endobj\n3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj\n4 0 obj << /Length 200 >>\nstream\nBT\n/F1 12 Tf\n(Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks) Tj\n(By Dr. Aris Thorne and Prof. Elena Rostova 2024 Journal of Advanced Computer Science) Tj\n(Federated learning across edge networks faces latency challenges. We propose quantum inspired architecture for high order evidence systems.) Tj\nET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f\ntrailer << /Size 5 /Root 1 0 R >>\nstartxref\n500\n%%EOF';
+  const pdfBytes = new TextEncoder().encode(pdfStreamText);
+
+  const pdfRes1 = await ingestDocument({ name: 'academic_paper.pdf', buffer: pdfBytes.buffer });
+  const pdfRes2 = await ingestDocument({ name: 'academic_paper.pdf', buffer: pdfBytes.buffer });
+
+  console.log(`Success: ${pdfRes1.success}`);
+  console.log(`Method: ${pdfRes1.extractionMethod}`);
+  console.log(`OCR Used: ${pdfRes1.ocrUsed}`);
+  console.log(`Char Count: ${pdfRes1.characterCount}`);
+  console.log(`Word Count: ${pdfRes1.wordCount}`);
+  console.log(`Doc ID 1: ${pdfRes1.canonicalDocument?.documentId}`);
+  console.log(`Doc ID 2: ${pdfRes2.canonicalDocument?.documentId}`);
+
+  if (!pdfRes1.success || !pdfRes1.canonicalDocument) {
+    throw new Error('TEST 2 FAILED: Text-Native PDF ingestion failed.');
+  }
+  if (pdfRes1.canonicalDocument.documentId !== pdfRes2.canonicalDocument?.documentId) {
+    throw new Error('TEST 2 FAILED: Text-Native PDF determinism check failed.');
+  }
+
+  // TEST 3: TXT Document
+  console.log('\n--- TEST 3: TXT Document ---');
+  const txtContent = 'Gradifi Universal Ingestion Service Text Document\r\nLine endings are normalized deterministically.\r\nThis document verifies plain text extraction without external dependencies.';
+  const txtBytes = new TextEncoder().encode(txtContent);
+
+  const txtRes1 = await ingestDocument({ name: 'sample.txt', buffer: txtBytes.buffer });
+  const txtRes2 = await ingestDocument({ name: 'sample.txt', buffer: txtBytes.buffer });
+
+  console.log(`Success: ${txtRes1.success}`);
+  console.log(`Method: ${txtRes1.extractionMethod}`);
+  console.log(`Char Count: ${txtRes1.characterCount}`);
+  console.log(`Word Count: ${txtRes1.wordCount}`);
+  console.log(`Doc ID 1: ${txtRes1.canonicalDocument?.documentId}`);
+  console.log(`Doc ID 2: ${txtRes2.canonicalDocument?.documentId}`);
+
+  if (!txtRes1.success || !txtRes1.canonicalDocument) {
+    throw new Error('TEST 3 FAILED: TXT document ingestion failed.');
+  }
+  if (txtRes1.canonicalDocument.documentId !== txtRes2.canonicalDocument?.documentId) {
+    throw new Error('TEST 3 FAILED: TXT determinism check failed.');
+  }
+
+  // TEST 4: EPUB Document
+  console.log('\n--- TEST 4: EPUB Document (OCF Spine Order) ---');
+  const epubContainerXml = `<?xml version="1.0"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`;
+
+  const epubOpfContent = `<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0">
+  <manifest>
+    <item id="ch1" href="chapter1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="ch2" href="chapter2.xhtml" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine>
+    <itemref idref="ch1"/>
+    <itemref idref="ch2"/>
+  </spine>
+</package>`;
+
+  const epubCh1 = `<!DOCTYPE html><html><body><h1>Chapter 1: Quantum Foundations</h1><p>Deterministic similarity engine guarantees provenance transparency across distributed edge nodes.</p></body></html>`;
+  const epubCh2 = `<!DOCTYPE html><html><body><h2>Chapter 2: Verification Protocol</h2><p>Multi-model AI federation verifies academic evidence non-repudiation.</p></body></html>`;
+
+  const epubZipBytes = createZipArchive({
+    'META-INF/container.xml': epubContainerXml,
+    'OEBPS/content.opf': epubOpfContent,
+    'OEBPS/chapter1.xhtml': epubCh1,
+    'OEBPS/chapter2.xhtml': epubCh2
+  });
+
+  const epubRes1 = await ingestDocument({ name: 'quantum_book.epub', buffer: epubZipBytes.buffer });
+  const epubRes2 = await ingestDocument({ name: 'quantum_book.epub', buffer: epubZipBytes.buffer });
+
+  console.log(`Success: ${epubRes1.success}`);
+  console.log(`Method: ${epubRes1.extractionMethod}`);
+  console.log(`Chapter Count: ${epubRes1.chapterCount}`);
+  console.log(`Char Count: ${epubRes1.characterCount}`);
+  console.log(`Word Count: ${epubRes1.wordCount}`);
+  console.log(`Extracted Text Sample: "${epubRes1.text.slice(0, 100).replace(/\n/g, ' ')}..."`);
+  console.log(`Doc ID 1: ${epubRes1.canonicalDocument?.documentId}`);
+  console.log(`Doc ID 2: ${epubRes2.canonicalDocument?.documentId}`);
+
+  if (!epubRes1.success || !epubRes1.canonicalDocument) {
+    throw new Error('TEST 4 FAILED: EPUB document ingestion failed.');
+  }
+  if (epubRes1.canonicalDocument.documentId !== epubRes2.canonicalDocument?.documentId) {
+    throw new Error('TEST 4 FAILED: EPUB determinism check failed.');
+  }
+
+  // TEST 5: Malformed DOCX Fail-Closed
+  console.log('\n--- TEST 5: Malformed DOCX Fail-Closed ---');
+  const malformedDocx = new Uint8Array([0x50, 0x4b, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00]);
+  const malformedRes = await ingestDocument({ name: 'corrupted.docx', buffer: malformedDocx.buffer });
+
+  console.log(`Success: ${malformedRes.success}`);
+  console.log(`Error Code: ${malformedRes.error?.code}`);
+  console.log(`Error Message: ${malformedRes.error?.message}`);
+
+  if (malformedRes.success || malformedRes.canonicalReady) {
+    throw new Error('TEST 5 FAILED: Malformed DOCX did not fail closed.');
+  }
+
+  console.log('\n============================================================');
+  console.log('ALL DETERMINISTIC FORMAT MATRIX TESTS PASSED (100%)');
+  console.log('============================================================');
+}
+
+runFormatMatrixTests().catch(err => {
+  console.error('\n❌ Format Matrix Test Suite Failed:', err);
+  process.exit(1);
+});

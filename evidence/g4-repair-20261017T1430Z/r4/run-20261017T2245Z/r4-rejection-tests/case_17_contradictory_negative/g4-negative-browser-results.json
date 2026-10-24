@@ -1,0 +1,12 @@
+﻿{
+  "testIdentity": "e2e/four-gates-g4-negative.spec.ts",
+  "executionStatus": "PASS",
+  "missingCanonicalCondition": "missing_canonical_raw_text",
+  "unavailableIndicatorObserved": false,
+  "viewerSuppressed": true,
+  "observedHighlightCount": 0,
+  "expectedHighlightCount": 0,
+  "allMandatoryAssertionsPassed": true,
+  "screenshotArtifact": "screenshots/g4_negative_browser_unavailable.png",
+  "timestamp": "2026-10-17T21:14:14.426Z"
+}

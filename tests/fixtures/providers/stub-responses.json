@@ -1,0 +1,94 @@
+{
+  "crossref": {
+    "providerId": "crossref",
+    "status": "success",
+    "fineGrainedStatus": "VERIFIED",
+    "syntheticStub": true,
+    "matches": [
+      {
+        "sourceId": "doi:10.9999/gradifi-r6-a",
+        "title": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+        "authors": ["Aris Thorne"],
+        "url": "https://doi.org/10.9999/gradifi-r6-a",
+        "doi": "10.9999/gradifi-r6-a",
+        "matchedText": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks\r\nBy Dr. Aris Thorne, Prof. Elena Rostova, and Dr. Marcus Vance (2024)\r\nJournal of Advanced Computer Science & Quantum Information Systems, Vol. 14, DOI: 10.1038/s41",
+        "matchedTextStart": 0,
+        "matchedTextEnd": 250,
+        "originalSnippet": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks\r\nBy Dr. Aris Thorne, Prof. Elena Rostova, and Dr. Marcus Vance (2024)\r\nJournal of Advanced Computer Science & Quantum Information Systems, Vol. 14, DOI: 10.1038/s41",
+        "matchType": "exact",
+        "matchPercentage": 23,
+        "relevanceScore": 1.0,
+        "provenance": {
+          "provider": "crossref",
+          "providerRecordId": "10.9999/gradifi-r6-a",
+          "retrievedAt": "2026-10-18T01:00:00Z",
+          "sourceType": "journal-article",
+          "sourceUrl": "https://doi.org/10.9999/gradifi-r6-a",
+          "title": "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+          "authors": ["Aris Thorne"],
+          "doi": "10.9999/gradifi-r6-a",
+          "publishedYear": 2024,
+          "provenanceState": "VERIFIED",
+          "fineGrainedStatus": "VERIFIED",
+          "syntheticStub": true,
+          "syntheticNote": "R6 hermetic test fixture; not live API evidence"
+        }
+      },
+      {
+        "sourceId": "doi:10.9999/gradifi-r6-b",
+        "title": "Distributed Machine Learning Determinism",
+        "authors": ["Elena Rostova"],
+        "url": "https://doi.org/10.9999/gradifi-r6-b",
+        "doi": "10.9999/gradifi-r6-b",
+        "matchedText": "ted node topology while preserving complete privacy. We compare our approach against standard Crossref and OpenAlex benchmarks.\r\n\r\nIntroduction:\r\nDistributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence. Previo",
+        "matchedTextStart": 650,
+        "matchedTextEnd": 950,
+        "originalSnippet": "ted node topology while preserving complete privacy. We compare our approach against standard Crossref and OpenAlex benchmarks.\r\n\r\nIntroduction:\r\nDistributed machine learning frameworks require mathematical determinism to guarantee non-repudiation of student submissions and academic evidence. Previo",
+        "matchType": "exact",
+        "matchPercentage": 27,
+        "relevanceScore": 1.0,
+        "provenance": {
+          "provider": "crossref",
+          "providerRecordId": "10.9999/gradifi-r6-b",
+          "retrievedAt": "2026-10-18T01:00:00Z",
+          "sourceType": "journal-article",
+          "sourceUrl": "https://doi.org/10.9999/gradifi-r6-b",
+          "title": "Distributed Machine Learning Determinism",
+          "authors": ["Elena Rostova"],
+          "doi": "10.9999/gradifi-r6-b",
+          "publishedYear": 2024,
+          "provenanceState": "VERIFIED",
+          "fineGrainedStatus": "VERIFIED",
+          "syntheticStub": true,
+          "syntheticNote": "R6 hermetic test fixture; not live API evidence"
+        }
+      }
+    ],
+    "rawCount": 2,
+    "requestTimestamp": "2026-10-18T01:00:00Z",
+    "responseTimestamp": "2026-10-18T01:00:01Z",
+    "correlationId": "r6-stub-crossref-001"
+  },
+  "openalex": {
+    "providerId": "openalex",
+    "status": "success",
+    "fineGrainedStatus": "EMPTY_RESULT",
+    "syntheticStub": true,
+    "matches": [],
+    "rawCount": 0,
+    "requestTimestamp": "2026-10-18T01:00:00Z",
+    "responseTimestamp": "2026-10-18T01:00:01Z",
+    "correlationId": "r6-stub-openalex-001"
+  },
+  "unpaywall": {
+    "providerId": "unpaywall",
+    "status": "partial",
+    "fineGrainedStatus": "EMPTY_RESULT",
+    "syntheticStub": true,
+    "matches": [],
+    "rawCount": 0,
+    "requestTimestamp": "2026-10-18T01:00:00Z",
+    "responseTimestamp": "2026-10-18T01:00:01Z",
+    "correlationId": "r6-stub-unpaywall-001"
+  }
+}

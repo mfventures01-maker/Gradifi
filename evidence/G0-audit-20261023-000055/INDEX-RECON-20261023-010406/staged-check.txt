@@ -1,0 +1,20 @@
+﻿docs/HOEOS/GRADIFI-AI-CONSTITUTION.md:2: trailing whitespace.
++**Standard:** HOEOS 2.0 Law 10 (AI Containment & Graceful Degradation)  
+docs/HOEOS/GRADIFI-AI-CONSTITUTION.md:3: trailing whitespace.
++**Status:** RATIFIED BASELINE  
+docs/HOEOS/GRADIFI-AI-CONSTITUTION.md:4: trailing whitespace.
++**Security Classification:** Level 1 Canonical System Artifact  
+docs/HOEOS/GRADIFI-AI-CONSTITUTION.md:12: trailing whitespace.
++   
+docs/HOEOS/GRADIFI-AI-CONSTITUTION.md:34: trailing whitespace.
++  - If Nemotron unavailable, falls back to raw deterministic snippet rendering with typed warning:  
+docs/HOEOS/GRADIFI-AI-CONSTITUTION.md:44: trailing whitespace.
++  - Emits warning:  
+docs/HOEOS/GRADIFI-AI-CONSTITUTION.md:54: trailing whitespace.
++  - Emits warning:  
+docs/HOEOS/GRADIFI-CONSTITUTION.md:2: trailing whitespace.
++**Standard:** HOEOS 2.0 Law 2 & Part IX  
+docs/HOEOS/GRADIFI-CONSTITUTION.md:3: trailing whitespace.
++**Status:** RATIFIED BASELINE  
+docs/HOEOS/GRADIFI-CONSTITUTION.md:4: trailing whitespace.
++**Security Classification:** Level 1 Canonical System Artifact  

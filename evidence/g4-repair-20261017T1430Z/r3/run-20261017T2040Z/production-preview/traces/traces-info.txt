@@ -1,0 +1,1 @@
+﻿No Playwright trace archives generated: Both browser tests passed on first execution (trace: 'retain-on-failure').

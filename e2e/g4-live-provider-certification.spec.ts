@@ -128,11 +128,53 @@ test.describe('HOEOS G4 Live-Provider End-to-End Certification', () => {
       }))
     );
 
-    const findings: any[] = markTuples.map(t => ({
-      findingId: t.findingId,
-      matchedDocumentId: t.matchedDocumentId
-    }));
-    const verifiedSources: any[] = findings;
+    // PROVENANCE: engine findings read from the DOM attribute (independent of mark derivation)
+    const engineFindingsJson = await viewerContainer.getAttribute('data-verify-result');
+    expect(engineFindingsJson, 'data-verify-result attribute must be present on the viewer container').toBeTruthy();
+
+    const engineFindings: Array<{
+      findingId: string;
+      matchedDocumentId: string;
+      sourceStart?: number;
+      sourceEnd?: number;
+    }> = JSON.parse(engineFindingsJson!);
+
+    fs.writeFileSync(
+      path.join(process.env.RECERT_EVIDENCE_DIR || '.', 'ENGINE_FINDINGS_DIAGNOSTIC.json'),
+      JSON.stringify({
+        engineFindingsLength: engineFindings.length,
+        engineFindings: engineFindings,
+        markTuplesLength: markTuples.length,
+        markTuples: markTuples
+      }, null, 2)
+    );
+    expect(engineFindings.length, 'Engine findings count must be > 0').toBeGreaterThan(0);
+
+    // findings sourced from engine output, not DOM marks
+    const findings: any[] = engineFindings;
+    const verifiedSources: any[] = engineFindings.map(f => ({ sourceId: f.matchedDocumentId }));
+
+    // PROVENANCE ASSERTION 1: every engine finding is rendered as a mark
+    for (const ef of engineFindings) {
+      const matchingMark = markTuples.find(mt => mt.findingId === ef.findingId);
+
+      expect(
+        matchingMark,
+        `Engine finding ${ef.findingId} (${ef.matchedDocumentId}) must be rendered as a DOM mark`
+      ).toBeTruthy();
+      expect(matchingMark!.matchedDocumentId, `Mark source must match engine source for ${ef.findingId}`).toBe(ef.matchedDocumentId);
+      expect(matchingMark!.startOffset, `Mark start offset must match engine sourceStart for ${ef.findingId}`).toBe(String(ef.sourceStart));
+      expect(matchingMark!.endOffset, `Mark end offset must match engine sourceEnd for ${ef.findingId}`).toBe(String(ef.sourceEnd));
+    }
+
+    // PROVENANCE ASSERTION 2: every mark corresponds to an engine finding
+    for (const mt of markTuples) {
+      const matchingFinding = engineFindings.find(ef => ef.findingId === mt.findingId);
+      expect(
+        matchingFinding,
+        `DOM mark ${mt.findingId} must correspond to an engine finding`
+      ).toBeTruthy();
+    }
 
     // 9. Assert Provenance Non-Fixture Invariant
     const FORBIDDEN_FIXTURE_IDS = new Set([
@@ -244,7 +286,10 @@ test.describe('HOEOS G4 Live-Provider End-to-End Certification', () => {
       markCount,
       observedDomMarks,
       allSlicesMatched: observedDomMarks.every(m => m.sliceMatchesExact),
-      provenanceNonFixture: findings.every(f => !FORBIDDEN_FIXTURE_IDS.has(f.findingId)),
+            provenanceNonFixture: findings.every(f => !FORBIDDEN_FIXTURE_IDS.has(f.findingId)),
+      provenanceVerified: true,
+      engineFindingsCount: engineFindings.length,
+      renderedMarkCount: markTuples.length,
       screenshotPath: path.relative(process.cwd(), screenshotPath).replace(/\\/g, '/'),
       verdict: 'PASS'
     };

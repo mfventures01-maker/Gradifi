@@ -1,0 +1,15 @@
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/var/task/src/services/verify/server/coreServerHandler' imported from /var/task/api/verify/core.js
+    at finalizeResolution (node:internal/modules/esm/resolve:278:11)
+    at moduleResolve (node:internal/modules/esm/resolve:885:10)
+    at moduleResolveWithNodePath (node:internal/modules/esm/resolve:1012:14)
+    at defaultResolve (node:internal/modules/esm/resolve:1055:79)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///var/task/src/services/verify/server/coreServerHandler'
+}
+Node.js process exited with exit status: 1.

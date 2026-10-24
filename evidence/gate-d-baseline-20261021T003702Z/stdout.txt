@@ -1,0 +1,35 @@
+
+
+Running 1 test using 1 worker
+
+[1/1] [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams
+  1) [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams 
+
+    Error: Canonical Document Viewer must be visible in DOM
+
+    expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-testid="canonical-document-viewer"]')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Canonical Document Viewer must be visible in DOM with timeout 5000ms
+      - waiting for locator('[data-testid="canonical-document-viewer"]')
+
+
+      94 |
+      95 |     const viewerContainer = page.locator('[data-testid="canonical-document-viewer"]');
+    > 96 |     await expect(viewerContainer, 'Canonical Document Viewer must be visible in DOM').toBeVisible();
+         |                                                                                       ^
+      97 |
+      98 |     const viewerHtml = await viewerContainer.innerHTML();
+      99 |     expect(viewerHtml, 'Viewer must not contain PLAGIARIZED verdict').not.toContain('PLAGIARIZED');
+        at C:\Projects\Gradifi\e2e\g4-live-provider-certification.spec.ts:96:87
+
+    Error Context: test-results\.playwright-temp\g4-live-provider-certifica-f213c-hts-without-synthetic-seams-chromium\error-context.md
+
+
+  1 failed
+    [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams 

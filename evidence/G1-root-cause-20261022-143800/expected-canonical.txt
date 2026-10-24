@@ -1,0 +1,19 @@
+CHAPTER ONE
+
+1.0INTRODUCTION	
+
+Thermometer In the seventeenth century, it was difficult to quantify heat which makes it difficult for people to measure their body temperature when they get sick. This became a concern to humanity thereby several researches were done in this regard. Instruments invented include a wind gauge, a water current meter, the âpulsilogiumâ, and a thermoscope, a precursor to the thermometer. In 1612, Santorio (physicians) an Italian inventor was the first to apply a numerical scale to his thermoscope which later evolved into various thermometers (which is a means of measuring âthe degree of hotness or coldnessâ (temperature) of an object or a fluid). At the time thermometers or heat meter was highly regarded as a medical equipment, for it could justify the human temperature at different stages (whether normal or abnormal) accurately. As a result of rapid technological development, thermometers are vastly used as medical equipment since the 19th century.
+
+As time goes by, thermometers of different types, shapes and sizes were invented and manufactured for both industrial and domestic use. There are ears, baby, basal, and instant-read thermometers too.
+
+However, the digital thermometer of interest in this projects work could be regarded as among the latest thermometers. It is highly efficient because of its fast response, accuracy and easy to read tendency; it has indicators for easier use. This thermometer is a digital type and as such, this makes it different and more sophisticated than the analogue type. It is a multipurpose, portable cheap and user friendly.
+
+1.1BACKGROUND OF THE STUDY	
+
+From the research carried out, today digital thermometers have almost entirely replaced the liquid in gas thermometer in the consumer market. Before the introduction of the digital thermometer, thermometer uses liquid or gas to measure temperature and lacked standards for readings. The first consistent standard came when mercury is being used. Daniel Gabriele A Fahrenheit created a temperature scale that could reproduce reliable temperatures.
+
+In the 1990s scientists deemed the mercury based thermometer was risky to handle. It had to be swung sharply to be reset. Since then, mercury thermometers have been replaced in stores with digital ones. The basic principle for measuring temperature, however still remains the same. All heat meters require a temperature sensor and a means of translating a change in temperature into a numerical value for example, in a mercury thermometer the temperature sensor is the mercury. The change in numerical value registers on the scale on the thermometer.
+
+The most common way for a digital thermometer to measure temperature is via a thermal resistor or transistor. When a change in temperature occurs the device chan ges its resistance or conductivity, then a circuit translates that resistance into a reading.
+
+The consumer market for the digital thermometer has expanded in the past 20years. We use to rel

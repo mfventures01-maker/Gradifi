@@ -1,0 +1,40 @@
+# G1 BROWSER STREAM EXTRACTOR — REPAIR RECORD
+# Repair ID: G1-STREAM-FIX-2026-09-23
+# Classification: RUNTIME PASS (browser)
+# Status: FROZEN
+
+[DEFECT]
+G1_BROWSER_STREAM_EXTRACTOR_RETURNS_EMPTY
+extractTextFromPdfStream returned empty for FlateDecode-compressed
+text-native PDFs in the browser, forcing the pipeline through OCR.
+Observed as Method: ocr_tesseract on a text-native PDF.
+
+[FIX]
+1. src/utils/pdfExtractor.ts
+   - extractTextFromPdfStream is now async and, in the browser,
+     uses pdfjsLib getTextContent() per page. Falls through to
+     the regex path in Node and on PDF.js failure.
+   - extractDocumentText awaits the call.
+2. src/services/verify/contentValidationService.ts
+   - validateRetrievedContent is now async and awaits the extract.
+3. src/services/verify/deterministicEvidenceBridge.ts
+   - the call site awaits validateRetrievedContent.
+
+[ACCEPTANCE]
+Before: SEFAES PDF -> Method: ocr_tesseract
+After:  SEFAES PDF -> Method: pdf_stream_extractor
+
+[VERIFICATION]
+- npx tsc --noEmit: no new error at contentValidationService.ts:58
+- npm run build: clean, worker asset emitted
+- g1_ocr_scanned test: PASS
+- g1_epub_ocr test: PASS
+- demoWorkflow3Runs: 3/3 PASS, documentHash stable
+- Browser local preview: Method: pdf_stream_extractor
+- Production: Method: pdf_stream_extractor
+
+[COMMIT]
+8542deb7c8b1ed8bb3ac73a34cc69c0d9a758440
+
+[COMPOSITE]
+42ACD58B724923D00735C653842AE6F6884D416C9C0428E6C5A56E6CACCB82DD

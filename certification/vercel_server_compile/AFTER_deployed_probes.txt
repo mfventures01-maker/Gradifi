@@ -1,0 +1,9 @@
+﻿core -> 200
+crossref -> 200
+googlebooks -> 200
+openalex -> 200
+unpaywall -> 200
+nemotron -> 200
+gemini -> 200
+gemma -> 200
+semanticscholar -> 200

@@ -1,0 +1,85 @@
+﻿   1: # scratch/r3-run-specs.ps1
+   2: # R3.3: run the R2 specs against the local production build via playwright.localprod.config.ts.
+   3: # Precondition: R3.1 gate applied (page at 4DC3C49E...), R3.2 build succeeded,
+   4: #               playwright.localprod.config.ts present.
+   5: 
+   6: $ErrorActionPreference = 'Stop'
+   7: 
+   8: $r3Dir = (Join-Path (Get-Location).Path 'evidence/g4-repair-20261017T1430Z/r3')
+   9: New-Item -ItemType Directory -Path $r3Dir -Force | Out-Null
+  10: [Environment]::CurrentDirectory = (Get-Location).Path
+  11: 
+  12: $log = Join-Path $r3Dir 'r3-specs.txt'
+  13: $tee = { param($msg) $msg | Tee-Object -FilePath $log -Append | Out-Host }
+  14: 
+  15: & $tee "=== R3.3 SPECS AGAINST LOCAL PRODUCTION BUILD ==="
+  16: & $tee "Config: playwright.localprod.config.ts"
+  17: 
+  18: # Pre-condition: config exists
+  19: $localProd = 'playwright.localprod.config.ts'
+  20: if (-not (Test-Path $localProd)) { throw "$localProd not found" }
+  21: & $tee "config hash: $((Get-FileHash $localProd -Algorithm SHA256).Hash)"
+  22: 
+  23: # Preserve R2 evidence before R3 specs overwrite it
+  24: $r2Dir = 'evidence/g4-repair-20261017T1430Z/r2'
+  25: $r2Preserved = 'evidence/g4-repair-20261017T1430Z/r2-preserved'
+  26: if ((Test-Path $r2Dir) -and -not (Test-Path $r2Preserved)) {
+  27:     Copy-Item -Path $r2Dir -Destination $r2Preserved -Recurse -Force
+  28:     & $tee "preserved R2 evidence to: $r2Preserved"
+  29: } elseif (Test-Path $r2Preserved) {
+  30:     & $tee "R2 evidence already preserved at: $r2Preserved"
+  31: }
+  32: 
+  33: # Spec hashes (must match R2)
+  34: $specHashes = Get-FileHash -Path @(
+  35:     'e2e/four-gates-g4-browser.spec.ts',
+  36:     'e2e/four-gates-g4-negative.spec.ts',
+  37:     'e2e/g4-fixtures.ts'
+  38: ) -Algorithm SHA256
+  39: foreach ($h in $specHashes) {
+  40:     & $tee "spec: $($h.Path.Substring((Get-Location).Path.Length + 1)) = $($h.Hash)"
+  41: }
+  42: 
+  43: # ---------- RUN SPECS ----------
+  44: & $tee "`n--- playwright run ---"
+  45: $browserLog = Join-Path $r3Dir 'browser-output-r3.txt'
+  46: $sw = [System.Diagnostics.Stopwatch]::StartNew()
+  47: 
+  48: $oldEap = $ErrorActionPreference
+  49: $oldNativePref = $null
+  50: $hasNativePref = Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue
+  51: if ($hasNativePref) { $oldNativePref = $PSNativeCommandUseErrorActionPreference }
+  52: 
+  53: $ErrorActionPreference = 'Continue'
+  54: if ($hasNativePref) { $PSNativeCommandUseErrorActionPreference = $false }
+  55: try {
+  56:     & npx.cmd playwright test `
+  57:         'e2e/four-gates-g4-browser.spec.ts' `
+  58:         'e2e/four-gates-g4-negative.spec.ts' `
+  59:         --config=$localProd *> $browserLog
+  60:     $playwrightExit = $LASTEXITCODE
+  61: } finally {
+  62:     $ErrorActionPreference = $oldEap
+  63:     if ($hasNativePref) { $PSNativeCommandUseErrorActionPreference = $oldNativePref }
+  64: }
+  65: $sw.Stop()
+  66: 
+  67: & $tee "playwright exit: $playwrightExit"
+  68: & $tee "playwright duration: $([Math]::Round($sw.Elapsed.TotalSeconds, 2))s"
+  69: & $tee "browser log: $browserLog"
+  70: 
+  71: @(
+  72:     "ExitCode=$playwrightExit"
+  73:     "DurationSec=$([Math]::Round($sw.Elapsed.TotalSeconds, 2))"
+  74:     "Config=$localProd"
+  75:     "Log=$browserLog"
+  76: ) | Set-Content -LiteralPath (Join-Path $r3Dir 'r3-specs-record.txt') -Encoding utf8
+  77: 
+  78: if ($playwrightExit -ne 0) {
+  79:     & $tee "`n--- browser log tail ---"
+  80:     Get-Content $browserLog -Tail 80 | Out-Host
+  81:     throw "PLAYWRIGHT FAILED (exit $playwrightExit); see $browserLog"
+  82: }
+  83: 
+  84: & $tee "`n=== R3.3 COMPLETE ==="
+  85: & $tee "Evidence dir: $r3Dir"

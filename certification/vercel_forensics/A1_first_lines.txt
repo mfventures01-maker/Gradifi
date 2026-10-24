@@ -1,0 +1,77 @@
+﻿--- C:\Projects\Gradifi\api\_probe.ts [23147 bytes] ---
+// src/services/verify/federation/providerQuotas.ts
+var PROVIDER_QUOTAS = {
+  core: {
+    providerId: "core",
+    maxTokens: 1,
+
+--- C:\Projects\Gradifi\api\verify\core.ts [23152 bytes] ---
+// src/services/verify/federation/providerQuotas.ts
+var PROVIDER_QUOTAS = {
+  core: {
+    providerId: "core",
+    maxTokens: 1,
+
+--- C:\Projects\Gradifi\api\verify\crossref.ts [22762 bytes] ---
+// src/services/verify/federation/providerQuotas.ts
+var PROVIDER_QUOTAS = {
+  core: {
+    providerId: "core",
+    maxTokens: 1,
+
+--- C:\Projects\Gradifi\api\verify\gemini.ts [1787987 bytes] ---
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+
+--- C:\Projects\Gradifi\api\verify\gemma.ts [8047 bytes] ---
+// src/services/verify/server/geminiServerHandler.ts
+function validateAIFindingSchema(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const validTypes = ["exact_overlap", "lexical_overlap", "semantic_overlap", "citation_issue", "writing_signal"];
+  const validSeverities = ["low", "moderate", "high"];
+
+--- C:\Projects\Gradifi\api\verify\googlebooks.ts [25121 bytes] ---
+// src/services/verify/federation/providerQuotas.ts
+var PROVIDER_QUOTAS = {
+  core: {
+    providerId: "core",
+    maxTokens: 1,
+
+--- C:\Projects\Gradifi\api\verify\nemotron.ts [9251 bytes] ---
+// src/services/verify/server/geminiServerHandler.ts
+function validateAIFindingSchema(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const validTypes = ["exact_overlap", "lexical_overlap", "semantic_overlap", "citation_issue", "writing_signal"];
+  const validSeverities = ["low", "moderate", "high"];
+
+--- C:\Projects\Gradifi\api\verify\openalex.ts [9298 bytes] ---
+// src/services/verify/server/passageExtractor.ts
+function tokenizeWithOffsets(text) {
+  const tokens = [];
+  const regex = /[^\s\p{P}]+|\S/gu;
+  let match;
+
+--- C:\Projects\Gradifi\api\verify\persist.ts [876966 bytes] ---
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+
+--- C:\Projects\Gradifi\api\verify\semanticscholar.ts [23511 bytes] ---
+// src/services/verify/federation/providerQuotas.ts
+var PROVIDER_QUOTAS = {
+  core: {
+    providerId: "core",
+    maxTokens: 1,
+
+--- C:\Projects\Gradifi\api\verify\unpaywall.ts [22238 bytes] ---
+// src/services/verify/federation/providerQuotas.ts
+var PROVIDER_QUOTAS = {
+  core: {
+    providerId: "core",
+    maxTokens: 1,
+

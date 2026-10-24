@@ -1,0 +1,111 @@
+﻿--- B3 COMMIT STATS ---
+commit 00b48cf7fb40233d515706dd9daeedea9680b413
+Author: mfventures01-maker <mfventures01@gmail.com>
+Date:   Fri Sep 25 12:41:04 2026 +0100
+
+    g5: republish composite hash with sorted file list
+    
+    The prior G5_COMPOSITE was not reproducible across runs
+    because the file list was not sorted before hashing. Two
+    consecutive computations on the same tree produced
+    different values.
+    
+    Fix: sort the file list lexicographically before computing
+    per-file SHA-256 lines, and hash the joined string with
+    SHA-256. Command is embedded in G5_COMPOSITE.txt for
+    independent reproduction.
+    
+    Also adds G5_ARTIFACT_COMPOSITE: a second hash over
+    certification/g5/ so the certification outputs are
+    themselves certified.
+    
+    Evidence (certification/g5_regeneration/):
+      - file count:               18
+      - composite (run A):        0E1EED362231A7FE02CEFB6C1DDE6AA8FA0EDAD155E75B549A7E514F9F337E8A
+      - composite (run B):        0E1EED362231A7FE02CEFB6C1DDE6AA8FA0EDAD155E75B549A7E514F9F337E8A
+      - identical:                yes
+      - artifact composite:       8F47753FFF84817B0187E55FA6ACD1FF11B0573DA8622105F79054FA3D2556B5
+    
+    Classification: CATEGORY B ΓÇö certification artifact defect.
+
+ certification/g5/G5_ARTIFACT_COMPOSITE.txt         | 21 +++++++++++++++++
+ certification/g5/G5_COMPOSITE.txt                  | 27 +++++++++++++++++++++-
+ certification/g5_regeneration/01_file_list.txt     | 18 +++++++++++++++
+ .../g5_regeneration/02_composite_run_a.txt         |  2 ++
+ .../g5_regeneration/02_composite_run_b.txt         |  2 ++
+ .../g5_regeneration/03_reproducibility_check.txt   |  1 +
+ .../g5_regeneration/POST_REPAIR_EVIDENCE.txt       | 23 ++++++++++++++++++
+ 7 files changed, 93 insertions(+), 1 deletion(-)
+
+commit c67235a11e332ed18d9190769c339a196cde8741
+Author: mfventures01-maker <mfventures01@gmail.com>
+Date:   Fri Sep 25 12:14:12 2026 +0100
+
+    providers: add Semantic Scholar integration
+    
+    Adds Semantic Scholar as a sixth deterministic evidence
+    provider. Follows the coreProvider / coreServerHandler
+    pattern.
+    
+    Deliverables:
+      - semanticScholarServerHandler.ts   (new)
+      - semanticScholarProvider.ts        (new)
+      - verifyServerPlugin.ts             (+1 route)
+      - types.ts                          (semanticscholar in SourceType)
+    
+    Field mapping:
+      paperId   -> sourceId (s2: prefix)
+      abstract  -> originalSnippet (300-char slice)
+      externalIds.DOI/ISBN -> doi/isbn
+      openAccessPdf.url -> url (fallback: s2 paper page)
+      year -> provenance.publishedYear
+    
+    Rate limits:
+      429 -> RATE_LIMITED (now a legal FineGrainedProviderStatus
+                              as of f4fb2b6)
+      401/403 -> AUTHENTICATION_FAILED
+      missing key -> AUTHENTICATION_FAILED with MISSING_SERVER_KEY
+    
+    Env:
+      SEMANTIC_SCHOLAR_API_KEY (server-side only, not VITE_*)
+    
+    Evidence (certification/s2_integration/):
+      - V1 direct API probe:  HTTP 200 OK, total=6091994
+      - V2 handler direct:    fineGrainedStatus=VERIFIED, matches=3
+      - V3 HTTP probe:        HTTP 200 OK, matches=3
+      - V4 predictability:    DETERMINISTIC, 429s=0
+      - V5 forwarding:        1/3 sources with matchedText
+      - V6 tsc + build:       clean
+      - V7 scope:             only provider files touched
+    
+    Thresholds:
+      T1 Predictability  PASS  (DETERMINISTIC)
+      T2 Reliability     PASS  (5/5 VERIFIED)
+      T3 Rate-limit      PASS  (0 429s)
+      T4 Forwarding      PASS  (matchedText populated)
+    
+    Classification: NEW PROVIDER ADDITION.
+
+ certification/s2_integration/HALT_NOTE.txt         |  36 ++
+ .../s2_integration/POST_REPAIR_EVIDENCE.txt        |  25 ++
+ .../s2_integration/prerepair/coreProvider.ts       |  65 +++
+ certification/s2_integration/prerepair/types.ts    | 496 +++++++++++++++++++++
+ .../s2_integration/prerepair/union_state.txt       |   0
+ .../s2_integration/prerepair/verifyServerPlugin.ts | 206 +++++++++
+ certification/s2_integration/s2_direct_probe.txt   | 348 +++++++++++++++
+ .../s2_integration/s2_documentText_parity.txt      |  30 ++
+ certification/s2_integration/s2_handler_direct.txt |  19 +
+ certification/s2_integration/s2_http_probe.txt     |   6 +
+ certification/s2_integration/s2_predictability.txt |  25 ++
+ certification/s2_integration/s2_scope.txt          |   3 +
+ .../s2_integration/s2_typecheck_and_build.txt      |  45 ++
+ scratch/test_s2_direct.ts                          |  35 ++
+ scratch/test_s2_handler.ts                         |  48 ++
+ scratch/test_s2_http.ts                            |  33 ++
+ scratch/test_s2_parity.ts                          |  47 ++
+ scratch/test_s2_predictability.ts                  | 113 +++++
+ .../verify/providers/semanticScholarProvider.ts    |  68 +++
+ .../verify/server/semanticScholarServerHandler.ts  | 193 ++++++++
+ src/services/verify/server/verifyServerPlugin.ts   |   2 +
+ src/services/verify/types.ts                       |   1 +
+ 22 files changed, 1844 insertions(+)

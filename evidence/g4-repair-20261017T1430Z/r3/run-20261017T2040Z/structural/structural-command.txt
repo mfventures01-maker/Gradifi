@@ -1,0 +1,1 @@
+﻿npx tsx tests/g4-offset-invariants.test.ts

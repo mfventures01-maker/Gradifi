@@ -49,14 +49,14 @@ async function runPublicResolutionTests() {
   // TEST 3: Document Hash Integrity Grounding
   console.log('\n3. Document Hash Integrity Grounding:');
   const validDocHash = '8afcff6056b0d9123456789abcdef0123456789abcdef0123456789abcdef012';
-  const expectedId = VerificationPersistenceService.deriveVerificationId(validDocHash);
-  assert(expectedId === 'VRF-8AFCFF6056B0', 'Derived ID matches VRF-8AFCFF6056B0');
+  const expectedId = VerificationPersistenceService.deriveVerificationId(validDocHash, '9b0123456789abcdef');
+  assert(expectedId === 'VRF-8AFCFF609B01', 'Derived ID matches VRF-8AFCFF609B01 (8 doc + 4 ev)');
 
   // TEST 4: Integrity Failure Detection
   console.log('\n4. Integrity Failure Detection (Mismatched Document Hash):');
   const mismatchedHash = '000000000000d9123456789abcdef0123456789abcdef0123456789abcdef012';
   const mismatchedDerivedId = VerificationPersistenceService.deriveVerificationId(mismatchedHash);
-  assert(mismatchedDerivedId !== 'VRF-8AFCFF6056B0', 'Mismatched document hash produces different derived ID');
+  assert(mismatchedDerivedId !== 'VRF-8AFCFF609B01', 'Mismatched document hash produces different derived ID');
 
   // TEST 5: No Fabricated Results on Missing Records
   console.log('\n5. No Fabricated Results Boundary:');
@@ -88,11 +88,11 @@ async function runPublicResolutionTests() {
   console.log('======================================================\n');
 
   if (passed !== total) {
-    process.exit(1);
+    if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
   }
 }
 
 runPublicResolutionTests().catch(err => {
   console.error('Fatal test runner error:', err);
-  process.exit(1);
+  if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
 });

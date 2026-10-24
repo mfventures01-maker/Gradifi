@@ -1,0 +1,312 @@
+﻿G5-M02 - TWO-PART SENTENCE SEGMENTATION CONTRACT
+Date:   2026-10-06
+Status: PENDING REVIEW
+Author: HOEOS certification process
+Predecessor: G5-M01 (REJECTED - partial fix, 4/8 regression pass)
+Revision: 1 - resolves x.5 contradiction in Capability 1
+
+--------------------------------------------------------------------
+1. MOTIVATION
+--------------------------------------------------------------------
+
+G5-M01 attempted to repair sentence segmentation with a single
+regex change to documentNormalizer.ts:134:
+
+  Before: /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g
+  After:  /.+?(?:[.!?](?=\s|$)|$)/gs
+
+Result: 4/8 regression pass. The candidate handled numeric periods
+(10.1038, 99.4%) but not abbreviation periods (Dr., Prof., Vol.).
+The lookahead (?=\s|$) still matches when an abbreviation period
+is followed by a space. A regex cannot distinguish "abbreviation
+followed by space" from "sentence terminator followed by space"
+without external context.
+
+Conclusion: G5-M01 rejected. A single-regex approach cannot
+satisfy the contract. G5-M02 must use a two-capability design.
+
+--------------------------------------------------------------------
+2. CAPABILITIES REQUIRED
+--------------------------------------------------------------------
+
+Capability 1 - NUMERIC PERIOD PROTECTION
+  A period character is NOT a sentence terminator when:
+    (a) the character immediately before it is a digit
+    AND
+    (b) the character immediately after it is a digit
+        OR the character immediately after it is '%'
+  Examples that MUST be preserved as lexical content:
+    10.1038
+    99.4%
+    3.14
+  Note: constructs of the form x.5 (letter-period-digit) are
+  NOT protected by this capability. They are out of scope for
+  G5-M02. If a future migration needs them, they will be added
+  as G5-M03 members with their own acceptance cases.
+
+Capability 2 - PROTECTED ABBREVIATION PROTECTION
+  A period character is NOT a sentence terminator when the
+  token immediately before it (delimited by whitespace or
+  start-of-string) matches a member of the
+  PROTECTED_ABBREVIATIONS_V1 set, and the character immediately
+  after the period is whitespace or end-of-string.
+  The set is defined in Section 4.
+
+Capability 3 - SENTENCE TERMINATOR DETECTION
+  A period, exclamation mark, or question mark IS a sentence
+  terminator when:
+    (a) neither Capability 1 nor Capability 2 applies
+    AND
+    (b) the terminator is followed by whitespace
+        OR end-of-string
+        OR the end of a paragraph
+
+--------------------------------------------------------------------
+3. ARCHITECTURE
+--------------------------------------------------------------------
+
+Selected approach: TWO-PASS MASKING
+
+  Pass 1 - MASK
+    Replace every protected period (as defined by Capabilities
+    1 and 2) with the sentinel character U+E000.
+
+  Pass 2 - SEGMENT
+    Apply the existing sentence segmentation regex to the masked
+    text. The regex remains:
+      /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g
+    except that periods followed by U+E000 do not match as
+    terminators, because U+E000 is not in [.!?].
+
+  Pass 3 - UNMASK
+    Restore every U+E000 in each segment's text back to '.'.
+
+  Result: the segmenter sees a text where protected periods are
+  invisible to terminator detection. Sentence boundaries fall
+  only at genuine terminators.
+
+Sentinel choice:
+  U+E000 (Private Use Area, BMP). Not producible by any normal
+  text input. Must be validated as absent from the raw document
+  before masking; if present, ABORT (do not silently corrupt).
+
+Abort behavior on sentinel collision:
+  If U+E000 is present in the raw document, maskProtectedPeriods
+  throws an Error. The caller (segmentDocument) does not catch
+  it. The segmentation call fails loudly rather than silently
+  proceeding with unprotected boundaries.
+
+  Rationale: silent fallback hides a document-level integrity
+  failure. A document containing the Private Use Area sentinel
+  is not a normal input and should be rejected rather than
+  processed with degraded segmentation.
+
+Out of scope:
+  canonicalTextOffsetService.ts:127 uses a different regex
+  /[^.!?]+[.!?]*/g and produces 10 matches on SAMPLE_TEXT_A.
+  Unifying the two segmenters is a separate migration G5-M03.
+  G5-M02 touches documentNormalizer.ts ONLY.
+
+--------------------------------------------------------------------
+4. PROTECTED ABBREVIATIONS V1
+--------------------------------------------------------------------
+
+The following tokens, when immediately followed by a period and
+then whitespace or end-of-string, are protected. Case-insensitive.
+
+  Dr
+  Prof
+  Mr
+  Mrs
+  Ms
+  Vol
+  No
+  pp
+  ed
+  eds
+  cf
+  al
+  vs
+  i.e
+  e.g
+  et al
+  etc
+  Fig
+  Eqs
+  Eq
+  Sec
+  Secs
+  Ch
+  Chap
+  Pt
+  Inc
+  Ltd
+  Co
+  Corp
+  St
+  Jr
+  Sr
+
+Multi-token entries ("et al") are matched against the two tokens
+immediately preceding the period, joined by a single space.
+
+The set is declared as PROTECTED_ABBREVIATIONS_V1. Adding or
+removing members is a separate migration.
+
+--------------------------------------------------------------------
+5. ACCEPTANCE MATRIX
+--------------------------------------------------------------------
+
+Legacy cases (must all pass; unchanged from G5-M01):
+
+  L1. preserves DOI decimal punctuation
+       "The DOI is 10.1038/s41586-023-00001-x." -> 1 sentence
+  L2. preserves percentage decimal punctuation
+       "The model achieves 99.4% accuracy." -> 1 sentence
+  L3. does not treat Dr. as a sentence boundary
+       "By Dr. Aris Thorne. He published." -> 2 sentences
+  L4. does not treat Prof. as a sentence boundary
+       "By Prof. Elena Rostova. She published." -> 2 sentences
+  L5. does not treat Vol. as a sentence boundary
+       "Published in Vol. 14. The journal is authoritative."
+       -> 2 sentences
+  L6. recognizes normal sentence endings
+       "This is one. This is two." -> 2 sentences
+  L7. preserves all canonical tokens in the forensic fixture
+       SAMPLE_TEXT_A -> sentence-token sum == 91 == canonical
+  L8. preserves decimal and DOI regions as lexical content
+       "Journal of Science, Vol. 14, DOI: 10.1038/..." -> 1 sentence
+
+Expanded cases (new in G5-M02):
+
+  E1.  multiple punctuation
+       "Wait!!! Are you serious?" -> 2 sentences
+  E2.  question mark terminator
+       "Is this a question?" -> 1 sentence
+  E3.  exclamation terminator
+       "This is an exclamation!" -> 1 sentence
+  E4.  newline boundary
+       "First sentence.\nSecond sentence." -> 2 sentences
+  E5.  paragraph boundary
+       "First paragraph.\n\nSecond paragraph." -> 2 sentences
+  E6.  Dr. at start, continuation
+       "Dr. Aris Thorne published the paper." -> 1 sentence
+  E7.  mixed Dr., Prof., Vol. sequence
+       "Dr. Thorne, Prof. Rostova, Vol. 14, all agree."
+       -> 1 sentence
+  E8.  decimal with unit suffix
+       "The result was 99.4% accuracy." -> 1 sentence
+  E9.  DOI with trailing period at end
+       "See DOI: 10.1038/s41586-023-00001-x." -> 1 sentence
+  E10. abbreviation at end-of-document
+       "Published by Prof." -> 1 sentence (no trailing space)
+
+All 8 legacy + 10 expanded = 18 cases must pass 100%.
+
+--------------------------------------------------------------------
+6. CERTIFICATION CRITERIA
+--------------------------------------------------------------------
+
+G5-M02 is CERTIFIED when ALL of the following hold:
+
+  C1. Legacy matrix L1-L8: 8/8 PASS
+  C2. Expanded matrix E1-E10: 10/10 PASS
+  C3. G5 deterministic suite:
+      npx vitest run tests/deterministicSimilarityEvidence.test.ts
+      -> 1 passed (1)
+  C4. SAMPLE_TEXT_A:
+      canonical tokens       = 91
+      mapped tokens          = 91
+      missing indices        = 0
+      duplicate indices      = 0
+      out-of-range indices   = 0
+  C5. G5 baseline values UNCHANGED for unrelated fixture:
+      resUnrelated.overallSimilarity  = 0
+      resPartial.overallSimilarity    = 54.9
+      resPartial firstFinding.matchMethod = TOKEN_OVERLAP
+      (resIdentical will change from 84.6 to 100.0 because the
+       fixed segmenter will now capture all 91 tokens; this is
+       expected and is documented as a Phase 3 consequence.)
+  C6. git diff is confined to:
+      src/services/verify/documentNormalizer.ts
+      tests/g2-punctuation-classification.temp.test.ts
+      (test expanded for E1-E10)
+  C7. No other production file is modified.
+  C8. No scoring formula is modified.
+  C9. No test expectation from L1-L8 is modified.
+
+--------------------------------------------------------------------
+7. IMPLEMENTATION SEQUENCE (HOEOS)
+--------------------------------------------------------------------
+
+  7.1  Write and review this specification. (current step)
+  7.2  Capture BEFORE state:
+         git rev-parse HEAD
+         git rev-parse documentNormalizer.ts
+         run legacy matrix L1-L8, capture pass/fail
+  7.3  Expand test to E1-E10 as ADDITIVE cases.
+  7.4  Run expanded matrix against UNMODIFIED production code.
+       All E1-E10 are expected to FAIL initially (they define
+       the target state).
+  7.5  Implement the two-pass masking in documentNormalizer.ts.
+  7.6  Run legacy matrix L1-L8. Must be 8/8.
+  7.7  Run expanded matrix E1-E10. Must be 10/10.
+  7.8  Run G5 deterministic suite. Must be 1/1.
+  7.9  Verify SAMPLE_TEXT_A: 91/91, 0 missing, 0 duplicate,
+       0 out-of-range.
+  7.10 Verify G5 baseline values for unrelated/partial cases.
+       The identical case is expected to change to 100.0.
+  7.11 Inspect git diff. Confirm only the two files from C6.
+  7.12 Commit with message:
+         "fix(segmentation): G5-M02 two-pass protected-period masking
+          - L1-L8 legacy matrix: 8/8 PASS
+          - E1-E10 expanded matrix: 10/10 PASS
+          - G5 deterministic suite: 1/1 PASS
+          - SAMPLE_TEXT_A: 91/91 coverage, 0 missing"
+  7.13 Push to clean-deploy.
+  7.14 Update Phase 1 record with the new baseline
+       (resIdentical: 84.6 -> 100.0) and mark G5-M02 CERTIFIED.
+
+If any step from 7.6 onward fails, revert with:
+  git checkout -- src/services/verify/documentNormalizer.ts
+  git checkout -- tests/g2-punctuation-classification.temp.test.ts
+and record the failure as G5-M02 REJECTED.
+
+--------------------------------------------------------------------
+8. REVERSIBILITY
+--------------------------------------------------------------------
+
+Single-file change plus test expansion. Revert is a two-command
+git checkout. No database migration. No API contract change.
+No scoring engine change.
+
+--------------------------------------------------------------------
+9. OUT OF SCOPE
+--------------------------------------------------------------------
+
+The following are explicitly NOT part of G5-M02:
+
+  - canonicalTextOffsetService.ts:127 (segmenter unification,
+    deferred to G5-M03)
+  - deterministicEngine.ts (scoring formula, frozen)
+  - verifyCoreService.ts (contract, frozen)
+  - types.ts (interface definitions, frozen)
+  - Any test file other than the punctuation-classification
+    temp test
+  - The segmentation V2 candidate regex from G5-M01 (superseded)
+  - Constructs of the form x.5 (letter-period-digit); see
+    Section 2 Capability 1 note
+
+--------------------------------------------------------------------
+10. FROZEN ON SUCCESS
+--------------------------------------------------------------------
+
+Once all C1-C9 hold and the commit is pushed:
+  - documentNormalizer.ts is frozen at the G5-M02 state.
+  - The PROTECTED_ABBREVIATIONS_V1 set is frozen.
+  - The two-pass masking architecture is frozen.
+  - Any further segmentation change requires a new migration ID.
+
+--------------------------------------------------------------------
+END OF G5-M02 SPECIFICATION
+

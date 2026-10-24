@@ -1,0 +1,26 @@
+﻿MIGRATION VS LIVE DATABASE STATE COMPARISON
+===========================================
+Target Project Ref: ehkmfnaqkdgkjmdxxbwj (Gradifi SSOT)
+Timestamp:          2026-10-16T04:09:55+01:00
+
+MIGRATION IN REPOSITORY:
+  File: supabase/migrations/2026091200_public_verification_records.sql
+  Declared Policies:
+    1. 'Public Verification Record Select Policy' (FOR SELECT TO anon, authenticated USING (true))
+    2. 'Authenticated Verification Record Insert Policy' (FOR INSERT TO authenticated, service_role WITH CHECK (true))
+
+LIVE REMOTE DATABASE (pg_policies):
+  1. 'Public Verification Record Select Policy' (FOR SELECT TO anon, authenticated USING (true))
+  [MISSING ON REMOTE] 'Authenticated Verification Record Insert Policy' DOES NOT EXIST ON REMOTE DATABASE.
+
+REMOTE MIGRATION HISTORY (supabase migration list):
+  Local migrations matched on remote:
+    - 20260819, 2026082101, 2026082102, 2026082103, 2026082104, 2026082105, 2026082106, 2026091200
+  Remote-only migration:
+    - 20261004073941 (Recorded at 2026-10-04 07:39:41)
+
+CONCLUSION:
+  The declared migration file in the repository diverged from the live database.
+  On the live database, direct INSERT by authenticated users is NOT permitted by RLS.
+  Only service_role (via BYPASSRLS) can insert records.
+  Anonymous key fallback in server handler (if triggered) fails closed on live database with RLS error.

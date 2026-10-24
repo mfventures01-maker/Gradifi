@@ -1,0 +1,234 @@
+import { test, expect } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+
+test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
+  test('executes real verification UI with Golden DOCX and verifies DOM <mark> elements', async ({ page }) => {
+    test.setTimeout(90000);
+
+    const consoleLogs: string[] = [];
+    const networkFailures: string[] = [];
+
+    page.on('console', msg => {
+      consoleLogs.push(`[${msg.type()}] ${msg.text()}`);
+    });
+
+    page.on('requestfailed', req => {
+      networkFailures.push(`FAILED: ${req.method()} ${req.url()} - ${req.failure()?.errorText}`);
+    });
+
+    // 1. Navigate to verification route
+    await page.goto('/verify');
+    await page.waitForLoadState('networkidle');
+
+    // 2. Click "Pre-load Demo Document" or upload Golden DOCX
+    const preloadBtn = page.locator('button:has-text("Pre-load Demo Document")');
+    await expect(preloadBtn).toBeVisible();
+    await preloadBtn.click();
+
+    // Verify document text container is populated
+    const textarea = page.locator('textarea[placeholder*="Paste academic paper"]');
+    await expect(textarea).toBeVisible();
+    const documentText = await textarea.inputValue();
+    expect(documentText.length).toBeGreaterThan(50);
+    expect(documentText).toContain('Quantum Entanglement');
+
+    // 3. Click "Run Academic Evidence Verification"
+    const checkBtn = page.locator('button:has-text("Run Academic Evidence Verification")');
+    await expect(checkBtn).toBeEnabled();
+    await checkBtn.click();
+
+    // 4. Wait for analysis result and Canonical Document Viewer to appear
+    await page.waitForSelector('text=Canonical Document Evidence Payload', { timeout: 60000 });
+
+    // Verify Human Academic Review Boundary disclaimer is present
+    await expect(page.locator('text=Human Academic Review Boundary')).toBeVisible();
+
+    // Ensure forbidden verdict words are absent from viewer section
+    const viewerSection = page.locator('text=Canonical Document Evidence Payload').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]');
+    const viewerHtml = await viewerSection.innerHTML();
+    expect(viewerHtml).not.toContain('PLAGIARIZED');
+    expect(viewerHtml).not.toContain('GUILTY');
+    expect(viewerHtml).not.toContain('PROVEN PLAGIARISM');
+
+    // 5. Assert mark elements rendered inside Canonical Document Viewer in DOM
+    const viewerContainer = page.locator('[data-testid="canonical-document-viewer"]');
+    await expect(viewerContainer).toBeVisible();
+
+    const markElements = viewerContainer.locator('mark[data-finding-id]');
+    const markCount = await markElements.count();
+    console.log(`G4_BROWSER_MARK_COUNT: ${markCount}`);
+    expect(markCount).toBeGreaterThan(0);
+
+    // 6. Obtain authoritative verification result from browser runtime
+    const authResult = await page.evaluate(() => (window as any).__GRADIFI_VERIFY_RESULT__);
+    expect(authResult).toBeTruthy();
+
+    // Authoritative verification boundary check: Must fail closed if canonicalDocument or rawText is missing
+    expect(authResult.canonicalDocument).toBeDefined();
+    expect(authResult.canonicalDocument?.rawText).toBeDefined();
+    expect(typeof authResult.canonicalDocument?.rawText).toBe('string');
+    expect(authResult.canonicalDocument.rawText.length).toBeGreaterThan(0);
+    const canonicalText: string = authResult.canonicalDocument.rawText;
+
+    const authFindings: any[] = authResult?.similarityAnalysis?.findings || [];
+    const authSources: any[] = authResult?.verifiedSources || [];
+
+    const findingMap = new Map<string, any>();
+    for (const f of authFindings) {
+      if (f?.findingId) findingMap.set(f.findingId, f);
+    }
+
+    const sourceMap = new Map<string, any>();
+    for (const s of authSources) {
+      if (s?.sourceId) sourceMap.set(s.sourceId, s);
+    }
+
+    // 7. Rigorous Exact Canonical Offset & Identity Assertions for Every Rendered Mark
+    let allOffsetsVerified = true;
+    let allExactMatches = true;
+    let allIdentitiesVerified = true;
+    const verifiedDetails: Array<{
+      index: number;
+      findingId: string;
+      sourceId: string;
+      start: number;
+      end: number;
+      markText: string;
+      expectedSlice: string;
+      sourceTitle: string;
+    }> = [];
+
+    for (let i = 0; i < markCount; i++) {
+      const mark = markElements.nth(i);
+      const textSpan = mark.locator('[data-highlight-text]');
+      const markText = (await textSpan.count()) > 0
+        ? ((await textSpan.textContent()) || '')
+        : ((await mark.evaluate((el: any) => Array.from(el.childNodes).filter((n: any) => n.nodeType === 3).map((n: any) => n.textContent).join(''))) || '');
+      const findingId = await mark.getAttribute('data-finding-id');
+      const sourceId = await mark.getAttribute('data-source-id');
+      const startOffsetAttr = await mark.getAttribute('data-start-offset');
+      const endOffsetAttr = await mark.getAttribute('data-end-offset');
+
+      expect(markText.length).toBeGreaterThan(0);
+      expect(findingId).toBeTruthy();
+      expect(sourceId).toBeTruthy();
+      expect(startOffsetAttr).toBeTruthy();
+      expect(endOffsetAttr).toBeTruthy();
+
+      const start = parseInt(startOffsetAttr!, 10);
+      const end = parseInt(endOffsetAttr!, 10);
+
+      // Check offset convention: 0-based indexing, slice(start, end)
+      expect(start).toBeGreaterThanOrEqual(0);
+      expect(end).toBeGreaterThan(start);
+      expect(end).toBeLessThanOrEqual(canonicalText.length);
+
+      // Exact canonical text slice calculation
+      const expectedSlice = canonicalText.slice(start, end);
+      expect(markText).toBe(expectedSlice);
+
+      if (markText !== expectedSlice) {
+        allExactMatches = false;
+      }
+
+      // Finding & source identity binding verification
+      const authFinding = findingMap.get(findingId!);
+      expect(authFinding).toBeDefined();
+      expect(authFinding.matchedDocumentId).toBe(sourceId);
+
+      const authSource = sourceMap.get(sourceId!);
+      expect(authSource).toBeDefined();
+      expect(authSource.provenance?.provenanceState).toBe('VERIFIED');
+
+      if (!authFinding || authFinding.matchedDocumentId !== sourceId || !authSource) {
+        allIdentitiesVerified = false;
+      }
+
+      verifiedDetails.push({
+        index: i,
+        findingId: findingId!,
+        sourceId: sourceId!,
+        start,
+        end,
+        markText,
+        expectedSlice,
+        sourceTitle: authSource?.title || 'Unknown Source'
+      });
+    }
+
+    const primaryMark = verifiedDetails[0];
+    console.log(`G4_PRIMARY_MARK_TEXT: "${primaryMark.markText}"`);
+    console.log(`G4_PRIMARY_SOURCE_ID: ${primaryMark.sourceId}`);
+    console.log(`G4_PRIMARY_FINDING_ID: ${primaryMark.findingId}`);
+    console.log(`G4_PRIMARY_OFFSETS: [${primaryMark.start}, ${primaryMark.end}]`);
+
+    // 8. Capture screenshot artifact
+    const evidenceDir = process.env.HOEOS_G4_EVIDENCE_DIR || path.join(process.cwd(), 'tests', 'hoeos', 'four_gates', 'evidence');
+    const screenshotDir = path.join(evidenceDir, 'g4');
+    fs.mkdirSync(screenshotDir, { recursive: true });
+    const screenshotPath = path.join(screenshotDir, 'g4_browser_highlight.png');
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    console.log(`G4_SCREENSHOT_SAVED: ${screenshotPath}`);
+
+    // 9. Record honest console, network, and assertion evidence derived from real execution
+    fs.mkdirSync(evidenceDir, { recursive: true });
+
+    const relScreenshot = path.relative(process.cwd(), screenshotPath).replace(/\\/g, '/');
+
+    const markAssertionsContent = [
+      `MARK_COUNT: ${markCount}`,
+      `PRIMARY_MARK_TEXT: "${primaryMark.markText}"`,
+      `SOURCE_ID: ${primaryMark.sourceId}`,
+      `FINDING_ID: ${primaryMark.findingId}`,
+      `START_OFFSET: ${primaryMark.start}`,
+      `END_OFFSET: ${primaryMark.end}`,
+      `ALL_OFFSETS_VERIFIED: ${allOffsetsVerified}`,
+      `ALL_EXACT_MATCHES: ${allExactMatches}`,
+      `ALL_IDENTITIES_VERIFIED: ${allIdentitiesVerified}`,
+      `VERDICT: ${allOffsetsVerified && allExactMatches && allIdentitiesVerified ? 'PASS' : 'FAIL'}`
+    ].join('\n') + '\n';
+    fs.writeFileSync(path.join(evidenceDir, 'G4_MARK_ASSERTIONS.txt'), markAssertionsContent);
+
+    const canonicalIdentityContent = [
+      `CANONICAL_TEXT_LENGTH: ${canonicalText.length}`,
+      `PRIMARY_MARK_TEXT: "${primaryMark.markText}"`,
+      `EXPECTED_CANONICAL_SLICE: "${primaryMark.expectedSlice}"`,
+      `MATCH_EXACT: ${allExactMatches}`,
+      `OFFSETS_INVARIANT: ${allOffsetsVerified}`,
+      `AUTHORITATIVE_IDENTITY_VERDICT: ${allIdentitiesVerified && allExactMatches ? 'PASS' : 'FAIL'}`,
+      `VERIFIED_HIGHLIGHTS_DETAIL:`,
+      JSON.stringify(verifiedDetails, null, 2)
+    ].join('\n') + '\n';
+    fs.writeFileSync(path.join(evidenceDir, 'G4_CANONICAL_IDENTITY.txt'), canonicalIdentityContent);
+
+    fs.writeFileSync(
+      path.join(evidenceDir, 'G4_NETWORK_CONSOLE.txt'),
+      `CONSOLE_LOGS_COUNT: ${consoleLogs.length}\nNETWORK_FAILURES_COUNT: ${networkFailures.length}\n\nCONSOLE_LOGS:\n${consoleLogs.join('\n')}\n\nNETWORK_FAILURES:\n${networkFailures.join('\n')}\n`
+    );
+
+    fs.writeFileSync(
+      path.join(evidenceDir, 'G4_BROWSER_RUNTIME.txt'),
+      `PLAYWRIGHT_E2E_STATUS: ${allOffsetsVerified && allExactMatches && allIdentitiesVerified ? 'PASS' : 'FAIL'}\nMARK_COUNT: ${markCount}\nSCREENSHOT_PATH: ${relScreenshot}\n`
+    );
+
+    fs.writeFileSync(
+      path.join(evidenceDir, 'G4_RESULT.json'),
+      JSON.stringify({
+        status: allOffsetsVerified && allExactMatches && allIdentitiesVerified ? 'PASS' : 'FAIL',
+        realBrowser: true,
+        markCount,
+        primaryMarkText: primaryMark.markText,
+        sourceId: primaryMark.sourceId,
+        findingId: primaryMark.findingId,
+        startOffset: primaryMark.start,
+        endOffset: primaryMark.end,
+        authoritativeTextMatch: allExactMatches,
+        offsetInvariant: allOffsetsVerified,
+        identityBound: allIdentitiesVerified,
+        verifiedHighlights: verifiedDetails,
+        screenshotPath: relScreenshot
+      }, null, 2)
+    );
+  });
+});

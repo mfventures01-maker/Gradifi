@@ -1,0 +1,136 @@
+================================================================
+HOEOS ARCHITECTURE PROPOSAL — PERSISTENT & PREDICTABLE ENGINES
+Ingestion + Verification Pipeline Redesign
+================================================================
+Proposal ID: HOEOS-ARCH-PROPOSAL-2026-09-25
+Status:      PROPOSED
+Scope:       Production Architecture for Gradifi Ingestion & Verification
+
+[1] ARCHITECTURAL GOALS & MANDATORY PROPERTIES
+
+  P1. PERSISTENT:
+      The verification API must be reachable from both development (localhost)
+      and production (Vercel / domain) via the exact same interface and route structure.
+      Route availability must NEVER depend on whether a development server (Vite dev)
+      is running.
+
+  P2. PREDICTABLE (DETERMINISTIC):
+      Given identical input bytes and identical engine version, the pipeline MUST produce
+      identically hashed document representations, identical provider query sets, and
+      identical verification records. The document hash serves as the primary key.
+
+  P3. OBSERVABLE:
+      Every execution stage (INGEST -> EXTRACT -> NORMALIZE -> VERIFY -> FEDERATE -> PERSIST)
+      writes structured, append-only durable log records. Each stage output is independently
+      checkable without process memory inspection.
+
+  P4. INDEPENDENTLY VERIFIABLE:
+      A reviewer without access to the running backend process can re-run verification from
+      the stored document hash, engine version, and raw stored provider envelopes to confirm
+      the exact audit receipt.
+
+[2] COUNTEREXAMPLE: CURRENT ARCHITECTURE DEFECTS
+
+  - API Server Topology:
+    - Current: Hosted inside Vite dev-server middleware (`verifyServerPlugin.ts`).
+    - Consequence: Production build (`vite build`) excludes server middleware, causing
+      HTTP 405 Method Not Allowed on all `/api/verify/*` endpoints in Vercel.
+
+  - Ingestion Engine:
+    - Current: Hand-written naive PKZIP byte scanner (`officeZipAdapter.ts`).
+    - Consequence: Standard OOXML DOCX files written with streaming Data Descriptors
+      (flag 0x08) yield `compSize = 0` in local headers, causing total extraction failure
+      and false rejection.
+
+  - Determinism & Persistence:
+    - Current: `verification_id` generated via wall-clock or random hex (`VRF-XXXXXXXXXXXX`).
+    - Consequence: Re-uploading the exact same document generates distinct verification IDs
+      and duplicate database rows without content-addressable deduplication.
+
+  - Observability:
+    - Current: Ad-hoc `console.log` / `console.warn` statements.
+    - Consequence: Non-durable, ephemeral logging lost upon container restart; impossible
+      to independently audit historical runs.
+
+[3] SERVER TOPOLOGY OPTIONS EVALUATION
+
+  Option (a): Dedicated Backend Server (Node.js/Express or Fastify on Render/Fly.io/Railway)
+    - Pros: Same code path everywhere, persistent connections, background queue support,
+      no serverless execution timeouts.
+    - Cons: Additional infrastructure cost, separate deployment management, requires CORS
+      configuration for Vercel frontend.
+
+  Option (b): Vercel Serverless Functions (`api/verify/*.ts`) [RECOMMENDED]
+    - Pros: Built into Vercel platform; zero additional infrastructure cost; identical
+      deployment target as frontend; automatic scaling; server-side environment secrets;
+      eliminates dev/prod route drift.
+    - Cons: 15-60s serverless timeout per request (must ensure provider requests execute
+      with strict timeouts or streaming).
+
+  Option (c): Cloudflare Workers + KV Store
+    - Pros: Ultra-low latency at edge, low execution cost.
+    - Cons: Non-Node.js runtime environment (V8 isolate), requiring rewrites of Node zlib/buffer
+      dependencies and Supabase SDK bindings.
+
+  RECOMMENDATION: Option (b) — Vercel Serverless Functions (`api/verify/*.ts`).
+  Reasoning: Offers 100% alignment with current Vercel hosting, zero operational cost increase,
+  instant elimination of 405 errors, and full access to Node.js standard libraries (`node:zlib`,
+  `crypto`) required by ingestion and verification handlers.
+
+[4] DETAILED ARCHITECTURAL SPECIFICATION
+
+  4.1 Ingestion Contract Spec
+      - All ingestion adapters MUST implement pure functions of input bytes -> result:
+        `extract(input: Uint8Array, options?: IngestionOptions): Promise<AdapterExtractionResult>`
+      - Adapters must NOT read environment variables or perform network calls.
+      - Standard library replacement for ZIP parsing: Use `fflate` (lightweight, zero-dep,
+        supports streaming Data Descriptors & Central Directory parsing).
+      - Strict Fixture Testing:
+        - Fuzz fixtures: Valid DOCX, ODT, EPUB, PPTX, XLSX with/without flag 0x08.
+        - Negative fixtures: Password-protected ZIPs, corrupt headers, empty archives.
+
+  4.2 Deterministic Ingestion & Hashing Contract
+      - Canonical Document Hash:
+        `document_hash = SHA256(normalized_utf8_text_content)`
+      - Verification Record Keying:
+        `verification_id = "VRF-" + document_hash.substring(0, 12).toUpperCase()`
+      - Monotonic/Stable ID Guarantee:
+        Re-uploading the same document yields the exact same `document_hash` and `verification_id`.
+
+  4.3 Persistence Schema (`public_verification_records`)
+      - `verification_id`: string (PK, derived from `document_hash`)
+      - `document_hash`: string (indexed, SHA-256)
+      - `engine_version`: string (e.g., "G5.7-PROD-2026.1")
+      - `policy_version`: string (e.g., "POL-2026-v1")
+      - `provider_envelope`: jsonb (map of providerId -> { status, matches, latencyMs })
+      - `deterministic_findings`: jsonb (array of structured passage matches)
+      - `ai_findings`: jsonb (tagged with modelProvider: "gemini" | "nemotron" | "gemma")
+      - `created_at`: timestamptz
+      - Write Policy: Idempotent `UPSERT` on `document_hash` + `engine_version`.
+
+  4.4 Observability & Structured Durable Log Format
+      - Append-only structured log lines emitted to stdout/logging backend:
+        `[INGEST] doc_hash=<sha256> status=<OK|FAIL> bytes=<n> method=<name>`
+        `[VERIFY] doc_hash=<sha256> engine=<version> query_count=<n>`
+        `[FEDERATE] doc_hash=<sha256> provider=<name> matches=<n> latency_ms=<n>`
+        `[PERSIST] doc_hash=<sha256> record_id=<vrf_id> action=<CREATED|DEDUPLICATED>`
+
+  4.5 Failure Isolation Rules
+      - Federation Failure Isolation: A provider timeout or network error populates `status: "ERROR"`
+        in that provider's envelope; the remaining 4 providers complete normally.
+      - AI Reasoning Failure Isolation: Gemini/Nemotron runtime unavailability is logged under
+        `ai_findings`, never blocking deterministic claim verification.
+      - Ingestion Failure Isolation: File parse failures write a structured rejection log
+        `[REJECT]` with input byte hash, never creating corrupt verification rows.
+
+  4.6 Deployment Parity & Startup Self-Test Spec
+      - Vercel functions placed in `api/verify/core.ts`, `api/verify/gemini.ts`, etc.
+      - Vite dev config updated with proxy or local function loader pointing to `api/verify/*`
+        so local dev and Vercel execution hit identical handler functions.
+      - Automated Deploy Probe: A deployment self-test script (`scripts/probe_deploy.ts`) runs
+        post-deployment, issuing synthetic POST requests to all `/api/verify/*` endpoints.
+        If any route returns non-2xx (or 405), the build pipeline fails automatically.
+
+================================================================
+END ARCHITECTURE PROPOSAL
+================================================================

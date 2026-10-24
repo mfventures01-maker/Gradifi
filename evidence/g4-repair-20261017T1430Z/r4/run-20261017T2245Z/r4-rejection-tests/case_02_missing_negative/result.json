@@ -1,0 +1,48 @@
+﻿{
+    "finalizer":  "scratch/finalize_g4_evidence_r4.ps1",
+    "version":  "R4.2",
+    "evaluationTimestamp":  "2026-10-17T23:50:44.5049165+01:00",
+    "evidenceDirectory":  "evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\case_02_missing_negative",
+    "terminalStatus":  "BLOCKED",
+    "precedenceRank":  1,
+    "exitCode":  2,
+    "statusExplanation":  "Prerequisites or artifacts missing/malformed: Missing negative browser results artifact: evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\case_02_missing_negative\\g4-negative-browser-results.json",
+    "allConditions":  {
+                          "blocked":  [
+                                          "Missing negative browser results artifact: evidence\\g4-repair-20261017T1430Z\\r4\\run-20261017T2245Z\\r4-rejection-tests\\case_02_missing_negative\\g4-negative-browser-results.json"
+                                      ],
+                          "notRun":  [
+
+                                     ],
+                          "failed":  [
+
+                                     ]
+                      },
+    "positiveEvaluation":  {
+                               "passed":  false,
+                               "markCount":  2,
+                               "screenshotExists":  true,
+                               "primaryHighlight":  {
+                                                        "findingId":  "finding-g4-quantum-001",
+                                                        "sourceId":  "src-crossref-10.1038-001",
+                                                        "start":  0,
+                                                        "end":  85,
+                                                        "markText":  "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+                                                        "expectedSlice":  "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks",
+                                                        "offsetInvariantPassed":  true,
+                                                        "textMatchPassed":  true,
+                                                        "identityBoundPassed":  true,
+                                                        "canonicalMatchPassed":  true
+                                                    }
+                           },
+    "negativeEvaluation":  {
+                               "passed":  false,
+                               "screenshotExists":  false,
+                               "details":  null
+                           },
+    "g4CertificationBoundary":  {
+                                    "finalizerResult":  "BLOCKED",
+                                    "g4VerificationEngineCertification":  "NOT CERTIFIED",
+                                    "certificationNotice":  "G4 verification-engine certification remains NOT CERTIFIED pending independent execution without injected result fixtures (seam hooks)."
+                                }
+}

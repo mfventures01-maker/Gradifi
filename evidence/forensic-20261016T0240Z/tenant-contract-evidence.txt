@@ -1,0 +1,24 @@
+﻿TENANT CONTRACT EVIDENCE ANALYSIS
+=================================
+Timestamp: 2026-10-16T04:13:06+01:00
+
+1. SEARCH FOR TENANT SPECIFICATIONS:
+   - Searched codebase for 'tenant', 'institution', and 'tenant_id' in src/services/verify/, api/, and docs/.
+   - Result: ZERO architectural or requirements specifications defining a tenant boundary for public verification records.
+
+2. EXISTING SCHEMA CONTRACT:
+   - Table: public.public_verification_records
+   - Columns: id, verification_id, document_hash, evidence_hash, engine_version, policy_version, overall_similarity, total_sources_found, evidence_envelope, created_at.
+   - Ownership / Tenant Fields: NONE.
+   - Table is globally un-scoped and partitioned purely by unique verification_id.
+
+3. ROUTING & ACCESS PATTERNS:
+   - Public Route: /verify/:verificationId
+   - Accessible anonymously without authentication or institutional session.
+   - Designed to display verification receipts from QR code scans.
+
+4. CURRENT BEHAVIOR:
+   - Single global notary model. Anyone possessing a verification_id can resolve the public record.
+
+5. STATUS:
+   CONTRACT GAP: TENANT MODEL NOT SPECIFIED

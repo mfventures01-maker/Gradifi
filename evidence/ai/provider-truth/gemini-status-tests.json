@@ -1,0 +1,144 @@
+[
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-01",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "da98340fef4cedac4900489f2af22c35b9ed942a4aa239ac9c363918e2f78963",
+    "status": "VERIFIED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini valid finding produces VERIFIED status with modelProvider=gemini and fallback_used=false",
+    "details": {
+      "findingsCount": 1,
+      "modelProvider": "gemini"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-02",
+    "input_hash": "3ca248b84d7ecfb3534125ee7871fef888b137ea1664c53e2112e2167be368de",
+    "output_hash": "40db3985f1671ed1cb41cbf0a2cbb37ad71381a48fbeeef04d8354df12ebd022",
+    "status": "EMPTY_RESULT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini valid [] produces EMPTY_RESULT with findings=[] and fallback_used=false",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-03",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "cd2ded9dd7336c5480d9b561426f746032598a3579dfcb01270f56013c77c710",
+    "status": "INFERENCE_FAILED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini malformed JSON produces INFERENCE_FAILED",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "Gemini response could not be parsed as JSON"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-04",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "dcbc6b5a5e61af523cd67ffd6c20864b76f16edfd3c1e3573e89863457e71a9e",
+    "status": "SCHEMA_INVALID",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini invalid finding schema produces SCHEMA_INVALID",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "Gemini response contained no structurally valid findings matching schema"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-05",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "9650393f247a825fe6694fd16e96f56153fc6afd58c35252d9c25d31e356fb91",
+    "status": "AUTHENTICATION_FAILED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini 401/403 produces AUTHENTICATION_FAILED",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "PERMISSION_DENIED: Caller does not have required permission"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-06",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "014f893c02c2dfbb1080bf75146111310ace3e18c41a5cd9f60a9a1b8adbf3a1",
+    "status": "TIMEOUT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini timeout event produces TIMEOUT",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "Request timed out after 30000ms"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-07",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "fcf0c88a204a552949d1fcd7bceef26039379705dbbb90d23ba3109238a3adf9",
+    "status": "NETWORK_ERROR",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini network failure produces NETWORK_ERROR",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "fetch failed: ECONNREFUSED"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-08",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "f61f4e45ca702cf97f01459ee12c49a5bf598a7b1e146522f71ec3dffdc3dc6f",
+    "status": "RUNTIME_UNAVAILABLE",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini 429/503 produces RUNTIME_UNAVAILABLE",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "RESOURCE_EXHAUSTED: 429 Rate limit exceeded"
+    }
+  }
+]

@@ -1,0 +1,33 @@
+﻿2026-10-17T20:54:06Z | === HOEOS R3 CONTROLLED PRODUCTION-PREVIEW RUNNER ===
+2026-10-17T20:54:06Z | Run Directory: evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z
+2026-10-17T20:54:06Z | Evidence Directory: evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview
+2026-10-17T20:54:11Z | Port 4173 is clean.
+2026-10-17T20:54:11Z | HOEOS_EVIDENCE_DIR=C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview
+2026-10-17T20:54:11Z | TARGET_ROUTE=/tools/plagiarism
+2026-10-17T20:54:11Z | VITE_ENABLE_TEST_SEAM=true
+2026-10-17T20:54:11Z | Playwright config: playwright.localprod.config.ts (56DE675F3B13FB34695D82481CF1A3930D88F6CD753FEE6C402F084FA4594365)
+2026-10-17T20:54:11Z | Executing Playwright against local production preview...
+2026-10-17T20:57:20Z | Playwright completed in 188.61s with exit code: 1
+2026-10-17T20:57:20Z | PLAYWRIGHT FAILED with exit code 1. Log tail:
+2026-10-17T21:08:27Z | === HOEOS R3 CONTROLLED PRODUCTION-PREVIEW RUNNER ===
+2026-10-17T21:08:28Z | Run Directory: evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z
+2026-10-17T21:08:28Z | Evidence Directory: evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview
+2026-10-17T21:08:30Z | Port 4173 is clean.
+2026-10-17T21:08:30Z | HOEOS_EVIDENCE_DIR=C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview
+2026-10-17T21:08:30Z | TARGET_ROUTE=/tools/plagiarism
+2026-10-17T21:08:30Z | VITE_ENABLE_TEST_SEAM=true
+2026-10-17T21:08:30Z | Playwright config: playwright.localprod.config.ts (56DE675F3B13FB34695D82481CF1A3930D88F6CD753FEE6C402F084FA4594365)
+2026-10-17T21:08:30Z | Executing Playwright against local production preview...
+2026-10-17T21:08:49Z | Playwright completed in 18.81s with exit code: 1
+2026-10-17T21:08:49Z | PLAYWRIGHT FAILED with exit code 1. Log tail:
+2026-10-17T21:12:41Z | === HOEOS R3 CONTROLLED PRODUCTION-PREVIEW RUNNER ===
+2026-10-17T21:12:41Z | Run Directory: evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z
+2026-10-17T21:12:41Z | Evidence Directory: evidence/g4-repair-20261017T1430Z/r3/run-20261017T2040Z/production-preview
+2026-10-17T21:12:42Z | Port 4173 is clean.
+2026-10-17T21:12:42Z | HOEOS_EVIDENCE_DIR=C:\Projects\Gradifi\evidence\g4-repair-20261017T1430Z\r3\run-20261017T2040Z\production-preview
+2026-10-17T21:12:42Z | TARGET_ROUTE=/tools/plagiarism
+2026-10-17T21:12:42Z | VITE_ENABLE_TEST_SEAM=true
+2026-10-17T21:12:43Z | Playwright config: playwright.localprod.config.ts (56DE675F3B13FB34695D82481CF1A3930D88F6CD753FEE6C402F084FA4594365)
+2026-10-17T21:12:43Z | Executing Playwright against local production preview...
+2026-10-17T21:14:15Z | Playwright completed in 92.44s with exit code: 0
+2026-10-17T21:14:15Z | === R3 PRODUCTION-PREVIEW EXECUTION COMPLETE: PASS ===

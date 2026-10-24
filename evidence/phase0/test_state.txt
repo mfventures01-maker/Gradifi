@@ -1,0 +1,1004 @@
+﻿PHASE 0 — TEST STATE
+Date: 2026-10-06 11:20:40
+
+The following test suites are captured in their pre-G1 state.
+Results are recorded verbatim. Do not modify.
+
+=== G2 REGRESSION MATRIX ===
+node.exe : ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å Supabase... fallback mode.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γùç injected env (19) from .env.local // tip: Γîÿ override existing { override: true }
+Γùç injected env (0) from .env // tip: Γîÿ suppress logs { quiet: true }
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default 
+in a future major version of Vite:
+  - `__dirname` (vite.config.ts:18:27). Use `import.meta.dirname` instead
+  - import "./src/services/verify/server/verifyServerPlugin" without a file extension (vite.config.ts:5:34). Add the file 
+extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[2m11:21:46 AM[22m [33m[1m[vite][22m[39m [33mwarning: `esbuild` option was specified by "vite:react-babel" plugin. This 
+option is deprecated, please use `oxc` instead.[39m
+[2m11:21:46 AM[22m [33m[1m[vite][22m[39m [33mwarning: `optimizeDeps.esbuildOptions` option was specified by 
+"vite:react-babel" plugin. This option is deprecated, please use `optimizeDeps.rolldownOptions` instead.[39m
+[33mBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored.[39m The following 
+esbuild options were set: `{ jsx: 'automatic', jsxImportSource: undefined }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90mC:/Projects/Gradifi[39m
+
+ [31mΓ¥»[39m tests/g2-punctuation-classification.temp.test.ts [2m([22m[2m18 tests[22m[2m | [22m[31m11 failed[39m[2m)[22m[32m 96[2mms[22m[39m
+   [31mΓ¥»[39m G2 canonical punctuation and segmentation contract [2m(18)[22m
+[31m     [31m├ù[31m L1 preserves DOI decimal punctuation[39m[32m 30[2mms[22m[39m
+[31m     [31m├ù[31m L2 preserves percentage decimal punctuation[39m[32m 7[2mms[22m[39m
+[31m     [31m├ù[31m L3 does not treat Dr. as a sentence boundary[39m[32m 9[2mms[22m[39m
+[31m     [31m├ù[31m L4 does not treat Prof. as a sentence boundary[39m[32m 3[2mms[22m[39m
+[31m     [31m├ù[31m L5 does not treat Vol. as a sentence boundary[39m[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m L6 recognizes normal sentence endings[32m 2[2mms[22m[39m
+[31m     [31m├ù[31m L7 preserves all canonical tokens in the forensic fixture[39m[32m 7[2mms[22m[39m
+[31m     [31m├ù[31m L8 preserves decimal and DOI regions as lexical sentence content[39m[32m 2[2mms[22m[39m
+     [32mΓ£ô[39m E1 multiple punctuation[32m 2[2mms[22m[39m
+     [32mΓ£ô[39m E2 question mark terminator[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m E3 exclamation terminator[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m E4 newline boundary[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m E5 paragraph boundary[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m E6 Dr. at start, continuation[39m[32m 2[2mms[22m[39m
+[31m     [31m├ù[31m E7 mixed Dr., Prof., Vol. sequence[39m[32m 2[2mms[22m[39m
+[31m     [31m├ù[31m E8 decimal with unit suffix[39m[32m 5[2mms[22m[39m
+[31m     [31m├ù[31m E9 DOI with trailing period at end[39m[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m E10 abbreviation at end-of-document[32m 1[2mms[22m[39m
+
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m[1m[41m Failed Tests 11 [49m[22m[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL1 preserves DOI decimal punctuation
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m25:80[22m[39m
+    [90m 23|[39m   it('L1 preserves DOI decimal punctuation', () => {
+    [90m 24|[39m     const sentences = getSentences('The DOI is 10.1038/s41586-023-0000ΓÇª
+    [90m 25|[39m     expect(sentences.some(s => s.text.includes('10.1038/s41586-023-000ΓÇª
+    [90m   |[39m                                                                                [31m^[39m
+    [90m 26|[39m   });
+    [90m 27|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL2 preserves percentage decimal punctuation
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m32:59[22m[39m
+    [90m 30|[39m       'The model achieves 99.4% accuracy across the dataset.'
+    [90m 31|[39m     );
+    [90m 32|[39m     expect(sentences.some(s => s.text.includes('99.4%'))).toBe(true);
+    [90m   |[39m                                                           [31m^[39m
+    [90m 33|[39m   });
+    [90m 34|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL3 does not treat Dr. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m37:23[22m[39m
+    [90m 35|[39m   it('L3 does not treat Dr. as a sentence boundary', () => {
+    [90m 36|[39m     const sentences = getSentences('By Dr. Aris Thorne. He published tΓÇª
+    [90m 37|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 38|[39m     expect(sentences[0].text).toContain('Dr. Aris Thorne.');
+    [90m 39|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL4 does not treat Prof. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m43:23[22m[39m
+    [90m 41|[39m   it('L4 does not treat Prof. as a sentence boundary', () => {
+    [90m 42|[39m     const sentences = getSentences('By Prof. Elena Rostova. She publisΓÇª
+    [90m 43|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 44|[39m     expect(sentences[0].text).toContain('Prof. Elena Rostova.');
+    [90m 45|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[4/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL5 does not treat Vol. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m49:23[22m[39m
+    [90m 47|[39m   it('L5 does not treat Vol. as a sentence boundary', () => {
+    [90m 48|[39m     const sentences = getSentences('Published in Vol. 14. The journal ΓÇª
+    [90m 49|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 50|[39m     expect(sentences[0].text).toContain('Vol. 14.');
+    [90m 51|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[5/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL7 preserves all canonical tokens in the forensic fixture
+[31m[1mAssertionError[22m: expected 77 to be 91 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 91[39m
+[31m+ 77[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m63:35[22m[39m
+    [90m 61|[39m     const sentenceTokens = sentences.flatMap(s => tokenize(s.text));
+    [90m 62|[39m
+    [90m 63|[39m     expect(sentenceTokens.length).toBe(canonicalTokens.length);
+    [90m   |[39m                                   [31m^[39m
+    [90m 64|[39m   });
+    [90m 65|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[6/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL8 preserves decimal and DOI regions as lexical sentence content
+[31m[1mAssertionError[22m: expected [ ΓÇª(2) ] to have a length of 1 but got 2[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m71:23[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (18)[39m
+[2m   Start at [22m 11:21:57
+    [90m 69|[39m     );
+    [90m 70|[39m
+    [90m 71|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m 72|[39m     expect(sentences[0].text).toContain('Vol. 14');
+    [90m 73|[39m     expect(sentences[0].text).toContain('10.1038/s41586-023-00001-x');
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[7/11]ΓÄ»[22m[39m
+
+[2m   Duration [22m 2.69s[2m (transform 36%, worker 25%, import 19%, tests 19%)[22m
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE6 Dr. at start, continuation
+[31m[1mAssertionError[22m: expected [ ΓÇª(2) ] to have a length of 1 but got 2[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m109:23[22m[39m
+    [90m107|[39m   it('E6 Dr. at start, continuation', () => {
+    [90m108|[39m     const sentences = getSentences('Dr. Aris Thorne published the papeΓÇª
+    [90m109|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m110|[39m     expect(sentences[0].text).toContain('Dr. Aris Thorne');
+    [90m111|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[8/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE7 mixed Dr., Prof., Vol. sequence
+[31m[1mAssertionError[22m: expected [ ΓÇª(4) ] to have a length of 1 but got 4[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 4[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m115:23[22m[39m
+    [90m113|[39m   it('E7 mixed Dr., Prof., Vol. sequence', () => {
+    [90m114|[39m     const sentences = getSentences('Dr. Thorne, Prof. Rostova, Vol. 14ΓÇª
+    [90m115|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m116|[39m     expect(sentences[0].text).toContain('Dr.');
+    [90m117|[39m     expect(sentences[0].text).toContain('Prof.');
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[9/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE8 decimal with unit suffix
+[31m[1mAssertionError[22m: expected '4% accuracy.' to contain '99.4%'[39m
+
+Expected: [32m"99.4%"[39m
+Received: [31m"4% accuracy."[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m124:31[22m[39m
+    [90m122|[39m     const sentences = getSentences('The result was 99.4% accuracy.');
+    [90m123|[39m     expect(sentences).toHaveLength(1);
+    [90m124|[39m     expect(sentences[0].text).toContain('99.4%');
+    [90m   |[39m                               [31m^[39m
+    [90m125|[39m   });
+    [90m126|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[10/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE9 DOI with trailing period at end
+[31m[1mAssertionError[22m: expected '1038/s41586-023-00001-x.' to contain '10.1038/s41586-023-00001-x'[39m
+
+Expected: [32m"[7m10.[27m1038/s41586-023-00001-x"[39m
+Received: [31m"1038/s41586-023-00001-x[7m.[27m"[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m130:31[22m[39m
+    [90m128|[39m     const sentences = getSentences('See DOI: 10.1038/s41586-023-00001-ΓÇª
+    [90m129|[39m     expect(sentences).toHaveLength(1);
+    [90m130|[39m     expect(sentences[0].text).toContain('10.1038/s41586-023-00001-x');
+    [90m   |[39m                               [31m^[39m
+    [90m131|[39m   });
+    [90m132|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[11/11]ΓÄ»[22m[39m
+
+
+
+
+=== G5 DETERMINISTIC SUITE ===
+node.exe : ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å Supabase... fallback mode.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γùç injected env (19) from .env.local // tip: Γîÿ override existing { override: true }
+Γùç injected env (0) from .env // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default 
+in a future major version of Vite:
+  - `__dirname` (vite.config.ts:18:27). Use `import.meta.dirname` instead
+  - import "./src/services/verify/server/verifyServerPlugin" without a file extension (vite.config.ts:5:34). Add the file 
+extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[2m11:22:16 AM[22m [33m[1m[vite][22m[39m [33mwarning: `esbuild` option was specified by "vite:react-babel" plugin. This 
+option is deprecated, please use `oxc` instead.[39m
+[2m11:22:16 AM[22m [33m[1m[vite][22m[39m [33mwarning: `optimizeDeps.esbuildOptions` option was specified by 
+"vite:react-babel" plugin. This option is deprecated, please use `optimizeDeps.rolldownOptions` instead.[39m
+[33mBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored.[39m The following 
+esbuild options were set: `{ jsx: 'automatic', jsxImportSource: undefined }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90mC:/Projects/Gradifi[39m
+
+[90mstdout[2m | tests/deterministicSimilarityEvidence.test.ts[2m > [22m[2mHOEOS G2 - Deterministic Similarity & Explainable Match[2m > [22m[2mpasses the complete deterministic similarity evidence suite
+[22m[39m├░┼╕┬º┬¬ GRADIFI HOEOS G2 - DETERMINISTIC SIMILARITY EVIDENCE TEST SUITE
+====================================================================
+
+1. TEST A: Identical Documents Comparison
+
+2. TEST B: Unrelated Documents Comparison
+
+3. TEST C: Partial Overlap Finding
+
+4. TEST D: Multiple Shared Segment Findings
+
+5. TEST E: 100% Mathematical Determinism
+
+6. TEST F: Traceable Actual Text Evidence
+
+7. TEST G: Match Method Integrity
+
+8. TEST H: No AI Runtimes Invoked in G2
+
+9. TEST I: G1 Canonical Document Compatibility
+
+10. TEST J: Zero Hardcoded Analytical Metrics Audit
+
+====================================================================
+├░┼╕ΓÇ£┼á G2 SIMILARITY ASSERTIONS COMPLETED
+
+ [32mΓ£ô[39m tests/deterministicSimilarityEvidence.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 246[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 11:22:16
+[2m   Duration [22m 4.01s[2m (transform 71%, import 14%, tests 13%, worker 1%)[22m
+
+
+
+=== G2 REGRESSION MATRIX ===
+node.exe : ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å Supabase... fallback mode.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γùç injected env (19) from .env.local // tip: Γîÿ suppress logs { quiet: true }
+Γùç injected env (0) from .env // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default 
+in a future major version of Vite:
+  - `__dirname` (vite.config.ts:18:27). Use `import.meta.dirname` instead
+  - import "./src/services/verify/server/verifyServerPlugin" without a file extension (vite.config.ts:5:34). Add the file 
+extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[2m11:27:21 AM[22m [33m[1m[vite][22m[39m [33mwarning: `esbuild` option was specified by "vite:react-babel" plugin. This 
+option is deprecated, please use `oxc` instead.[39m
+[2m11:27:21 AM[22m [33m[1m[vite][22m[39m [33mwarning: `optimizeDeps.esbuildOptions` option was specified by 
+"vite:react-babel" plugin. This option is deprecated, please use `optimizeDeps.rolldownOptions` instead.[39m
+[33mBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored.[39m The following 
+esbuild options were set: `{ jsx: 'automatic', jsxImportSource: undefined }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90mC:/Projects/Gradifi[39m
+
+ [31mΓ¥»[39m tests/g2-punctuation-classification.temp.test.ts [2m([22m[2m18 tests[22m[2m | [22m[31m11 failed[39m[2m)[22m[32m 111[2mms[22m[39m
+   [31mΓ¥»[39m G2 canonical punctuation and segmentation contract [2m(18)[22m
+[31m     [31m├ù[31m L1 preserves DOI decimal punctuation[39m[32m 38[2mms[22m[39m
+[31m     [31m├ù[31m L2 preserves percentage decimal punctuation[39m[32m 3[2mms[22m[39m
+[31m     [31m├ù[31m L3 does not treat Dr. as a sentence boundary[39m[32m 9[2mms[22m[39m
+[31m     [31m├ù[31m L4 does not treat Prof. as a sentence boundary[39m[32m 7[2mms[22m[39m
+[31m     [31m├ù[31m L5 does not treat Vol. as a sentence boundary[39m[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m L6 recognizes normal sentence endings[32m 2[2mms[22m[39m
+[31m     [31m├ù[31m L7 preserves all canonical tokens in the forensic fixture[39m[32m 9[2mms[22m[39m
+[31m     [31m├ù[31m L8 preserves decimal and DOI regions as lexical sentence content[39m[32m 2[2mms[22m[39m
+     [32mΓ£ô[39m E1 multiple punctuation[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m E2 question mark terminator[32m 2[2mms[22m[39m
+     [32mΓ£ô[39m E3 exclamation terminator[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m E4 newline boundary[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m E5 paragraph boundary[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m E6 Dr. at start, continuation[39m[32m 2[2mms[22m[39m
+[31m     [31m├ù[31m E7 mixed Dr., Prof., Vol. sequence[39m[32m 7[2mms[22m[39m
+[31m     [31m├ù[31m E8 decimal with unit suffix[39m[32m 8[2mms[22m[39m
+[31m     [31m├ù[31m E9 DOI with trailing period at end[39m[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m E10 abbreviation at end-of-document[32m 1[2mms[22m[39m
+
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m[1m[41m Failed Tests 11 [49m[22m[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL1 preserves DOI decimal punctuation
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m25:80[22m[39m
+    [90m 23|[39m   it('L1 preserves DOI decimal punctuation', () => {
+    [90m 24|[39m     const sentences = getSentences('The DOI is 10.1038/s41586-023-0000ΓÇª
+    [90m 25|[39m     expect(sentences.some(s => s.text.includes('10.1038/s41586-023-000ΓÇª
+    [90m   |[39m                                                                                [31m^[39m
+    [90m 26|[39m   });
+    [90m 27|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL2 preserves percentage decimal punctuation
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m32:59[22m[39m
+    [90m 30|[39m       'The model achieves 99.4% accuracy across the dataset.'
+    [90m 31|[39m     );
+    [90m 32|[39m     expect(sentences.some(s => s.text.includes('99.4%'))).toBe(true);
+    [90m   |[39m                                                           [31m^[39m
+    [90m 33|[39m   });
+    [90m 34|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL3 does not treat Dr. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m37:23[22m[39m
+    [90m 35|[39m   it('L3 does not treat Dr. as a sentence boundary', () => {
+    [90m 36|[39m     const sentences = getSentences('By Dr. Aris Thorne. He published tΓÇª
+    [90m 37|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 38|[39m     expect(sentences[0].text).toContain('Dr. Aris Thorne.');
+    [90m 39|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL4 does not treat Prof. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m43:23[22m[39m
+    [90m 41|[39m   it('L4 does not treat Prof. as a sentence boundary', () => {
+    [90m 42|[39m     const sentences = getSentences('By Prof. Elena Rostova. She publisΓÇª
+    [90m 43|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 44|[39m     expect(sentences[0].text).toContain('Prof. Elena Rostova.');
+    [90m 45|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[4/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL5 does not treat Vol. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m49:23[22m[39m
+    [90m 47|[39m   it('L5 does not treat Vol. as a sentence boundary', () => {
+    [90m 48|[39m     const sentences = getSentences('Published in Vol. 14. The journal ΓÇª
+    [90m 49|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 50|[39m     expect(sentences[0].text).toContain('Vol. 14.');
+    [90m 51|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[5/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL7 preserves all canonical tokens in the forensic fixture
+[31m[1mAssertionError[22m: expected 77 to be 91 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 91[39m
+[31m+ 77[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m63:35[22m[39m
+    [90m 61|[39m     const sentenceTokens = sentences.flatMap(s => tokenize(s.text));
+    [90m 62|[39m
+    [90m 63|[39m     expect(sentenceTokens.length).toBe(canonicalTokens.length);
+    [90m   |[39m                                   [31m^[39m
+    [90m 64|[39m   });
+    [90m 65|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[6/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL8 preserves decimal and DOI regions as lexical sentence content
+[31m[1mAssertionError[22m: expected [ ΓÇª(2) ] to have a length of 1 but got 2[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m71:23[22m[39m
+    [90m 69|[39m     );
+    [90m 70|[39m
+    [90m 71|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m 72|[39m     expect(sentences[0].text).toContain('Vol. 14');
+    [90m 73|[39m     expect(sentences[0].text).toContain('10.1038/s41586-023-00001-x');
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[7/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE6 Dr. at start, continuation
+[31m[1mAssertionError[22m: expected [ ΓÇª(2) ] to have a length of 1 but got 2[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m109:23[22m[39m
+    [90m107|[39m   it('E6 Dr. at start, continuation', () => {
+    [90m108|[39m     const sentences = getSentences('Dr. Aris Thorne published the papeΓÇª
+    [90m109|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m110|[39m     expect(sentences[0].text).toContain('Dr. Aris Thorne');
+    [90m111|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[8/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE7 mixed Dr., Prof., Vol. sequence
+[31m[1mAssertionError[22m: expected [ ΓÇª(4) ] to have a length of 1 but got 4[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 4[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m115:23[22m[39m
+    [90m113|[39m   it('E7 mixed Dr., Prof., Vol. sequence', () => {
+    [90m114|[39m     const sentences = getSentences('Dr. Thorne, Prof. Rostova, Vol. 14ΓÇª
+    [90m115|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m116|[39m     expect(sentences[0].text).toContain('Dr.');
+    [90m117|[39m     expect(sentences[0].text).toContain('Prof.');
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[9/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE8 decimal with unit suffix
+[31m[1mAssertionError[22m: expected '4% accuracy.' to contain '99.4%'[39m
+
+Expected: [32m"99.4%"[39m
+Received: [31m"4% accuracy."[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m124:31[22m[39m
+    [90m122|[39m     const sentences = getSentences('The result was 99.4% accuracy.');
+    [90m123|[39m     expect(sentences).toHaveLength(1);
+    [90m124|[39m     expect(sentences[0].text).toContain('99.4%');
+    [90m   |[39m                               [31m^[39m
+    [90m125|[39m   });
+    [90m126|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[10/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE9 DOI with trailing period at end
+[31m[1mAssertionError[22m: expected '1038/s41586-023-00001-x.' to contain '10.1038/s41586-023-00001-x'[39m
+
+Expected: [32m"[7m10.[27m1038/s41586-023-00001-x"[39m
+Received: [31m"1038/s41586-023-00001-x[7m.[27m"[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m130:31[22m[39m
+    [90m128|[39m     const sentences = getSentences('See DOI: 10.1038/s41586-023-00001-ΓÇª
+    [90m129|[39m     expect(sentences).toHaveLength(1);
+    [90m130|[39m     expect(sentences[0].text).toContain('10.1038/s41586-023-00001-x');
+    [90m   |[39m                               [31m^[39m
+    [90m131|[39m   });
+    [90m132|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[11/11]ΓÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (18)[39m
+[2m   Start at [22m 11:27:22
+[2m   Duration [22m 1.36s[2m (transform 49%, tests 29%, import 16%, worker 6%)[22m
+
+
+
+=== G5 DETERMINISTIC SUITE ===
+node.exe : ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å Supabase... fallback mode.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γùç injected env (19) from .env.local // tip: Γîÿ custom filepath { path: '/custom/path/.env' }
+Γùç injected env (0) from .env // tip: Γîÿ override existing { override: true }
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default 
+in a future major version of Vite:
+  - `__dirname` (vite.config.ts:18:27). Use `import.meta.dirname` instead
+  - import "./src/services/verify/server/verifyServerPlugin" without a file extension (vite.config.ts:5:34). Add the file 
+extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[2m11:27:39 AM[22m [33m[1m[vite][22m[39m [33mwarning: `esbuild` option was specified by "vite:react-babel" plugin. This 
+option is deprecated, please use `oxc` instead.[39m
+[2m11:27:39 AM[22m [33m[1m[vite][22m[39m [33mwarning: `optimizeDeps.esbuildOptions` option was specified by 
+"vite:react-babel" plugin. This option is deprecated, please use `optimizeDeps.rolldownOptions` instead.[39m
+[33mBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored.[39m The following 
+esbuild options were set: `{ jsx: 'automatic', jsxImportSource: undefined }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90mC:/Projects/Gradifi[39m
+
+[90mstdout[2m | tests/deterministicSimilarityEvidence.test.ts[2m > [22m[2mHOEOS G2 - Deterministic Similarity & Explainable Match[2m > [22m[2mpasses the complete deterministic similarity evidence suite
+[22m[39m├░┼╕┬º┬¬ GRADIFI HOEOS G2 - DETERMINISTIC SIMILARITY EVIDENCE TEST SUITE
+====================================================================
+
+1. TEST A: Identical Documents Comparison
+
+2. TEST B: Unrelated Documents Comparison
+
+3. TEST C: Partial Overlap Finding
+
+4. TEST D: Multiple Shared Segment Findings
+
+5. TEST E: 100% Mathematical Determinism
+
+6. TEST F: Traceable Actual Text Evidence
+
+7. TEST G: Match Method Integrity
+
+8. TEST H: No AI Runtimes Invoked in G2
+
+9. TEST I: G1 Canonical Document Compatibility
+
+10. TEST J: Zero Hardcoded Analytical Metrics Audit
+
+====================================================================
+├░┼╕ΓÇ£┼á G2 SIMILARITY ASSERTIONS COMPLETED
+
+ [32mΓ£ô[39m tests/deterministicSimilarityEvidence.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 256[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 11:27:40
+[2m   Duration [22m 4.11s[2m (transform 72%, tests 13%, import 12%, worker 3%)[22m
+
+
+
+=== G2 REGRESSION MATRIX ===
+node.exe : ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å Supabase... fallback mode.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γùç injected env (19) from .env.local // tip: Γîÿ enable debugging { debug: true }
+Γùç injected env (0) from .env // tip: Γùê encrypted .env [www.dotenvx.com]
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default 
+in a future major version of Vite:
+  - `__dirname` (vite.config.ts:18:27). Use `import.meta.dirname` instead
+  - import "./src/services/verify/server/verifyServerPlugin" without a file extension (vite.config.ts:5:34). Add the file 
+extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[2m12:18:13 PM[22m [33m[1m[vite][22m[39m [33mwarning: `esbuild` option was specified by "vite:react-babel" plugin. This 
+option is deprecated, please use `oxc` instead.[39m
+[2m12:18:13 PM[22m [33m[1m[vite][22m[39m [33mwarning: `optimizeDeps.esbuildOptions` option was specified by 
+"vite:react-babel" plugin. This option is deprecated, please use `optimizeDeps.rolldownOptions` instead.[39m
+[33mBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored.[39m The following 
+esbuild options were set: `{ jsx: 'automatic', jsxImportSource: undefined }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90mC:/Projects/Gradifi[39m
+
+ [31mΓ¥»[39m tests/g2-punctuation-classification.temp.test.ts [2m([22m[2m18 tests[22m[2m | [22m[31m11 failed[39m[2m)[22m[32m 127[2mms[22m[39m
+   [31mΓ¥»[39m G2 canonical punctuation and segmentation contract [2m(18)[22m
+[31m     [31m├ù[31m L1 preserves DOI decimal punctuation[39m[32m 37[2mms[22m[39m
+[31m     [31m├ù[31m L2 preserves percentage decimal punctuation[39m[32m 10[2mms[22m[39m
+[31m     [31m├ù[31m L3 does not treat Dr. as a sentence boundary[39m[32m 14[2mms[22m[39m
+[31m     [31m├ù[31m L4 does not treat Prof. as a sentence boundary[39m[32m 3[2mms[22m[39m
+[31m     [31m├ù[31m L5 does not treat Vol. as a sentence boundary[39m[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m L6 recognizes normal sentence endings[32m 3[2mms[22m[39m
+[31m     [31m├ù[31m L7 preserves all canonical tokens in the forensic fixture[39m[32m 14[2mms[22m[39m
+[31m     [31m├ù[31m L8 preserves decimal and DOI regions as lexical sentence content[39m[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m E1 multiple punctuation[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m E2 question mark terminator[32m 2[2mms[22m[39m
+     [32mΓ£ô[39m E3 exclamation terminator[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m E4 newline boundary[32m 2[2mms[22m[39m
+     [32mΓ£ô[39m E5 paragraph boundary[32m 1[2mms[22m[39m
+[31m     [31m├ù[31m E6 Dr. at start, continuation[39m[32m 4[2mms[22m[39m
+[31m     [31m├ù[31m E7 mixed Dr., Prof., Vol. sequence[39m[32m 4[2mms[22m[39m
+[31m     [31m├ù[31m E8 decimal with unit suffix[39m[32m 7[2mms[22m[39m
+[31m     [31m├ù[31m E9 DOI with trailing period at end[39m[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m E10 abbreviation at end-of-document[32m 1[2mms[22m[39m
+
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m[1m[41m Failed Tests 11 [49m[22m[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL1 preserves DOI decimal punctuation
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m25:80[22m[39m
+    [90m 23|[39m   it('L1 preserves DOI decimal punctuation', () => {
+    [90m 24|[39m     const sentences = getSentences('The DOI is 10.1038/s41586-023-0000ΓÇª
+    [90m 25|[39m     expect(sentences.some(s => s.text.includes('10.1038/s41586-023-000ΓÇª
+    [90m   |[39m                                                                                [31m^[39m
+    [90m 26|[39m   });
+    [90m 27|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL2 preserves percentage decimal punctuation
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m32:59[22m[39m
+    [90m 30|[39m       'The model achieves 99.4% accuracy across the dataset.'
+    [90m 31|[39m     );
+    [90m 32|[39m     expect(sentences.some(s => s.text.includes('99.4%'))).toBe(true);
+    [90m   |[39m                                                           [31m^[39m
+    [90m 33|[39m   });
+    [90m 34|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL3 does not treat Dr. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m37:23[22m[39m
+    [90m 35|[39m   it('L3 does not treat Dr. as a sentence boundary', () => {
+    [90m 36|[39m     const sentences = getSentences('By Dr. Aris Thorne. He published tΓÇª
+    [90m 37|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 38|[39m     expect(sentences[0].text).toContain('Dr. Aris Thorne.');
+    [90m 39|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL4 does not treat Prof. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m43:23[22m[39m
+    [90m 41|[39m   it('L4 does not treat Prof. as a sentence boundary', () => {
+    [90m 42|[39m     const sentences = getSentences('By Prof. Elena Rostova. She publisΓÇª
+    [90m 43|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 44|[39m     expect(sentences[0].text).toContain('Prof. Elena Rostova.');
+    [90m 45|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[4/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL5 does not treat Vol. as a sentence boundary
+[31m[1mAssertionError[22m: expected [ ΓÇª(3) ] to have a length of 2 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m49:23[22m[39m
+    [90m 47|[39m   it('L5 does not treat Vol. as a sentence boundary', () => {
+    [90m 48|[39m     const sentences = getSentences('Published in Vol. 14. The journal ΓÇª
+    [90m 49|[39m     expect(sentences).toHaveLength(2);
+    [90m   |[39m                       [31m^[39m
+    [90m 50|[39m     expect(sentences[0].text).toContain('Vol. 14.');
+    [90m 51|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[5/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL7 preserves all canonical tokens in the forensic fixture
+[31m[1mAssertionError[22m: expected 77 to be 91 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 91[39m
+[31m+ 77[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m63:35[22m[39m
+    [90m 61|[39m     const sentenceTokens = sentences.flatMap(s => tokenize(s.text));
+    [90m 62|[39m
+    [90m 63|[39m     expect(sentenceTokens.length).toBe(canonicalTokens.length);
+    [90m   |[39m                                   [31m^[39m
+    [90m 64|[39m   });
+    [90m 65|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[6/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mL8 preserves decimal and DOI regions as lexical sentence content
+[31m[1mAssertionError[22m: expected [ ΓÇª(2) ] to have a length of 1 but got 2[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m71:23[22m[39m
+    [90m 69|[39m     );
+    [90m 70|[39m
+    [90m 71|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m 72|[39m     expect(sentences[0].text).toContain('Vol. 14');
+    [90m 73|[39m     expect(sentences[0].text).toContain('10.1038/s41586-023-00001-x');
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[7/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE6 Dr. at start, continuation
+[31m[1mAssertionError[22m: expected [ ΓÇª(2) ] to have a length of 1 but got 2[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m109:23[22m[39m
+    [90m107|[39m   it('E6 Dr. at start, continuation', () => {
+    [90m108|[39m     const sentences = getSentences('Dr. Aris Thorne published the papeΓÇª
+    [90m109|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m110|[39m     expect(sentences[0].text).toContain('Dr. Aris Thorne');
+    [90m111|[39m   });
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[8/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE7 mixed Dr., Prof., Vol. sequence
+[31m[1mAssertionError[22m: expected [ ΓÇª(4) ] to have a length of 1 but got 4[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 4[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m115:23[22m[39m
+    [90m113|[39m   it('E7 mixed Dr., Prof., Vol. sequence', () => {
+    [90m114|[39m     const sentences = getSentences('Dr. Thorne, Prof. Rostova, Vol. 14ΓÇª
+    [90m115|[39m     expect(sentences).toHaveLength(1);
+    [90m   |[39m                       [31m^[39m
+    [90m116|[39m     expect(sentences[0].text).toContain('Dr.');
+    [90m117|[39m     expect(sentences[0].text).toContain('Prof.');
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[9/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE8 decimal with unit suffix
+[31m[1mAssertionError[22m: expected '4% accuracy.' to contain '99.4%'[39m
+
+Expected: [32m"99.4%"[39m
+Received: [31m"4% accuracy."[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m124:31[22m[39m
+    [90m122|[39m     const sentences = getSentences('The result was 99.4% accuracy.');
+    [90m123|[39m     expect(sentences).toHaveLength(1);
+    [90m124|[39m     expect(sentences[0].text).toContain('99.4%');
+    [90m   |[39m                               [31m^[39m
+    [90m125|[39m   });
+    [90m126|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[10/11]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/g2-punctuation-classification.temp.test.ts[2m > [22mG2 canonical punctuation and segmentation 
+contract[2m > [22mE9 DOI with trailing period at end
+[31m[1mAssertionError[22m: expected '1038/s41586-023-00001-x.' to contain '10.1038/s41586-023-00001-x'[39m
+
+Expected: [32m"[7m10.[27m1038/s41586-023-00001-x"[39m
+Received: [31m"1038/s41586-023-00001-x[7m.[27m"[39m
+
+[36m [2mΓ¥»[22m tests/g2-punctuation-classification.temp.test.ts:[2m130:31[22m[39m
+    [90m128|[39m     const sentences = getSentences('See DOI: 10.1038/s41586-023-00001-ΓÇª
+    [90m129|[39m     expect(sentences).toHaveLength(1);
+    [90m130|[39m     expect(sentences[0].text).toContain('10.1038/s41586-023-00001-x');
+    [90m   |[39m                               [31m^[39m
+    [90m131|[39m   });
+    [90m132|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[11/11]ΓÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (18)[39m
+[2m   Start at [22m 12:18:15
+[2m   Duration [22m 1.79s[2m (transform 45%, tests 30%, import 18%, worker 7%)[22m
+
+
+
+=== G5 DETERMINISTIC SUITE ===
+node.exe : ΓÜá∩╕Å Supabase credentials not found. Using fallback mode.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å Supabase... fallback mode.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γùç injected env (19) from .env.local // tip: Γîÿ override existing { override: true }
+Γùç injected env (0) from .env // tip: Γîÿ override existing { override: true }
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default 
+in a future major version of Vite:
+  - `__dirname` (vite.config.ts:18:27). Use `import.meta.dirname` instead
+  - import "./src/services/verify/server/verifyServerPlugin" without a file extension (vite.config.ts:5:34). Add the file 
+extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[2m12:18:31 PM[22m [33m[1m[vite][22m[39m [33mwarning: `esbuild` option was specified by "vite:react-babel" plugin. This 
+option is deprecated, please use `oxc` instead.[39m
+[2m12:18:31 PM[22m [33m[1m[vite][22m[39m [33mwarning: `optimizeDeps.esbuildOptions` option was specified by 
+"vite:react-babel" plugin. This option is deprecated, please use `optimizeDeps.rolldownOptions` instead.[39m
+[33mBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored.[39m The following 
+esbuild options were set: `{ jsx: 'automatic', jsxImportSource: undefined }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90mC:/Projects/Gradifi[39m
+
+[90mstdout[2m | tests/deterministicSimilarityEvidence.test.ts[2m > [22m[2mHOEOS G2 - Deterministic Similarity & Explainable Match[2m > [22m[2mpasses the complete deterministic similarity evidence suite
+[22m[39m├░┼╕┬º┬¬ GRADIFI HOEOS G2 - DETERMINISTIC SIMILARITY EVIDENCE TEST SUITE
+====================================================================
+
+1. TEST A: Identical Documents Comparison
+
+2. TEST B: Unrelated Documents Comparison
+
+3. TEST C: Partial Overlap Finding
+
+4. TEST D: Multiple Shared Segment Findings
+
+5. TEST E: 100% Mathematical Determinism
+
+6. TEST F: Traceable Actual Text Evidence
+
+7. TEST G: Match Method Integrity
+
+8. TEST H: No AI Runtimes Invoked in G2
+
+9. TEST I: G1 Canonical Document Compatibility
+
+10. TEST J: Zero Hardcoded Analytical Metrics Audit
+
+====================================================================
+├░┼╕ΓÇ£┼á G2 SIMILARITY ASSERTIONS COMPLETED
+
+ [32mΓ£ô[39m tests/deterministicSimilarityEvidence.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 327[2mms[22m[39m
+   [32mΓ£ô[39m HOEOS G2 - Deterministic Similarity & Explainable Match [2m(1)[22m
+     [33m[2mΓ£ô[22m[39m passes the complete deterministic similarity evidence suite[33m 312[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 12:18:32
+[2m   Duration [22m 5.65s[2m (transform 87%, tests 7%, import 6%, worker 1%)[22m
+
+[2m  Transform [22m [33mtransforming modules took 4.19s[39m[2m ┬╖ 87% of tracked time, re-done on every run[22m
+[2m            [22m [2mpersist transforms across runs with [22m[33mfsModuleCache: true[39m
+[2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#caching-between-reruns[22m
+
+

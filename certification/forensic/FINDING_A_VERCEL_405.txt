@@ -1,0 +1,119 @@
+================================================================
+HOEOS FORENSIC INVESTIGATION — FINDING A CLASSIFICATION
+HTTP 405 Method Not Allowed on /api/verify/* Routes on Vercel
+================================================================
+Investigation ID: HOEOS-VERCEL-FORENSIC-2026-09-25
+Target Domain:    gradifi.vercel.app
+Date:             2026-09-25
+
+[1] ROOT CAUSE CLASSIFICATION
+
+  ROOT CAUSE: MIDDLEWARE NOT DEPLOYED TO PRODUCTION
+
+  The API routes `/api/verify/*` are registered exclusively as Vite dev-server
+  middleware via Vite's `configureServer(server)` hook in `verifyServerPlugin.ts`.
+  Vite dev-server middleware ONLY executes during local development (`vite dev`).
+
+  When building for production via `vite build` (executed on Vercel via
+  `npm run build`), Vite compiles static single-page application (SPA) client
+  assets into the `dist/` directory. No serverless functions, backend entry points,
+  or server middleware handlers are generated or deployed.
+
+  `vercel.json` configures a global wildcard single-page application rewrite:
+    { "source": "/(.*)", "destination": "/index.html" }
+
+  When the browser sends an HTTP POST request to `/api/verify/core` (or any other
+  `/api/verify/*` route) on production Vercel (`gradifi.vercel.app`):
+  1. Vercel's edge router matches the path against `/(.*)` and rewrites the request
+     to serve `/index.html`.
+  2. `/index.html` is a static asset hosted on Vercel CDN.
+  3. Standard HTTP specification and Vercel Edge CDN policy enforce that static
+     file assets only accept GET and HEAD requests.
+  4. Vercel CDN immediately rejects the POST request with:
+     HTTP 405 Method Not Allowed.
+
+[2] EVIDENCE BASE
+
+  1. Registration site in `src/services/verify/server/verifyServerPlugin.ts`:
+     - Lines 68-71:
+       `export function verifyServerPlugin(): Plugin {`
+       `  return {`
+       `    name: 'gradifi-verify-server-plugin',`
+       `    configureServer(server) {`
+     - Lines 72-203 register endpoints `/api/verify/persist`, `/api/verify/core`,
+       `/api/verify/crossref`, `/api/verify/googlebooks`, `/api/verify/openalex`,
+       `/api/verify/unpaywall`, `/api/verify/gemini`, `/api/verify/nemotron`,
+       and `/api/verify/gemma` inside `configureServer`.
+
+  2. Configuration in `vite.config.ts`:
+     - Line 5: `import {verifyServerPlugin} from './src/services/verify/server/verifyServerPlugin';`
+     - Line 9: `plugins: [react(), tailwindcss(), verifyServerPlugin()],`
+     - `verifyServerPlugin` is passed to Vite plugins array. Because its implementation
+       only defines `configureServer`, it is inactive during `vite build`.
+
+  3. Vercel Router configuration in `vercel.json`:
+     - Lines 7-12:
+       `"rewrites": [`
+       `  {`
+       `    "source": "/(.*)",`
+       `    "destination": "/index.html"`
+       `  }`
+       `]`
+     - No route exemptions or serverless function mounts exist for `/api/verify/*`.
+
+  4. Build Output Artifacts (`dist/`):
+     - `npm run build` output stored at `certification/forensic/vercel_build_output.txt`.
+     - `dist/` listing contains only client assets:
+       - `dist/index.html` (786 bytes)
+       - `dist/assets/index-LnUNdK5s.js` (1.92 MB client JS bundle)
+       - `dist/assets/pdf.worker.min-BmVo14Nb.mjs`
+       - Static html/ico/css files
+     - ZERO server handlers or `/api` directory entry points exist in `dist/`.
+
+  5. Absence of Vercel Route Documentation in Repo:
+     - No architectural documentation or vercel function mapping exists in the repo
+       addressing Vercel deployment of `/api/verify/*` routes.
+
+[3] AFFECTED ROUTES
+
+  - `/api/verify/core`
+  - `/api/verify/crossref`
+  - `/api/verify/googlebooks`
+  - `/api/verify/openalex`
+  - `/api/verify/unpaywall`
+  - `/api/verify/nemotron`
+  - `/api/verify/gemini`
+  - `/api/verify/gemma`
+  - `/api/verify/persist`
+
+[4] SECONDARY FINDING — LOCALHOST OLLAMA ENDPOINT CONFIGURATION LEAK
+
+  - Finding: Browser console reports `localhost:11434/v1/models:1 Failed to load: 404` / connection refused.
+  - Classification: Configuration leak (local development endpoint hard-coded in client code).
+  - Evidence:
+    - `src/services/verify/aiFederation.ts` (lines 24-29):
+      `const endpoint = 'http://localhost:11434/v1/models';`
+    - `src/services/verify/server/gemmaServerHandler.ts` (line 28):
+      `const ollamaHost = process.env.OLLAMA_HOST || 'http://localhost:11434';`
+  - Cause: Client-side browser code attempts to probe `http://localhost:11434` directly from the user's browser in production, failing when no local Ollama service is running.
+
+[5] EXPLICIT NON-DEFECTS
+
+  - The API handler execution logic itself (`coreServerHandler.ts`, `geminiServerHandler.ts`, etc.) is CORRECT and functions as expected on localhost:5174.
+  - The provider API integration, rate limiting, and response parsing are CORRECT.
+  - The Supabase persistence path logic in `persistenceServerHandler.ts` is CORRECT.
+
+[6] FIX LOCATION
+
+  - Primary: Vercel serverless function entry points under `api/verify/[provider].ts` or a unified backend server entry point (e.g. Express/Node container or Vercel API routes).
+  - Secondary: `src/services/verify/aiFederation.ts` (guard local Ollama probe when running in production environment).
+
+[7] FIX SCOPE
+
+  - Create Vercel Serverless Function entry points under `api/verify/*.ts` that import and invoke the existing server handlers (`handleCoreServerSearch`, `handleGeminiServerReasoning`, etc.).
+  - Update `vercel.json` if needed to route `/api/verify/:path*` to Vercel functions before applying SPA wildcard rewrite.
+  - Update `aiFederation.ts` to check environment (`import.meta.env.PROD` / `DEV`) before triggering client-side `localhost:11434` probe.
+
+================================================================
+END FINDING A CLASSIFICATION
+================================================================

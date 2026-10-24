@@ -1,0 +1,12 @@
+{
+  "consoleLogs": [
+    "[CONSOLE WARNING] ⚠️ Supabase credentials not found. Using fallback mode.",
+    "[CONSOLE LOG] [SW] Service Worker registered successfully: ServiceWorkerRegistration",
+    "[CONSOLE LOG] [OfflineStorage] Database initialized",
+    "[CONSOLE LOG] ✅ Offline storage initialized",
+    "[CONSOLE LOG] [OfflineStorage] Database initialized",
+    "[CONSOLE LOG] ✅ Initial sync: 0 items synced"
+  ],
+  "isStreamExtractor": false,
+  "pageContent": "Back to Gradifi Tools Hub\nGRADIFI VERIFY\nHOEOS 2-HOUR DEMO CRITICAL PATH\n\nFederated Academic Evidence Core • Deterministic Similarity Engine • Multi-Model AI Federation • Authentic Scannable QR Receipts\n\nPre-load Demo Document\n01 UPLOAD\n02 EXTRACT\n03 NORMALIZE\n04 VERIFY\n05 FEDERATE\n06 RESULT\n07 RECEIPT\n1. PDF Document Upload\nSTATUS: EXTRACTED\nDrop your document file here (.pdf, .txt, .docx, .epub, .md, .rtf, etc.)\nUniversal ingestion & deterministic extraction up to 15MB\nM.ENG Project (SEFAES) (1).pdf\n1.6 KB • Method: ocr_tesseract\nDOCUMENT TEXT PAYLOAD\nRun Academic Evidence Verification\n2. Canonical Analysis Document\nPROVENANCE: NORMALIZED\nTITLE\nCOVER PAGE\nAUTHORS\nUnknown Author\nPUBLICATION / YEAR\nEVALUATION SYSTEM (SEFAES) (2026)\nIDENTIFIERS\nReady for Evidence Verification\n\nUpload a PDF paper or click \"Pre-load Demo Document\" to trigger the federated verification pipeline across Google Books, OpenAlex, Crossref, Unpaywall, CORE, and AI Federation.\n\nOnline\nSync Now"
+}

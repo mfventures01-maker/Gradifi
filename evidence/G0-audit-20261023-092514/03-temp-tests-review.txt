@@ -1,0 +1,42 @@
+HOEOS V2 FORENSIC EVIDENCE: G0.4 REVIEW OF TEMPORARY-NAMED TESTS
+Run ID: G0-audit-20261023-092514
+Timestamp: 2026-10-23T09:25:14+01:00
+
+MANDATE: Keep staged pending content review. Do not unstage merely because names contain .temp.
+
+1. tests/g5m02-baseline-check.temp.test.ts
+- What behavior it tests: Baseline similarity scoring and token coverage across identical, partial, and unrelated documents using documentNormalizer and verifyCoreService.
+- Contains assertions: NO (contains console.log statements only).
+- Deterministic: YES (pure functional calls with hardcoded strings).
+- External services / credentials: NONE.
+- Mutations: NONE (read-only execution).
+- Classification: Temporary diagnostic script.
+- Invocation: npx vitest run tests/g5m02-baseline-check.temp.test.ts
+- Side effects: None.
+- Reproducibility: Executes cleanly (exit code 0; diagnostic log output).
+- Disposition: Retained staged as requested.
+
+2. tests/g5m02-partial-diagnostic.temp.test.ts
+- What behavior it tests: Enumerates individual findings, matchMethod, similarityScore, and segment previews for partial document matching.
+- Contains assertions: NO (contains console.log statements only).
+- Deterministic: YES (pure functional calls with hardcoded strings).
+- External services / credentials: NONE.
+- Mutations: NONE (read-only execution).
+- Classification: Temporary diagnostic script.
+- Invocation: npx vitest run tests/g5m02-partial-diagnostic.temp.test.ts
+- Side effects: None.
+- Reproducibility: Executes cleanly (exit code 0; diagnostic log output).
+- Disposition: Retained staged as requested.
+
+3. tests/g5m02-sentinel-collision.temp.test.ts
+- What behavior it tests: Sentinel collision defense (expects segmentDocument to throw /sentinel collision/i when text contains U+E000 private-use character).
+- Contains assertions: YES (2 expect() assertions).
+- Deterministic: YES.
+- External services / credentials: NONE.
+- Mutations: NONE.
+- Classification: Prospective regression test written for migration spec G5-M02 (evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt).
+- Invocation: npx vitest run tests/g5m02-sentinel-collision.temp.test.ts
+- Execution result: FAILED (Exit code 1).
+  Test `throws when raw text contains U+E000` failed with AssertionError: expected [Function] to throw an error.
+  Root cause: The G5-M02 migration contract (which replaces regex-based segmentation with sentinel replacement) has status PENDING REVIEW and was not merged into src/services/verify/documentNormalizer.ts in this baseline.
+- Disposition: Retained staged as requested. Noted as an unmerged prospective contract test.

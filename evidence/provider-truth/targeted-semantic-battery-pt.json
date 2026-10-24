@@ -1,0 +1,338 @@
+[
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-01",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "da98340fef4cedac4900489f2af22c35b9ed942a4aa239ac9c363918e2f78963",
+    "status": "VERIFIED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini valid finding produces VERIFIED status with modelProvider=gemini and fallback_used=false",
+    "details": {
+      "findingsCount": 1,
+      "modelProvider": "gemini"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-02",
+    "input_hash": "3ca248b84d7ecfb3534125ee7871fef888b137ea1664c53e2112e2167be368de",
+    "output_hash": "40db3985f1671ed1cb41cbf0a2cbb37ad71381a48fbeeef04d8354df12ebd022",
+    "status": "EMPTY_RESULT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini valid [] produces EMPTY_RESULT with findings=[] and fallback_used=false",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-03",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "cd2ded9dd7336c5480d9b561426f746032598a3579dfcb01270f56013c77c710",
+    "status": "INFERENCE_FAILED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini malformed JSON produces INFERENCE_FAILED",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "Gemini response could not be parsed as JSON"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-04",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "dcbc6b5a5e61af523cd67ffd6c20864b76f16edfd3c1e3573e89863457e71a9e",
+    "status": "SCHEMA_INVALID",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini invalid finding schema produces SCHEMA_INVALID",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "Gemini response contained no structurally valid findings matching schema"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-05",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "9650393f247a825fe6694fd16e96f56153fc6afd58c35252d9c25d31e356fb91",
+    "status": "AUTHENTICATION_FAILED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini 401/403 produces AUTHENTICATION_FAILED",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "PERMISSION_DENIED: Caller does not have required permission"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-06",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "014f893c02c2dfbb1080bf75146111310ace3e18c41a5cd9f60a9a1b8adbf3a1",
+    "status": "TIMEOUT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini timeout event produces TIMEOUT",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "Request timed out after 30000ms"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-07",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "fcf0c88a204a552949d1fcd7bceef26039379705dbbb90d23ba3109238a3adf9",
+    "status": "NETWORK_ERROR",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini network failure produces NETWORK_ERROR",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "fetch failed: ECONNREFUSED"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "test_id": "PT-08",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "f61f4e45ca702cf97f01459ee12c49a5bf598a7b1e146522f71ec3dffdc3dc6f",
+    "status": "RUNTIME_UNAVAILABLE",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Gemini 429/503 produces RUNTIME_UNAVAILABLE",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "gemini",
+      "errorMessage": "RESOURCE_EXHAUSTED: 429 Rate limit exceeded"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-09",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "2dc53b80ce901586ab615d42b8461bd07fa020b33500aabf9d512d504811f0f5",
+    "status": "VERIFIED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron valid finding produces VERIFIED state with modelProvider=nemotron and fallback_used=false",
+    "details": {
+      "findingsCount": 1,
+      "modelProvider": "nemotron"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-10",
+    "input_hash": "a71b6f10a119de4c7243f837c665865083f90632c8bfd2d037956e85467e1eaa",
+    "output_hash": "ee5898e3abc4b46eb09043d6edc8938ddaa651e4655be76a9d694637ff33eb60",
+    "status": "EMPTY_RESULT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron empty array produces EMPTY_RESULT without error classification",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-11",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "56f26a5cb8203c6ecba34db072e42c41118e4fa2ef700c07659b1c519f4ea628",
+    "status": "INFERENCE_FAILED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron malformed JSON produces INFERENCE_FAILED",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "Nemotron response could not be parsed as JSON"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-12",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "a1d00267bbf8b0ed282bcc2e022d3806dc345fd99bd74e0d79d713aa598b3a75",
+    "status": "SCHEMA_INVALID",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron findings violating schema produce SCHEMA_INVALID",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "Nemotron JSON contained no valid findings matching schema"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-13",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "14f96f53039b533af4d952f7172c8a745025fe427c8dde5b4a1c1438648a70fa",
+    "status": "AUTHENTICATION_FAILED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron 401/403 produces AUTHENTICATION_FAILED",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "NVIDIA API returned HTTP 401: Unauthorized"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-14",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "923514716708f46e042a5a6dc988bf1038c369d7411c8ce99602b8ebf4be5021",
+    "status": "TIMEOUT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron timeout produces TIMEOUT",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "NVIDIA API timed out: The operation was aborted due to timeout"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-15",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "927c4d7d963042e38310d612dae9c7485533550b072ab9a3cde722fb4d6f38e0",
+    "status": "NETWORK_ERROR",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron connection failure produces NETWORK_ERROR",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "NVIDIA API network error: fetch failed: ECONNREFUSED"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-16",
+    "input_hash": "640ac7b3f9631c1737ba5ae91f13e9fa5d7e0365dacd248376ff308a5b4010d0",
+    "output_hash": "aca2065b1a90419301508f0470565f32e0a313fe6156b51c6e8df3174a62ea69",
+    "status": "RUNTIME_UNAVAILABLE",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Nemotron 503/429 produces RUNTIME_UNAVAILABLE",
+    "details": {
+      "findingsCount": 0,
+      "modelProvider": "nemotron",
+      "errorMessage": "NVIDIA API unavailable: HTTP 503"
+    }
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-17",
+    "input_hash": "69c34052979f8674cd555f534f7c2b11d6014978528dc80f26a61d58db91da05",
+    "output_hash": "374b58f02433fee3cbd74d3198c04c86eb4a93c47726da1351a7cc11dbb17043",
+    "status": "AUTHENTICATION_FAILED",
+    "fallback_used": true,
+    "result": "PASS",
+    "interpretation": "Fallback after provider failure preserves actual failure status and sets fallback_used=true with modelProvider=deterministic_fallback"
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-18",
+    "input_hash": "dc4e28bfa74b19e7c0babedafaa24fdf92aa49900fea05da6b67cf643d44d3d1",
+    "output_hash": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+    "status": "AUTHENTICATION_FAILED",
+    "fallback_used": true,
+    "result": "PASS",
+    "interpretation": "Provider failure is strictly forbidden from emitting VERIFIED status"
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "nemotron",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "test_id": "PT-19",
+    "input_hash": "eadd3697d205ebc442c89bab2fa066f5468fa970bd79fd34f95561bdc13be9fd",
+    "output_hash": "ee5898e3abc4b46eb09043d6edc8938ddaa651e4655be76a9d694637ff33eb60",
+    "status": "EMPTY_RESULT",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "Provider empty result remains EMPTY_RESULT and does not trigger fallback findings"
+  },
+  {
+    "commit_sha": "0cd6485eb6a3b4c2d86d8e6d2817ca36ebbe7cf5",
+    "environment": "simulated",
+    "provider": "federation",
+    "model": "federated-ai",
+    "test_id": "PT-20",
+    "input_hash": "3c39b6d17850e3ef2c7d40009a36d9150523f8b0adfc2e16101abb24e9a2014c",
+    "output_hash": "3dc48857b604a64f1b6e20fdfc2bbe150e778dc5a15f21b24eb2e957e2f575c5",
+    "status": "VERIFIED",
+    "fallback_used": false,
+    "result": "PASS",
+    "interpretation": "AI Federation preserves independent provider truth states without conflation"
+  }
+]

@@ -1,4 +1,5 @@
 import { nemotronService } from '../src/services/nemotronService';
+import { describe, test, expect } from 'vitest';
 
 /**
  * NEMOTRON SERVICE TEST SUITE

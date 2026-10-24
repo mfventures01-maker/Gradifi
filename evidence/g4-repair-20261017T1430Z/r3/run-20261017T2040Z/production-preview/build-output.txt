@@ -1,0 +1,11 @@
+﻿[WebServer] > gradifi@0.0.0 build
+[WebServer] > npm run build:server && vite build
+[WebServer] dist/index.html                                      0.79 kB | gzip:   0.38 kB
+[WebServer] dist/assets/pdf.worker.min-BmVo14Nb.mjs          1,317.03 kB
+[WebServer] dist/assets/index-DNf0xc2X.css                      86.47 kB | gzip:  12.98 kB
+[WebServer] dist/assets/__vite-browser-external-BIHI7g3E.js      0.03 kB | gzip:   0.05 kB
+[WebServer] dist/assets/purify.es-DBIK8olT.js                   29.40 kB | gzip:  11.31 kB
+[WebServer] dist/assets/index.es-CkTaBTb7.js                   159.72 kB | gzip:  53.54 kB
+[WebServer] dist/assets/html2canvas.esm-QH1iLAAe.js            202.38 kB | gzip:  48.04 kB
+[WebServer] dist/assets/index-1fW386DD.js                    2,010.43 kB | gzip: 580.20 kB
+[WebServer] built in 28.00s

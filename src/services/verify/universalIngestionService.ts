@@ -251,7 +251,18 @@ export async function ingestDocument(
     }
     case 'docx': {
       const buf = payload.buffer || (payload.text ? new TextEncoder().encode(payload.text).buffer : new ArrayBuffer(0));
-      adapterResult = await extractDocx(buf);
+      const docx = await extractDocx(buf);
+      adapterResult = {
+        success: docx.success,
+        text: docx.canonicalText,
+        wordCount: docx.canonicalText.split(/\s+/).filter(Boolean).length,
+        characterCount: docx.canonicalText.length,
+        extractionMethod: 'docx_xml_extractor',
+        ocrUsed: false,
+        ocrStatus: 'NOT_REQUIRED',
+        warnings: (docx.warnings || []).map((w: any) => (typeof w === 'string' ? w : (w && w.message) || String(w))),
+        error: docx.error,
+      };
       break;
     }
     case 'odt': {

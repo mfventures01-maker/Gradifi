@@ -1,0 +1,27 @@
+
+
+Running 1 test using 1 worker
+
+[1/1] [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams
+  1) [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams 
+
+    Error: Authoritative result on window.__GRADIFI_VERIFY_RESULT__ must be populated
+
+    expect(received).toBeTruthy()
+
+    Received: null
+
+      107 |     });
+      108 |
+    > 109 |     expect(appResult, 'Authoritative result on window.__GRADIFI_VERIFY_RESULT__ must be populated').toBeTruthy();
+          |                                                                                                     ^
+      110 |     expect(appResult.canonicalDocument, 'Canonical document must exist in engine result').toBeTruthy();
+      111 |     expect(typeof appResult.canonicalDocument.rawText, 'Canonical rawText must be string').toBe('string');
+      112 |
+        at C:\Projects\Gradifi\e2e\g4-live-provider-certification.spec.ts:109:101
+
+    Error Context: test-results\.playwright-temp\g4-live-provider-certifica-f213c-hts-without-synthetic-seams-chromium\error-context.md
+
+
+  1 failed
+    [chromium] › e2e\g4-live-provider-certification.spec.ts:19:3 › HOEOS G4 Live-Provider End-to-End Certification › executes genuine live verification flow and certifies rendered highlights without synthetic seams 

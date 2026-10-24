@@ -81,7 +81,7 @@ function isRetryableResult(res: any): boolean {
   const code = provRes.errorCode || '';
   const msg = provRes.errorMessage || '';
 
-  if (code.includes('500') || code.includes('502') || code.includes('503') || code.includes('504') || code === 'FETCH_ERROR' || code === 'TIMEOUT') {
+  if (code.includes('429') || code.includes('500') || code.includes('502') || code.includes('503') || code.includes('504') || code === 'FETCH_ERROR' || code === 'TIMEOUT') {
     return true;
   }
 
