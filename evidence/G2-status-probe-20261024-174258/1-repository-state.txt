@@ -1,0 +1,8 @@
+﻿UTC_TIMESTAMP=2026-10-24T17:42:58.8183449Z
+REPO_ROOT=C:\Projects\Gradifi
+HEAD=20bd207b0c9e207b04054e7c487b4316f093c543
+PARENT=b27f6b03ad762537fbbf07532740259f97c7fa8e
+BRANCH=clean-deploy
+TRACKING=origin/clean-deploy
+STATUS_SUMMARY=## clean-deploy...origin/clean-deploy
+DIRTY_FILES=0

@@ -1,0 +1,3 @@
+﻿b27f6b0 ∩╗┐G1 repair + B-group fixes + OCR disposition + File 1 D-2 conversion
+99b0a9e feat(similarity): hierarchical SIM-V1 engine with certified 20-gate battery
+504deb8 vercel: compile server dependency graph to runtime/

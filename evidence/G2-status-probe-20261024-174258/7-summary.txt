@@ -1,0 +1,18 @@
+﻿G2 STATUS PROBE SUMMARY
+========================
+Timestamp: 2026-10-24T17:43:01.1621714Z
+Repository HEAD: 20bd207b0c9e207b04054e7c487b4316f093c543
+Branch: clean-deploy
+
+Files inspected and hashed:
+  2-g2-source-hashes.csv (10 files)
+  3-verifyG2Certification.ps1.snapshot (full script)
+  3-defect-*.txt (defect findings)
+  4-test_g2_full_suite.ts.snapshot (full test suite)
+  4-gate-names.txt (14 unique gates)
+  5-historical-evidence.csv (prior evidence)
+  6-normalizer-recent-commits.txt
+
+Next action: repair the certification harness (not the engine),
+based on the four defects recorded in 3-defect-*.txt, then run
+the corrected verifier against HEAD=20bd207b0c9e207b04054e7c487b4316f093c543.

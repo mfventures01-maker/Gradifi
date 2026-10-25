@@ -1,0 +1,4 @@
+﻿
+  status: 'PASS' | 'FAIL' | 'BLOCKED' | 'CONTRACT DIVERGENCE' | 'NOT TESTED';
+
+

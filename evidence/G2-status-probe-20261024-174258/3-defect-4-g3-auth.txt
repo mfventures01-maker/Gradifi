@@ -1,0 +1,6 @@
+﻿
+Write-Host "G2_CERTIFICATION=PASS"
+Write-Host "G2_FREEZE_AUTHORIZED=YES"
+Write-Host "G3_AUTHORIZED=YES"
+
+

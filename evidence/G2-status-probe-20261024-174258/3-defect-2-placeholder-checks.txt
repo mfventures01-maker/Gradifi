@@ -1,0 +1,7 @@
+﻿
+  const crossProcessPass = repeatabilityPass;
+  const providerAuthorityAssignments = 0;
+  const persistencePass = true;
+  const clientPass = true;
+
+

@@ -1,0 +1,17 @@
+﻿path,type,size_bytes,last_modified
+tests/hoeos/g2/evidence/g1_browser/g1_browser_runtime_log.json,G2 evidence directory,562,2026-10-24T15:02:32.2181670Z
+tests/hoeos/g2/evidence/g1_browser/g1_docx_browser_completion.png,G2 evidence directory,2685204,2026-10-24T15:02:32.2111632Z
+evidence/g2-runtime-verification-20261022-214547/changed-files.txt,October 22 runtime diffs,284,2026-10-22T20:45:47.8470446Z
+evidence/g2-runtime-verification-20261022-214547/current-hashes.csv,October 22 runtime diffs,757,2026-10-22T20:45:48.1546121Z
+evidence/g2-runtime-verification-20261022-214547/deterministicEngine.ts.current,October 22 runtime diffs,34252,2026-10-22T20:41:41.1872034Z
+evidence/g2-runtime-verification-20261022-214547/deterministicEngine.ts.diff,October 22 runtime diffs,3619,2026-10-22T20:45:47.9206319Z
+evidence/g2-runtime-verification-20261022-214547/documentNormalizer.ts.current,October 22 runtime diffs,10733,2026-10-22T20:41:41.1311162Z
+evidence/g2-runtime-verification-20261022-214547/documentNormalizer.ts.diff,October 22 runtime diffs,1320,2026-10-22T20:45:47.9857202Z
+evidence/g2-runtime-verification-20261022-214547/verifyCoreService.ts.current,October 22 runtime diffs,21859,2026-10-22T20:41:41.2442034Z
+evidence/g2-runtime-verification-20261022-214547/verifyCoreService.ts.diff,October 22 runtime diffs,1106,2026-10-22T20:45:48.0570015Z
+evidence/g5_baseline/2026-10-05_migration_g5m01_spec.txt,G5 baseline evidence,1546,2026-10-05T17:26:06.1224266Z
+evidence/g5_baseline/2026-10-05_phase1_record.txt,G5 baseline evidence,2256,2026-10-05T17:35:41.8637997Z
+evidence/g5_baseline/2026-10-05_segmentation_v2_candidate.txt,G5 baseline evidence,1353,2026-10-05T17:36:00.8166604Z
+evidence/g5_baseline/2026-10-06_g5m02_before_state.txt,G5 baseline evidence,1848,2026-10-06T07:32:51.5233462Z
+evidence/g5_baseline/2026-10-06_g5m02_rejection_evidence.txt,G5 baseline evidence,3551,2026-10-06T10:05:39.0855790Z
+evidence/g5_baseline/2026-10-06_migration_g5m02_spec.txt,G5 baseline evidence,11567,2026-10-06T08:32:56.2060710Z

@@ -1,0 +1,5 @@
+﻿
+Write-Host "G2_REQUIRED_GATES=15"
+Write-Host "G2_PASSED_GATES=15"
+
+

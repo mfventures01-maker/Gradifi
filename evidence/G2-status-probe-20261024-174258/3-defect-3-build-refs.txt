@@ -1,0 +1,7 @@
+﻿
+$BuildOutput = npm run build
+    $BuildResult = "PASS"
+    $BuildResult = "FAIL"
+Write-Host "G2_BUILD=$BuildResult"
+
+
