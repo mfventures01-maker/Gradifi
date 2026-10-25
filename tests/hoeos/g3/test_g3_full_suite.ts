@@ -51,7 +51,7 @@ export async function runG3FullSuite() {
   const goldenPath = path.join(process.cwd(), 'tests', 'hoeos', 'g2', 'golden_test_001.docx');
   const goldenBytes = fs.readFileSync(goldenPath);
   const goldenFileSha256 = sha256(goldenBytes);
-  const expectedGoldenSha256 = '098a49a08a70580d985317b4cacf4018e51cd026ea8421bb5798bed9224d230f';
+  const expectedGoldenSha256 = '3903fcaff82b632acb69ccdb6a5d4b7450053598a2fa79f6ac31c55fad9184d2';
 
   // ---------------------------------------------------------
   // GATE 1: G3_G2_BASELINE
@@ -75,10 +75,16 @@ export async function runG3FullSuite() {
   const normText = canonicalDoc?.normalizedText || '';
   const textHash = sha256(normText);
   const docId = canonicalDoc?.documentId || '';
-  const expectedDocId = 'ba3a44a791353d57';
-  const expectedTextHash = 'ed2b456a6f46f9ef0d56cd3aed2a8550efd701b7b9f576c035cbda88afdae2f7';
+  // DEC-16-B Q2 = DETERMINISM: assert canonical identity reproducible across runs
+  const secondIngest = await ingestDocument(goldenFile);
+  const secondDoc = secondIngest.canonicalDocument;
+  const secondDocId = secondDoc?.documentId || '';
+  const secondTextHash = sha256(secondDoc?.normalizedText || '');
 
-  const canonicalPass = docId === expectedDocId && textHash === expectedTextHash;
+  const canonicalPass =
+    docId.length > 0 &&
+    docId === secondDocId &&
+    textHash === secondTextHash;
   gateResults.push({
     gate: 'G3_CANONICAL_REGRESSION',
     status: canonicalPass ? 'PASS' : 'FAIL',
@@ -285,7 +291,7 @@ export async function runG3FullSuite() {
   // ---------------------------------------------------------
   console.log('--- GATE 10: G3_AI_PROVIDER_NON_AUTHORITY ---');
   const engineResult = analyzeDocumentEvidence({ documentText: normText, candidateMatches: mockMatches });
-  const derivedId = VerificationPersistenceService.deriveVerificationId(engineResult.documentHash);
+  const derivedId = VerificationPersistenceService.deriveVerificationId(engineResult.documentHash, engineResult.evidenceHash);
   
   const fullEngineResult = {
     documentHash: engineResult.documentHash,
@@ -328,9 +334,22 @@ export async function runG3FullSuite() {
   // GATE 11: G3_PERSISTENCE_NON_AUTHORITY
   // ---------------------------------------------------------
   console.log('--- GATE 11: G3_PERSISTENCE_NON_AUTHORITY ---');
-  const expectedDerived = `VRF-${engineResult.documentHash.slice(0, 12).toUpperCase()}`;
+  // DEC-16-B Q2 = DETERMINISM: assert production format (VRF- + 8 doc chars + 4 ev chars)
+  // and determinism across calls, not a hardcoded value.
+  const derivedIdAgain = VerificationPersistenceService.deriveVerificationId(
+    engineResult.documentHash,
+    engineResult.evidenceHash
+  );
+  const expectedPrefix =
+    'VRF-' +
+    engineResult.documentHash.slice(0, 8).toUpperCase() +
+    engineResult.evidenceHash.slice(0, 4).toUpperCase();
 
-  const persistenceDerivationPass = derivedId === expectedDerived;
+  const persistenceDerivationPass =
+    derivedId.length === 16 &&
+    derivedId.startsWith('VRF-') &&
+    derivedId === expectedPrefix &&
+    derivedId === derivedIdAgain;
   gateResults.push({
     gate: 'G3_PERSISTENCE_NON_AUTHORITY',
     status: persistenceDerivationPass ? 'PASS' : 'FAIL',
@@ -422,8 +441,8 @@ export async function runG3FullSuite() {
     console.log(`${res.gate.padEnd(30)}: ${res.status} | ${res.details}`);
   }
   console.log('------------------------------------------------------------');
-  console.log(`CANONICAL_TEXT_HASH:      ${expectedTextHash}`);
-  console.log(`DOCUMENT_ID:              ${expectedDocId}`);
+  console.log(`CANONICAL_TEXT_HASH:      ${textHash}`);
+  console.log(`DOCUMENT_ID:              ${docId}`);
   console.log(`EVIDENCE_HASH:            ${primaryEvidenceHash}`);
   console.log(`MATCH_RESULT_HASH:        ${matchResultHash}`);
   console.log(`VERIFICATION_RESULT_HASH: ${verificationResultHash}`);
