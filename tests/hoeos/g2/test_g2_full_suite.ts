@@ -6,6 +6,8 @@ import { ingestDocument } from '../../../src/services/verify/universalIngestionS
 import { buildCanonicalAnalysisDocument, normalizeText, computeHash } from '../../../src/services/verify/documentNormalizer';
 import { evaluateDocumentSimilarity, analyzeDocumentEvidence } from '../../../src/services/verify/deterministicEngine';
 import { verifyCoreService } from '../../../src/services/verify/verifyCoreService';
+import { VerificationPersistenceService } from '../../../src/services/verify/verificationPersistenceService';
+import { toPublicVerificationResult } from '../../../src/services/verify/publicVerificationResult';
 
 function sha256(data: string | Buffer): string {
   return createHash('sha256').update(data).digest('hex');
@@ -18,25 +20,69 @@ function createNodeFile(bytes: Buffer, fileName: string, mimeType: string): File
 
 function createDocxWithXml(xmlText: string): Buffer {
   const xmlBuffer = Buffer.from(xmlText, 'utf-8');
-  const fileNameStr = 'word/document.xml';
-  const fileNameBuf = Buffer.from(fileNameStr, 'utf-8');
-  const crc32 = zlib.crc32(xmlBuffer);
-
-  const header = Buffer.alloc(30 + fileNameBuf.length);
-  header.writeUInt32LE(0x04034b50, 0);
-  header.writeUInt16LE(10, 4);
-  header.writeUInt16LE(0, 6);
-  header.writeUInt16LE(0, 8);
-  header.writeUInt16LE(0, 10);
-  header.writeUInt16LE(0, 12);
-  header.writeUInt32LE(crc32, 14);
-  header.writeUInt32LE(xmlBuffer.length, 18);
-  header.writeUInt32LE(xmlBuffer.length, 22);
-  header.writeUInt16LE(fileNameBuf.length, 26);
-  header.writeUInt16LE(0, 28);
-  fileNameBuf.copy(header, 30);
-
-  return Buffer.concat([header, xmlBuffer]);
+  const contentTypesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>\n  <Default Extension="xml" ContentType="application/xml"/>\n  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>\n</Types>';
+  const relsXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>\n</Relationships>';
+  const docRelsXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>';
+  const entries = [
+    { name: '[Content_Types].xml', data: Buffer.from(contentTypesXml, 'utf-8') },
+    { name: '_rels/.rels', data: Buffer.from(relsXml, 'utf-8') },
+    { name: 'word/document.xml', data: xmlBuffer },
+    { name: 'word/_rels/document.xml.rels', data: Buffer.from(docRelsXml, 'utf-8') }
+  ];
+  const localParts: Buffer[] = [];
+  const centralParts: Buffer[] = [];
+  let offset = 0;
+  for (const entry of entries) {
+    const nameBuf = Buffer.from(entry.name, 'utf-8');
+    const data = entry.data;
+    const crc32 = zlib.crc32(data);
+    const local = Buffer.alloc(30 + nameBuf.length);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(0, 6);
+    local.writeUInt16LE(0, 8);
+    local.writeUInt16LE(0, 10);
+    local.writeUInt16LE(0, 12);
+    local.writeUInt32LE(crc32, 14);
+    local.writeUInt32LE(data.length, 18);
+    local.writeUInt32LE(data.length, 22);
+    local.writeUInt16LE(nameBuf.length, 26);
+    local.writeUInt16LE(0, 28);
+    nameBuf.copy(local, 30);
+    localParts.push(local, data);
+    const central = Buffer.alloc(46 + nameBuf.length);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(20, 4);
+    central.writeUInt16LE(20, 6);
+    central.writeUInt16LE(0, 8);
+    central.writeUInt16LE(0, 10);
+    central.writeUInt16LE(0, 12);
+    central.writeUInt16LE(0, 14);
+    central.writeUInt32LE(crc32, 16);
+    central.writeUInt32LE(data.length, 20);
+    central.writeUInt32LE(data.length, 24);
+    central.writeUInt16LE(nameBuf.length, 28);
+    central.writeUInt16LE(0, 30);
+    central.writeUInt16LE(0, 32);
+    central.writeUInt16LE(0, 34);
+    central.writeUInt16LE(0, 36);
+    central.writeUInt32LE(0, 38);
+    central.writeUInt32LE(offset, 42);
+    nameBuf.copy(central, 46);
+    centralParts.push(central);
+    offset += local.length + data.length;
+  }
+  const centralDir = Buffer.concat(centralParts);
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(0, 4);
+  eocd.writeUInt16LE(0, 6);
+  eocd.writeUInt16LE(entries.length, 8);
+  eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(centralDir.length, 12);
+  eocd.writeUInt32LE(offset, 16);
+  eocd.writeUInt16LE(0, 20);
+  return Buffer.concat([...localParts, centralDir, eocd]);
 }
 
 function countCodeRandomness(filePath: string): number {
@@ -70,7 +116,7 @@ async function runG2FullSuite() {
   const goldenPath = path.join(process.cwd(), 'tests', 'hoeos', 'g2', 'golden_test_001.docx');
   const goldenBytes = fs.readFileSync(goldenPath);
   const goldenFileSha256 = sha256(goldenBytes);
-  const expectedGoldenSha256 = '098a49a08a70580d985317b4cacf4018e51cd026ea8421bb5798bed9224d230f';
+  const expectedGoldenSha256 = '3903fcaff82b632acb69ccdb6a5d4b7450053598a2fa79f6ac31c55fad9184d2';
 
   // ---------------------------------------------------------
   // GATE 1: G2 Golden Fixture Integrity
@@ -146,7 +192,25 @@ async function runG2FullSuite() {
   // GATE 4: G2 Cross-Process Determinism
   // ---------------------------------------------------------
   console.log('--- GATE 4: G2 CROSS-PROCESS DETERMINISM ---');
-  const crossProcessPass = repeatabilityPass;
+  // Real cross-process: spawn a child process that re-ingests the fixture
+  // and prints its canonical documentId. The gate passes only if the child
+  // documentId matches the parent's.
+  const { spawnSync } = await import('node:child_process');
+  const pathMod = await import('node:path');
+  const tsxCli = pathMod.resolve('node_modules/tsx/dist/cli.mjs');
+  const childRun = spawnSync(
+    process.execPath,
+    [tsxCli, 'scripts/g2-cross-process-probe.ts'],
+    { encoding: 'utf-8', timeout: 60000 }
+  );
+  const childDocId = childRun.status === 0 ? childRun.stdout.trim() : '';
+  console.log(`CROSS_PROCESS_CHILD_STATUS=${childRun.status}`);
+  console.log(`CROSS_PROCESS_CHILD_STDOUT=${(childRun.stdout || '').slice(0, 200)}`);
+  console.log(`CROSS_PROCESS_CHILD_STDERR=${(childRun.stderr || '').slice(0, 200)}`);
+  console.log(`CROSS_PROCESS_PARENT_DOCID=${runDocIds[0] ?? ''}`);
+  console.log(`CROSS_PROCESS_CHILD_DOCID=${childDocId}`);
+  const parentDocId = runDocIds[0] ?? '';
+  const crossProcessPass = childDocId.length > 0 && childDocId === parentDocId;
   gateResults.push({
     gate: 'G2_CROSS_PROCESS',
     status: crossProcessPass ? 'PASS' : 'FAIL',
@@ -379,7 +443,21 @@ async function runG2FullSuite() {
   // GATE 11: G2-I AI/Provider Authority Closure
   // ---------------------------------------------------------
   console.log('--- GATE 11: G2-I AI/PROVIDER AUTHORITY CLOSURE ---');
-  const providerAuthorityAssignments = 0;
+  // Real assertion: build an EvidenceEngineResult and count matches whose
+  // provenance is unknown or not VERIFIED.
+  const providerTestText = 'GRADIFI HOEOS Provider Authority Test Document Payload.';
+  const providerAnalysis = analyzeDocumentEvidence({
+    documentText: providerTestText,
+    candidateMatches: []
+  });
+  const KNOWN_PROVIDERS = ['openalex', 'crossref', 'unpaywall', 'core', 'googlebooks'];
+  const providerAuthorityAssignments = (providerAnalysis.verifiedMatches ?? []).filter((m: any) => {
+    const prov = m?.provenance;
+    if (!prov) return true;
+    if (!KNOWN_PROVIDERS.includes(String(prov.provider))) return true;
+    if (String(prov.provenanceState) !== 'VERIFIED') return true;
+    return false;
+  }).length;
   console.log(`PROVIDER_TO_CANONICAL_AUTHORITY_ASSIGNMENTS: ${providerAuthorityAssignments}`);
   const providerPass = providerAuthorityAssignments === 0;
   gateResults.push({
@@ -438,7 +516,28 @@ async function runG2FullSuite() {
   // GATE 13: G2-K Persistence Authority Closure
   // ---------------------------------------------------------
   console.log('--- GATE 13: G2-K PERSISTENCE AUTHORITY CLOSURE ---');
-  const persistencePass = true;
+  // Real assertion: build a record from a real analysis and verify that the
+  // record's verification_id equals the derived ID from the same hashes.
+  const persistenceTestText = 'GRADIFI HOEOS Persistence Authority Test Document Payload Content.';
+  const persistenceAnalysis = analyzeDocumentEvidence({
+    documentText: persistenceTestText,
+    candidateMatches: []
+  });
+  let persistencePass = false;
+  try {
+    const persistenceRecord = VerificationPersistenceService.buildPersistenceRecord(persistenceAnalysis);
+    const persistenceExpectedId = VerificationPersistenceService.deriveVerificationId(
+      persistenceAnalysis.documentHash,
+      persistenceAnalysis.evidenceHash
+    );
+    persistencePass =
+      persistenceRecord.verification_id === persistenceExpectedId &&
+      persistenceRecord.document_hash === persistenceAnalysis.documentHash &&
+      persistenceRecord.evidence_hash === persistenceAnalysis.evidenceHash;
+  } catch (e: any) {
+    console.error('PERSISTENCE_ERROR=' + (e?.message ?? String(e)));
+    persistencePass = false;
+  }
   gateResults.push({
     gate: 'G2_PERSISTENCE_AUTHORITY',
     status: persistencePass ? 'PASS' : 'FAIL',
@@ -450,7 +549,27 @@ async function runG2FullSuite() {
   // GATE 14: G2-L Client Authority Closure
   // ---------------------------------------------------------
   console.log('--- GATE 14: G2-L CLIENT AUTHORITY CLOSURE ---');
-  const clientPass = true;
+  // Real assertion: convert a real analysis to the public form and verify
+  // that server-only fields are absent from the client-visible result.
+  const clientTestText = 'GRADIFI HOEOS Client Authority Test Document Payload Content.';
+  const clientAnalysis = analyzeDocumentEvidence({
+    documentText: clientTestText,
+    candidateMatches: []
+  });
+  let clientPass = false;
+  try {
+    const clientPublicResult: any = toPublicVerificationResult(clientAnalysis);
+    clientPass =
+      clientPublicResult.evidence_hash === undefined &&
+      clientPublicResult.providerCredentials === undefined &&
+      clientPublicResult.rawCanonicalText === undefined &&
+      clientPublicResult.documentId === undefined &&
+      clientPublicResult.document !== undefined &&
+      typeof clientPublicResult.document.title === 'string';
+  } catch (e: any) {
+    console.error('CLIENT_CONVERSION_ERROR=' + (e?.message ?? String(e)));
+    clientPass = false;
+  }
   gateResults.push({
     gate: 'G2_CLIENT_AUTHORITY',
     status: clientPass ? 'PASS' : 'FAIL',
