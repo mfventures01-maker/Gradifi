@@ -130,28 +130,56 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
     const pEnd = pStart + match[0].length;
     const pTokens = tokenize(pText);
 
-    // Segment sentences inside paragraph
+    // Segment sentences inside paragraph.
+    //
+    // Boundary protection: before splitting on .!?, protect academic
+    // abbreviations, DOIs, decimals, and single-letter initials by replacing
+    // them with placeholder tokens containing no .!? characters. The
+    // placeholder is restored into the resulting sentence text, so the
+    // canonical token stream is preserved (L7 asserts sentenceTokens.length
+    // equals canonicalTokens.length).
+    const abbreviations = ['Dr','Prof','Mr','Mrs','Ms','Vol','No','Fig','Sec','Eq','Ch','pp','p','etc','e\\.g','i\\.e','vs','Viz'];
+    const abbrPattern = '(?:\\b(?:' + abbreviations.join('|') + ')\\.)';
+    const doiPattern = '(?:\\b10\\.\\d{4,}\\/\\S+?\\.(?=\\s|$))';
+    const decimalPattern = '(?:\\b\\d+\\.\\d+)';
+    const initialPattern = '(?:\\b[A-Z]\\.(?=\\s+[A-Z]))';
+
+    const protectedSpans: Array<{placeholder: string; text: string}> = [];
+    let protectIdx = 0;
+    let protectedText = pText;
+    for (const pat of [abbrPattern, doiPattern, decimalPattern, initialPattern]) {
+      const re = new RegExp(pat, 'g');
+      protectedText = protectedText.replace(re, (m) => {
+        const placeholder = '\uE000' + String(protectIdx++).padStart(4, '0') + '\uE001';
+        protectedSpans.push({ placeholder, text: m });
+        return placeholder;
+      });
+    }
+
     const sentenceRegex = /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g;
     const sentences: DocumentSentence[] = [];
     let sMatch: RegExpExecArray | null;
     let sInPIdx = 0;
 
-    while ((sMatch = sentenceRegex.exec(pText)) !== null) {
-      const sText = sMatch[0].trim();
-      const sTokens = tokenize(sText);
-      // G2 Sub-Defect B: reject pathological short sentences that produce
-      // single-token matches at 100% similarity. Two floors:
-      //   - at least 3 tokens,
-      //   - at least 15 characters.
-      // This prevents numbered section headings like "4 ." or "1 ." from
-      // entering the sentence set and being matched via String.includes.
-      if (sTokens.length < 3 || sText.length < 15) continue;
+    while ((sMatch = sentenceRegex.exec(protectedText)) !== null) {
+      const rawText = sMatch[0];
+      // Restore protected placeholders back to original text
+      const restored = rawText.replace(/\uE000(\d{4})\uE001/g, (_, idx) => protectedSpans[parseInt(idx, 10)].text);
+      const sText = restored.trim();
 
+      // Heading pathology filter: reject only sentences whose entire content
+      // is a bare section number (e.g. "4", "4.", "12 ."). Every other
+      // sentence is admitted — short legitimate sentences like
+      // "First sentence." (2 tokens) are retained.
+      if (/^\s*\d+\s*\.?\s*$/.test(sText)) continue;
+
+      const sTokens = tokenize(sText);
       sInPIdx++;
       globalSentenceIdx++;
       const sId = `SEN-${String(globalSentenceIdx).padStart(3, '0')}`;
-      const sStart = pStart + sMatch.index;
-      const sEnd = sStart + sMatch[0].length;
+      const leadingWhitespace = restored.length - restored.trimStart().length;
+      const sStart = pStart + sMatch.index + leadingWhitespace;
+      const sEnd = sStart + sText.length;
 
       // Extract sliding window n-gram phrases (N=3, 5, 7)
       const phrases: DocumentPhrase[] = [];
