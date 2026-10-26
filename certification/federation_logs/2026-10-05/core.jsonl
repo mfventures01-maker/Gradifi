@@ -1,1 +1,0 @@
-{"timestamp":"2026-10-05T00:02:49.117Z","correlationId":"core_1791158566379_f0876faf","providerId":"core","url":"https://api.core.ac.uk/v3/search/works?q=quantum%20computer%20superposition%20binary%20bits%20computation%20computing%20contrast&limit=5","attempt":1,"durationMs":2736,"outcome":"SUCCESS","matchesReturned":5,"fineGrainedStatus":"VERIFIED"}
