@@ -33,3 +33,6 @@ certification/*/runtime/
 certification/*/tmp/
 certification/*/scratch/
 certs/
+
+# Transient runtime output
+certification/federation_logs/
