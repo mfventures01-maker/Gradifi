@@ -1,5 +1,5 @@
-﻿# tests/hoeos/g3/test_verifyG3Certification.ps1
-# Verifies the V8 verdict block against sixteen stub scenarios.
+# tests/hoeos/g3/test_verifyG3Certification.ps1
+# Verifies the V8 verdict block against twenty-one stub scenarios.
 # Exits 0 only if every scenario's verdict and every counter match.
 
 $ErrorActionPreference = 'Stop'
@@ -80,6 +80,7 @@ function Set-GateState {
 }
 
 $allPass = @($requiredGates | ForEach-Object { "$_ : PASS" })
+$allPassWithDetails = @($requiredGates | ForEach-Object { "$_ : PASS | valid details" })
 
 $scenarios = @(
     New-Scenario -Name 'all-pass' -Lines $allPass -ExpectedVerdict 'PASS' `
@@ -129,6 +130,21 @@ $scenarios = @(
 
     New-Scenario -Name 'all-fail-no-pass' -Lines (Set-GateState $requiredGates 0 'BLOCKED') `
         -ExpectedVerdict 'FAIL' -ExpectedCounters @{ Blocked = 1 }
+
+    New-Scenario -Name 'all-pass-with-details' -Lines $allPassWithDetails -ExpectedVerdict 'PASS' `
+        -ExpectedCounters @{ Passed = 15; MalformedCount = 0 }
+
+    New-Scenario -Name 'unknown-status' -Lines (@($allPass) + @('G3_FAKE : MAYBE')) `
+        -ExpectedVerdict 'FAIL' -ExpectedCounters @{ MalformedCount = 1 }
+
+    New-Scenario -Name 'ambiguous-delimiter' -Lines (@($allPass) + @('G3_X : PASS | PASS | PASS')) `
+        -ExpectedVerdict 'FAIL' -ExpectedCounters @{ MalformedCount = 1 }
+
+    New-Scenario -Name 'empty-output' -Lines @() `
+        -ExpectedVerdict 'FAIL' -ExpectedCounters @{ MissingCount = 15 }
+
+    New-Scenario -Name 'diagnostics-only' -Lines @('Checking system...', 'Connecting to database...', 'All checks completed.') `
+        -ExpectedVerdict 'FAIL' -ExpectedCounters @{ MissingCount = 15 }
 )
 
 $scenariosPassed = 0

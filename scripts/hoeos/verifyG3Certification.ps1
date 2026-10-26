@@ -100,7 +100,7 @@ $requiredGates = @(
     'G3_AI_PROVIDER_NON_AUTHORITY','G3_PERSISTENCE_NON_AUTHORITY','G3_CLIENT_NON_AUTHORITY',
     'G3_RECEIPT_INTEGRITY','G3_PUBLIC_RECONCILIATION','G3_FAILURE_DETERMINISM'
 )
-$gateNamePattern = '^\s*(G3_[A-Z0-9_]+)\s*:\s*(PASS|FAIL|BLOCKED|NOT TESTED)\s*$'
+$gateNamePattern = '^\s*(G3_[A-Z0-9_]+)\s*:\s*(PASS|FAIL|BLOCKED|NOT TESTED)(?:\s*\|[^|\r\n]*)?\s*$'
 
 foreach ($line in ($TsxOutput -split "`n")) {
     if ($line -match $gateNamePattern) {
@@ -119,8 +119,7 @@ foreach ($line in ($TsxOutput -split "`n")) {
 # match the full gate pattern is treated as a defect, not ignored.
 $malformedGateLines = @()
 foreach ($scanLine in ($TsxOutput -split "`n")) {
-    $scanTrimmed = $scanLine.TrimStart()
-    if ($scanTrimmed -match '^G3_' -and $scanLine -notmatch $gateNamePattern) {
+    if ($scanLine -match '^\s*G3_' -and $scanLine -notmatch $gateNamePattern) {
         $malformedGateLines += $scanLine
     }
 }
