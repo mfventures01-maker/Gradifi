@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { analyzeDocumentEvidence, ENGINE_VERSION, POLICY_VERSION } from '../src/services/verify/deterministicEngine';
-import { NORMALIZATION_VERSION, normalizeText, tokenize } from '../src/services/verify/documentNormalizer';
-import { EvidenceMatch } from '../src/services/verify/types';
+import { analyzeDocumentEvidence, ENGINE_VERSION, POLICY_VERSION } from '../../../src/services/verify/deterministicEngine';
+import { NORMALIZATION_VERSION, normalizeText, tokenize } from '../../../src/services/verify/documentNormalizer';
+import { EvidenceMatch } from '../../../src/services/verify/types';
 
 const RUN_ID = `run-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}Z`;
 const RUN_DIR_REPO = path.join(process.cwd(), 'evidence', 'layer2', 'runs', RUN_ID);
