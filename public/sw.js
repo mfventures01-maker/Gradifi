@@ -4,7 +4,7 @@
 // Constitutional Law 8: Build Engines, Not Pages
 // ============================================================================
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const STATIC_CACHE = `gradifi-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `gradifi-dynamic-${CACHE_VERSION}`;
 const ASSET_CACHE = `gradifi-assets-${CACHE_VERSION}`;
