@@ -93,6 +93,40 @@ import {
 } from './types.js';
 
 /**
+ * Deterministically maps normalized alphanumeric tokens to their exact raw character
+ * spans within the sentence text, preserving punctuation, hyphens, and whitespace.
+ */
+export function mapTokenSpans(sText: string, tokens: string[]): Array<{ start: number; end: number }> {
+  const spans: Array<{ start: number; end: number }> = [];
+  let currentIdx = 0;
+  const sNorm = sText.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  for (const token of tokens) {
+    const tLower = token.toLowerCase();
+    let matchIdx = -1;
+    for (let j = currentIdx; j <= sNorm.length - tLower.length; j++) {
+      if (sNorm.slice(j, j + tLower.length) === tLower) {
+        const charBefore = j > 0 ? sNorm[j - 1] : ' ';
+        const charAfter = j + tLower.length < sNorm.length ? sNorm[j + tLower.length] : ' ';
+        if (!/[\w]/.test(charBefore) && !/[\w]/.test(charAfter)) {
+          matchIdx = j;
+          break;
+        }
+      }
+    }
+
+    if (matchIdx !== -1) {
+      spans.push({ start: matchIdx, end: matchIdx + tLower.length });
+      currentIdx = matchIdx + tLower.length;
+    } else {
+      spans.push({ start: currentIdx, end: Math.min(sText.length, currentIdx + token.length) });
+      currentIdx = currentIdx + token.length;
+    }
+  }
+  return spans;
+}
+
+/**
  * Deterministically segments text into Paragraphs (PAR-XXX), Sentences (SEN-XXX), and Phrases (PHR-XXX).
  * Stable sequential IDs provide 100% reproducible evidence references.
  */
@@ -126,8 +160,9 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
 
     pIdx++;
     const pId = `PAR-${String(pIdx).padStart(3, '0')}`;
-    const pStart = match.index;
-    const pEnd = pStart + match[0].length;
+    const pLeading = match[0].length - match[0].trimStart().length;
+    const pStart = match.index + pLeading;
+    const pEnd = pStart + pText.length;
     const pTokens = tokenize(pText);
 
     // Segment sentences inside paragraph.
@@ -184,6 +219,7 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
       // Extract sliding window n-gram phrases (N=3, 5, 7)
       const phrases: DocumentPhrase[] = [];
       const nGramSizes = [3, 5, 7];
+      const tokenSpans = mapTokenSpans(sText, sTokens);
 
       for (const n of nGramSizes) {
         if (sTokens.length >= n) {
@@ -193,11 +229,11 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
             globalPhraseIdx++;
             const phrId = `PHR-${String(globalPhraseIdx).padStart(3, '0')}`;
 
-            // Character coordinates within sentence
-            const normSent = normalizeText(sText);
-            const charIdx = normSent.indexOf(phraseText);
-            const startChar = charIdx !== -1 ? sStart + charIdx : sStart;
-            const endChar = startChar + phraseText.length;
+            // Character coordinates within sentence mapped directly to raw text
+            const startRel = tokenSpans[i] ? tokenSpans[i].start : 0;
+            const endRel = tokenSpans[i + n - 1] ? tokenSpans[i + n - 1].end : (startRel + phraseText.length);
+            const startChar = sStart + startRel;
+            const endChar = sStart + endRel;
 
             phrases.push({
               phraseId: phrId,

@@ -518,8 +518,8 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
         sourcePhraseMatches.push(...phrases);
         allPhraseEvidence.push(...phrases);
 
-        // Track token coverage for this sentence if matched
-        if (sentenceMatch.similarityPercentage >= 20) {
+        // Track token coverage for this sentence if matched with substantive similarity (>= 40% MODERATE or HIGH)
+        if (sentenceMatch.similarityPercentage >= 40) {
           const sentTokens = tokenize(sentence.text);
           const docTokenOffset = tokenize(input.documentText.slice(0, sentence.startChar)).length;
           for (let i = 0; i < sentTokens.length; i++) {

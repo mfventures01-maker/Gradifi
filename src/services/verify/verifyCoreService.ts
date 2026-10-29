@@ -68,7 +68,7 @@ export class VerifyCoreService {
    */
   async executeVerifyRun(
     input: string | CanonicalAnalysisDocument | AnalysisInputContract,
-    options?: { searchLimit?: number }
+    options?: { searchLimit?: number; candidateMatches?: EvidenceMatch[] }
   ): Promise<EvidenceEngineResult> {
     const startTime = Date.now();
     const limit = options?.searchLimit || 5;
@@ -112,7 +112,7 @@ export class VerifyCoreService {
       semanticscholar: 'NOT_TESTED'
     };
 
-    const rawMatches: EvidenceMatch[] = [];
+    const rawMatches: EvidenceMatch[] = options?.candidateMatches ? [...options.candidateMatches] : [];
 
     // Execute all 6 academic providers independently in parallel with staggered offsets
     const [
