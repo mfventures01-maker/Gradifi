@@ -1,4 +1,4 @@
-﻿/**
+/**
  * G5-M03 DOCX EXTRACTOR
  *
  * Conforms to evidence/phase3/g5m03_spec.txt.
@@ -225,7 +225,7 @@ function readCentralDirectory(bytes: Uint8Array): CentralDir | null {
 
     if (pos + 46 + nameLen > bytes.length) return null;
     const nameBytes = bytes.slice(pos + 46, pos + 46 + nameLen);
-    const name = strFromU8(nameBytes, true);
+    const name = strFromU8(nameBytes);
 
     entries.push({
       name,
@@ -386,7 +386,7 @@ function scanForForbiddenPatterns(xmlBytes: Uint8Array): ExtractionFailure | nul
     }
   }
 
-  const xml = strFromU8(xmlBytes, true);
+  const xml = strFromU8(xmlBytes);
   const upper = xml.toUpperCase();
 
   if (upper.includes('<!DOCTYPE')) {
@@ -736,7 +736,7 @@ export async function extractDocx(
     return failure(scanFail.code, scanFail.message, scanFail.detail);
   }
 
-  const xmlText = strFromU8(xmlBytes, true);
+  const xmlText = strFromU8(xmlBytes);
   let parsed: ParsedTree;
   try {
     parsed = parseXml(xmlText);
