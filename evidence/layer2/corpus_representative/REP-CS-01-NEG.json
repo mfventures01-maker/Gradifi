@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-CS-01-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Computer Science",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-CS-001",
+      "title": "Architectural Patterns for Low-Bandwidth Web Systems",
+      "authors": [
+        "Dr. A. Balogun"
+      ],
+      "text": "Intermittent grid electricity and high cellular data costs in sub-Saharan African educational environments necessitate offline-first progressive web applications utilizing Service Workers and IndexedDB local caching."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-CS-001",
+    "title": "Offline Resilient Systems in African Higher Education",
+    "text": "Due to frequent power failures and expensive mobile bandwidth across West African universities, modern academic software must support offline synchronization using client-side browser storage and service worker background syncing."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 20,
+    "expectedMatches": []
+  },
+  "labelRationale": "Paraphrase with independent vocabulary. Repaired engine correctly reports no match.",
+  "provenance": "Anonymized undergraduate software engineering thesis"
+}

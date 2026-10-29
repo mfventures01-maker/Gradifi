@@ -1,0 +1,38 @@
+{
+  "fixtureId": "L2-CAT-H-01",
+  "corpusVersion": "1.0.0",
+  "category": "H",
+  "categoryDescription": "Boundary - All-caps case mutation and exclamation marks",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-H-01",
+      "title": "Causality and Invariance in Machine Cognition",
+      "authors": [
+        "Dr. J. Pearl"
+      ],
+      "text": "Artificial general intelligence requires causal reasoning capabilities that transcend statistical pattern correlation in high-dimensional observational manifolds."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-H-01",
+    "title": "Adversarial Casing Probe",
+    "text": "ARTIFICIAL GENERAL INTELLIGENCE REQUIRES CAUSAL REASONING CAPABILITIES THAT TRANSCEND STATISTICAL PATTERN CORRELATION IN HIGH-DIMENSIONAL OBSERVATIONAL MANIFOLDS!!!"
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 95,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-H-01",
+        "studentTextSnippet": "ARTIFICIAL GENERAL INTELLIGENCE REQUIRES CAUSAL REASONING CAPABILITIES THAT TRANSCEND STATISTICAL PATTERN CORRELATION IN HIGH-DIMENSIONAL OBSERVATIONAL MANIFOLDS!!!",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "NORM-V1 canonical normalization converts to lowercase and strips non-alphanumeric punctuation. Match must be 100% exact under normalized representation.",
+  "knownLimitations": "None. Canonical normalization guarantees case and punctuation invariance."
+}

@@ -1,0 +1,51 @@
+{
+    "recordId":  "THRESHOLD-DECISION-L2-CG-01-POSTREPAIR",
+    "timestamp":  "2026-10-29T11:13:35.532Z",
+    "decisionStatus":  "POST_REPAIR_OBSERVATION",
+    "governingRule":  "HOEOS v2 Phase 4 Threshold Governance (Do not invent acceptance thresholds. Mark BLOCKED if unapproved.)",
+    "decisionOwner":  "System Owner / Executive Authority",
+    "supersedes":  {
+                       "preRepairRecordPath":  "evidence/layer2/threshold-decision.json (original path)",
+                       "preRepairRecordSha256":  "32973e6cb8b0a3620002dd110d1300a31939f93893be798d1126b0e91d66a9a7",
+                       "preRepairRecordId":  "THRESHOLD-DECISION-L2-CG-01",
+                       "amendmentSha256":  "393fbf8a25729fd0f87378e32e13e99f95b4dd530b44bc74a67510d03e6d67be",
+                       "note":  "The pre-repair record was overwritten in place at 2026-10-29T11:13:35Z. Its content is reconstructed in threshold-decision-2026-10-29T01-19-57Z-PREREPAIR.json from amendment 393fbf8a.observedValues and .proposedThresholds. Original hash preserved above."
+                   },
+    "proposedThresholds":  {
+                               "documentLevelPrecision":  {
+                                                              "proposed":  0.95,
+                                                              "observed":  1,
+                                                              "rationale":  "Commercial plagiarism detection requires minimal false positives to prevent false accusations."
+                                                          },
+                               "documentLevelRecall":  {
+                                                           "proposed":  0.9,
+                                                           "observed":  1,
+                                                           "rationale":  "Standard academic detection must reliably capture \u003e=90% of copied or lightly modified passages."
+                                                       },
+                               "falsePositiveRate":  {
+                                                         "proposed":  0.05,
+                                                         "observed":  0,
+                                                         "rationale":  "False positive rate on negative controls and original text must stay \u003c= 5%."
+                                                     },
+                               "sentenceSpanAccuracy":  {
+                                                            "proposed":  0.95,
+                                                            "observed":  1,
+                                                            "rationale":  "Text span coordinates into canonical text must have \u003e=95% raw text slice match."
+                                                        },
+                               "aiAdvisoryIsolation":  {
+                                                           "proposed":  1,
+                                                           "observed":  1,
+                                                           "rationale":  "Deterministic findings and scores must remain 100% bit-for-bit invariant under AI outages."
+                                                       }
+                           },
+    "coveragePolicy":  "REQUIRE_SUBSTANTIVE_SIMILARITY_THRESHOLD",
+    "coveragePolicyRationale":  "deterministicEngine.ts gates sentence token coverage at \u003e=40% (MODERATE or higher). This supersedes the ACCEPT_WHOLE_SENTENCE_COVERAGE policy recorded in amendment 393fbf8a. The \u003e=40% gate closes the L2-CAT-C-03 document-level false positive (observed 1/10 pre-repair, 0/10 post-repair).",
+    "spanDefectPolicy":  "REPAIRED",
+    "spanDefectRationale":  "documentNormalizer.ts mapTokenSpans + paragraph leading-whitespace offset correction closes the L2-CAT-H-02 span truncation.",
+    "gateImpact":  "PASS: ALL_PROPOSED_THRESHOLDS_MET",
+    "layer2VerdictAfterThisRecord":  "PASS",
+    "sourceCommit":  "9ee57c353163e58c18459c1c0efb114c9e7456a8",
+    "productionStatus":  "HARD_HOLD",
+    "preventsPushing":  true,
+    "freeTextNote":  "Layer 2 gate PASSes on this record for the source at 9ee57c3. Production remains HARD_HOLD. Layer 3 not started. Pilot authorization under HARD_HOLD is a separate Phase F question."
+}

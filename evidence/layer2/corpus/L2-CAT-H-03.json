@@ -1,0 +1,38 @@
+{
+  "fixtureId": "L2-CAT-H-03",
+  "corpusVersion": "1.0.0",
+  "category": "H",
+  "categoryDescription": "Boundary - Short phrase (5 tokens, 40 characters)",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-H-03",
+      "title": "Elementary Plant Biology",
+      "authors": [
+        "Dr. J. Botanist"
+      ],
+      "text": "Photosynthesis requires light and water."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-H-03",
+    "title": "Short Sentence Probe",
+    "text": "Photosynthesis requires light and water."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 95,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-H-03",
+        "studentTextSnippet": "Photosynthesis requires light and water.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Sentence has 5 tokens and 40 characters, exceeding the G2 Sub-Defect B defence-in-depth minimum (>=3 tokens, >=10 characters). Expected exact match.",
+  "knownLimitations": "Sentences below 3 tokens or 10 characters are intentionally rejected to prevent trivial common-word false positives."
+}

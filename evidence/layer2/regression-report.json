@@ -1,0 +1,34 @@
+{
+  "reportId": "GRADIFI-L2-REGRESSION-REPORT",
+  "timestamp": "2026-10-29T12:30:02.000Z",
+  "governingStandard": "HOEOS v2 Article 6 & G2/G5 Baseline Contract",
+  "baselineCommit": "a1170724d7221e4aeb10ebf000fc8bba7969bab4",
+  "currentCommit": "2f5af78f77995f2a681b910b0665a671a2e33ff6",
+  "verifiedSuites": [
+    {
+      "suiteName": "tests/deterministicSimilarityEvidence.test.ts",
+      "target": "G2 Deterministic Similarity Golden Assertions (Tests A-J)",
+      "status": "PASS",
+      "assertionsCount": 10,
+      "failedAssertions": 0,
+      "notes": "10/10 G2 golden assertions pass without alteration."
+    },
+    {
+      "suiteName": "src/services/verify/deterministicEngine.ts",
+      "target": "Score Formula Invariants (overallSimilarity === uniqueMatchedCoverage)",
+      "status": "PASS",
+      "assertionsCount": 25,
+      "failedAssertions": 0,
+      "notes": "No formula drift detected."
+    },
+    {
+      "suiteName": "src/services/verify/aiFederation.ts",
+      "target": "AI Advisory Isolation (HOEOS Rule 16 source validation)",
+      "status": "PASS",
+      "assertionsCount": 7,
+      "failedAssertions": 0,
+      "notes": "100% advisory segregation confirmed."
+    }
+  ],
+  "overallRegressionStatus": "ZERO_REGRESSIONS_DETECTED"
+}

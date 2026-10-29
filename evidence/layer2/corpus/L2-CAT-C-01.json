@@ -1,0 +1,30 @@
+{
+  "fixtureId": "L2-CAT-C-01",
+  "corpusVersion": "1.0.0",
+  "category": "C",
+  "categoryDescription": "Paraphrase - Moderate lexical overlap with shared domain terms",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-C-01",
+      "title": "Urban Hydrology in Emerging Economies",
+      "authors": [
+        "Dr. M. Satterthwaite"
+      ],
+      "text": "Rapid urbanization without adequate infrastructure leads to severe groundwater depletion and environmental contamination in developing metropolitan regions."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-C-01",
+    "title": "Hydrological Crises in Modern Cities",
+    "text": "Metropolitan regions experiencing rapid growth without proper municipal systems suffer from diminished groundwater supplies and polluted environments."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 50,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": null
+  },
+  "labelRationale": "SIM-V1 is an n-gram lexical engine. When vocabulary is substantially paraphrased, 3-gram overlap is zero. Token overlap is ~25%. Expected: low similarity or NO_MATCH under strict lexical limits.",
+  "knownLimitations": "Pure lexical n-gram engines cannot detect deep paraphrases without semantic embeddings."
+}

@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-EDGE-03-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Engineering",
+  "documentLengthCategory": "Medium",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDGE-003",
+      "title": "Rural Electrification and Decentralized Renewable Mini-Grids",
+      "authors": [
+        "Engr. K. Danladi"
+      ],
+      "text": "Solar mini-grids deploying lithium iron phosphate battery storage systems reduce diesel generator operating costs by seventy-five percent across off-grid rural farming settlements in Niger State."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDGE-003",
+    "title": "Decentralized Solar Storage in Agrarian Communities",
+    "text": "Decentralized power is vital for rural cold chain storage. Solar mini-grids deploying lithium iron phosphate battery storage systems reduce diesel generator operating costs by seventy-five percent across off-grid rural farming settlements in Niger State. Local community energy cooperatives manage tariff collections through mobile phone billing applications."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 40,
+    "maxOverallSimilarity": 70,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-EDGE-003",
+        "studentTextSnippet": "Solar mini-grids deploying lithium iron phosphate battery storage systems reduce diesel generator operating costs by seventy-five percent across off-grid rural farming settlements in Niger State.",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Verbatim engineering sentence embedded in student work.",
+  "provenance": "Renewable Energy Agency Technical Paper"
+}

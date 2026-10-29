@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-ENG-02-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Engineering",
+  "documentLengthCategory": "Short",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-ENG-003",
+      "title": "Grid Frequency Instability in the Nigerian 330kV National Grid",
+      "authors": [
+        "Engr. O. Bello"
+      ],
+      "text": "Cascading grid collapses occur when sudden generation trip-offs in thermal power plants exceed the spinning reserve capacity of hydro stations in Kainji and Jebba."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-ENG-002",
+    "title": "Design of Rooftop Solar Photovoltaic Inverters with Maximum Power Point Tracking",
+    "text": "Perturb and observe maximum power point tracking algorithms dynamically match solar array impedance to battery charge controllers under fluctuating solar irradiance."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Negative control: student wrote on solar inverters; source discusses 330kV grid frequency drops.",
+  "provenance": "Electrical engineering final year project abstract"
+}

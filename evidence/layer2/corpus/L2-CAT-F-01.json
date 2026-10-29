@@ -1,0 +1,39 @@
+{
+  "fixtureId": "L2-CAT-F-01",
+  "corpusVersion": "1.0.0",
+  "category": "F",
+  "categoryDescription": "Mixed content - Exact middle paragraph embedded between two original paragraphs",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-F-01",
+      "title": "Degradation Mechanisms in Lithium Battery Chemistries",
+      "authors": [
+        "Dr. J. Goodenough",
+        "Dr. A. Yoshino"
+      ],
+      "text": "Lithium-ion batteries experience progressive capacity loss caused by solid electrolyte interphase layer growth on the graphite anode surface during prolonged charge-discharge cycling."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-F-01",
+    "title": "Electrochemical Energy Storage Challenges",
+    "text": "Renewable energy storage requires cost-effective and durable electrochemical systems for grid stabilization.\n\nLithium-ion batteries experience progressive capacity loss caused by solid electrolyte interphase layer growth on the graphite anode surface during prolonged charge-discharge cycling.\n\nTo mitigate degradation, alternative solid-state electrolytes are currently under intensive scientific investigation."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 30,
+    "maxOverallSimilarity": 55,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-F-01",
+        "studentTextSnippet": "Lithium-ion batteries experience progressive capacity loss caused by solid electrolyte interphase layer growth on the graphite anode surface during prolonged charge-discharge cycling.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Only the middle paragraph is copied. Paragraphs 1 and 3 are original. Test verifies precise span isolation: only Paragraph 2 is flagged, without whole-document false contamination.",
+  "knownLimitations": "None."
+}

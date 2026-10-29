@@ -1,0 +1,59 @@
+{
+  "documentHash": "a716f0efddce96ad",
+  "evidenceHash": "ed20022bf5e4f9e9",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 0,
+  "uniqueMatchedCoverage": 0,
+  "highestSourceMatch": 0,
+  "totalSourcesEvaluated": 1,
+  "verifiedMatches": [
+    {
+      "sourceId": "SRC-D-01",
+      "title": "Structural Properties of High-Tc Superconductors",
+      "authors": [
+        "Dr. J. Bednorz",
+        "Prof. K. Muller"
+      ],
+      "url": "",
+      "matchedText": "",
+      "originalSnippet": "Crystallographic analysis reveals that high-temperature superconducting cuprates possess a layered perovskite structure with alternating copper-oxide planes.",
+      "matchType": "citation",
+      "matchPercentage": 0,
+      "relevanceScore": 0,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "SRC-D-01",
+        "retrievedAt": "2026-10-29T01:19:56.722Z",
+        "sourceType": "document",
+        "sourceUrl": "",
+        "title": "Structural Properties of High-Tc Superconductors",
+        "authors": [
+          "Dr. J. Bednorz",
+          "Prof. K. Muller"
+        ],
+        "provenanceState": "UNVERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "aggregation": {
+    "totalDocumentTokens": 32,
+    "totalUniqueMatchedTokens": 0,
+    "totalDocumentOverlap": 0,
+    "highestSourceMatch": 0,
+    "totalSourceMatches": 0,
+    "totalParagraphMatches": 0,
+    "totalSentenceMatches": 0,
+    "totalPhraseMatches": 0,
+    "sourceReports": [],
+    "paragraphFlags": [],
+    "sentenceFlags": [],
+    "phraseFlags": [],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "ed20022bf5e4f9e9",
+    "documentHash": "a716f0efddce96ad"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        a716f0efddce96ad\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        ed20022bf5e4f9e9\nAnalysis Timestamp:   2026-10-29T01:19:56.724Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  0.0%\nHighest Source Match:     0.0%\nSources With Matches:     0\nParagraphs Flagged:       0\nSentences Flagged:        0\nPhrases Flagged:          0\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\n  No matching academic sources identified.\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\n  No paragraph flags raised.\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\n  No sentence flags raised.\nPHRASE FLAGS\n--------------------------------------------------------------------------------\n  No phrase flags raised.\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         ed20022bf5e4f9e9\n================================================================================"
+}

@@ -1,0 +1,38 @@
+{
+  "fixtureId": "L2-CAT-F-03",
+  "corpusVersion": "1.0.0",
+  "category": "F",
+  "categoryDescription": "Mixed content - Repeated identical copied paragraphs enclosing original sentence",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-F-03",
+      "title": "High-Resolution Chiral Chromatography",
+      "authors": [
+        "Dr. P. Sandra"
+      ],
+      "text": "Supercritical fluid chromatography combines the low viscosity of gases with the high solvating capability of liquid solvents to separate complex chiral enantiomers efficiently."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-F-03",
+    "title": "Analytical Separation Science",
+    "text": "Supercritical fluid chromatography combines the low viscosity of gases with the high solvating capability of liquid solvents to separate complex chiral enantiomers efficiently.\n\nSeparation efficiency depends upon mobile phase temperature and column backpressure regulation.\n\nSupercritical fluid chromatography combines the low viscosity of gases with the high solvating capability of liquid solvents to separate complex chiral enantiomers efficiently."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 70,
+    "maxOverallSimilarity": 90,
+    "expectedFindingCount": 2,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-F-03",
+        "studentTextSnippet": "Supercritical fluid chromatography combines the low viscosity of gases with the high solvating capability of liquid solvents to separate complex chiral enantiomers efficiently.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Paragraph 1 and Paragraph 3 are identical copies of the source. Middle sentence is original. Unique coverage deduplicates tokens, while both occurrences are flagged.",
+  "knownLimitations": "Global token coverage prevents double-counting tokens."
+}

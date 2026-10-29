@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-LAW-04-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Law",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-LAW-004",
+      "title": "Corporate Governance Under CAMA 2020",
+      "authors": [
+        "Prof. F. Momoh"
+      ],
+      "text": "The Companies and Allied Matters Act 2020 introduces statutory provisions for electronic meetings and electronic share transfers for private limited liability companies."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-LAW-004",
+    "title": "Corporate Rescue Mechanisms in CAMA 2020",
+    "text": "The Companies and Allied Matters Act 2020 establishes statutory provisions for company voluntary arrangements and administrative receivership to preserve insolvent commercial entities as going concerns."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 30,
+    "expectedMatches": []
+  },
+  "labelRationale": "Clean negative: Shared standard statutory title (\"Companies and Allied Matters Act 2020 establishes statutory provisions for\") does not constitute substantive plagiarism.",
+  "provenance": "Commercial law tutorial submission"
+}

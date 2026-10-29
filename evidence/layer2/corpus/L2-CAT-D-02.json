@@ -1,0 +1,31 @@
+{
+  "fixtureId": "L2-CAT-D-02",
+  "corpusVersion": "1.0.0",
+  "category": "D",
+  "categoryDescription": "Unrelated original writing - Biochemistry vs Musicology",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-D-02",
+      "title": "Kinetics of Enzymatic Catalysis",
+      "authors": [
+        "Dr. L. Michaelis",
+        "Dr. M. Menten"
+      ],
+      "text": "Enzyme kinetics adhere to the Michaelis-Menten hyperbolic model under quasi-steady-state conditions where substrate concentration substantially exceeds total enzyme concentration."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-D-02",
+    "title": "Origins of American Jazz Ensemble Traditions",
+    "text": "Jazz music in early twentieth-century New Orleans emerged from African polyrhythms, blues traditions, and European marching band harmonic structures. Improvisation served as the defining aesthetic element of collective ensemble performance."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Zero common domain terms. Expected score: 0.0%.",
+  "knownLimitations": "None."
+}

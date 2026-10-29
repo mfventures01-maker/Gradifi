@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-LAW-03-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Law",
+  "documentLengthCategory": "Short",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-LAW-003",
+      "title": "Doctrine of Locus Standi in Public Interest Litigation",
+      "authors": [
+        "Justice O. Adebayo"
+      ],
+      "text": "In Fawehinmi v Akilu, the Supreme Court liberalized the restrictive doctrine of locus standi regarding criminal prosecutions for murder, recognizing the communal obligation of every citizen to advocate the enforcement of the rule of law."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-LAW-003",
+    "title": "Public Interest Standing in Nigerian Jurisprudence",
+    "text": "In Fawehinmi v Akilu, the Supreme Court liberalized the restrictive doctrine of locus standi regarding criminal prosecutions for murder, recognizing the communal obligation of every citizen to advocate the enforcement of the rule of law."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 100,
+    "maxOverallSimilarity": 100,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-LAW-003",
+        "studentTextSnippet": "In Fawehinmi v Akilu, the Supreme Court liberalized",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Exact verbatim single-sentence submission identical to source monograph.",
+  "provenance": "Nigerian Bar Journal Review"
+}

@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-EDGE-05-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Medicine",
+  "documentLengthCategory": "Short",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDGE-005",
+      "title": "Climate Drivers of Meningitis Outbreaks in the Sahel",
+      "authors": [
+        "Dr. I. Sambo"
+      ],
+      "text": "Meningococcal meningitis epidemics in the African Meningitis Belt occur during dry harmattan dust winds that damage respiratory mucosal defenses and facilitate Neisseria meningitidis bacterial invasion."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDGE-005",
+    "title": "Pathophysiology of Harmattan-Associated Meningitis",
+    "text": "Meningococcal meningitis epidemics in the African Meningitis Belt occur during dry harmattan dust winds that damage respiratory mucosal defenses and facilitate Neisseria meningitidis bacterial invasion."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 100,
+    "maxOverallSimilarity": 100,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-EDGE-005",
+        "studentTextSnippet": "Meningococcal meningitis epidemics in the African Meningitis Belt occur during dry harmattan dust winds that damage respiratory mucosal defenses and facilitate Neisseria meningitidis bacterial invasion.",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Verbatim single sentence medical clone.",
+  "provenance": "Epidemiological review"
+}

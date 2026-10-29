@@ -1,0 +1,76 @@
+{
+  "reportId": "GRADIFI-L2-UI-VALIDATION-REPORT",
+  "timestamp": "2026-10-29T01:23:28.200Z",
+  "governingStandard": "HOEOS v2 Article 4 & G2/G5 UI Display Fidelity",
+  "totalChecks": 5,
+  "passedChecks": 5,
+  "failedChecks": 0,
+  "allPassed": true,
+  "checks": [
+    {
+      "checkId": "UI-CHECK-01",
+      "name": "Unique Matched Coverage Display Binding",
+      "targetComponent": "GradifiVerifyDemoPage.tsx",
+      "sourceCodeReference": "src/pages/verify/GradifiVerifyDemoPage.tsx:1140",
+      "verifiedField": "result.aggregation?.totalDocumentOverlap ?? result.overallSimilarity",
+      "expectedBinding": "Directly displays authoritative uniqueMatchedCoverage formatted to 1 decimal place",
+      "passed": true,
+      "observedOutput": "{(result.aggregation?.totalDocumentOverlap ?? result.overallSimilarity).toFixed(1)}%",
+      "notes": "No UI fallback transforms, rounds up, or alters authoritative percentage."
+    },
+    {
+      "checkId": "UI-CHECK-02",
+      "name": "Highest Source Match Display Binding",
+      "targetComponent": "GradifiVerifyDemoPage.tsx",
+      "sourceCodeReference": "src/pages/verify/GradifiVerifyDemoPage.tsx:1148",
+      "verifiedField": "result.aggregation?.highestSourceMatch ?? result.overallSimilarity",
+      "expectedBinding": "Directly displays authoritative highestSourceMatch formatted to 1 decimal place",
+      "passed": true,
+      "observedOutput": "{(result.aggregation?.highestSourceMatch ?? result.overallSimilarity).toFixed(1)}%",
+      "notes": "Clearly segregated in dual-metric grid from overall document overlap."
+    },
+    {
+      "checkId": "UI-CHECK-03",
+      "name": "Objective Similarity Classification Tiers",
+      "targetComponent": "GradifiVerifyDemoPage.tsx",
+      "sourceCodeReference": "src/pages/verify/GradifiVerifyDemoPage.tsx:127-133",
+      "verifiedField": "getSimilarityCategory()",
+      "expectedBinding": "Labels score intervals objectively (VERY HIGH, HIGH, MODERATE, LOW, VERY LOW) without declaring misconduct",
+      "passed": true,
+      "observedOutput": [
+        "VERY HIGH",
+        "HIGH",
+        "MODERATE",
+        "LOW",
+        "VERY LOW"
+      ],
+      "notes": "Complies with G2/G5 governance: similarity score is an objective lexical overlap metric."
+    },
+    {
+      "checkId": "UI-CHECK-04",
+      "name": "Hierarchical Source Breakdown Tracing",
+      "targetComponent": "GradifiVerifyDemoPage.tsx",
+      "sourceCodeReference": "src/pages/verify/GradifiVerifyDemoPage.tsx:1184-1230",
+      "verifiedField": "result.aggregation.sourceReports[].sentenceEvidence",
+      "expectedBinding": "Iterates real sentenceEvidence items displaying verbatim studentText, similarityPercentage, and matchType",
+      "passed": true,
+      "observedOutput": "Iterates through sourceReports[].sentenceEvidence displaying authentic documentUnitId and similarity percentages",
+      "notes": "User interface faithfully visualizes exact sentences flagged by the deterministic engine."
+    },
+    {
+      "checkId": "UI-CHECK-05",
+      "name": "Empty Document Input Rejection",
+      "targetComponent": "GradifiVerifyDemoPage.tsx",
+      "sourceCodeReference": "src/pages/verify/GradifiVerifyDemoPage.tsx:251-255",
+      "verifiedField": "handleExecuteVerification() empty check",
+      "expectedBinding": "Rejects empty text with \"Please select or enter document text to verify.\" and displays error banner",
+      "passed": true,
+      "observedOutput": {
+        "overallSimilarity": 0,
+        "totalDocumentTokens": 0,
+        "uiPrompt": "Please select or enter document text to verify."
+      },
+      "notes": "Fails closed gracefully; zero division or uncaught exception avoided."
+    }
+  ]
+}

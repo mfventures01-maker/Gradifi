@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-MED-03-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Medicine",
+  "documentLengthCategory": "Medium",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-MED-003",
+      "title": "Maternal Mortality and Emergency Obstetric Care in Kano",
+      "authors": [
+        "Dr. H. Garba"
+      ],
+      "text": "Postpartum hemorrhage remains the leading direct cause of maternal mortality in Northern Nigeria. Delays in seeking skilled emergency obstetric care and severe shortages of screened blood products compound maternal mortality ratios in rural secondary healthcare facilities."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-MED-003",
+    "title": "Obstetric Emergencies in Sub-Saharan District Hospitals",
+    "text": "Clinical audit indicates severe regional disparities. Postpartum hemorrhage remains the leading direct cause of maternal mortality in Northern Nigeria. Significant delays in seeking skilled emergency obstetric care and severe chronic shortages of screened blood products compound maternal mortality ratios in rural secondary healthcare facilities. Immediate health-system intervention is required."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 60,
+    "maxOverallSimilarity": 85,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-MED-003",
+        "studentTextSnippet": "Postpartum hemorrhage remains the leading direct cause",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Core sentences copied with minor adjective insertions (\"Significant delays\", \"severe chronic shortages\").",
+  "provenance": "West African Journal of Medicine"
+}

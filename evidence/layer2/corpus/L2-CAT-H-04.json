@@ -1,0 +1,30 @@
+{
+  "fixtureId": "L2-CAT-H-04",
+  "corpusVersion": "1.0.0",
+  "category": "H",
+  "categoryDescription": "Boundary - Empty student document payload",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-H-04",
+      "title": "Galactic Cluster Kinematics",
+      "authors": [
+        "Dr. F. Zwicky"
+      ],
+      "text": "A comprehensive survey of galactic cluster dynamics."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-H-04",
+    "title": "Empty Payload Test",
+    "text": ""
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": "EMPTY_DOCUMENT"
+  },
+  "labelRationale": "Empty input document must fail closed, returning 0 similarity and warning/empty result without throwing unhandled exceptions.",
+  "knownLimitations": "None."
+}

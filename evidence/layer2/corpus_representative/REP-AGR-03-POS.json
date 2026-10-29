@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-AGR-03-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Agriculture",
+  "documentLengthCategory": "Long",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-AGR-003",
+      "title": "Intensive Catfish Husbandry in Flow-Through Systems",
+      "authors": [
+        "Prof. E. Agbebi"
+      ],
+      "text": "Aquaculture intensification in the Niger Delta faces severe environmental hurdles. Poor dissolved oxygen aeration and high stocking density induce bacterial gill rot and enteric septicemia in Clarias gariepinus fingerlings. Formulated floating pelleted feeds with thirty-eight percent crude protein optimize feed conversion ratios while mitigating organic bottom sediment eutrophication."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-AGR-003",
+    "title": "Commercial Clarias Culture in Commercial Earthen Ponds",
+    "text": "Pond fish farming has expanded substantially across riverine communities in Southern Nigeria to meet urban dietary protein demand. Commercial operators invest in earthen and concrete holding tanks.\n\nAquaculture intensification in the Niger Delta faces severe environmental hurdles. Poor dissolved oxygen aeration and high stocking density induce bacterial gill rot and enteric septicemia in Clarias gariepinus fingerlings. Formulated floating pelleted feeds with thirty-eight percent crude protein optimize feed conversion ratios while mitigating organic bottom sediment eutrophication.\n\nAquaculture managers must therefore maintain strict water recirculation protocols and regular biological testing to protect their commercial investments."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 45,
+    "maxOverallSimilarity": 75,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-AGR-003",
+        "studentTextSnippet": "Aquaculture intensification in the Niger Delta faces",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Long document with substantive middle section copied directly from published monograph.",
+  "provenance": "Fisheries Society of Nigeria Conference Review"
+}

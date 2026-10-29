@@ -1,0 +1,30 @@
+{
+  "documentHash": "0000000000000000",
+  "evidenceHash": "729f92eda3b12df5",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 0,
+  "uniqueMatchedCoverage": 0,
+  "highestSourceMatch": 0,
+  "totalSourcesEvaluated": 0,
+  "verifiedMatches": [],
+  "aggregation": {
+    "totalDocumentTokens": 0,
+    "totalUniqueMatchedTokens": 0,
+    "totalDocumentOverlap": 0,
+    "highestSourceMatch": 0,
+    "totalSourceMatches": 0,
+    "totalParagraphMatches": 0,
+    "totalSentenceMatches": 0,
+    "totalPhraseMatches": 0,
+    "sourceReports": [],
+    "paragraphFlags": [],
+    "sentenceFlags": [],
+    "phraseFlags": [],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "729f92eda3b12df5",
+    "documentHash": "0000000000000000"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        0000000000000000\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        729f92eda3b12df5\nAnalysis Timestamp:   2026-10-29T11:13:35.469Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  0.0%\nHighest Source Match:     0.0%\nSources With Matches:     0\nParagraphs Flagged:       0\nSentences Flagged:        0\nPhrases Flagged:          0\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\n  No matching academic sources identified.\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\n  No paragraph flags raised.\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\n  No sentence flags raised.\nPHRASE FLAGS\n--------------------------------------------------------------------------------\n  No phrase flags raised.\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         729f92eda3b12df5\n================================================================================"
+}

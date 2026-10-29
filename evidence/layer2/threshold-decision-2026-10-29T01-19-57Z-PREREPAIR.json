@@ -1,0 +1,51 @@
+{
+    "recordId":  "THRESHOLD-DECISION-L2-CG-01",
+    "timestamp":  "2026-10-29T01:19:57.027Z",
+    "decisionStatus":  "PENDING_OWNER_APPROVAL",
+    "governingRule":  "HOEOS v2 Phase 4 Threshold Governance (Do not invent acceptance thresholds. Mark BLOCKED if unapproved.)",
+    "decisionOwner":  "System Owner / Executive Authority",
+    "reconstructedFrom":  {
+                              "reason":  "The original file was overwritten in place at 2026-10-29T11:13:35Z by a post-repair observation. The overwriting file is preserved as threshold-decision.json.overwritten-at-2026-10-29T11-13-35Z. The pre-repair content survives only as (a) this reconstruction from the amendment, and (b) the metadata entry in the reconciliation manifest.",
+                              "amendmentPath":  "evidence/layer2/threshold-decision-amendment-20261029T072434Z.json",
+                              "amendmentSha256":  "393fbf8a25729fd0f87378e32e13e99f95b4dd530b44bc74a67510d03e6d67be",
+                              "manifestPath":  "evidence/layer2/reconciliation-manifest-20261029T080000Z.json",
+                              "manifestEntrySha256":  "32973e6cb8b0a3620002dd110d1300a31939f93893be798d1126b0e91d66a9a7",
+                              "originalMtimeUtc":  "2026-10-29T01:19:57.030Z",
+                              "originalSizeBytes":  1421,
+                              "fidelity":  "Reconstructed numbers are the amendment.observedValues field verbatim. Gate impact and recordId are from amendment.supersedes. This file is a faithful reconstruction, not the original bitstream. Do not cite its hash as if it were the original."
+                          },
+    "proposedThresholds":  {
+                               "documentLevelPrecision":  {
+                                                              "proposed":  0.95,
+                                                              "observed":  0.9375,
+                                                              "rationale":  "Commercial plagiarism detection requires minimal false positives to prevent false accusations."
+                                                          },
+                               "documentLevelRecall":  {
+                                                           "proposed":  0.9,
+                                                           "observed":  1,
+                                                           "rationale":  "Standard academic detection must reliably capture \u003e=90% of copied or lightly modified passages."
+                                                       },
+                               "falsePositiveRate":  {
+                                                         "proposed":  0.05,
+                                                         "observed":  0.1,
+                                                         "rationale":  "False positive rate on negative controls and original text must stay \u003c= 5%."
+                                                     },
+                               "sentenceSpanAccuracy":  {
+                                                            "proposed":  0.95,
+                                                            "observed":  0.95652173913043481,
+                                                            "rationale":  "Text span coordinates into canonical text must have \u003e=95% raw text slice match."
+                                                        },
+                               "aiAdvisoryIsolation":  {
+                                                           "proposed":  1,
+                                                           "observed":  1,
+                                                           "rationale":  "Deterministic findings and scores must remain 100% bit-for-bit invariant under AI outages."
+                                                       }
+                           },
+    "ownerApprovalStatus":  "UNAPPROVED",
+    "gateImpact":  "BLOCKED: OWNER THRESHOLD DECISION REQUIRED",
+    "supersededBy":  {
+                         "postRepairPath":  "evidence/layer2/threshold-decision-2026-10-29T11-13-35Z-POSTREPAIR.json",
+                         "postRepairRecordId":  "THRESHOLD-DECISION-L2-CG-01-POSTREPAIR",
+                         "sourceCommit":  "9ee57c353163e58c18459c1c0efb114c9e7456a8"
+                     }
+}

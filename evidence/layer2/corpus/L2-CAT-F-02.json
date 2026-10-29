@@ -1,0 +1,39 @@
+{
+  "fixtureId": "L2-CAT-F-02",
+  "corpusVersion": "1.0.0",
+  "category": "F",
+  "categoryDescription": "Mixed content - Copied first paragraph followed by original second paragraph",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-F-02",
+      "title": "Chromatin Remodeling and Gene Expression Regulation",
+      "authors": [
+        "Dr. C. D. Allis",
+        "Dr. T. Jenuwein"
+      ],
+      "text": "Epigenetic modifications such as DNA methylation and histone acetylation alter chromatin architecture without changing the underlying genomic nucleotide sequence."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-F-02",
+    "title": "Epigenetic Dysregulation in Oncogenesis",
+    "text": "Epigenetic modifications such as DNA methylation and histone acetylation alter chromatin architecture without changing the underlying genomic nucleotide sequence.\n\nRecent clinical trials demonstrate that aberrant hypermethylation of tumor suppressor promoter regions represents an early biomarker in colorectal oncology."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 40,
+    "maxOverallSimilarity": 65,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-F-02",
+        "studentTextSnippet": "Epigenetic modifications such as DNA methylation and histone acetylation alter chromatin architecture without changing the underlying genomic nucleotide sequence.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Paragraph 1 is 100% copied. Paragraph 2 is completely original. Span must cleanly isolate Paragraph 1.",
+  "knownLimitations": "None."
+}

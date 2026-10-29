@@ -1,0 +1,46 @@
+{
+  "fixtureId": "L2-CAT-A-01",
+  "corpusVersion": "1.0.0",
+  "category": "A",
+  "categoryDescription": "Exact copied passage - Reordered exact sentences",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-A-01",
+      "title": "Decoherence Dynamics in Superconducting Qubits",
+      "authors": [
+        "Dr. A. Vance",
+        "Prof. M. Thorne"
+      ],
+      "text": "Quantum decoherence in mesoscopic physical systems remains a primary bottleneck for superconducting qubits. Environmental electromagnetic radiation induces non-equilibrium quasiparticles that rapidly degrade the quantum state coherence time."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-A-01",
+    "title": "Mesoscopic Decoherence Analysis",
+    "text": "Environmental electromagnetic radiation induces non-equilibrium quasiparticles that rapidly degrade the quantum state coherence time. Quantum decoherence in mesoscopic physical systems remains a primary bottleneck for superconducting qubits."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 90,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 2,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-A-01",
+        "studentTextSnippet": "Environmental electromagnetic radiation induces non-equilibrium quasiparticles that rapidly degrade the quantum state coherence time.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      },
+      {
+        "sourceId": "SRC-A-01",
+        "studentTextSnippet": "Quantum decoherence in mesoscopic physical systems remains a primary bottleneck for superconducting qubits.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "All sentences are verbatim copies from the source, reordered. Each sentence meets the length and token count criteria for exact match containment (100% sentence similarity). Expected coverage: 100%.",
+  "knownLimitations": "None for verbatim copied sentences."
+}

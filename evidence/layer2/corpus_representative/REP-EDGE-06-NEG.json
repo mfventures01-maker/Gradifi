@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-EDGE-06-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Economics",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDGE-006",
+      "title": "Fiscal Federalism and Mineral Resource Revenue Sharing",
+      "authors": [
+        "Prof. S. Tomori"
+      ],
+      "text": "Derivation principles in intergovernmental revenue allocation formulas attempt to compensate mineral-bearing littoral communities for environmental degradation and natural capital depletion."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDGE-006",
+    "title": "Returns to Higher Education and Graduate Unemployment in Lagos",
+    "text": "Human capital rate-of-return analyses indicate that university graduates encounter prolonged frictional job search durations in white-collar formal employment, driving youth labor market absorption into gig economy fintech services."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Clean negative control across unrelated labor economics topic.",
+  "provenance": "Applied economics term project"
+}

@@ -1,0 +1,39 @@
+{
+  "fixtureId": "L2-CAT-H-05",
+  "corpusVersion": "1.0.0",
+  "category": "H",
+  "categoryDescription": "Boundary - Adversarial Unicode homoglyphs and diacritics",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-H-05",
+      "title": "Teleportation of Unknown Quantum States",
+      "authors": [
+        "Dr. C. Bennett",
+        "Dr. G. Brassard"
+      ],
+      "text": "Quantum teleportation utilizes shared entanglement to transmit unknown quantum states without transferring physical matter."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-H-05",
+    "title": "Adversarial Diacritics Probe",
+    "text": "Quántum telépórtation utilizes sháred entánglement to transmít unknówn quántum státes withóut transférring physícal mátter."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 90,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-H-05",
+        "studentTextSnippet": "Quántum telépórtation utilizes sháred entánglement to transmít unknówn quántum státes withóut transférring physícal mátter.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "NORM-V1 applies NFKD decomposition and removes combining diacritical marks ([\\u0300-\\u036f]). Accented characters normalize cleanly to base ASCII, defeating adversarial evasion.",
+  "knownLimitations": "None."
+}

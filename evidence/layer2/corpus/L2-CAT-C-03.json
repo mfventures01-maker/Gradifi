@@ -1,0 +1,39 @@
+{
+  "fixtureId": "L2-CAT-C-03",
+  "corpusVersion": "1.0.0",
+  "category": "C",
+  "categoryDescription": "Paraphrase - Hybrid with short 3-gram anchor retained",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-C-03",
+      "title": "The Coercive Power of Trade Embargoes",
+      "authors": [
+        "Dr. G. Hufbauer",
+        "Dr. J. Schott"
+      ],
+      "text": "Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter disputed geopolitical policies."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-C-03",
+    "title": "Efficacy of Financial Sanctions",
+    "text": "International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 10,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-C-03",
+        "studentTextSnippet": "International bodies enforce",
+        "matchType": "ngram_overlap",
+        "expectedFlag": "LOW_SIMILARITY_SENTENCE",
+        "shouldMatch": false
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Incidental 2-gram overlap results in 25.1% similarity (LOW_SIMILARITY_SENTENCE). Under the repaired engine, incidental similarity (<40%) is excluded from document coverage (0.0%). Expected document verdict: NEGATIVE.",
+  "knownLimitations": "Lexical similarity scores between 20% and 40% correctly flagged."
+}

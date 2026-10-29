@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-EDU-04-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Education",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDU-004",
+      "title": "ICT Integration in Senior Secondary Mathematics",
+      "authors": [
+        "Dr. M. Chinedu"
+      ],
+      "text": "Computer-assisted instructional software significantly enhances student geometric visualization and algebraic concept retention compared to chalk-and-talk methods."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDU-004",
+    "title": "Mother-Tongue Instruction in Early Childhood Classrooms",
+    "text": "Teaching initial reading in Yoruba or Hausa during the first three years of schooling accelerates cognitive development and eases subsequent English-medium second language acquisition."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Negative control: student wrote on early language policy; source is computer mathematics software.",
+  "provenance": "Educational foundations seminar paper"
+}

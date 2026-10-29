@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-EDU-03-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Education",
+  "documentLengthCategory": "Short",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDU-003",
+      "title": "National Universities Commission Benchmark Minimum Academic Standards",
+      "authors": [
+        "NUC Directorate of Quality Assurance"
+      ],
+      "text": "Programmatic university accreditation mandates a minimum staff-to-student ratio of one to fifteen in clinical sciences and one to thirty in social sciences, with qualified doctoral degree holders composing at least sixty percent of instructional academic faculty."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDU-003",
+    "title": "Staffing Norms and Accreditation Compliance in Private Universities",
+    "text": "Programmatic university accreditation mandates a minimum staff-to-student ratio of one to fifteen in clinical sciences and one to thirty in social sciences, with qualified doctoral degree holders composing at least sixty percent of instructional academic faculty."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 100,
+    "maxOverallSimilarity": 100,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-EDU-003",
+        "studentTextSnippet": "Programmatic university accreditation mandates a minimum staff-to-student ratio",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Exact verbatim duplicate of accreditation benchmark document.",
+  "provenance": "NUC Quality Assurance Guidelines"
+}

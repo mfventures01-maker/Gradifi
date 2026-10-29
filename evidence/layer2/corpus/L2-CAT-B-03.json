@@ -1,0 +1,39 @@
+{
+  "fixtureId": "L2-CAT-B-03",
+  "corpusVersion": "1.0.0",
+  "category": "B",
+  "categoryDescription": "Lightly modified passage - Active to passive voice clause transformation",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-B-03",
+      "title": "Radiative Forcing and Climate Equilibria",
+      "authors": [
+        "Dr. S. Arrhenius",
+        "Dr. G. Callendar"
+      ],
+      "text": "Atmospheric greenhouse gases absorb longwave infrared radiation emitted from the surface of planetary bodies. This trapped thermal energy causes an increase in equilibrium global surface temperatures over extended decadal timescales."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-B-03",
+    "title": "Planetary Thermodynamics",
+    "text": "Longwave infrared radiation emitted from the surface of planetary bodies is absorbed by atmospheric greenhouse gases. This trapped thermal energy causes an increase in equilibrium global surface temperatures over extended decadal timescales."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 65,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 2,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-B-03",
+        "studentTextSnippet": "This trapped thermal energy causes an increase in equilibrium global surface temperatures over extended decadal timescales.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Sentence 2 is exact match (100%). Sentence 1 passive transformation maintains high lexical token overlap (>80%) and partial n-grams.",
+  "knownLimitations": "N-grams are fragmented across syntax change, but lexical ratio preserves match."
+}

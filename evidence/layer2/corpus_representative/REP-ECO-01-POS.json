@@ -1,0 +1,37 @@
+{
+  "fixtureId": "REP-ECO-01-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Economics",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-ECO-001",
+      "title": "Fintech Disruption and Agent Banking in Emerging Markets",
+      "authors": [
+        "Dr. K. Sanusi",
+        "Prof. U. Soludo"
+      ],
+      "text": "The Central Bank of Nigeria Payment Service Bank regulatory framework aims to accelerate rural financial inclusion by leveraging telecommunications infrastructure for deposit mobilization and low-value peer-to-peer domestic remittances."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-ECO-001",
+    "title": "Payment Service Banks and Financial Deepening in Rural Nigeria",
+    "text": "Traditional commercial banks in Nigeria have historically concentrated brick-and-mortar branch infrastructure in metropolitan commercial centers, leaving rural agricultural regions financially excluded.\n\nThe Central Bank of Nigeria Payment Service Bank regulatory framework aims to accelerate rural financial inclusion by leveraging telecommunications infrastructure for deposit mobilization and low-value peer-to-peer domestic remittances.\n\nConsequently, telecommunication payment service subsidiaries such as MoMo PSB and SmartCash have experienced exponential transaction growth across northern agrarian corridors."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 30,
+    "maxOverallSimilarity": 55,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-ECO-001",
+        "studentTextSnippet": "The Central Bank of Nigeria Payment Service Bank regulatory framework aims to accelerate rural financial inclusion by leveraging telecommunications infrastructure for deposit mobilization and low-value peer-to-peer domestic remittances.",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Exact middle paragraph embedded between two original paragraphs. Verifies precise span isolation without whole-document contamination.",
+  "provenance": "Nigerian Journal of Economic and Social Studies"
+}

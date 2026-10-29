@@ -1,0 +1,76 @@
+{
+  "documentHash": "1a908b9cfceb7878",
+  "evidenceHash": "d9411c3aaf4c2c90",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 0,
+  "uniqueMatchedCoverage": 0,
+  "highestSourceMatch": 1.2,
+  "totalSourcesEvaluated": 1,
+  "verifiedMatches": [
+    {
+      "sourceId": "SRC-E-01",
+      "title": "Gauge Symmetries in the Standard Model",
+      "authors": [
+        "Dr. S. Weinberg"
+      ],
+      "url": "",
+      "matchedText": "",
+      "originalSnippet": "The standard model of particle physics classifies all known elementary particles into leptons, quarks, and gauge bosons mediating fundamental forces.",
+      "matchType": "citation",
+      "matchPercentage": 1.2,
+      "relevanceScore": 1,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "SRC-E-01",
+        "retrievedAt": "2026-10-29T01:19:56.747Z",
+        "sourceType": "document",
+        "sourceUrl": "",
+        "title": "Gauge Symmetries in the Standard Model",
+        "authors": [
+          "Dr. S. Weinberg"
+        ],
+        "provenanceState": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "aggregation": {
+    "totalDocumentTokens": 31,
+    "totalUniqueMatchedTokens": 0,
+    "totalDocumentOverlap": 0,
+    "highestSourceMatch": 1.2,
+    "totalSourceMatches": 1,
+    "totalParagraphMatches": 0,
+    "totalSentenceMatches": 0,
+    "totalPhraseMatches": 0,
+    "sourceReports": [
+      {
+        "sourceId": "SRC-E-01",
+        "title": "Gauge Symmetries in the Standard Model",
+        "authors": [
+          "Dr. S. Weinberg"
+        ],
+        "url": "",
+        "documentCoverage": 0,
+        "paragraphMatches": 0,
+        "sentenceMatches": 0,
+        "phraseMatches": 0,
+        "highestSentenceMatch": 2,
+        "highestPhraseMatch": 0,
+        "aggregateSourceScore": 1.2,
+        "paragraphEvidence": [],
+        "sentenceEvidence": [],
+        "phraseEvidence": []
+      }
+    ],
+    "paragraphFlags": [],
+    "sentenceFlags": [],
+    "phraseFlags": [],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "d9411c3aaf4c2c90",
+    "documentHash": "1a908b9cfceb7878"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        1a908b9cfceb7878\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        d9411c3aaf4c2c90\nAnalysis Timestamp:   2026-10-29T01:19:56.749Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  0.0%\nHighest Source Match:     1.2%\nSources With Matches:     1\nParagraphs Flagged:       0\nSentences Flagged:        0\nPhrases Flagged:          0\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\nSource: [SRC-E-01] Gauge Symmetries in the Standard Model\n  Document Coverage:       0.0%\n  Aggregate Source Score:  1.2%\n  Highest Sentence Match:  2.0%\n  Highest Phrase Match:    0.0%\n  Paragraph Matches:       0\n  Sentence Matches:        0\n  Phrase Matches:          0\n\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\n  No paragraph flags raised.\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\n  No sentence flags raised.\nPHRASE FLAGS\n--------------------------------------------------------------------------------\n  No phrase flags raised.\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         d9411c3aaf4c2c90\n================================================================================"
+}

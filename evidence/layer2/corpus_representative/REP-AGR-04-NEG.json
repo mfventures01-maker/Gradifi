@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-AGR-04-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Agriculture",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-AGR-004",
+      "title": "Soil Organic Carbon Dynamics Under Conservation Tillage",
+      "authors": [
+        "Dr. P. Akamigbo"
+      ],
+      "text": "Zero-tillage practices combined with crop residue retention increase topsoil cation exchange capacity and microbial biomass carbon in sandy loam soils."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-AGR-004",
+    "title": "Soil Fertility Degradation in Acid Ultisols",
+    "text": "Acid ultisols in southeastern agricultural landscapes exhibit low effective cation exchange capacity and severe phosphorus fixation, requiring systematic agricultural limestone application and organic manuring."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 25,
+    "expectedMatches": []
+  },
+  "labelRationale": "Domain jargon (\"cation exchange capacity\", \"loam soils\") without plagiarism. Engine must not flag as match.",
+  "provenance": "Soil science undergraduate essay"
+}

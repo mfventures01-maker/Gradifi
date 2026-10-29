@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-MED-04-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Medicine",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-MED-004",
+      "title": "Artemisinin Combination Therapies in Uncomplicated Falciparum Malaria",
+      "authors": [
+        "Prof. C. Nwokolo"
+      ],
+      "text": "Artemether-lumefantrine provides rapid parasite clearance times and high cure rates exceeding ninety-five percent in pediatric clinical trials conducted across West Africa."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-MED-004",
+    "title": "Antimalarial Policy and Chemotherapeutic Efficacy",
+    "text": "Contemporary guidelines prioritize artemisinin derivative combinations for uncomplicated malaria. Clinical researchers have evaluated fixed-dose therapies with variable outcomes in community health centers. Pharmacovigilance networks report sustained efficacy throughout endemic tropical zones."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 15,
+    "expectedMatches": []
+  },
+  "labelRationale": "Negative control: Student discusses related therapeutic concepts using independent composition without copying source text.",
+  "provenance": "Clinical pharmacology student assignment"
+}

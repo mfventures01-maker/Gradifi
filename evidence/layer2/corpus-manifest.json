@@ -1,0 +1,269 @@
+{
+  "manifestId": "GRADIFI-LAYER2-CORPUS-MANIFEST",
+  "corpusVersion": "1.0.0",
+  "generatedAt": "2026-10-29T11:12:31.293Z",
+  "corpusSha256": "3a8083657cdce5955403a966fec3a25efc01c91acac2d4e7ade006e6b0247571",
+  "totalFixtures": 25,
+  "categoryCounts": {
+    "A": 3,
+    "B": 3,
+    "C": 3,
+    "D": 3,
+    "E": 3,
+    "F": 3,
+    "G": 2,
+    "H": 5
+  },
+  "fixtures": [
+    {
+      "fixtureId": "L2-CAT-A-01",
+      "category": "A",
+      "categoryDescription": "Exact copied passage - Reordered exact sentences",
+      "filename": "L2-CAT-A-01.json",
+      "sha256": "2170f14acf5cf816532cc48b4e8dcd5f7b76e43862f734cb608237241e8fc560",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 241,
+      "labelRationale": "All sentences are verbatim copies from the source, reordered. Each sentence meets the length and token count criteria for exact match containment (100% sentence similarity). Expected coverage: 100%."
+    },
+    {
+      "fixtureId": "L2-CAT-A-02",
+      "category": "A",
+      "categoryDescription": "Exact copied passage - Single embedded sentence in original text",
+      "filename": "L2-CAT-A-02.json",
+      "sha256": "67001f348d66f1f84aeb4b5e0d7f6c819c0415bd41db7a015eb17311d05fac10",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 222,
+      "labelRationale": "The middle sentence is copied verbatim. Surrounding sentences are original. Expected coverage reflects exact middle sentence token proportion."
+    },
+    {
+      "fixtureId": "L2-CAT-A-03",
+      "category": "A",
+      "categoryDescription": "Exact copied passage - Full document identical clone",
+      "filename": "L2-CAT-A-03.json",
+      "sha256": "8e98fbe21b244491b8b8d636d99bd9ca6653fe872e7df3c4dca368d4ed00cff8",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 186,
+      "labelRationale": "Identical 100% duplicate document. Coverage and similarity must be exactly 100.0%."
+    },
+    {
+      "fixtureId": "L2-CAT-B-01",
+      "category": "B",
+      "categoryDescription": "Lightly modified passage - Controlled word substitutions",
+      "filename": "L2-CAT-B-01.json",
+      "sha256": "460d4983620a00743cd811b305e6e4994439076065dc3a429a656b50a7933d48",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 226,
+      "labelRationale": "Sentence 1 has 2 substituted phrases but retains high 3-gram and 2-gram overlap (>75%). Sentence 2 is exact copy."
+    },
+    {
+      "fixtureId": "L2-CAT-B-02",
+      "category": "B",
+      "categoryDescription": "Lightly modified passage - Adverb and adjective insertions",
+      "filename": "L2-CAT-B-02.json",
+      "sha256": "faee885bac9bbef67da11219ecf6cfe9b71f87fdf450a9d837112c37c6c70c2f",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 205,
+      "labelRationale": "Inserted words break some 3-grams, but 2-grams and high token Jaccard overlap (>70%) maintain HIGH_SIMILARITY_SENTENCE flag."
+    },
+    {
+      "fixtureId": "L2-CAT-B-03",
+      "category": "B",
+      "categoryDescription": "Lightly modified passage - Active to passive voice clause transformation",
+      "filename": "L2-CAT-B-03.json",
+      "sha256": "9f13ac46131d0cd1c44776847c780a1dcd301713ef5ecb07510cca005ff95ccc",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 241,
+      "labelRationale": "Sentence 2 is exact match (100%). Sentence 1 passive transformation maintains high lexical token overlap (>80%) and partial n-grams."
+    },
+    {
+      "fixtureId": "L2-CAT-C-01",
+      "category": "C",
+      "categoryDescription": "Paraphrase - Moderate lexical overlap with shared domain terms",
+      "filename": "L2-CAT-C-01.json",
+      "sha256": "265c5951de8a33d547d13bf257aa24e50cb54b3c582eaf74b74fa694fff21af0",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 150,
+      "labelRationale": "SIM-V1 is an n-gram lexical engine. When vocabulary is substantially paraphrased, 3-gram overlap is zero. Token overlap is ~25%. Expected: low similarity or NO_MATCH under strict lexical limits."
+    },
+    {
+      "fixtureId": "L2-CAT-C-02",
+      "category": "C",
+      "categoryDescription": "Paraphrase - Full semantic restatement (out of scope for SIM-V1 lexical)",
+      "filename": "L2-CAT-C-02.json",
+      "sha256": "28b0a1ec852f25af447efd0c6eeef9a68f3c4e61817812002d7f7cab2fede60b",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 170,
+      "labelRationale": "Pure semantic rewrite. All domain nouns replaced with synonyms (autonomous vehicles -> self-driving cars; LiDAR/radar -> laser pulses/radio detection). Deterministic SIM-V1 correctly reports NO_MATCH (<20% score). This is correct deterministic behavior, not an engine error."
+    },
+    {
+      "fixtureId": "L2-CAT-C-03",
+      "category": "C",
+      "categoryDescription": "Paraphrase - Hybrid with short 3-gram anchor retained",
+      "filename": "L2-CAT-C-03.json",
+      "sha256": "e3664cdc84b23ce66aea641c3b8910f1a0234a52c16fb58f0985a48ab796e75c",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 128,
+      "labelRationale": "Sentence similarity is 25.1% (LOW_SIMILARITY_SENTENCE). Under the SIM-V1 formula, any sentence scoring >= 20% has all of its tokens added to uniqueMatchedCoverage. Because this document has only 1 sentence, total document coverage is 100.0%. Expected similarity: 100.0%."
+    },
+    {
+      "fixtureId": "L2-CAT-D-01",
+      "category": "D",
+      "categoryDescription": "Unrelated original writing - Disjoint academic disciplines (Physics vs Roman History)",
+      "filename": "L2-CAT-D-01.json",
+      "sha256": "31a0f82695658f885e57392c2429ab4160a9dc4471d29ff593c31a45cf88d4e2",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 257,
+      "labelRationale": "Completely disjoint vocabulary and topic. Zero 3-grams, zero 2-grams, near-zero token intersection (<5%). Expected similarity: 0.0%."
+    },
+    {
+      "fixtureId": "L2-CAT-D-02",
+      "category": "D",
+      "categoryDescription": "Unrelated original writing - Biochemistry vs Musicology",
+      "filename": "L2-CAT-D-02.json",
+      "sha256": "d00bcc25356107ea044fa45d63d718964dca86d20205ac8501b4f41e43cbf698",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 240,
+      "labelRationale": "Zero common domain terms. Expected score: 0.0%."
+    },
+    {
+      "fixtureId": "L2-CAT-D-03",
+      "category": "D",
+      "categoryDescription": "Unrelated original writing - Quantum Field Theory vs Volcanology",
+      "filename": "L2-CAT-D-03.json",
+      "sha256": "9c3c72407e79a3f52347b3158a82f734b48ad774e255378f0f818dc7c2f91a8c",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 194,
+      "labelRationale": "Unrelated science fields. Expected score: 0.0%."
+    },
+    {
+      "fixtureId": "L2-CAT-E-01",
+      "category": "E",
+      "categoryDescription": "Clean negative control - Original anthropology essay",
+      "filename": "L2-CAT-E-01.json",
+      "sha256": "844d26f1a91fc341c4f97456c3ed8e9830ca9b155b3907e899ca384acaf657ff",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 276,
+      "labelRationale": "Negative control: student document contains zero plagiarism. Absolute zero false positives required."
+    },
+    {
+      "fixtureId": "L2-CAT-E-02",
+      "category": "E",
+      "categoryDescription": "Clean negative control - Computer Systems text vs Geology source",
+      "filename": "L2-CAT-E-02.json",
+      "sha256": "eb556f1ad617615b0d1bc6285901c9741a0f259dacebfdc2d47e520462a28499",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 212,
+      "labelRationale": "Negative control: 0 findings expected."
+    },
+    {
+      "fixtureId": "L2-CAT-E-03",
+      "category": "E",
+      "categoryDescription": "Clean negative control - Architectural History vs Cardiology source",
+      "filename": "L2-CAT-E-03.json",
+      "sha256": "fd4c7c7b87c04b8a4b0361bdd71e8042a235800f4a28a64a3c7745d3b7c9c520",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 174,
+      "labelRationale": "Negative control: 0 findings expected."
+    },
+    {
+      "fixtureId": "L2-CAT-F-01",
+      "category": "F",
+      "categoryDescription": "Mixed content - Exact middle paragraph embedded between two original paragraphs",
+      "filename": "L2-CAT-F-01.json",
+      "sha256": "4dd250fd1adb1f670b1988b8fccc4a40e94646961e60339a78c50837c42b6874",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 412,
+      "labelRationale": "Only the middle paragraph is copied. Paragraphs 1 and 3 are original. Test verifies precise span isolation: only Paragraph 2 is flagged, without whole-document false contamination."
+    },
+    {
+      "fixtureId": "L2-CAT-F-02",
+      "category": "F",
+      "categoryDescription": "Mixed content - Copied first paragraph followed by original second paragraph",
+      "filename": "L2-CAT-F-02.json",
+      "sha256": "eeae2058df623db1f833f471525815cc42749aa21d72306c8d6a4a7780891fd9",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 320,
+      "labelRationale": "Paragraph 1 is 100% copied. Paragraph 2 is completely original. Span must cleanly isolate Paragraph 1."
+    },
+    {
+      "fixtureId": "L2-CAT-F-03",
+      "category": "F",
+      "categoryDescription": "Mixed content - Repeated identical copied paragraphs enclosing original sentence",
+      "filename": "L2-CAT-F-03.json",
+      "sha256": "feca141b70b653f620e6a80dd9410a23604c457245dd498c101091a52c7c1d2e",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 451,
+      "labelRationale": "Paragraph 1 and Paragraph 3 are identical copies of the source. Middle sentence is original. Unique coverage deduplicates tokens, while both occurrences are flagged."
+    },
+    {
+      "fixtureId": "L2-CAT-G-01",
+      "category": "G",
+      "categoryDescription": "Multi-source - Spans drawn from two distinct independent sources",
+      "filename": "L2-CAT-G-01.json",
+      "sha256": "cbb8307aa7b7fc8fc7a83ddb85598a2b11cb580780e36866a8117f8d9c9c475c",
+      "sourceDocumentCount": 2,
+      "studentDocumentLength": 392,
+      "labelRationale": "Student borrows verbatim from two separate sources. Verification must independently attribute Span 1 to SRC-G-01A and Span 2 to SRC-G-01B without cross-contamination. Aggregation must sum non-overlapping tokens."
+    },
+    {
+      "fixtureId": "L2-CAT-G-02",
+      "category": "G",
+      "categoryDescription": "Multi-source - Multiple sources embedded with original intro paragraph",
+      "filename": "L2-CAT-G-02.json",
+      "sha256": "e708d4da9d9eebaf2c34308008833399cb30bc9ca0382c465a2b03cbfcf219f8",
+      "sourceDocumentCount": 2,
+      "studentDocumentLength": 337,
+      "labelRationale": "Paragraph 1 is original. Paragraph 2 is from Source A. Paragraph 3 is from Source B. Both sources must be correctly attributed."
+    },
+    {
+      "fixtureId": "L2-CAT-H-01",
+      "category": "H",
+      "categoryDescription": "Boundary - All-caps case mutation and exclamation marks",
+      "filename": "L2-CAT-H-01.json",
+      "sha256": "95e7888e68b897179a74779c06c9f168f1aff8984b5f3085feb4d3196d263eea",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 164,
+      "labelRationale": "NORM-V1 canonical normalization converts to lowercase and strips non-alphanumeric punctuation. Match must be 100% exact under normalized representation."
+    },
+    {
+      "fixtureId": "L2-CAT-H-02",
+      "category": "H",
+      "categoryDescription": "Boundary - Irregular tabs, leading/trailing whitespace, and internal newlines",
+      "filename": "L2-CAT-H-02.json",
+      "sha256": "4f02fa5d8f8a3bb31c42d7575b803e208a8cbba8ab926d9135cd1493ea1ba1a4",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 172,
+      "labelRationale": "NORM-V1 collapses multiple whitespace characters and newlines into single spaces. Expected match is 100% exact."
+    },
+    {
+      "fixtureId": "L2-CAT-H-03",
+      "category": "H",
+      "categoryDescription": "Boundary - Short phrase (5 tokens, 40 characters)",
+      "filename": "L2-CAT-H-03.json",
+      "sha256": "1f2f7143888925d035f092051682d873b92abb9646a9f2fd1356eaa8af4b3fab",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 40,
+      "labelRationale": "Sentence has 5 tokens and 40 characters, exceeding the G2 Sub-Defect B defence-in-depth minimum (>=3 tokens, >=10 characters). Expected exact match."
+    },
+    {
+      "fixtureId": "L2-CAT-H-04",
+      "category": "H",
+      "categoryDescription": "Boundary - Empty student document payload",
+      "filename": "L2-CAT-H-04.json",
+      "sha256": "821c5db0425a3c8c059626d70ce619fb1c7713f275f6aa74ead8e48df9d8d1f4",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 0,
+      "labelRationale": "Empty input document must fail closed, returning 0 similarity and warning/empty result without throwing unhandled exceptions."
+    },
+    {
+      "fixtureId": "L2-CAT-H-05",
+      "category": "H",
+      "categoryDescription": "Boundary - Adversarial Unicode homoglyphs and diacritics",
+      "filename": "L2-CAT-H-05.json",
+      "sha256": "2de49e94add482141d583295c76a09b20a97f60815cad86b7f0126b3b756dc3e",
+      "sourceDocumentCount": 1,
+      "studentDocumentLength": 123,
+      "labelRationale": "NORM-V1 applies NFKD decomposition and removes combining diacritical marks ([\\u0300-\\u036f]). Accented characters normalize cleanly to base ASCII, defeating adversarial evasion."
+    }
+  ]
+}

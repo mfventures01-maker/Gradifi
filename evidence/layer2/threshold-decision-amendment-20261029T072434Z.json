@@ -1,0 +1,34 @@
+{
+    "recordId":  "THRESHOLD-DECISION-AMENDMENT-L2-CG-01-20261029T072434Z",
+    "amendmentTimestamp":  "2026-10-29T07:24:34.481Z",
+    "supersedes":  {
+                       "path":  "evidence/layer2/threshold-decision.json",
+                       "sha256":  "32973e6cb8b0a3620002dd110d1300a31939f93893be798d1126b0e91d66a9a7",
+                       "recordId":  "THRESHOLD-DECISION-L2-CG-01"
+                   },
+    "decisionOwner":  "System Owner / Executive Authority",
+    "decisionMode":  "APPROVE_AS_PROPOSED",
+    "thresholdState":  "APPROVED_AS_PROPOSED — two metrics observed below proposal; gate remains BLOCKED pending engine repair",
+    "coveragePolicy":  "ACCEPT_WHOLE_SENTENCE_COVERAGE",
+    "spanDefectPolicy":  "REQUIRE_FIX_BEFORE_CERTIFICATION",
+    "ownerRationale":  "Pending owner narrative. This field is for the owner to explain the choice against commercial requirements.",
+    "observedValues":  {
+                           "documentLevelPrecision":  0.9375,
+                           "documentLevelRecall":  1,
+                           "falsePositiveRate":  0.1,
+                           "sentenceSpanAccuracy":  0.95652173913043481,
+                           "aiAdvisoryIsolation":  1
+                       },
+    "proposedThresholds":  {
+                               "documentLevelPrecision":  0.95,
+                               "documentLevelRecall":  0.9,
+                               "falsePositiveRate":  0.05,
+                               "sentenceSpanAccuracy":  0.95,
+                               "aiAdvisoryIsolation":  1
+                           },
+    "gateImpact":  "BLOCKED: PRECISION_AND_FPR_MISSES_REQUIRE_ENGINE_REPAIR",
+    "layer2VerdictAfterThisAmendment":  "BLOCKED",
+    "productionStatus":  "HARD_HOLD",
+    "preventsPushing":  true,
+    "freeTextNote":  "This amendment does not authorize push, tag, or deploy. Layer 2 remains BLOCKED until the specific defect resolution policy above is executed and the gate re-evaluated."
+}

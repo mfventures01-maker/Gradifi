@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-ECO-02-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Economics",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-ECO-002",
+      "title": "Monetary Policy Transmission and Foreign Exchange Fluctuations",
+      "authors": [
+        "Prof. C. Soludo"
+      ],
+      "text": "Devaluation of the official exchange rate triggers domestic cost-push inflation through imported intermediate manufacturing inputs and escalating transport logistics."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-ECO-002",
+    "title": "Macroeconomic Impact of Currency Depreciation",
+    "text": "When national monetary authorities adjust official currency exchange rates downward, consumer prices generally rise as industrial manufacturers pass higher import costs onto retail markets."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 25,
+    "expectedMatches": []
+  },
+  "labelRationale": "Paraphrase without verbatim copying. Deterministic n-gram engine should report no substantive match.",
+  "provenance": "Economics student tutorial response"
+}

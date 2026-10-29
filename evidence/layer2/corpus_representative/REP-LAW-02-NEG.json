@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-LAW-02-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Law",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-LAW-002",
+      "title": "Admiralty Jurisdiction in West African Maritime Claims",
+      "authors": [
+        "Dr. E. Briggs"
+      ],
+      "text": "Admiralty jurisdiction in the Federal High Court encompasses actions in rem against vessels for maritime liens, salvage claims, and collision damage arising within Nigerian territorial waters."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-LAW-002",
+    "title": "Constitutional Supremacy and Judicial Review",
+    "text": "Constitutional supremacy under Section 1(1) of the 1999 Constitution of the Federal Republic of Nigeria establishes that the Constitution is supreme and its provisions shall have binding force on all authorities and persons throughout the Federation. Any other law inconsistent with the provisions of this Constitution is null and void to the extent of the inconsistency."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Negative control: student wrote constitutional analysis; source discusses admiralty jurisdiction.",
+  "provenance": "Anonymized Nigerian undergraduate constitutional law essay"
+}

@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-EDGE-04-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Computer Science",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDGE-004",
+      "title": "Deep Learning for Yoruba Named Entity Recognition",
+      "authors": [
+        "Dr. A. Adegbola"
+      ],
+      "text": "Diacritic restoration using bidirectional long short-term memory recurrent neural networks improves acoustic phonetic accuracy in tonal language automatic speech recognition."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDGE-004",
+    "title": "Rule-Based Morphological Analyzer for Igbo Verbs",
+    "text": "Igbo verbal morphology involves extensive prefixation, suffixation, and interfixation to express grammatical aspect, requiring finite-state transducers for computational lexicon parsing."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Negative control: student wrote on Igbo morphological parsing; source is Yoruba diacritic restoration.",
+  "provenance": "African Natural Language Processing workshop"
+}

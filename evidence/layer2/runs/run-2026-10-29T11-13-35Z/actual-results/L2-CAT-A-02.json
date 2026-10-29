@@ -1,0 +1,5007 @@
+{
+  "documentHash": "d77bafc8edbcf6f4",
+  "evidenceHash": "c4cae708ffff0c1a",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 43.3,
+  "uniqueMatchedCoverage": 43.3,
+  "highestSourceMatch": 77.3,
+  "totalSourcesEvaluated": 1,
+  "verifiedMatches": [
+    {
+      "sourceId": "SRC-A-02",
+      "title": "Biochemistry of Carbon Fixation",
+      "authors": [
+        "Dr. H. Green",
+        "Dr. L. Plant"
+      ],
+      "url": "",
+      "matchedText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts.",
+      "originalSnippet": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+      "matchType": "exact",
+      "matchPercentage": 77.3,
+      "relevanceScore": 71.7,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "SRC-A-02",
+        "retrievedAt": "2026-10-29T11:13:35.156Z",
+        "sourceType": "document",
+        "sourceUrl": "",
+        "title": "Biochemistry of Carbon Fixation",
+        "authors": [
+          "Dr. H. Green",
+          "Dr. L. Plant"
+        ],
+        "provenanceState": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "aggregation": {
+    "totalDocumentTokens": 30,
+    "totalUniqueMatchedTokens": 13,
+    "totalDocumentOverlap": 43.3,
+    "highestSourceMatch": 77.3,
+    "totalSourceMatches": 1,
+    "totalParagraphMatches": 1,
+    "totalSentenceMatches": 1,
+    "totalPhraseMatches": 27,
+    "sourceReports": [
+      {
+        "sourceId": "SRC-A-02",
+        "title": "Biochemistry of Carbon Fixation",
+        "authors": [
+          "Dr. H. Green",
+          "Dr. L. Plant"
+        ],
+        "url": "",
+        "documentCoverage": 43.3,
+        "paragraphMatches": 1,
+        "sentenceMatches": 1,
+        "phraseMatches": 27,
+        "highestSentenceMatch": 100,
+        "highestPhraseMatch": 100,
+        "aggregateSourceScore": 77.3,
+        "paragraphEvidence": [
+          {
+            "level": "paragraph",
+            "documentUnitId": "PAR-001",
+            "sourceId": "SRC-A-02",
+            "submittedParagraph": "In biological systems, photosynthesis is essential for life on Earth. Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. This concludes our introduction to plant biochemistry.",
+            "sourcePassage": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+            "similarityPercentage": 100,
+            "coveragePercentage": 43.3,
+            "matchedSentences": [
+              {
+                "level": "sentence",
+                "documentUnitId": "SEN-001",
+                "paragraphId": "PAR-001",
+                "sourceId": "SRC-A-02",
+                "studentText": "In biological systems, photosynthesis is essential for life on Earth.",
+                "sourceText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+                "similarityPercentage": 0,
+                "matchType": "lexical_overlap",
+                "algorithmVersion": "SIM-V1",
+                "documentLocation": {
+                  "startChar": 0,
+                  "endChar": 69
+                },
+                "matchedPhrases": [],
+                "flag": "NO_MATCH"
+              },
+              {
+                "level": "sentence",
+                "documentUnitId": "SEN-002",
+                "paragraphId": "PAR-001",
+                "sourceId": "SRC-A-02",
+                "studentText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts.",
+                "sourceText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+                "similarityPercentage": 100,
+                "matchType": "exact_match",
+                "algorithmVersion": "SIM-V1",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 167
+                },
+                "matchedPhrases": [
+                  {
+                    "phraseId": "PHR-019",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "photosynthetic carbon fixation",
+                    "sourcePhrase": "photosynthetic carbon fixation",
+                    "normalizedPhrase": "photosynthetic carbon fixation",
+                    "documentLocation": {
+                      "startChar": 70,
+                      "endChar": 100,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 0,
+                      "endChar": 30
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 30,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-020",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "carbon fixation occurs",
+                    "sourcePhrase": "carbon fixation occurs",
+                    "normalizedPhrase": "carbon fixation occurs",
+                    "documentLocation": {
+                      "startChar": 85,
+                      "endChar": 107,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 15,
+                      "endChar": 37
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 22,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-021",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "fixation occurs through",
+                    "sourcePhrase": "fixation occurs through",
+                    "normalizedPhrase": "fixation occurs through",
+                    "documentLocation": {
+                      "startChar": 92,
+                      "endChar": 115,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 22,
+                      "endChar": 45
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 23,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-022",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "occurs through the",
+                    "sourcePhrase": "occurs through the",
+                    "normalizedPhrase": "occurs through the",
+                    "documentLocation": {
+                      "startChar": 101,
+                      "endChar": 119,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 31,
+                      "endChar": 49
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 18,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-023",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "through the calvin",
+                    "sourcePhrase": "through the calvin",
+                    "normalizedPhrase": "through the calvin",
+                    "documentLocation": {
+                      "startChar": 108,
+                      "endChar": 126,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 38,
+                      "endChar": 56
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 18,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-024",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "the calvin cycle",
+                    "sourcePhrase": "the calvin cycle",
+                    "normalizedPhrase": "the calvin cycle",
+                    "documentLocation": {
+                      "startChar": 116,
+                      "endChar": 132,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 46,
+                      "endChar": 62
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 16,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-025",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "calvin cycle within",
+                    "sourcePhrase": "calvin cycle within",
+                    "normalizedPhrase": "calvin cycle within",
+                    "documentLocation": {
+                      "startChar": 120,
+                      "endChar": 139,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 50,
+                      "endChar": 69
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 19,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-026",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "cycle within the",
+                    "sourcePhrase": "cycle within the",
+                    "normalizedPhrase": "cycle within the",
+                    "documentLocation": {
+                      "startChar": 127,
+                      "endChar": 143,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 57,
+                      "endChar": 73
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 16,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-027",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "within the stroma",
+                    "sourcePhrase": "within the stroma",
+                    "normalizedPhrase": "within the stroma",
+                    "documentLocation": {
+                      "startChar": 133,
+                      "endChar": 150,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 63,
+                      "endChar": 80
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 17,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-028",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "the stroma of",
+                    "sourcePhrase": "the stroma of",
+                    "normalizedPhrase": "the stroma of",
+                    "documentLocation": {
+                      "startChar": 140,
+                      "endChar": 153,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 70,
+                      "endChar": 83
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 13,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-029",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "stroma of chloroplasts",
+                    "sourcePhrase": "stroma of chloroplasts",
+                    "normalizedPhrase": "stroma of chloroplasts",
+                    "documentLocation": {
+                      "startChar": 144,
+                      "endChar": 166,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 74,
+                      "endChar": 96
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 22,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-030",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "photosynthetic carbon fixation occurs through",
+                    "sourcePhrase": "photosynthetic carbon fixation occurs through",
+                    "normalizedPhrase": "photosynthetic carbon fixation occurs through",
+                    "documentLocation": {
+                      "startChar": 70,
+                      "endChar": 115,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 0,
+                      "endChar": 45
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 45,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-031",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "carbon fixation occurs through the",
+                    "sourcePhrase": "carbon fixation occurs through the",
+                    "normalizedPhrase": "carbon fixation occurs through the",
+                    "documentLocation": {
+                      "startChar": 85,
+                      "endChar": 119,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 15,
+                      "endChar": 49
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 34,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-032",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "fixation occurs through the calvin",
+                    "sourcePhrase": "fixation occurs through the calvin",
+                    "normalizedPhrase": "fixation occurs through the calvin",
+                    "documentLocation": {
+                      "startChar": 92,
+                      "endChar": 126,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 22,
+                      "endChar": 56
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 34,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-033",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "occurs through the calvin cycle",
+                    "sourcePhrase": "occurs through the calvin cycle",
+                    "normalizedPhrase": "occurs through the calvin cycle",
+                    "documentLocation": {
+                      "startChar": 101,
+                      "endChar": 132,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 31,
+                      "endChar": 62
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 31,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-034",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "through the calvin cycle within",
+                    "sourcePhrase": "through the calvin cycle within",
+                    "normalizedPhrase": "through the calvin cycle within",
+                    "documentLocation": {
+                      "startChar": 108,
+                      "endChar": 139,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 38,
+                      "endChar": 69
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 31,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-035",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "the calvin cycle within the",
+                    "sourcePhrase": "the calvin cycle within the",
+                    "normalizedPhrase": "the calvin cycle within the",
+                    "documentLocation": {
+                      "startChar": 116,
+                      "endChar": 143,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 46,
+                      "endChar": 73
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 27,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-036",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "calvin cycle within the stroma",
+                    "sourcePhrase": "calvin cycle within the stroma",
+                    "normalizedPhrase": "calvin cycle within the stroma",
+                    "documentLocation": {
+                      "startChar": 120,
+                      "endChar": 150,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 50,
+                      "endChar": 80
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 30,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-037",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "cycle within the stroma of",
+                    "sourcePhrase": "cycle within the stroma of",
+                    "normalizedPhrase": "cycle within the stroma of",
+                    "documentLocation": {
+                      "startChar": 127,
+                      "endChar": 153,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 57,
+                      "endChar": 83
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 26,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-038",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "within the stroma of chloroplasts",
+                    "sourcePhrase": "within the stroma of chloroplasts",
+                    "normalizedPhrase": "within the stroma of chloroplasts",
+                    "documentLocation": {
+                      "startChar": 133,
+                      "endChar": 166,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 63,
+                      "endChar": 96
+                    },
+                    "tokenCount": 5,
+                    "characterCount": 33,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-039",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+                    "sourcePhrase": "photosynthetic carbon fixation occurs through the calvin",
+                    "normalizedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+                    "documentLocation": {
+                      "startChar": 70,
+                      "endChar": 126,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 0,
+                      "endChar": 56
+                    },
+                    "tokenCount": 7,
+                    "characterCount": 56,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-040",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "carbon fixation occurs through the calvin cycle",
+                    "sourcePhrase": "carbon fixation occurs through the calvin cycle",
+                    "normalizedPhrase": "carbon fixation occurs through the calvin cycle",
+                    "documentLocation": {
+                      "startChar": 85,
+                      "endChar": 132,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 15,
+                      "endChar": 62
+                    },
+                    "tokenCount": 7,
+                    "characterCount": 47,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-041",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "fixation occurs through the calvin cycle within",
+                    "sourcePhrase": "fixation occurs through the calvin cycle within",
+                    "normalizedPhrase": "fixation occurs through the calvin cycle within",
+                    "documentLocation": {
+                      "startChar": 92,
+                      "endChar": 139,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 22,
+                      "endChar": 69
+                    },
+                    "tokenCount": 7,
+                    "characterCount": 47,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-042",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "occurs through the calvin cycle within the",
+                    "sourcePhrase": "occurs through the calvin cycle within the",
+                    "normalizedPhrase": "occurs through the calvin cycle within the",
+                    "documentLocation": {
+                      "startChar": 101,
+                      "endChar": 143,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 31,
+                      "endChar": 73
+                    },
+                    "tokenCount": 7,
+                    "characterCount": 42,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-043",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "through the calvin cycle within the stroma",
+                    "sourcePhrase": "through the calvin cycle within the stroma",
+                    "normalizedPhrase": "through the calvin cycle within the stroma",
+                    "documentLocation": {
+                      "startChar": 108,
+                      "endChar": 150,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 38,
+                      "endChar": 80
+                    },
+                    "tokenCount": 7,
+                    "characterCount": 42,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-044",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "the calvin cycle within the stroma of",
+                    "sourcePhrase": "the calvin cycle within the stroma of",
+                    "normalizedPhrase": "the calvin cycle within the stroma of",
+                    "documentLocation": {
+                      "startChar": 116,
+                      "endChar": 153,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 46,
+                      "endChar": 83
+                    },
+                    "tokenCount": 7,
+                    "characterCount": 37,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  },
+                  {
+                    "phraseId": "PHR-045",
+                    "sourceId": "SRC-A-02",
+                    "submittedPhrase": "calvin cycle within the stroma of chloroplasts",
+                    "sourcePhrase": "calvin cycle within the stroma of chloroplasts",
+                    "normalizedPhrase": "calvin cycle within the stroma of chloroplasts",
+                    "documentLocation": {
+                      "startChar": 120,
+                      "endChar": 166,
+                      "sentenceId": "SEN-002",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 50,
+                      "endChar": 96
+                    },
+                    "tokenCount": 7,
+                    "characterCount": 46,
+                    "matchPercentage": 100,
+                    "flag": "EXACT_PHRASE_MATCH",
+                    "algorithmVersion": "SIM-V1"
+                  }
+                ],
+                "flag": "HIGH_SIMILARITY_SENTENCE"
+              },
+              {
+                "level": "sentence",
+                "documentUnitId": "SEN-003",
+                "paragraphId": "PAR-001",
+                "sourceId": "SRC-A-02",
+                "studentText": "This concludes our introduction to plant biochemistry.",
+                "sourceText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+                "similarityPercentage": 0,
+                "matchType": "lexical_overlap",
+                "algorithmVersion": "SIM-V1",
+                "documentLocation": {
+                  "startChar": 168,
+                  "endChar": 222
+                },
+                "matchedPhrases": [],
+                "flag": "NO_MATCH"
+              }
+            ],
+            "matchedPhrases": [
+              {
+                "phraseId": "PHR-019",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation",
+                "sourcePhrase": "photosynthetic carbon fixation",
+                "normalizedPhrase": "photosynthetic carbon fixation",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 100,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 30
+                },
+                "tokenCount": 3,
+                "characterCount": 30,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-020",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs",
+                "sourcePhrase": "carbon fixation occurs",
+                "normalizedPhrase": "carbon fixation occurs",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 107,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 37
+                },
+                "tokenCount": 3,
+                "characterCount": 22,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-021",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through",
+                "sourcePhrase": "fixation occurs through",
+                "normalizedPhrase": "fixation occurs through",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 115,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 45
+                },
+                "tokenCount": 3,
+                "characterCount": 23,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-022",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the",
+                "sourcePhrase": "occurs through the",
+                "normalizedPhrase": "occurs through the",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 119,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 49
+                },
+                "tokenCount": 3,
+                "characterCount": 18,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-023",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin",
+                "sourcePhrase": "through the calvin",
+                "normalizedPhrase": "through the calvin",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 56
+                },
+                "tokenCount": 3,
+                "characterCount": 18,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-024",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle",
+                "sourcePhrase": "the calvin cycle",
+                "normalizedPhrase": "the calvin cycle",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 62
+                },
+                "tokenCount": 3,
+                "characterCount": 16,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-025",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within",
+                "sourcePhrase": "calvin cycle within",
+                "normalizedPhrase": "calvin cycle within",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 69
+                },
+                "tokenCount": 3,
+                "characterCount": 19,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-026",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "cycle within the",
+                "sourcePhrase": "cycle within the",
+                "normalizedPhrase": "cycle within the",
+                "documentLocation": {
+                  "startChar": 127,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 57,
+                  "endChar": 73
+                },
+                "tokenCount": 3,
+                "characterCount": 16,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-027",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "within the stroma",
+                "sourcePhrase": "within the stroma",
+                "normalizedPhrase": "within the stroma",
+                "documentLocation": {
+                  "startChar": 133,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 63,
+                  "endChar": 80
+                },
+                "tokenCount": 3,
+                "characterCount": 17,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-028",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the stroma of",
+                "sourcePhrase": "the stroma of",
+                "normalizedPhrase": "the stroma of",
+                "documentLocation": {
+                  "startChar": 140,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 70,
+                  "endChar": 83
+                },
+                "tokenCount": 3,
+                "characterCount": 13,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-029",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "stroma of chloroplasts",
+                "sourcePhrase": "stroma of chloroplasts",
+                "normalizedPhrase": "stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 144,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 74,
+                  "endChar": 96
+                },
+                "tokenCount": 3,
+                "characterCount": 22,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-030",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation occurs through",
+                "sourcePhrase": "photosynthetic carbon fixation occurs through",
+                "normalizedPhrase": "photosynthetic carbon fixation occurs through",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 115,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 45
+                },
+                "tokenCount": 5,
+                "characterCount": 45,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-031",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs through the",
+                "sourcePhrase": "carbon fixation occurs through the",
+                "normalizedPhrase": "carbon fixation occurs through the",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 119,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 49
+                },
+                "tokenCount": 5,
+                "characterCount": 34,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-032",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through the calvin",
+                "sourcePhrase": "fixation occurs through the calvin",
+                "normalizedPhrase": "fixation occurs through the calvin",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 56
+                },
+                "tokenCount": 5,
+                "characterCount": 34,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-033",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the calvin cycle",
+                "sourcePhrase": "occurs through the calvin cycle",
+                "normalizedPhrase": "occurs through the calvin cycle",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 62
+                },
+                "tokenCount": 5,
+                "characterCount": 31,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-034",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin cycle within",
+                "sourcePhrase": "through the calvin cycle within",
+                "normalizedPhrase": "through the calvin cycle within",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 69
+                },
+                "tokenCount": 5,
+                "characterCount": 31,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-035",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle within the",
+                "sourcePhrase": "the calvin cycle within the",
+                "normalizedPhrase": "the calvin cycle within the",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 73
+                },
+                "tokenCount": 5,
+                "characterCount": 27,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-036",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within the stroma",
+                "sourcePhrase": "calvin cycle within the stroma",
+                "normalizedPhrase": "calvin cycle within the stroma",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 80
+                },
+                "tokenCount": 5,
+                "characterCount": 30,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-037",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "cycle within the stroma of",
+                "sourcePhrase": "cycle within the stroma of",
+                "normalizedPhrase": "cycle within the stroma of",
+                "documentLocation": {
+                  "startChar": 127,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 57,
+                  "endChar": 83
+                },
+                "tokenCount": 5,
+                "characterCount": 26,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-038",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "within the stroma of chloroplasts",
+                "sourcePhrase": "within the stroma of chloroplasts",
+                "normalizedPhrase": "within the stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 133,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 63,
+                  "endChar": 96
+                },
+                "tokenCount": 5,
+                "characterCount": 33,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-039",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "sourcePhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "normalizedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 56
+                },
+                "tokenCount": 7,
+                "characterCount": 56,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-040",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs through the calvin cycle",
+                "sourcePhrase": "carbon fixation occurs through the calvin cycle",
+                "normalizedPhrase": "carbon fixation occurs through the calvin cycle",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 62
+                },
+                "tokenCount": 7,
+                "characterCount": 47,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-041",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through the calvin cycle within",
+                "sourcePhrase": "fixation occurs through the calvin cycle within",
+                "normalizedPhrase": "fixation occurs through the calvin cycle within",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 69
+                },
+                "tokenCount": 7,
+                "characterCount": 47,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-042",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the calvin cycle within the",
+                "sourcePhrase": "occurs through the calvin cycle within the",
+                "normalizedPhrase": "occurs through the calvin cycle within the",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 73
+                },
+                "tokenCount": 7,
+                "characterCount": 42,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-043",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin cycle within the stroma",
+                "sourcePhrase": "through the calvin cycle within the stroma",
+                "normalizedPhrase": "through the calvin cycle within the stroma",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 80
+                },
+                "tokenCount": 7,
+                "characterCount": 42,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-044",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle within the stroma of",
+                "sourcePhrase": "the calvin cycle within the stroma of",
+                "normalizedPhrase": "the calvin cycle within the stroma of",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 83
+                },
+                "tokenCount": 7,
+                "characterCount": 37,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-045",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within the stroma of chloroplasts",
+                "sourcePhrase": "calvin cycle within the stroma of chloroplasts",
+                "normalizedPhrase": "calvin cycle within the stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 96
+                },
+                "tokenCount": 7,
+                "characterCount": 46,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              }
+            ],
+            "flag": "HIGH_SIMILARITY_PARAGRAPH",
+            "algorithmVersion": "SIM-V1"
+          }
+        ],
+        "sentenceEvidence": [
+          {
+            "level": "sentence",
+            "documentUnitId": "SEN-002",
+            "paragraphId": "PAR-001",
+            "sourceId": "SRC-A-02",
+            "studentText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts.",
+            "sourceText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+            "similarityPercentage": 100,
+            "matchType": "exact_match",
+            "algorithmVersion": "SIM-V1",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 167
+            },
+            "matchedPhrases": [
+              {
+                "phraseId": "PHR-019",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation",
+                "sourcePhrase": "photosynthetic carbon fixation",
+                "normalizedPhrase": "photosynthetic carbon fixation",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 100,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 30
+                },
+                "tokenCount": 3,
+                "characterCount": 30,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-020",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs",
+                "sourcePhrase": "carbon fixation occurs",
+                "normalizedPhrase": "carbon fixation occurs",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 107,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 37
+                },
+                "tokenCount": 3,
+                "characterCount": 22,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-021",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through",
+                "sourcePhrase": "fixation occurs through",
+                "normalizedPhrase": "fixation occurs through",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 115,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 45
+                },
+                "tokenCount": 3,
+                "characterCount": 23,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-022",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the",
+                "sourcePhrase": "occurs through the",
+                "normalizedPhrase": "occurs through the",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 119,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 49
+                },
+                "tokenCount": 3,
+                "characterCount": 18,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-023",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin",
+                "sourcePhrase": "through the calvin",
+                "normalizedPhrase": "through the calvin",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 56
+                },
+                "tokenCount": 3,
+                "characterCount": 18,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-024",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle",
+                "sourcePhrase": "the calvin cycle",
+                "normalizedPhrase": "the calvin cycle",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 62
+                },
+                "tokenCount": 3,
+                "characterCount": 16,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-025",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within",
+                "sourcePhrase": "calvin cycle within",
+                "normalizedPhrase": "calvin cycle within",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 69
+                },
+                "tokenCount": 3,
+                "characterCount": 19,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-026",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "cycle within the",
+                "sourcePhrase": "cycle within the",
+                "normalizedPhrase": "cycle within the",
+                "documentLocation": {
+                  "startChar": 127,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 57,
+                  "endChar": 73
+                },
+                "tokenCount": 3,
+                "characterCount": 16,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-027",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "within the stroma",
+                "sourcePhrase": "within the stroma",
+                "normalizedPhrase": "within the stroma",
+                "documentLocation": {
+                  "startChar": 133,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 63,
+                  "endChar": 80
+                },
+                "tokenCount": 3,
+                "characterCount": 17,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-028",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the stroma of",
+                "sourcePhrase": "the stroma of",
+                "normalizedPhrase": "the stroma of",
+                "documentLocation": {
+                  "startChar": 140,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 70,
+                  "endChar": 83
+                },
+                "tokenCount": 3,
+                "characterCount": 13,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-029",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "stroma of chloroplasts",
+                "sourcePhrase": "stroma of chloroplasts",
+                "normalizedPhrase": "stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 144,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 74,
+                  "endChar": 96
+                },
+                "tokenCount": 3,
+                "characterCount": 22,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-030",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation occurs through",
+                "sourcePhrase": "photosynthetic carbon fixation occurs through",
+                "normalizedPhrase": "photosynthetic carbon fixation occurs through",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 115,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 45
+                },
+                "tokenCount": 5,
+                "characterCount": 45,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-031",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs through the",
+                "sourcePhrase": "carbon fixation occurs through the",
+                "normalizedPhrase": "carbon fixation occurs through the",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 119,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 49
+                },
+                "tokenCount": 5,
+                "characterCount": 34,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-032",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through the calvin",
+                "sourcePhrase": "fixation occurs through the calvin",
+                "normalizedPhrase": "fixation occurs through the calvin",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 56
+                },
+                "tokenCount": 5,
+                "characterCount": 34,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-033",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the calvin cycle",
+                "sourcePhrase": "occurs through the calvin cycle",
+                "normalizedPhrase": "occurs through the calvin cycle",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 62
+                },
+                "tokenCount": 5,
+                "characterCount": 31,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-034",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin cycle within",
+                "sourcePhrase": "through the calvin cycle within",
+                "normalizedPhrase": "through the calvin cycle within",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 69
+                },
+                "tokenCount": 5,
+                "characterCount": 31,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-035",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle within the",
+                "sourcePhrase": "the calvin cycle within the",
+                "normalizedPhrase": "the calvin cycle within the",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 73
+                },
+                "tokenCount": 5,
+                "characterCount": 27,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-036",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within the stroma",
+                "sourcePhrase": "calvin cycle within the stroma",
+                "normalizedPhrase": "calvin cycle within the stroma",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 80
+                },
+                "tokenCount": 5,
+                "characterCount": 30,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-037",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "cycle within the stroma of",
+                "sourcePhrase": "cycle within the stroma of",
+                "normalizedPhrase": "cycle within the stroma of",
+                "documentLocation": {
+                  "startChar": 127,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 57,
+                  "endChar": 83
+                },
+                "tokenCount": 5,
+                "characterCount": 26,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-038",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "within the stroma of chloroplasts",
+                "sourcePhrase": "within the stroma of chloroplasts",
+                "normalizedPhrase": "within the stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 133,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 63,
+                  "endChar": 96
+                },
+                "tokenCount": 5,
+                "characterCount": 33,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-039",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "sourcePhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "normalizedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 56
+                },
+                "tokenCount": 7,
+                "characterCount": 56,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-040",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs through the calvin cycle",
+                "sourcePhrase": "carbon fixation occurs through the calvin cycle",
+                "normalizedPhrase": "carbon fixation occurs through the calvin cycle",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 62
+                },
+                "tokenCount": 7,
+                "characterCount": 47,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-041",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through the calvin cycle within",
+                "sourcePhrase": "fixation occurs through the calvin cycle within",
+                "normalizedPhrase": "fixation occurs through the calvin cycle within",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 69
+                },
+                "tokenCount": 7,
+                "characterCount": 47,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-042",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the calvin cycle within the",
+                "sourcePhrase": "occurs through the calvin cycle within the",
+                "normalizedPhrase": "occurs through the calvin cycle within the",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 73
+                },
+                "tokenCount": 7,
+                "characterCount": 42,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-043",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin cycle within the stroma",
+                "sourcePhrase": "through the calvin cycle within the stroma",
+                "normalizedPhrase": "through the calvin cycle within the stroma",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 80
+                },
+                "tokenCount": 7,
+                "characterCount": 42,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-044",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle within the stroma of",
+                "sourcePhrase": "the calvin cycle within the stroma of",
+                "normalizedPhrase": "the calvin cycle within the stroma of",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 83
+                },
+                "tokenCount": 7,
+                "characterCount": 37,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-045",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within the stroma of chloroplasts",
+                "sourcePhrase": "calvin cycle within the stroma of chloroplasts",
+                "normalizedPhrase": "calvin cycle within the stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 96
+                },
+                "tokenCount": 7,
+                "characterCount": 46,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              }
+            ],
+            "flag": "HIGH_SIMILARITY_SENTENCE"
+          }
+        ],
+        "phraseEvidence": [
+          {
+            "phraseId": "PHR-019",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation",
+            "sourcePhrase": "photosynthetic carbon fixation",
+            "normalizedPhrase": "photosynthetic carbon fixation",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 100,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 30
+            },
+            "tokenCount": 3,
+            "characterCount": 30,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-020",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs",
+            "sourcePhrase": "carbon fixation occurs",
+            "normalizedPhrase": "carbon fixation occurs",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 107,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 37
+            },
+            "tokenCount": 3,
+            "characterCount": 22,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-021",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through",
+            "sourcePhrase": "fixation occurs through",
+            "normalizedPhrase": "fixation occurs through",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 115,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 45
+            },
+            "tokenCount": 3,
+            "characterCount": 23,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-022",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the",
+            "sourcePhrase": "occurs through the",
+            "normalizedPhrase": "occurs through the",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 119,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 49
+            },
+            "tokenCount": 3,
+            "characterCount": 18,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-023",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin",
+            "sourcePhrase": "through the calvin",
+            "normalizedPhrase": "through the calvin",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 56
+            },
+            "tokenCount": 3,
+            "characterCount": 18,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-024",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle",
+            "sourcePhrase": "the calvin cycle",
+            "normalizedPhrase": "the calvin cycle",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 62
+            },
+            "tokenCount": 3,
+            "characterCount": 16,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-025",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within",
+            "sourcePhrase": "calvin cycle within",
+            "normalizedPhrase": "calvin cycle within",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 69
+            },
+            "tokenCount": 3,
+            "characterCount": 19,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-026",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "cycle within the",
+            "sourcePhrase": "cycle within the",
+            "normalizedPhrase": "cycle within the",
+            "documentLocation": {
+              "startChar": 127,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 57,
+              "endChar": 73
+            },
+            "tokenCount": 3,
+            "characterCount": 16,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-027",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "within the stroma",
+            "sourcePhrase": "within the stroma",
+            "normalizedPhrase": "within the stroma",
+            "documentLocation": {
+              "startChar": 133,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 63,
+              "endChar": 80
+            },
+            "tokenCount": 3,
+            "characterCount": 17,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-028",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the stroma of",
+            "sourcePhrase": "the stroma of",
+            "normalizedPhrase": "the stroma of",
+            "documentLocation": {
+              "startChar": 140,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 70,
+              "endChar": 83
+            },
+            "tokenCount": 3,
+            "characterCount": 13,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-029",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "stroma of chloroplasts",
+            "sourcePhrase": "stroma of chloroplasts",
+            "normalizedPhrase": "stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 144,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 74,
+              "endChar": 96
+            },
+            "tokenCount": 3,
+            "characterCount": 22,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-030",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation occurs through",
+            "sourcePhrase": "photosynthetic carbon fixation occurs through",
+            "normalizedPhrase": "photosynthetic carbon fixation occurs through",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 115,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 45
+            },
+            "tokenCount": 5,
+            "characterCount": 45,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-031",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs through the",
+            "sourcePhrase": "carbon fixation occurs through the",
+            "normalizedPhrase": "carbon fixation occurs through the",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 119,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 49
+            },
+            "tokenCount": 5,
+            "characterCount": 34,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-032",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through the calvin",
+            "sourcePhrase": "fixation occurs through the calvin",
+            "normalizedPhrase": "fixation occurs through the calvin",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 56
+            },
+            "tokenCount": 5,
+            "characterCount": 34,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-033",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the calvin cycle",
+            "sourcePhrase": "occurs through the calvin cycle",
+            "normalizedPhrase": "occurs through the calvin cycle",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 62
+            },
+            "tokenCount": 5,
+            "characterCount": 31,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-034",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin cycle within",
+            "sourcePhrase": "through the calvin cycle within",
+            "normalizedPhrase": "through the calvin cycle within",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 69
+            },
+            "tokenCount": 5,
+            "characterCount": 31,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-035",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle within the",
+            "sourcePhrase": "the calvin cycle within the",
+            "normalizedPhrase": "the calvin cycle within the",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 73
+            },
+            "tokenCount": 5,
+            "characterCount": 27,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-036",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within the stroma",
+            "sourcePhrase": "calvin cycle within the stroma",
+            "normalizedPhrase": "calvin cycle within the stroma",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 80
+            },
+            "tokenCount": 5,
+            "characterCount": 30,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-037",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "cycle within the stroma of",
+            "sourcePhrase": "cycle within the stroma of",
+            "normalizedPhrase": "cycle within the stroma of",
+            "documentLocation": {
+              "startChar": 127,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 57,
+              "endChar": 83
+            },
+            "tokenCount": 5,
+            "characterCount": 26,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-038",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "within the stroma of chloroplasts",
+            "sourcePhrase": "within the stroma of chloroplasts",
+            "normalizedPhrase": "within the stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 133,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 63,
+              "endChar": 96
+            },
+            "tokenCount": 5,
+            "characterCount": 33,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-039",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "sourcePhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "normalizedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 56
+            },
+            "tokenCount": 7,
+            "characterCount": 56,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-040",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs through the calvin cycle",
+            "sourcePhrase": "carbon fixation occurs through the calvin cycle",
+            "normalizedPhrase": "carbon fixation occurs through the calvin cycle",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 62
+            },
+            "tokenCount": 7,
+            "characterCount": 47,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-041",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through the calvin cycle within",
+            "sourcePhrase": "fixation occurs through the calvin cycle within",
+            "normalizedPhrase": "fixation occurs through the calvin cycle within",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 69
+            },
+            "tokenCount": 7,
+            "characterCount": 47,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-042",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the calvin cycle within the",
+            "sourcePhrase": "occurs through the calvin cycle within the",
+            "normalizedPhrase": "occurs through the calvin cycle within the",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 73
+            },
+            "tokenCount": 7,
+            "characterCount": 42,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-043",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin cycle within the stroma",
+            "sourcePhrase": "through the calvin cycle within the stroma",
+            "normalizedPhrase": "through the calvin cycle within the stroma",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 80
+            },
+            "tokenCount": 7,
+            "characterCount": 42,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-044",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle within the stroma of",
+            "sourcePhrase": "the calvin cycle within the stroma of",
+            "normalizedPhrase": "the calvin cycle within the stroma of",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 83
+            },
+            "tokenCount": 7,
+            "characterCount": 37,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-045",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within the stroma of chloroplasts",
+            "sourcePhrase": "calvin cycle within the stroma of chloroplasts",
+            "normalizedPhrase": "calvin cycle within the stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 96
+            },
+            "tokenCount": 7,
+            "characterCount": 46,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          }
+        ]
+      }
+    ],
+    "paragraphFlags": [
+      {
+        "level": "paragraph",
+        "documentUnitId": "PAR-001",
+        "sourceId": "SRC-A-02",
+        "submittedParagraph": "In biological systems, photosynthesis is essential for life on Earth. Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. This concludes our introduction to plant biochemistry.",
+        "sourcePassage": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+        "similarityPercentage": 100,
+        "coveragePercentage": 43.3,
+        "matchedSentences": [
+          {
+            "level": "sentence",
+            "documentUnitId": "SEN-001",
+            "paragraphId": "PAR-001",
+            "sourceId": "SRC-A-02",
+            "studentText": "In biological systems, photosynthesis is essential for life on Earth.",
+            "sourceText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+            "similarityPercentage": 0,
+            "matchType": "lexical_overlap",
+            "algorithmVersion": "SIM-V1",
+            "documentLocation": {
+              "startChar": 0,
+              "endChar": 69
+            },
+            "matchedPhrases": [],
+            "flag": "NO_MATCH"
+          },
+          {
+            "level": "sentence",
+            "documentUnitId": "SEN-002",
+            "paragraphId": "PAR-001",
+            "sourceId": "SRC-A-02",
+            "studentText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts.",
+            "sourceText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+            "similarityPercentage": 100,
+            "matchType": "exact_match",
+            "algorithmVersion": "SIM-V1",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 167
+            },
+            "matchedPhrases": [
+              {
+                "phraseId": "PHR-019",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation",
+                "sourcePhrase": "photosynthetic carbon fixation",
+                "normalizedPhrase": "photosynthetic carbon fixation",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 100,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 30
+                },
+                "tokenCount": 3,
+                "characterCount": 30,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-020",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs",
+                "sourcePhrase": "carbon fixation occurs",
+                "normalizedPhrase": "carbon fixation occurs",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 107,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 37
+                },
+                "tokenCount": 3,
+                "characterCount": 22,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-021",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through",
+                "sourcePhrase": "fixation occurs through",
+                "normalizedPhrase": "fixation occurs through",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 115,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 45
+                },
+                "tokenCount": 3,
+                "characterCount": 23,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-022",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the",
+                "sourcePhrase": "occurs through the",
+                "normalizedPhrase": "occurs through the",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 119,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 49
+                },
+                "tokenCount": 3,
+                "characterCount": 18,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-023",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin",
+                "sourcePhrase": "through the calvin",
+                "normalizedPhrase": "through the calvin",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 56
+                },
+                "tokenCount": 3,
+                "characterCount": 18,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-024",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle",
+                "sourcePhrase": "the calvin cycle",
+                "normalizedPhrase": "the calvin cycle",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 62
+                },
+                "tokenCount": 3,
+                "characterCount": 16,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-025",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within",
+                "sourcePhrase": "calvin cycle within",
+                "normalizedPhrase": "calvin cycle within",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 69
+                },
+                "tokenCount": 3,
+                "characterCount": 19,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-026",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "cycle within the",
+                "sourcePhrase": "cycle within the",
+                "normalizedPhrase": "cycle within the",
+                "documentLocation": {
+                  "startChar": 127,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 57,
+                  "endChar": 73
+                },
+                "tokenCount": 3,
+                "characterCount": 16,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-027",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "within the stroma",
+                "sourcePhrase": "within the stroma",
+                "normalizedPhrase": "within the stroma",
+                "documentLocation": {
+                  "startChar": 133,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 63,
+                  "endChar": 80
+                },
+                "tokenCount": 3,
+                "characterCount": 17,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-028",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the stroma of",
+                "sourcePhrase": "the stroma of",
+                "normalizedPhrase": "the stroma of",
+                "documentLocation": {
+                  "startChar": 140,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 70,
+                  "endChar": 83
+                },
+                "tokenCount": 3,
+                "characterCount": 13,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-029",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "stroma of chloroplasts",
+                "sourcePhrase": "stroma of chloroplasts",
+                "normalizedPhrase": "stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 144,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 74,
+                  "endChar": 96
+                },
+                "tokenCount": 3,
+                "characterCount": 22,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-030",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation occurs through",
+                "sourcePhrase": "photosynthetic carbon fixation occurs through",
+                "normalizedPhrase": "photosynthetic carbon fixation occurs through",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 115,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 45
+                },
+                "tokenCount": 5,
+                "characterCount": 45,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-031",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs through the",
+                "sourcePhrase": "carbon fixation occurs through the",
+                "normalizedPhrase": "carbon fixation occurs through the",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 119,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 49
+                },
+                "tokenCount": 5,
+                "characterCount": 34,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-032",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through the calvin",
+                "sourcePhrase": "fixation occurs through the calvin",
+                "normalizedPhrase": "fixation occurs through the calvin",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 56
+                },
+                "tokenCount": 5,
+                "characterCount": 34,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-033",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the calvin cycle",
+                "sourcePhrase": "occurs through the calvin cycle",
+                "normalizedPhrase": "occurs through the calvin cycle",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 62
+                },
+                "tokenCount": 5,
+                "characterCount": 31,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-034",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin cycle within",
+                "sourcePhrase": "through the calvin cycle within",
+                "normalizedPhrase": "through the calvin cycle within",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 69
+                },
+                "tokenCount": 5,
+                "characterCount": 31,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-035",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle within the",
+                "sourcePhrase": "the calvin cycle within the",
+                "normalizedPhrase": "the calvin cycle within the",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 73
+                },
+                "tokenCount": 5,
+                "characterCount": 27,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-036",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within the stroma",
+                "sourcePhrase": "calvin cycle within the stroma",
+                "normalizedPhrase": "calvin cycle within the stroma",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 80
+                },
+                "tokenCount": 5,
+                "characterCount": 30,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-037",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "cycle within the stroma of",
+                "sourcePhrase": "cycle within the stroma of",
+                "normalizedPhrase": "cycle within the stroma of",
+                "documentLocation": {
+                  "startChar": 127,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 57,
+                  "endChar": 83
+                },
+                "tokenCount": 5,
+                "characterCount": 26,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-038",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "within the stroma of chloroplasts",
+                "sourcePhrase": "within the stroma of chloroplasts",
+                "normalizedPhrase": "within the stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 133,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 63,
+                  "endChar": 96
+                },
+                "tokenCount": 5,
+                "characterCount": 33,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-039",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "sourcePhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "normalizedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+                "documentLocation": {
+                  "startChar": 70,
+                  "endChar": 126,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 0,
+                  "endChar": 56
+                },
+                "tokenCount": 7,
+                "characterCount": 56,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-040",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "carbon fixation occurs through the calvin cycle",
+                "sourcePhrase": "carbon fixation occurs through the calvin cycle",
+                "normalizedPhrase": "carbon fixation occurs through the calvin cycle",
+                "documentLocation": {
+                  "startChar": 85,
+                  "endChar": 132,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 15,
+                  "endChar": 62
+                },
+                "tokenCount": 7,
+                "characterCount": 47,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-041",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "fixation occurs through the calvin cycle within",
+                "sourcePhrase": "fixation occurs through the calvin cycle within",
+                "normalizedPhrase": "fixation occurs through the calvin cycle within",
+                "documentLocation": {
+                  "startChar": 92,
+                  "endChar": 139,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 22,
+                  "endChar": 69
+                },
+                "tokenCount": 7,
+                "characterCount": 47,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-042",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "occurs through the calvin cycle within the",
+                "sourcePhrase": "occurs through the calvin cycle within the",
+                "normalizedPhrase": "occurs through the calvin cycle within the",
+                "documentLocation": {
+                  "startChar": 101,
+                  "endChar": 143,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 31,
+                  "endChar": 73
+                },
+                "tokenCount": 7,
+                "characterCount": 42,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-043",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "through the calvin cycle within the stroma",
+                "sourcePhrase": "through the calvin cycle within the stroma",
+                "normalizedPhrase": "through the calvin cycle within the stroma",
+                "documentLocation": {
+                  "startChar": 108,
+                  "endChar": 150,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 38,
+                  "endChar": 80
+                },
+                "tokenCount": 7,
+                "characterCount": 42,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-044",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "the calvin cycle within the stroma of",
+                "sourcePhrase": "the calvin cycle within the stroma of",
+                "normalizedPhrase": "the calvin cycle within the stroma of",
+                "documentLocation": {
+                  "startChar": 116,
+                  "endChar": 153,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 46,
+                  "endChar": 83
+                },
+                "tokenCount": 7,
+                "characterCount": 37,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              },
+              {
+                "phraseId": "PHR-045",
+                "sourceId": "SRC-A-02",
+                "submittedPhrase": "calvin cycle within the stroma of chloroplasts",
+                "sourcePhrase": "calvin cycle within the stroma of chloroplasts",
+                "normalizedPhrase": "calvin cycle within the stroma of chloroplasts",
+                "documentLocation": {
+                  "startChar": 120,
+                  "endChar": 166,
+                  "sentenceId": "SEN-002",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 50,
+                  "endChar": 96
+                },
+                "tokenCount": 7,
+                "characterCount": 46,
+                "matchPercentage": 100,
+                "flag": "EXACT_PHRASE_MATCH",
+                "algorithmVersion": "SIM-V1"
+              }
+            ],
+            "flag": "HIGH_SIMILARITY_SENTENCE"
+          },
+          {
+            "level": "sentence",
+            "documentUnitId": "SEN-003",
+            "paragraphId": "PAR-001",
+            "sourceId": "SRC-A-02",
+            "studentText": "This concludes our introduction to plant biochemistry.",
+            "sourceText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+            "similarityPercentage": 0,
+            "matchType": "lexical_overlap",
+            "algorithmVersion": "SIM-V1",
+            "documentLocation": {
+              "startChar": 168,
+              "endChar": 222
+            },
+            "matchedPhrases": [],
+            "flag": "NO_MATCH"
+          }
+        ],
+        "matchedPhrases": [
+          {
+            "phraseId": "PHR-019",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation",
+            "sourcePhrase": "photosynthetic carbon fixation",
+            "normalizedPhrase": "photosynthetic carbon fixation",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 100,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 30
+            },
+            "tokenCount": 3,
+            "characterCount": 30,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-020",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs",
+            "sourcePhrase": "carbon fixation occurs",
+            "normalizedPhrase": "carbon fixation occurs",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 107,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 37
+            },
+            "tokenCount": 3,
+            "characterCount": 22,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-021",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through",
+            "sourcePhrase": "fixation occurs through",
+            "normalizedPhrase": "fixation occurs through",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 115,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 45
+            },
+            "tokenCount": 3,
+            "characterCount": 23,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-022",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the",
+            "sourcePhrase": "occurs through the",
+            "normalizedPhrase": "occurs through the",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 119,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 49
+            },
+            "tokenCount": 3,
+            "characterCount": 18,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-023",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin",
+            "sourcePhrase": "through the calvin",
+            "normalizedPhrase": "through the calvin",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 56
+            },
+            "tokenCount": 3,
+            "characterCount": 18,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-024",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle",
+            "sourcePhrase": "the calvin cycle",
+            "normalizedPhrase": "the calvin cycle",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 62
+            },
+            "tokenCount": 3,
+            "characterCount": 16,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-025",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within",
+            "sourcePhrase": "calvin cycle within",
+            "normalizedPhrase": "calvin cycle within",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 69
+            },
+            "tokenCount": 3,
+            "characterCount": 19,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-026",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "cycle within the",
+            "sourcePhrase": "cycle within the",
+            "normalizedPhrase": "cycle within the",
+            "documentLocation": {
+              "startChar": 127,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 57,
+              "endChar": 73
+            },
+            "tokenCount": 3,
+            "characterCount": 16,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-027",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "within the stroma",
+            "sourcePhrase": "within the stroma",
+            "normalizedPhrase": "within the stroma",
+            "documentLocation": {
+              "startChar": 133,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 63,
+              "endChar": 80
+            },
+            "tokenCount": 3,
+            "characterCount": 17,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-028",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the stroma of",
+            "sourcePhrase": "the stroma of",
+            "normalizedPhrase": "the stroma of",
+            "documentLocation": {
+              "startChar": 140,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 70,
+              "endChar": 83
+            },
+            "tokenCount": 3,
+            "characterCount": 13,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-029",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "stroma of chloroplasts",
+            "sourcePhrase": "stroma of chloroplasts",
+            "normalizedPhrase": "stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 144,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 74,
+              "endChar": 96
+            },
+            "tokenCount": 3,
+            "characterCount": 22,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-030",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation occurs through",
+            "sourcePhrase": "photosynthetic carbon fixation occurs through",
+            "normalizedPhrase": "photosynthetic carbon fixation occurs through",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 115,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 45
+            },
+            "tokenCount": 5,
+            "characterCount": 45,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-031",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs through the",
+            "sourcePhrase": "carbon fixation occurs through the",
+            "normalizedPhrase": "carbon fixation occurs through the",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 119,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 49
+            },
+            "tokenCount": 5,
+            "characterCount": 34,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-032",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through the calvin",
+            "sourcePhrase": "fixation occurs through the calvin",
+            "normalizedPhrase": "fixation occurs through the calvin",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 56
+            },
+            "tokenCount": 5,
+            "characterCount": 34,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-033",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the calvin cycle",
+            "sourcePhrase": "occurs through the calvin cycle",
+            "normalizedPhrase": "occurs through the calvin cycle",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 62
+            },
+            "tokenCount": 5,
+            "characterCount": 31,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-034",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin cycle within",
+            "sourcePhrase": "through the calvin cycle within",
+            "normalizedPhrase": "through the calvin cycle within",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 69
+            },
+            "tokenCount": 5,
+            "characterCount": 31,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-035",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle within the",
+            "sourcePhrase": "the calvin cycle within the",
+            "normalizedPhrase": "the calvin cycle within the",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 73
+            },
+            "tokenCount": 5,
+            "characterCount": 27,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-036",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within the stroma",
+            "sourcePhrase": "calvin cycle within the stroma",
+            "normalizedPhrase": "calvin cycle within the stroma",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 80
+            },
+            "tokenCount": 5,
+            "characterCount": 30,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-037",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "cycle within the stroma of",
+            "sourcePhrase": "cycle within the stroma of",
+            "normalizedPhrase": "cycle within the stroma of",
+            "documentLocation": {
+              "startChar": 127,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 57,
+              "endChar": 83
+            },
+            "tokenCount": 5,
+            "characterCount": 26,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-038",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "within the stroma of chloroplasts",
+            "sourcePhrase": "within the stroma of chloroplasts",
+            "normalizedPhrase": "within the stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 133,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 63,
+              "endChar": 96
+            },
+            "tokenCount": 5,
+            "characterCount": 33,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-039",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "sourcePhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "normalizedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 56
+            },
+            "tokenCount": 7,
+            "characterCount": 56,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-040",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs through the calvin cycle",
+            "sourcePhrase": "carbon fixation occurs through the calvin cycle",
+            "normalizedPhrase": "carbon fixation occurs through the calvin cycle",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 62
+            },
+            "tokenCount": 7,
+            "characterCount": 47,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-041",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through the calvin cycle within",
+            "sourcePhrase": "fixation occurs through the calvin cycle within",
+            "normalizedPhrase": "fixation occurs through the calvin cycle within",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 69
+            },
+            "tokenCount": 7,
+            "characterCount": 47,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-042",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the calvin cycle within the",
+            "sourcePhrase": "occurs through the calvin cycle within the",
+            "normalizedPhrase": "occurs through the calvin cycle within the",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 73
+            },
+            "tokenCount": 7,
+            "characterCount": 42,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-043",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin cycle within the stroma",
+            "sourcePhrase": "through the calvin cycle within the stroma",
+            "normalizedPhrase": "through the calvin cycle within the stroma",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 80
+            },
+            "tokenCount": 7,
+            "characterCount": 42,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-044",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle within the stroma of",
+            "sourcePhrase": "the calvin cycle within the stroma of",
+            "normalizedPhrase": "the calvin cycle within the stroma of",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 83
+            },
+            "tokenCount": 7,
+            "characterCount": 37,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-045",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within the stroma of chloroplasts",
+            "sourcePhrase": "calvin cycle within the stroma of chloroplasts",
+            "normalizedPhrase": "calvin cycle within the stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 96
+            },
+            "tokenCount": 7,
+            "characterCount": 46,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          }
+        ],
+        "flag": "HIGH_SIMILARITY_PARAGRAPH",
+        "algorithmVersion": "SIM-V1"
+      }
+    ],
+    "sentenceFlags": [
+      {
+        "level": "sentence",
+        "documentUnitId": "SEN-002",
+        "paragraphId": "PAR-001",
+        "sourceId": "SRC-A-02",
+        "studentText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts.",
+        "sourceText": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate.",
+        "similarityPercentage": 100,
+        "matchType": "exact_match",
+        "algorithmVersion": "SIM-V1",
+        "documentLocation": {
+          "startChar": 70,
+          "endChar": 167
+        },
+        "matchedPhrases": [
+          {
+            "phraseId": "PHR-019",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation",
+            "sourcePhrase": "photosynthetic carbon fixation",
+            "normalizedPhrase": "photosynthetic carbon fixation",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 100,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 30
+            },
+            "tokenCount": 3,
+            "characterCount": 30,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-020",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs",
+            "sourcePhrase": "carbon fixation occurs",
+            "normalizedPhrase": "carbon fixation occurs",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 107,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 37
+            },
+            "tokenCount": 3,
+            "characterCount": 22,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-021",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through",
+            "sourcePhrase": "fixation occurs through",
+            "normalizedPhrase": "fixation occurs through",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 115,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 45
+            },
+            "tokenCount": 3,
+            "characterCount": 23,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-022",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the",
+            "sourcePhrase": "occurs through the",
+            "normalizedPhrase": "occurs through the",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 119,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 49
+            },
+            "tokenCount": 3,
+            "characterCount": 18,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-023",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin",
+            "sourcePhrase": "through the calvin",
+            "normalizedPhrase": "through the calvin",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 56
+            },
+            "tokenCount": 3,
+            "characterCount": 18,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-024",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle",
+            "sourcePhrase": "the calvin cycle",
+            "normalizedPhrase": "the calvin cycle",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 62
+            },
+            "tokenCount": 3,
+            "characterCount": 16,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-025",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within",
+            "sourcePhrase": "calvin cycle within",
+            "normalizedPhrase": "calvin cycle within",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 69
+            },
+            "tokenCount": 3,
+            "characterCount": 19,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-026",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "cycle within the",
+            "sourcePhrase": "cycle within the",
+            "normalizedPhrase": "cycle within the",
+            "documentLocation": {
+              "startChar": 127,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 57,
+              "endChar": 73
+            },
+            "tokenCount": 3,
+            "characterCount": 16,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-027",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "within the stroma",
+            "sourcePhrase": "within the stroma",
+            "normalizedPhrase": "within the stroma",
+            "documentLocation": {
+              "startChar": 133,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 63,
+              "endChar": 80
+            },
+            "tokenCount": 3,
+            "characterCount": 17,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-028",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the stroma of",
+            "sourcePhrase": "the stroma of",
+            "normalizedPhrase": "the stroma of",
+            "documentLocation": {
+              "startChar": 140,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 70,
+              "endChar": 83
+            },
+            "tokenCount": 3,
+            "characterCount": 13,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-029",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "stroma of chloroplasts",
+            "sourcePhrase": "stroma of chloroplasts",
+            "normalizedPhrase": "stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 144,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 74,
+              "endChar": 96
+            },
+            "tokenCount": 3,
+            "characterCount": 22,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-030",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation occurs through",
+            "sourcePhrase": "photosynthetic carbon fixation occurs through",
+            "normalizedPhrase": "photosynthetic carbon fixation occurs through",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 115,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 45
+            },
+            "tokenCount": 5,
+            "characterCount": 45,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-031",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs through the",
+            "sourcePhrase": "carbon fixation occurs through the",
+            "normalizedPhrase": "carbon fixation occurs through the",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 119,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 49
+            },
+            "tokenCount": 5,
+            "characterCount": 34,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-032",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through the calvin",
+            "sourcePhrase": "fixation occurs through the calvin",
+            "normalizedPhrase": "fixation occurs through the calvin",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 56
+            },
+            "tokenCount": 5,
+            "characterCount": 34,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-033",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the calvin cycle",
+            "sourcePhrase": "occurs through the calvin cycle",
+            "normalizedPhrase": "occurs through the calvin cycle",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 62
+            },
+            "tokenCount": 5,
+            "characterCount": 31,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-034",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin cycle within",
+            "sourcePhrase": "through the calvin cycle within",
+            "normalizedPhrase": "through the calvin cycle within",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 69
+            },
+            "tokenCount": 5,
+            "characterCount": 31,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-035",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle within the",
+            "sourcePhrase": "the calvin cycle within the",
+            "normalizedPhrase": "the calvin cycle within the",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 73
+            },
+            "tokenCount": 5,
+            "characterCount": 27,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-036",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within the stroma",
+            "sourcePhrase": "calvin cycle within the stroma",
+            "normalizedPhrase": "calvin cycle within the stroma",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 80
+            },
+            "tokenCount": 5,
+            "characterCount": 30,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-037",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "cycle within the stroma of",
+            "sourcePhrase": "cycle within the stroma of",
+            "normalizedPhrase": "cycle within the stroma of",
+            "documentLocation": {
+              "startChar": 127,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 57,
+              "endChar": 83
+            },
+            "tokenCount": 5,
+            "characterCount": 26,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-038",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "within the stroma of chloroplasts",
+            "sourcePhrase": "within the stroma of chloroplasts",
+            "normalizedPhrase": "within the stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 133,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 63,
+              "endChar": 96
+            },
+            "tokenCount": 5,
+            "characterCount": 33,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-039",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "sourcePhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "normalizedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+            "documentLocation": {
+              "startChar": 70,
+              "endChar": 126,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 0,
+              "endChar": 56
+            },
+            "tokenCount": 7,
+            "characterCount": 56,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-040",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "carbon fixation occurs through the calvin cycle",
+            "sourcePhrase": "carbon fixation occurs through the calvin cycle",
+            "normalizedPhrase": "carbon fixation occurs through the calvin cycle",
+            "documentLocation": {
+              "startChar": 85,
+              "endChar": 132,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 15,
+              "endChar": 62
+            },
+            "tokenCount": 7,
+            "characterCount": 47,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-041",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "fixation occurs through the calvin cycle within",
+            "sourcePhrase": "fixation occurs through the calvin cycle within",
+            "normalizedPhrase": "fixation occurs through the calvin cycle within",
+            "documentLocation": {
+              "startChar": 92,
+              "endChar": 139,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 22,
+              "endChar": 69
+            },
+            "tokenCount": 7,
+            "characterCount": 47,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-042",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "occurs through the calvin cycle within the",
+            "sourcePhrase": "occurs through the calvin cycle within the",
+            "normalizedPhrase": "occurs through the calvin cycle within the",
+            "documentLocation": {
+              "startChar": 101,
+              "endChar": 143,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 31,
+              "endChar": 73
+            },
+            "tokenCount": 7,
+            "characterCount": 42,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-043",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "through the calvin cycle within the stroma",
+            "sourcePhrase": "through the calvin cycle within the stroma",
+            "normalizedPhrase": "through the calvin cycle within the stroma",
+            "documentLocation": {
+              "startChar": 108,
+              "endChar": 150,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 38,
+              "endChar": 80
+            },
+            "tokenCount": 7,
+            "characterCount": 42,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-044",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "the calvin cycle within the stroma of",
+            "sourcePhrase": "the calvin cycle within the stroma of",
+            "normalizedPhrase": "the calvin cycle within the stroma of",
+            "documentLocation": {
+              "startChar": 116,
+              "endChar": 153,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 46,
+              "endChar": 83
+            },
+            "tokenCount": 7,
+            "characterCount": 37,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          },
+          {
+            "phraseId": "PHR-045",
+            "sourceId": "SRC-A-02",
+            "submittedPhrase": "calvin cycle within the stroma of chloroplasts",
+            "sourcePhrase": "calvin cycle within the stroma of chloroplasts",
+            "normalizedPhrase": "calvin cycle within the stroma of chloroplasts",
+            "documentLocation": {
+              "startChar": 120,
+              "endChar": 166,
+              "sentenceId": "SEN-002",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 50,
+              "endChar": 96
+            },
+            "tokenCount": 7,
+            "characterCount": 46,
+            "matchPercentage": 100,
+            "flag": "EXACT_PHRASE_MATCH",
+            "algorithmVersion": "SIM-V1"
+          }
+        ],
+        "flag": "HIGH_SIMILARITY_SENTENCE"
+      }
+    ],
+    "phraseFlags": [
+      {
+        "phraseId": "PHR-039",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+        "sourcePhrase": "photosynthetic carbon fixation occurs through the calvin",
+        "normalizedPhrase": "photosynthetic carbon fixation occurs through the calvin",
+        "documentLocation": {
+          "startChar": 70,
+          "endChar": 126,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 0,
+          "endChar": 56
+        },
+        "tokenCount": 7,
+        "characterCount": 56,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-040",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "carbon fixation occurs through the calvin cycle",
+        "sourcePhrase": "carbon fixation occurs through the calvin cycle",
+        "normalizedPhrase": "carbon fixation occurs through the calvin cycle",
+        "documentLocation": {
+          "startChar": 85,
+          "endChar": 132,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 15,
+          "endChar": 62
+        },
+        "tokenCount": 7,
+        "characterCount": 47,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-041",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "fixation occurs through the calvin cycle within",
+        "sourcePhrase": "fixation occurs through the calvin cycle within",
+        "normalizedPhrase": "fixation occurs through the calvin cycle within",
+        "documentLocation": {
+          "startChar": 92,
+          "endChar": 139,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 22,
+          "endChar": 69
+        },
+        "tokenCount": 7,
+        "characterCount": 47,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-042",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "occurs through the calvin cycle within the",
+        "sourcePhrase": "occurs through the calvin cycle within the",
+        "normalizedPhrase": "occurs through the calvin cycle within the",
+        "documentLocation": {
+          "startChar": 101,
+          "endChar": 143,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 31,
+          "endChar": 73
+        },
+        "tokenCount": 7,
+        "characterCount": 42,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-043",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "through the calvin cycle within the stroma",
+        "sourcePhrase": "through the calvin cycle within the stroma",
+        "normalizedPhrase": "through the calvin cycle within the stroma",
+        "documentLocation": {
+          "startChar": 108,
+          "endChar": 150,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 38,
+          "endChar": 80
+        },
+        "tokenCount": 7,
+        "characterCount": 42,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-044",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "the calvin cycle within the stroma of",
+        "sourcePhrase": "the calvin cycle within the stroma of",
+        "normalizedPhrase": "the calvin cycle within the stroma of",
+        "documentLocation": {
+          "startChar": 116,
+          "endChar": 153,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 46,
+          "endChar": 83
+        },
+        "tokenCount": 7,
+        "characterCount": 37,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-045",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "calvin cycle within the stroma of chloroplasts",
+        "sourcePhrase": "calvin cycle within the stroma of chloroplasts",
+        "normalizedPhrase": "calvin cycle within the stroma of chloroplasts",
+        "documentLocation": {
+          "startChar": 120,
+          "endChar": 166,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 50,
+          "endChar": 96
+        },
+        "tokenCount": 7,
+        "characterCount": 46,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-030",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "photosynthetic carbon fixation occurs through",
+        "sourcePhrase": "photosynthetic carbon fixation occurs through",
+        "normalizedPhrase": "photosynthetic carbon fixation occurs through",
+        "documentLocation": {
+          "startChar": 70,
+          "endChar": 115,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 0,
+          "endChar": 45
+        },
+        "tokenCount": 5,
+        "characterCount": 45,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-031",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "carbon fixation occurs through the",
+        "sourcePhrase": "carbon fixation occurs through the",
+        "normalizedPhrase": "carbon fixation occurs through the",
+        "documentLocation": {
+          "startChar": 85,
+          "endChar": 119,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 15,
+          "endChar": 49
+        },
+        "tokenCount": 5,
+        "characterCount": 34,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-032",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "fixation occurs through the calvin",
+        "sourcePhrase": "fixation occurs through the calvin",
+        "normalizedPhrase": "fixation occurs through the calvin",
+        "documentLocation": {
+          "startChar": 92,
+          "endChar": 126,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 22,
+          "endChar": 56
+        },
+        "tokenCount": 5,
+        "characterCount": 34,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-033",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "occurs through the calvin cycle",
+        "sourcePhrase": "occurs through the calvin cycle",
+        "normalizedPhrase": "occurs through the calvin cycle",
+        "documentLocation": {
+          "startChar": 101,
+          "endChar": 132,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 31,
+          "endChar": 62
+        },
+        "tokenCount": 5,
+        "characterCount": 31,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-034",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "through the calvin cycle within",
+        "sourcePhrase": "through the calvin cycle within",
+        "normalizedPhrase": "through the calvin cycle within",
+        "documentLocation": {
+          "startChar": 108,
+          "endChar": 139,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 38,
+          "endChar": 69
+        },
+        "tokenCount": 5,
+        "characterCount": 31,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-035",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "the calvin cycle within the",
+        "sourcePhrase": "the calvin cycle within the",
+        "normalizedPhrase": "the calvin cycle within the",
+        "documentLocation": {
+          "startChar": 116,
+          "endChar": 143,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 46,
+          "endChar": 73
+        },
+        "tokenCount": 5,
+        "characterCount": 27,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-036",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "calvin cycle within the stroma",
+        "sourcePhrase": "calvin cycle within the stroma",
+        "normalizedPhrase": "calvin cycle within the stroma",
+        "documentLocation": {
+          "startChar": 120,
+          "endChar": 150,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 50,
+          "endChar": 80
+        },
+        "tokenCount": 5,
+        "characterCount": 30,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-037",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "cycle within the stroma of",
+        "sourcePhrase": "cycle within the stroma of",
+        "normalizedPhrase": "cycle within the stroma of",
+        "documentLocation": {
+          "startChar": 127,
+          "endChar": 153,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 57,
+          "endChar": 83
+        },
+        "tokenCount": 5,
+        "characterCount": 26,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-038",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "within the stroma of chloroplasts",
+        "sourcePhrase": "within the stroma of chloroplasts",
+        "normalizedPhrase": "within the stroma of chloroplasts",
+        "documentLocation": {
+          "startChar": 133,
+          "endChar": 166,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 63,
+          "endChar": 96
+        },
+        "tokenCount": 5,
+        "characterCount": 33,
+        "matchPercentage": 100,
+        "flag": "EXACT_PHRASE_MATCH",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-019",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "photosynthetic carbon fixation",
+        "sourcePhrase": "photosynthetic carbon fixation",
+        "normalizedPhrase": "photosynthetic carbon fixation",
+        "documentLocation": {
+          "startChar": 70,
+          "endChar": 100,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 0,
+          "endChar": 30
+        },
+        "tokenCount": 3,
+        "characterCount": 30,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-020",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "carbon fixation occurs",
+        "sourcePhrase": "carbon fixation occurs",
+        "normalizedPhrase": "carbon fixation occurs",
+        "documentLocation": {
+          "startChar": 85,
+          "endChar": 107,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 15,
+          "endChar": 37
+        },
+        "tokenCount": 3,
+        "characterCount": 22,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-021",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "fixation occurs through",
+        "sourcePhrase": "fixation occurs through",
+        "normalizedPhrase": "fixation occurs through",
+        "documentLocation": {
+          "startChar": 92,
+          "endChar": 115,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 22,
+          "endChar": 45
+        },
+        "tokenCount": 3,
+        "characterCount": 23,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-022",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "occurs through the",
+        "sourcePhrase": "occurs through the",
+        "normalizedPhrase": "occurs through the",
+        "documentLocation": {
+          "startChar": 101,
+          "endChar": 119,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 31,
+          "endChar": 49
+        },
+        "tokenCount": 3,
+        "characterCount": 18,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-023",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "through the calvin",
+        "sourcePhrase": "through the calvin",
+        "normalizedPhrase": "through the calvin",
+        "documentLocation": {
+          "startChar": 108,
+          "endChar": 126,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 38,
+          "endChar": 56
+        },
+        "tokenCount": 3,
+        "characterCount": 18,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-024",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "the calvin cycle",
+        "sourcePhrase": "the calvin cycle",
+        "normalizedPhrase": "the calvin cycle",
+        "documentLocation": {
+          "startChar": 116,
+          "endChar": 132,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 46,
+          "endChar": 62
+        },
+        "tokenCount": 3,
+        "characterCount": 16,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-025",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "calvin cycle within",
+        "sourcePhrase": "calvin cycle within",
+        "normalizedPhrase": "calvin cycle within",
+        "documentLocation": {
+          "startChar": 120,
+          "endChar": 139,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 50,
+          "endChar": 69
+        },
+        "tokenCount": 3,
+        "characterCount": 19,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-026",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "cycle within the",
+        "sourcePhrase": "cycle within the",
+        "normalizedPhrase": "cycle within the",
+        "documentLocation": {
+          "startChar": 127,
+          "endChar": 143,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 57,
+          "endChar": 73
+        },
+        "tokenCount": 3,
+        "characterCount": 16,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-027",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "within the stroma",
+        "sourcePhrase": "within the stroma",
+        "normalizedPhrase": "within the stroma",
+        "documentLocation": {
+          "startChar": 133,
+          "endChar": 150,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 63,
+          "endChar": 80
+        },
+        "tokenCount": 3,
+        "characterCount": 17,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-028",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "the stroma of",
+        "sourcePhrase": "the stroma of",
+        "normalizedPhrase": "the stroma of",
+        "documentLocation": {
+          "startChar": 140,
+          "endChar": 153,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 70,
+          "endChar": 83
+        },
+        "tokenCount": 3,
+        "characterCount": 13,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      },
+      {
+        "phraseId": "PHR-029",
+        "sourceId": "SRC-A-02",
+        "submittedPhrase": "stroma of chloroplasts",
+        "sourcePhrase": "stroma of chloroplasts",
+        "normalizedPhrase": "stroma of chloroplasts",
+        "documentLocation": {
+          "startChar": 144,
+          "endChar": 166,
+          "sentenceId": "SEN-002",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 74,
+          "endChar": 96
+        },
+        "tokenCount": 3,
+        "characterCount": 22,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      }
+    ],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "c4cae708ffff0c1a",
+    "documentHash": "d77bafc8edbcf6f4"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        d77bafc8edbcf6f4\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        c4cae708ffff0c1a\nAnalysis Timestamp:   2026-10-29T11:13:35.158Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  43.3%\nHighest Source Match:     77.3%\nSources With Matches:     1\nParagraphs Flagged:       1\nSentences Flagged:        1\nPhrases Flagged:          27\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\nSource: [SRC-A-02] Biochemistry of Carbon Fixation\n  Document Coverage:       43.3%\n  Aggregate Source Score:  77.3%\n  Highest Sentence Match:  100.0%\n  Highest Phrase Match:    100.0%\n  Paragraph Matches:       1\n  Sentence Matches:        1\n  Phrase Matches:          27\n\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\nParagraph: PAR-001 [Flag: HIGH_SIMILARITY_PARAGRAPH]\n  Similarity: 100.0% | Coverage: 43.3%\n  Source ID:  SRC-A-02\n  Evidence:   \"In biological systems, photosynthesis is essential for life on Earth. Photosynthetic carbon fixation occurs through the Calvin cycle within ...\"\n\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\nSentence: SEN-002 [Flag: HIGH_SIMILARITY_SENTENCE]\n  Similarity: 100.0% (exact_match)\n  Source ID:  SRC-A-02\n  Student:    \"Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts.\"\n  Source:     \"Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosph...\"\n\nPHRASE FLAGS\n--------------------------------------------------------------------------------\nPhrase: PHR-039 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 7 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"photosynthetic carbon fixation occurs through the calvin\"\n\nPhrase: PHR-040 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 7 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"carbon fixation occurs through the calvin cycle\"\n\nPhrase: PHR-041 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 7 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"fixation occurs through the calvin cycle within\"\n\nPhrase: PHR-042 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 7 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"occurs through the calvin cycle within the\"\n\nPhrase: PHR-043 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 7 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"through the calvin cycle within the stroma\"\n\nPhrase: PHR-044 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 7 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"the calvin cycle within the stroma of\"\n\nPhrase: PHR-045 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 7 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"calvin cycle within the stroma of chloroplasts\"\n\nPhrase: PHR-030 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 5 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"photosynthetic carbon fixation occurs through\"\n\nPhrase: PHR-031 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 5 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"carbon fixation occurs through the\"\n\nPhrase: PHR-032 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 5 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"fixation occurs through the calvin\"\n\nPhrase: PHR-033 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 5 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"occurs through the calvin cycle\"\n\nPhrase: PHR-034 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 5 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"through the calvin cycle within\"\n\nPhrase: PHR-035 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 5 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"the calvin cycle within the\"\n\nPhrase: PHR-036 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 5 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"calvin cycle within the stroma\"\n\nPhrase: PHR-037 [Flag: EXACT_PHRASE_MATCH]\n  Tokens: 5 | Similarity: 100%\n  Source ID: SRC-A-02\n  Phrase:    \"cycle within the stroma of\"\n\n  ... and 12 additional phrase matches.\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         c4cae708ffff0c1a\n================================================================================"
+}

@@ -1,0 +1,76 @@
+{
+  "documentHash": "60fbe8727d708342",
+  "evidenceHash": "9d4a75042c6703b6",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 0,
+  "uniqueMatchedCoverage": 0,
+  "highestSourceMatch": 7.1,
+  "totalSourcesEvaluated": 1,
+  "verifiedMatches": [
+    {
+      "sourceId": "SRC-C-01",
+      "title": "Urban Hydrology in Emerging Economies",
+      "authors": [
+        "Dr. M. Satterthwaite"
+      ],
+      "url": "",
+      "matchedText": "",
+      "originalSnippet": "Rapid urbanization without adequate infrastructure leads to severe groundwater depletion and environmental contamination in developing metropolitan regions.",
+      "matchType": "citation",
+      "matchPercentage": 7.1,
+      "relevanceScore": 5.9,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "SRC-C-01",
+        "retrievedAt": "2026-10-29T11:13:35.231Z",
+        "sourceType": "document",
+        "sourceUrl": "",
+        "title": "Urban Hydrology in Emerging Economies",
+        "authors": [
+          "Dr. M. Satterthwaite"
+        ],
+        "provenanceState": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "aggregation": {
+    "totalDocumentTokens": 17,
+    "totalUniqueMatchedTokens": 0,
+    "totalDocumentOverlap": 0,
+    "highestSourceMatch": 7.1,
+    "totalSourceMatches": 1,
+    "totalParagraphMatches": 0,
+    "totalSentenceMatches": 0,
+    "totalPhraseMatches": 0,
+    "sourceReports": [
+      {
+        "sourceId": "SRC-C-01",
+        "title": "Urban Hydrology in Emerging Economies",
+        "authors": [
+          "Dr. M. Satterthwaite"
+        ],
+        "url": "",
+        "documentCoverage": 0,
+        "paragraphMatches": 0,
+        "sentenceMatches": 0,
+        "phraseMatches": 0,
+        "highestSentenceMatch": 11.8,
+        "highestPhraseMatch": 0,
+        "aggregateSourceScore": 7.1,
+        "paragraphEvidence": [],
+        "sentenceEvidence": [],
+        "phraseEvidence": []
+      }
+    ],
+    "paragraphFlags": [],
+    "sentenceFlags": [],
+    "phraseFlags": [],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "9d4a75042c6703b6",
+    "documentHash": "60fbe8727d708342"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        60fbe8727d708342\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        9d4a75042c6703b6\nAnalysis Timestamp:   2026-10-29T11:13:35.232Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  0.0%\nHighest Source Match:     7.1%\nSources With Matches:     1\nParagraphs Flagged:       0\nSentences Flagged:        0\nPhrases Flagged:          0\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\nSource: [SRC-C-01] Urban Hydrology in Emerging Economies\n  Document Coverage:       0.0%\n  Aggregate Source Score:  7.1%\n  Highest Sentence Match:  11.8%\n  Highest Phrase Match:    0.0%\n  Paragraph Matches:       0\n  Sentence Matches:        0\n  Phrase Matches:          0\n\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\n  No paragraph flags raised.\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\n  No sentence flags raised.\nPHRASE FLAGS\n--------------------------------------------------------------------------------\n  No phrase flags raised.\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         9d4a75042c6703b6\n================================================================================"
+}

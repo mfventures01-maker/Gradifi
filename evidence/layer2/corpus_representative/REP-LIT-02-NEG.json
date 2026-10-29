@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-LIT-02-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Humanities",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-LIT-002",
+      "title": "Soyinka and the Mythopoetics of Yoruba Tragedy",
+      "authors": [
+        "Dr. A. Irele"
+      ],
+      "text": "Wole Soyinka utilizes the Ogun myth in Death and the Kings Horseman to symbolize the perilous abyss of transition and cosmic reconciliation between mortal and spiritual realms."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-LIT-002",
+    "title": "Feminist Subversion in Flora Nwapa’s Efuru",
+    "text": "Flora Nwapa reclaims feminine agency in early Nigerian fiction by demonstrating economic autonomy through commerce and spiritual devotion to the river goddess Uhamiri, defying patriarchal marital constraints."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Clean negative: student analyzed Flora Nwapa; source analyzed Wole Soyinka.",
+  "provenance": "African literature essay assignment"
+}

@@ -1,0 +1,79 @@
+{
+  "documentHash": "3f867db150290419",
+  "evidenceHash": "1a4dacf44d4cf70c",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 0,
+  "uniqueMatchedCoverage": 0,
+  "highestSourceMatch": 1.6,
+  "totalSourcesEvaluated": 1,
+  "verifiedMatches": [
+    {
+      "sourceId": "SRC-D-02",
+      "title": "Kinetics of Enzymatic Catalysis",
+      "authors": [
+        "Dr. L. Michaelis",
+        "Dr. M. Menten"
+      ],
+      "url": "",
+      "matchedText": "",
+      "originalSnippet": "Enzyme kinetics adhere to the Michaelis-Menten hyperbolic model under quasi-steady-state conditions where substrate concentration substantially exceeds total enzyme concentration.",
+      "matchType": "citation",
+      "matchPercentage": 1.6,
+      "relevanceScore": 1.4,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "SRC-D-02",
+        "retrievedAt": "2026-10-29T11:04:00.985Z",
+        "sourceType": "document",
+        "sourceUrl": "",
+        "title": "Kinetics of Enzymatic Catalysis",
+        "authors": [
+          "Dr. L. Michaelis",
+          "Dr. M. Menten"
+        ],
+        "provenanceState": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "aggregation": {
+    "totalDocumentTokens": 31,
+    "totalUniqueMatchedTokens": 0,
+    "totalDocumentOverlap": 0,
+    "highestSourceMatch": 1.6,
+    "totalSourceMatches": 1,
+    "totalParagraphMatches": 0,
+    "totalSentenceMatches": 0,
+    "totalPhraseMatches": 0,
+    "sourceReports": [
+      {
+        "sourceId": "SRC-D-02",
+        "title": "Kinetics of Enzymatic Catalysis",
+        "authors": [
+          "Dr. L. Michaelis",
+          "Dr. M. Menten"
+        ],
+        "url": "",
+        "documentCoverage": 0,
+        "paragraphMatches": 0,
+        "sentenceMatches": 0,
+        "phraseMatches": 0,
+        "highestSentenceMatch": 2.7,
+        "highestPhraseMatch": 0,
+        "aggregateSourceScore": 1.6,
+        "paragraphEvidence": [],
+        "sentenceEvidence": [],
+        "phraseEvidence": []
+      }
+    ],
+    "paragraphFlags": [],
+    "sentenceFlags": [],
+    "phraseFlags": [],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "1a4dacf44d4cf70c",
+    "documentHash": "3f867db150290419"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        3f867db150290419\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        1a4dacf44d4cf70c\nAnalysis Timestamp:   2026-10-29T11:04:00.986Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  0.0%\nHighest Source Match:     1.6%\nSources With Matches:     1\nParagraphs Flagged:       0\nSentences Flagged:        0\nPhrases Flagged:          0\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\nSource: [SRC-D-02] Kinetics of Enzymatic Catalysis\n  Document Coverage:       0.0%\n  Aggregate Source Score:  1.6%\n  Highest Sentence Match:  2.7%\n  Highest Phrase Match:    0.0%\n  Paragraph Matches:       0\n  Sentence Matches:        0\n  Phrase Matches:          0\n\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\n  No paragraph flags raised.\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\n  No sentence flags raised.\nPHRASE FLAGS\n--------------------------------------------------------------------------------\n  No phrase flags raised.\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         1a4dacf44d4cf70c\n================================================================================"
+}

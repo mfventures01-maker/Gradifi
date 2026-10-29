@@ -1,0 +1,146 @@
+{
+  "reportId": "GRADIFI-L2-AI-ISOLATION-REPORT",
+  "timestamp": "2026-10-29T12:02:18.897Z",
+  "governingStandard": "HOEOS v2 Article 5 & G2/G5 AI Advisory Boundary",
+  "totalScenarios": 7,
+  "passedScenarios": 7,
+  "failedScenarios": 0,
+  "allPassed": true,
+  "baselineEvidenceHash": "964991b109311f45",
+  "baselineDocumentHash": "d6fbc80f424fbd93",
+  "scenarios": [
+    {
+      "scenarioId": "AI-SCENARIO-1",
+      "name": "AI Available & Valid Advice",
+      "conditionDescription": "Gemini/Nemotron returns structured advisory findings matching verified source.",
+      "deterministicScoresInvariant": true,
+      "deterministicSpansInvariant": true,
+      "deterministicHashesInvariant": true,
+      "aiAdvisorySeparationVerified": true,
+      "unsupportedSourceRejected": true,
+      "observedScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "observedEvidenceHash": "964991b109311f45",
+      "findingsCount": 1,
+      "verdict": "PASS",
+      "notes": "Advisory findings successfully segregated to advisory envelope; deterministic engine outputs 100% bit-for-bit unchanged."
+    },
+    {
+      "scenarioId": "AI-SCENARIO-2",
+      "name": "AI Runtime Unavailable",
+      "conditionDescription": "AI service returns 503 SERVICE_UNAVAILABLE or ECONNREFUSED.",
+      "deterministicScoresInvariant": true,
+      "deterministicSpansInvariant": true,
+      "deterministicHashesInvariant": true,
+      "aiAdvisorySeparationVerified": true,
+      "unsupportedSourceRejected": true,
+      "observedScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "observedEvidenceHash": "964991b109311f45",
+      "findingsCount": 0,
+      "verdict": "PASS",
+      "notes": "Deterministic pipeline operates without degradation; fail-closed isolation confirmed."
+    },
+    {
+      "scenarioId": "AI-SCENARIO-3",
+      "name": "AI Timeout Abort",
+      "conditionDescription": "AI request exceeds timeout threshold and is aborted via AbortController.",
+      "deterministicScoresInvariant": true,
+      "deterministicSpansInvariant": true,
+      "deterministicHashesInvariant": true,
+      "aiAdvisorySeparationVerified": true,
+      "unsupportedSourceRejected": true,
+      "observedScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "observedEvidenceHash": "964991b109311f45",
+      "findingsCount": 0,
+      "verdict": "PASS",
+      "notes": "Timeout in advisory tier does not interrupt or delay authoritative deterministic output."
+    },
+    {
+      "scenarioId": "AI-SCENARIO-4",
+      "name": "AI Malformed Output",
+      "conditionDescription": "AI runtime returns corrupted JSON or non-schema payload.",
+      "deterministicScoresInvariant": true,
+      "deterministicSpansInvariant": true,
+      "deterministicHashesInvariant": true,
+      "aiAdvisorySeparationVerified": true,
+      "unsupportedSourceRejected": true,
+      "observedScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "observedEvidenceHash": "964991b109311f45",
+      "findingsCount": 0,
+      "verdict": "PASS",
+      "notes": "Schema validation rejects malformed payload; deterministic authority protected."
+    },
+    {
+      "scenarioId": "AI-SCENARIO-5",
+      "name": "AI Empty Findings",
+      "conditionDescription": "AI runtime returns empty findings array [].",
+      "deterministicScoresInvariant": true,
+      "deterministicSpansInvariant": true,
+      "deterministicHashesInvariant": true,
+      "aiAdvisorySeparationVerified": true,
+      "unsupportedSourceRejected": true,
+      "observedScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "observedEvidenceHash": "964991b109311f45",
+      "findingsCount": 0,
+      "verdict": "PASS",
+      "notes": "Empty advisory payload leaves deterministic similarity evidence fully intact."
+    },
+    {
+      "scenarioId": "AI-SCENARIO-6",
+      "name": "AI Conflicting Advice Invariant",
+      "conditionDescription": "AI model returns low/conflicting similarity claim against 100% deterministic duplicate.",
+      "deterministicScoresInvariant": true,
+      "deterministicSpansInvariant": true,
+      "deterministicHashesInvariant": true,
+      "aiAdvisorySeparationVerified": true,
+      "unsupportedSourceRejected": true,
+      "observedScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "observedEvidenceHash": "964991b109311f45",
+      "findingsCount": 1,
+      "verdict": "PASS",
+      "notes": "Conflicting AI score did NOT overwrite or suppress authoritative deterministic score (100.0%)."
+    },
+    {
+      "scenarioId": "AI-SCENARIO-7",
+      "name": "AI Unsupported Source Injection Defense",
+      "conditionDescription": "AI attempts to inject a match to an unauthorized or fabricated academic source ID.",
+      "deterministicScoresInvariant": true,
+      "deterministicSpansInvariant": true,
+      "deterministicHashesInvariant": true,
+      "aiAdvisorySeparationVerified": true,
+      "unsupportedSourceRejected": true,
+      "observedScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "observedEvidenceHash": "964991b109311f45",
+      "findingsCount": 1,
+      "verdict": "PASS",
+      "notes": "HOEOS Rule 16 intercepted fabricated source: neutralized to UNVERIFIED_SOURCE with similarityScore=0."
+    }
+  ]
+}

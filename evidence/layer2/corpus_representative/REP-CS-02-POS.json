@@ -1,0 +1,49 @@
+{
+  "fixtureId": "REP-CS-02-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Computer Science",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-CS-002A",
+      "title": "Decentralized Consensus Protocols in Peer Networks",
+      "authors": [
+        "Dr. K. Ibrahim"
+      ],
+      "text": "Distributed ledger consensus mechanisms require Byzantine fault tolerance to guarantee state machine replication across untrusted peer nodes."
+    },
+    {
+      "sourceId": "SRC-NG-CS-002B",
+      "title": "Formal Verification of Ethereum Smart Contracts",
+      "authors": [
+        "Prof. N. Ogundipe"
+      ],
+      "text": "Smart contract vulnerability auditing tools employ symbolic execution and abstract interpretation to detect integer reentrancy bugs in decentralized financial protocols."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-CS-002",
+    "title": "Security Auditing and Consensus in Blockchain Architectures",
+    "text": "Blockchain systems rely on mathematical foundations to establish trust. Distributed ledger consensus mechanisms require Byzantine fault tolerance to guarantee state machine replication across untrusted peer nodes. On the application layer, security remains paramount. Smart contract vulnerability auditing tools employ symbolic execution and abstract interpretation to detect integer reentrancy bugs in decentralized financial protocols. Therefore automated verification pipelines are essential for production release."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 50,
+    "maxOverallSimilarity": 90,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-CS-002A",
+        "studentTextSnippet": "Distributed ledger consensus mechanisms require Byzantine fault tolerance to guarantee state machine replication across untrusted peer nodes.",
+        "shouldMatch": true
+      },
+      {
+        "sourceId": "SRC-NG-CS-002B",
+        "studentTextSnippet": "Smart contract vulnerability auditing tools employ symbolic execution and abstract interpretation to detect integer reentrancy bugs in decentralized financial protocols.",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Multi-source verbatim plagiarized paper from two separate computer science publications.",
+  "provenance": "Nigerian Computer Society Conference"
+}

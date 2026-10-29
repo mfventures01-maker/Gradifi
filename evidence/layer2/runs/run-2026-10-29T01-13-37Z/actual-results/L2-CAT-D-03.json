@@ -1,0 +1,76 @@
+{
+  "documentHash": "93053f70500bd276",
+  "evidenceHash": "5157911b5613aab5",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 0,
+  "uniqueMatchedCoverage": 0,
+  "highestSourceMatch": 0.7,
+  "totalSourcesEvaluated": 1,
+  "verifiedMatches": [
+    {
+      "sourceId": "SRC-D-03",
+      "title": "Topological Invariants and Quantum Invariance",
+      "authors": [
+        "Dr. E. Witten"
+      ],
+      "url": "",
+      "matchedText": "",
+      "originalSnippet": "Topological quantum field theories compute topological invariants of manifolds using path integrals over gauge fields invariant under arbitrary diffeomorphism transformations.",
+      "matchType": "citation",
+      "matchPercentage": 0.7,
+      "relevanceScore": 0.6,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "SRC-D-03",
+        "retrievedAt": "2026-10-29T01:13:37.552Z",
+        "sourceType": "document",
+        "sourceUrl": "",
+        "title": "Topological Invariants and Quantum Invariance",
+        "authors": [
+          "Dr. E. Witten"
+        ],
+        "provenanceState": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "aggregation": {
+    "totalDocumentTokens": 24,
+    "totalUniqueMatchedTokens": 0,
+    "totalDocumentOverlap": 0,
+    "highestSourceMatch": 0.7,
+    "totalSourceMatches": 1,
+    "totalParagraphMatches": 0,
+    "totalSentenceMatches": 0,
+    "totalPhraseMatches": 0,
+    "sourceReports": [
+      {
+        "sourceId": "SRC-D-03",
+        "title": "Topological Invariants and Quantum Invariance",
+        "authors": [
+          "Dr. E. Witten"
+        ],
+        "url": "",
+        "documentCoverage": 0,
+        "paragraphMatches": 0,
+        "sentenceMatches": 0,
+        "phraseMatches": 0,
+        "highestSentenceMatch": 1.2,
+        "highestPhraseMatch": 0,
+        "aggregateSourceScore": 0.7,
+        "paragraphEvidence": [],
+        "sentenceEvidence": [],
+        "phraseEvidence": []
+      }
+    ],
+    "paragraphFlags": [],
+    "sentenceFlags": [],
+    "phraseFlags": [],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "5157911b5613aab5",
+    "documentHash": "93053f70500bd276"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        93053f70500bd276\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        5157911b5613aab5\nAnalysis Timestamp:   2026-10-29T01:13:37.554Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  0.0%\nHighest Source Match:     0.7%\nSources With Matches:     1\nParagraphs Flagged:       0\nSentences Flagged:        0\nPhrases Flagged:          0\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\nSource: [SRC-D-03] Topological Invariants and Quantum Invariance\n  Document Coverage:       0.0%\n  Aggregate Source Score:  0.7%\n  Highest Sentence Match:  1.2%\n  Highest Phrase Match:    0.0%\n  Paragraph Matches:       0\n  Sentence Matches:        0\n  Phrase Matches:          0\n\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\n  No paragraph flags raised.\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\n  No sentence flags raised.\nPHRASE FLAGS\n--------------------------------------------------------------------------------\n  No phrase flags raised.\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         5157911b5613aab5\n================================================================================"
+}

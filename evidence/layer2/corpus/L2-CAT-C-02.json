@@ -1,0 +1,31 @@
+{
+  "fixtureId": "L2-CAT-C-02",
+  "corpusVersion": "1.0.0",
+  "category": "C",
+  "categoryDescription": "Paraphrase - Full semantic restatement (out of scope for SIM-V1 lexical)",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-C-02",
+      "title": "Sensor Integration in Robotic Navigation",
+      "authors": [
+        "Dr. S. Thrun",
+        "Dr. H. Durrant-Whyte"
+      ],
+      "text": "Autonomous vehicles rely on sensor fusion algorithms combining LiDAR, radar, and stereoscopic vision streams to navigate complex urban corridors safely."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-C-02",
+    "title": "Perception Systems for Driverless Platforms",
+    "text": "Self-driving cars integrate input from multiple scanning instruments including radio detection, optical sensors, and laser pulses to avoid collisions during city transit."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 15,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Pure semantic rewrite. All domain nouns replaced with synonyms (autonomous vehicles -> self-driving cars; LiDAR/radar -> laser pulses/radio detection). Deterministic SIM-V1 correctly reports NO_MATCH (<20% score). This is correct deterministic behavior, not an engine error.",
+  "knownLimitations": "Documented boundary of SIM-V1 lexical engine."
+}

@@ -1,0 +1,56 @@
+{
+  "fixtureId": "L2-CAT-G-01",
+  "corpusVersion": "1.0.0",
+  "category": "G",
+  "categoryDescription": "Multi-source - Spans drawn from two distinct independent sources",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-G-01A",
+      "title": "Impossibility of Distributed Consensus with One Faulty Process",
+      "authors": [
+        "Dr. M. Fischer",
+        "Dr. N. Lynch",
+        "Dr. M. Paterson"
+      ],
+      "text": "Distributed consensus algorithms in asynchronous network environments must circumvent the Fischer-Lynch-Paterson impossibility theorem by adopting randomized tie-breakers or partial synchrony assumptions."
+    },
+    {
+      "sourceId": "SRC-G-01B",
+      "title": "Practical Byzantine Fault Tolerance in Replicated Systems",
+      "authors": [
+        "Dr. M. Castro",
+        "Dr. B. Liskov"
+      ],
+      "text": "Byzantine fault tolerant protocols guarantee safety and liveness provided that fewer than one-third of participating nodes act maliciously or exhibit arbitrary failure modes."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-G-01",
+    "title": "Fault-Tolerant Distributed Consensus Foundations",
+    "text": "Distributed consensus algorithms in asynchronous network environments must circumvent the Fischer-Lynch-Paterson impossibility theorem by adopting randomized tie-breakers or partial synchrony assumptions. Furthermore, Byzantine fault tolerant protocols guarantee safety and liveness provided that fewer than one-third of participating nodes act maliciously or exhibit arbitrary failure modes."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 85,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 2,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-G-01A",
+        "studentTextSnippet": "Distributed consensus algorithms in asynchronous network environments must circumvent the Fischer-Lynch-Paterson impossibility theorem by adopting randomized tie-breakers or partial synchrony assumptions.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      },
+      {
+        "sourceId": "SRC-G-01B",
+        "studentTextSnippet": "Byzantine fault tolerant protocols guarantee safety and liveness provided that fewer than one-third of participating nodes act maliciously or exhibit arbitrary failure modes.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Student borrows verbatim from two separate sources. Verification must independently attribute Span 1 to SRC-G-01A and Span 2 to SRC-G-01B without cross-contamination. Aggregation must sum non-overlapping tokens.",
+  "knownLimitations": "None."
+}

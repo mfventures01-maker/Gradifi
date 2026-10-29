@@ -1,0 +1,53 @@
+{
+  "fixtureId": "L2-CAT-G-02",
+  "corpusVersion": "1.0.0",
+  "category": "G",
+  "categoryDescription": "Multi-source - Multiple sources embedded with original intro paragraph",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-G-02A",
+      "title": "Structural Basis of Cas12a Target Recognition",
+      "authors": [
+        "Dr. F. Zhang"
+      ],
+      "text": "CRISPR-associated Cas12a nucleases process their own crRNA and introduce staggered cuts with sticky overhanging ends."
+    },
+    {
+      "sourceId": "SRC-G-02B",
+      "title": "Search-and-Replace Genome Editing Without Double-Strand Breaks",
+      "authors": [
+        "Dr. D. Liu"
+      ],
+      "text": "Prime editing couples a catalytically impaired Cas9 nickase to an engineered reverse transcriptase programmed by a prime editing guide RNA."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-G-02",
+    "title": "Comparative Analysis of Next-Generation Precision Nucleases",
+    "text": "In synthetic biology, innovative tools continue to emerge rapidly.\n\nCRISPR-associated Cas12a nucleases process their own crRNA and introduce staggered cuts with sticky overhanging ends.\n\nMeanwhile, prime editing couples a catalytically impaired Cas9 nickase to an engineered reverse transcriptase programmed by a prime editing guide RNA."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 65,
+    "maxOverallSimilarity": 90,
+    "expectedFindingCount": 2,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-G-02A",
+        "studentTextSnippet": "CRISPR-associated Cas12a nucleases process their own crRNA and introduce staggered cuts with sticky overhanging ends.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      },
+      {
+        "sourceId": "SRC-G-02B",
+        "studentTextSnippet": "Prime editing couples a catalytically impaired Cas9 nickase to an engineered reverse transcriptase programmed by a prime editing guide RNA.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Paragraph 1 is original. Paragraph 2 is from Source A. Paragraph 3 is from Source B. Both sources must be correctly attributed.",
+  "knownLimitations": "None."
+}

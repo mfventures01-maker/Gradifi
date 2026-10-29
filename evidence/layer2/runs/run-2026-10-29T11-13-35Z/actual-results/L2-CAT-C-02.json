@@ -1,0 +1,79 @@
+{
+  "documentHash": "5131ffa2901ad066",
+  "evidenceHash": "b0ffefe47cd708c6",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 0,
+  "uniqueMatchedCoverage": 0,
+  "highestSourceMatch": 1.6,
+  "totalSourcesEvaluated": 1,
+  "verifiedMatches": [
+    {
+      "sourceId": "SRC-C-02",
+      "title": "Sensor Integration in Robotic Navigation",
+      "authors": [
+        "Dr. S. Thrun",
+        "Dr. H. Durrant-Whyte"
+      ],
+      "url": "",
+      "matchedText": "",
+      "originalSnippet": "Autonomous vehicles rely on sensor fusion algorithms combining LiDAR, radar, and stereoscopic vision streams to navigate complex urban corridors safely.",
+      "matchType": "citation",
+      "matchPercentage": 1.6,
+      "relevanceScore": 1.3,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "SRC-C-02",
+        "retrievedAt": "2026-10-29T11:13:35.236Z",
+        "sourceType": "document",
+        "sourceUrl": "",
+        "title": "Sensor Integration in Robotic Navigation",
+        "authors": [
+          "Dr. S. Thrun",
+          "Dr. H. Durrant-Whyte"
+        ],
+        "provenanceState": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "aggregation": {
+    "totalDocumentTokens": 23,
+    "totalUniqueMatchedTokens": 0,
+    "totalDocumentOverlap": 0,
+    "highestSourceMatch": 1.6,
+    "totalSourceMatches": 1,
+    "totalParagraphMatches": 0,
+    "totalSentenceMatches": 0,
+    "totalPhraseMatches": 0,
+    "sourceReports": [
+      {
+        "sourceId": "SRC-C-02",
+        "title": "Sensor Integration in Robotic Navigation",
+        "authors": [
+          "Dr. S. Thrun",
+          "Dr. H. Durrant-Whyte"
+        ],
+        "url": "",
+        "documentCoverage": 0,
+        "paragraphMatches": 0,
+        "sentenceMatches": 0,
+        "phraseMatches": 0,
+        "highestSentenceMatch": 2.6,
+        "highestPhraseMatch": 0,
+        "aggregateSourceScore": 1.6,
+        "paragraphEvidence": [],
+        "sentenceEvidence": [],
+        "phraseEvidence": []
+      }
+    ],
+    "paragraphFlags": [],
+    "sentenceFlags": [],
+    "phraseFlags": [],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "b0ffefe47cd708c6",
+    "documentHash": "5131ffa2901ad066"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        5131ffa2901ad066\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        b0ffefe47cd708c6\nAnalysis Timestamp:   2026-10-29T11:13:35.237Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  0.0%\nHighest Source Match:     1.6%\nSources With Matches:     1\nParagraphs Flagged:       0\nSentences Flagged:        0\nPhrases Flagged:          0\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\nSource: [SRC-C-02] Sensor Integration in Robotic Navigation\n  Document Coverage:       0.0%\n  Aggregate Source Score:  1.6%\n  Highest Sentence Match:  2.6%\n  Highest Phrase Match:    0.0%\n  Paragraph Matches:       0\n  Sentence Matches:        0\n  Phrase Matches:          0\n\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\n  No paragraph flags raised.\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\n  No sentence flags raised.\nPHRASE FLAGS\n--------------------------------------------------------------------------------\n  No phrase flags raised.\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         b0ffefe47cd708c6\n================================================================================"
+}

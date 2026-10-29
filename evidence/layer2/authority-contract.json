@@ -1,0 +1,157 @@
+{
+  "contractId": "G2-G5-AUTHORITY-CONTRACT-L2-CG-01",
+  "contractVersion": "1.0.0",
+  "timestamp": "2026-10-29T01:58:00Z",
+  "authorityGate": "L2-CG-01",
+  "governingStandard": "HOEOS v2 Articles 1-6, G2/G5 Deterministic Verification Contract",
+  "productionStatus": "HARD HOLD",
+  "engineIdentity": {
+    "engineId": "GRADIFI-DETERMINISTIC-SIMILARITY-ENGINE",
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "policyVersion": "2026.09-academic-evidence",
+    "plagiarismPolicyVersion": "G3-POLICY-v1",
+    "implementationSource": "src/services/verify/deterministicEngine.ts",
+    "normalizerSource": "src/services/verify/documentNormalizer.ts",
+    "serviceSource": "src/services/verify/verifyCoreService.ts"
+  },
+  "acceptedSchemas": {
+    "inputSchemas": [
+      {
+        "name": "DeterministicAnalysisInput",
+        "fields": {
+          "documentText": "string (required)",
+          "candidateMatches": "EvidenceMatch[] (required)",
+          "engineVersion": "string (optional, defaults to SIM-V1)",
+          "policyVersion": "string (optional, defaults to 2026.09-academic-evidence)"
+        }
+      },
+      {
+        "name": "CanonicalAnalysisDocument",
+        "fields": {
+          "documentId": "string (SHA-256 of normalizedText)",
+          "source": "DocumentSourceMetadata",
+          "rawText": "string (verbatim document string)",
+          "normalizedText": "string (NFKD lowercase stripped)",
+          "title": "string",
+          "authors": "string[]",
+          "stats": "DocumentStats",
+          "extractionStatus": "SUCCESS | FAILED",
+          "normalizationStatus": "NORMALIZED | FAILED"
+        }
+      }
+    ],
+    "outputSchemas": [
+      {
+        "name": "DeterministicEngineOutput",
+        "fields": {
+          "documentHash": "string (SHA-256 of raw documentText)",
+          "evidenceHash": "string (SHA-256 over sourceKeysSorted, tokens, versions)",
+          "engineVersion": "SIM-V1",
+          "policyVersion": "2026.09-academic-evidence",
+          "overallSimilarity": "number (0.0 - 100.0, rounded to 1 decimal place)",
+          "uniqueMatchedCoverage": "number (0.0 - 100.0, rounded to 1 decimal place)",
+          "highestSourceMatch": "number (0.0 - 100.0, rounded to 1 decimal place)",
+          "totalSourcesEvaluated": "number",
+          "verifiedMatches": "EvidenceMatch[]",
+          "aggregation": "GlobalSimilarityAggregation",
+          "reportText": "string"
+        }
+      },
+      {
+        "name": "GranularSimilarityResult",
+        "fields": {
+          "analysisType": "DETERMINISTIC_SIMILARITY",
+          "sourceDocumentId": "string",
+          "matchedDocumentId": "string",
+          "overallSimilarity": "number (0.0 - 100.0)",
+          "findings": "SimilarityFinding[]",
+          "engineVersion": "SIM-V1",
+          "policyVersion": "2026.09-academic-evidence",
+          "deterministic": "true",
+          "warnings": "string[]",
+          "paragraphFlags": "ParagraphMatchEvidence[]",
+          "sentenceFlags": "SentenceMatchEvidence[]"
+        }
+      }
+    ]
+  },
+  "scoreFormulasAndSemantics": {
+    "uniqueMatchedCoverage": {
+      "formula": "totalDocumentTokens > 0 ? Math.min(100, Math.round((totalUniqueMatchedTokens / totalDocumentTokens) * 1000) / 10) : 0",
+      "definition": "Non-overlapping unique document tokens matched across all sources divided by total document tokens, expressed as a percentage with 1 decimal precision.",
+      "range": [
+        0,
+        100
+      ]
+    },
+    "overallSimilarity": {
+      "formula": "overallSimilarity = uniqueMatchedCoverage",
+      "definition": "Equal to uniqueMatchedCoverage. Represents global non-overlapping text overlap percentage.",
+      "range": [
+        0,
+        100
+      ]
+    },
+    "highestSourceMatch": {
+      "formula": "sourceReports.length > 0 ? Math.max(...sourceReports.map(s => s.aggregateSourceScore)) : 0",
+      "definition": "Maximum aggregateSourceScore across individual source reports. Represents the highest single-source overlap.",
+      "range": [
+        0,
+        100
+      ]
+    },
+    "sentenceSimilarity": {
+      "formula": "if exact containment (>=10 chars, >=3 tokens): 100%; else: Math.min(100, Math.round((ngram3 * 0.5 + ngram2 * 0.2 + lexicalRatio * 0.3) * 10) / 10)",
+      "flags": {
+        "HIGH_SIMILARITY_SENTENCE": ">= 75%",
+        "MODERATE_SIMILARITY_SENTENCE": ">= 40%",
+        "LOW_SIMILARITY_SENTENCE": ">= 20%",
+        "NO_MATCH": "< 20%"
+      }
+    },
+    "phraseSimilarity": {
+      "nGramSizes": [
+        3,
+        5,
+        7
+      ],
+      "exactPhraseMatch": "100% containment in normalized source snippet",
+      "flags": {
+        "EXACT_PHRASE_MATCH": "nGramSize >= 5",
+        "HIGH_PHRASE_OVERLAP": "nGramSize === 4",
+        "SIGNIFICANT_PHRASE_OVERLAP": "nGramSize === 3"
+      }
+    }
+  },
+  "coordinateSystem": {
+    "basis": "0-based character offsets into canonical rawText",
+    "spanFields": [
+      "startChar",
+      "endChar"
+    ],
+    "invariant": "rawText.slice(startChar, endChar) === segmentText",
+    "sentenceCoordinates": "Segmented inside paragraph, relative to document rawText startChar",
+    "phraseCoordinates": "Relative to document rawText startChar"
+  },
+  "canonicalNormalization": {
+    "normalizationVersion": "NORM-V1",
+    "steps": [
+      "Unicode NFKD normalization",
+      "Diacritic removal: replace(/[\\u0300-\\u036f]/g, \"\")",
+      "Lowercasing",
+      "Punctuation removal: replace(/[^\\w\\s]/g, \" \")",
+      "Whitespace collapsing: replace(/\\s+/g, \" \").trim()"
+    ]
+  },
+  "aiAdvisoryBoundaryInvariants": [
+    "AI runtimes (Gemini, Gemma, Nemotron) are strictly advisory and isolated.",
+    "analyzeDocumentEvidence() and evaluateDocumentSimilarityInternal() execute with zero AI runtime calls.",
+    "AI results may only populate advisory findings; they MUST NOT alter overallSimilarity, uniqueMatchedCoverage, highestSourceMatch, or deterministic finding spans.",
+    "Under all AI failure conditions (offline, timeout, malformed, empty, conflicting), deterministic scores and spans remain 100% bit-for-bit invariant."
+  ],
+  "governanceAndPolicy": {
+    "misconductInterpretationPolicy": "Similarity score is an objective lexical overlap metric and DOES NOT constitute definitive academic misconduct without institutional policy review.",
+    "thresholdGovernance": "Commercial acceptance thresholds require explicit owner sign-off. Default unapproved status produces BLOCKED: OWNER THRESHOLD DECISION REQUIRED."
+  }
+}

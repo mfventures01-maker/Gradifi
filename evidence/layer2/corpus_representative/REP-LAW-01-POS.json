@@ -1,0 +1,37 @@
+{
+  "fixtureId": "REP-LAW-01-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Law",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-LAW-001",
+      "title": "Statutory Analysis of the Petroleum Industry Act 2021",
+      "authors": [
+        "Prof. K. Ojukwu",
+        "Dr. T. Alabi"
+      ],
+      "text": "The Petroleum Industry Act 2021 repeals the Petroleum Act of 1969 and introduces the Host Community Development Trust framework. Settlors are mandated to allocate an annual contribution of three percent of their actual operating expenditure from the preceding financial year to designated host community development trusts."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-LAW-001",
+    "title": "Fiscal Obligations of Upstream Settlors to Host Communities",
+    "text": "In evaluating energy governance in the Niger Delta, corporate social investment has taken a statutory dimension. The Petroleum Industry Act 2021 repeals the Petroleum Act of 1969 and introduces the Host Community Development Trust framework. Settlors are mandated to allocate an annual contribution of three percent of their actual operating expenditure from the preceding financial year to designated host community development trusts. This fiscal obligation aims to foster harmonious operating environments."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 45,
+    "maxOverallSimilarity": 75,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-LAW-001",
+        "studentTextSnippet": "The Petroleum Industry Act 2021 repeals the Petroleum Act of 1969",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Verbatim middle 2 sentences copied from statutory commentary. Boundary sentences original.",
+  "provenance": "Nigerian Law Journal Open Commentary (2022)"
+}

@@ -1,0 +1,38 @@
+{
+  "fixtureId": "L2-CAT-H-02",
+  "corpusVersion": "1.0.0",
+  "category": "H",
+  "categoryDescription": "Boundary - Irregular tabs, leading/trailing whitespace, and internal newlines",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-H-02",
+      "title": "Bioenergetics of the Inner Mitochondrial Cristae",
+      "authors": [
+        "Dr. P. Mitchell"
+      ],
+      "text": "Mitochondrial oxidative phosphorylation generates adenosine triphosphate through an electrochemical proton gradient across the inner mitochondrial membrane."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-H-02",
+    "title": "Adversarial Whitespace Probe",
+    "text": "   Mitochondrial    oxidative\n\nphosphorylation   generates\t\tadenosine triphosphate   through an electrochemical proton gradient across the inner mitochondrial membrane.   \n"
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 80,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-H-02",
+        "studentTextSnippet": "phosphorylation   generates",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Text contains internal \n\n splitting the sentence into two paragraphs. The second paragraph (14 tokens) matches 100%, yielding 87.5% coverage. Both sentence spans match raw text with 0 offset drift.",
+  "knownLimitations": "None."
+}

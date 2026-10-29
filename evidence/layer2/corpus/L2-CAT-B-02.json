@@ -1,0 +1,39 @@
+{
+  "fixtureId": "L2-CAT-B-02",
+  "corpusVersion": "1.0.0",
+  "category": "B",
+  "categoryDescription": "Lightly modified passage - Adverb and adjective insertions",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-B-02",
+      "title": "Molecular Basis of Antibiotic Inactivation",
+      "authors": [
+        "Dr. R. Fleming",
+        "Dr. H. Abraham"
+      ],
+      "text": "Bacterial resistance to beta-lactam antibiotics is primarily mediated by the expression of beta-lactamase enzymes that hydrolyze the four-membered beta-lactam ring structure."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-B-02",
+    "title": "Evolution of Microbial Resistance",
+    "text": "Bacterial resistance to beta-lactam antibiotics is undoubtedly and primarily mediated by the robust expression of beta-lactamase enzymes that rapidly hydrolyze the four-membered beta-lactam ring structure."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 70,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-B-02",
+        "studentTextSnippet": "Bacterial resistance to beta-lactam antibiotics is undoubtedly and primarily mediated by the robust expression of beta-lactamase enzymes that rapidly hydrolyze the four-membered beta-lactam ring structure.",
+        "matchType": "ngram_overlap",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Inserted words break some 3-grams, but 2-grams and high token Jaccard overlap (>70%) maintain HIGH_SIMILARITY_SENTENCE flag.",
+  "knownLimitations": "Sliding n-grams detect fragments around inserted adjectives."
+}

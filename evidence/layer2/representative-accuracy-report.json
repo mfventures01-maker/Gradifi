@@ -1,0 +1,960 @@
+{
+  "runId": "rep-run-2026-10-29T14-15-01Z",
+  "timestamp": "2026-10-29T14:15:01.727Z",
+  "engineVersion": "SIM-V1",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "totalFixturesEvaluated": 34,
+  "passedFixtures": 34,
+  "failedFixtures": 0,
+  "overallConfusionMatrix": {
+    "TP": 17,
+    "FP": 0,
+    "TN": 17,
+    "FN": 0
+  },
+  "approvedThresholds": {
+    "precision": {
+      "required": 0.95,
+      "actual": 1,
+      "pass": true
+    },
+    "recall": {
+      "required": 0.9,
+      "actual": 1,
+      "pass": true
+    },
+    "fpr": {
+      "required": 0.05,
+      "actual": 0,
+      "pass": true
+    },
+    "sentenceSpanAccuracy": {
+      "required": 0.95,
+      "actual": 1,
+      "pass": true
+    },
+    "aiAdvisoryIsolation": {
+      "required": 1,
+      "actual": 1,
+      "pass": true
+    }
+  },
+  "heldOutMetrics": {
+    "totalHeldOut": 25,
+    "confusionMatrix": {
+      "TP": 9,
+      "FP": 0,
+      "TN": 16,
+      "FN": 0
+    },
+    "precision": 1,
+    "recall": 1,
+    "fpr": 0
+  },
+  "fidelityMetrics": {
+    "totalSentSpans": 28,
+    "passedSentSpans": 28,
+    "sentenceSpanAccuracy": 1,
+    "totalPhrSpans": 1531,
+    "passedPhrSpans": 1531,
+    "phraseSpanAccuracy": 1,
+    "totalAttributionChecks": 17,
+    "passedAttributionChecks": 17,
+    "attributionAccuracy": 1
+  },
+  "repeatability": {
+    "threePassConsistency": "100.0%",
+    "status": "PASS"
+  },
+  "aiIsolation": {
+    "status": "PASS",
+    "isolationRatio": 1
+  },
+  "gateVerdict": "PASS",
+  "fixtureResults": [
+    {
+      "fixtureId": "REP-AGR-01-POS",
+      "discipline": "Agriculture",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 74.9
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 75,
+        "maxOverallSimilarity": 100
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 2,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 34,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-AGR-02-NEG",
+      "discipline": "Agriculture",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 1
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-AGR-03-POS",
+      "discipline": "Agriculture",
+      "documentLengthCategory": "Long",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 52.1,
+        "uniqueMatchedCoverage": 52.1,
+        "highestSourceMatch": 80.8
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 45,
+        "maxOverallSimilarity": 75
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 3,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 111,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-AGR-04-NEG",
+      "discipline": "Agriculture",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 9.5
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 25
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 2,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-CS-01-NEG",
+      "discipline": "Computer Science",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 3
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 20
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-CS-02-POS",
+      "discipline": "Computer Science",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 59.7,
+        "uniqueMatchedCoverage": 59.7,
+        "highestSourceMatch": 72.9
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 50,
+        "maxOverallSimilarity": 90
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 2,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 87,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-ECO-01-POS",
+      "discipline": "Economics",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 41.9,
+        "uniqueMatchedCoverage": 41.9,
+        "highestSourceMatch": 76.8
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 30,
+        "maxOverallSimilarity": 55
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 81,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-ECO-02-NEG",
+      "discipline": "Economics",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 1.5
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 25
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-ECO-03-POS",
+      "discipline": "Economics",
+      "documentLengthCategory": "Short",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 100,
+        "maxOverallSimilarity": 100
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 75,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-ECO-04-NEG",
+      "discipline": "Economics",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 2.6
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDGE-01-POS",
+      "discipline": "Economics",
+      "documentLengthCategory": "Long",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 65.3,
+        "uniqueMatchedCoverage": 65.3,
+        "highestSourceMatch": 86.1
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 55,
+        "maxOverallSimilarity": 80
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 3,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 162,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDGE-02-NEG",
+      "discipline": "Law",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 7.9
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 25
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 1,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDGE-03-POS",
+      "discipline": "Engineering",
+      "documentLengthCategory": "Medium",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 57.1,
+        "uniqueMatchedCoverage": 57.1,
+        "highestSourceMatch": 82.8
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 40,
+        "maxOverallSimilarity": 70
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 72,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDGE-04-NEG",
+      "discipline": "Computer Science",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 0
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDGE-05-POS",
+      "discipline": "Medicine",
+      "documentLengthCategory": "Short",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 100,
+        "maxOverallSimilarity": 100
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 63,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDGE-06-NEG",
+      "discipline": "Economics",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 1.1
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDU-01-NEG",
+      "discipline": "Education",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 0.7
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDU-02-POS",
+      "discipline": "Education",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 44.9,
+        "uniqueMatchedCoverage": 44.9,
+        "highestSourceMatch": 78
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 35,
+        "maxOverallSimilarity": 65
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 54,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDU-03-POS",
+      "discipline": "Education",
+      "documentLengthCategory": "Short",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 100,
+        "maxOverallSimilarity": 100
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 101,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-EDU-04-NEG",
+      "discipline": "Education",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 0.7
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-ENG-01-POS",
+      "discipline": "Engineering",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 85.8
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 85,
+        "maxOverallSimilarity": 100
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 3,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 138,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-ENG-02-NEG",
+      "discipline": "Engineering",
+      "documentLengthCategory": "Short",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 1.7
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-LAW-01-POS",
+      "discipline": "Law",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 64.8,
+        "uniqueMatchedCoverage": 64.8,
+        "highestSourceMatch": 85.9
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 45,
+        "maxOverallSimilarity": 75
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 2,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 114,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-LAW-02-NEG",
+      "discipline": "Law",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 3.9
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-LAW-03-POS",
+      "discipline": "Law",
+      "documentLengthCategory": "Short",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 100,
+        "maxOverallSimilarity": 100
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 93,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-LAW-04-NEG",
+      "discipline": "Law",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 21.5
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 30
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 10,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-LIT-01-POS",
+      "discipline": "Humanities",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 100,
+        "maxOverallSimilarity": 100
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 87,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-LIT-02-NEG",
+      "discipline": "Humanities",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 3.8
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-LIT-03-POS",
+      "discipline": "Humanities",
+      "documentLengthCategory": "Medium",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 53.1,
+        "uniqueMatchedCoverage": 53.1,
+        "highestSourceMatch": 81.2
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 40,
+        "maxOverallSimilarity": 70
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 66,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-LIT-04-NEG",
+      "discipline": "Humanities",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 2.8
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-MED-01-POS",
+      "discipline": "Medicine",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 100,
+        "uniqueMatchedCoverage": 100,
+        "highestSourceMatch": 100
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 100,
+        "maxOverallSimilarity": 100
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 1,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 108,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-MED-02-NEG",
+      "discipline": "Medicine",
+      "documentLengthCategory": "Short",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 1.8
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 0
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-MED-03-POS",
+      "discipline": "Medicine",
+      "documentLengthCategory": "Medium",
+      "split": "DEVELOPMENT",
+      "groundTruthPlagiarized": true,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 76,
+        "uniqueMatchedCoverage": 76,
+        "highestSourceMatch": 90.4
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 60,
+        "maxOverallSimilarity": 85
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 2,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 72,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TP",
+      "attributionCorrect": true
+    },
+    {
+      "fixtureId": "REP-MED-04-NEG",
+      "discipline": "Medicine",
+      "documentLengthCategory": "Medium",
+      "split": "HELD_OUT",
+      "groundTruthPlagiarized": false,
+      "verdict": "PASS",
+      "failureReasons": [],
+      "actualScores": {
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0,
+        "highestSourceMatch": 2.6
+      },
+      "expectedScores": {
+        "minOverallSimilarity": 0,
+        "maxOverallSimilarity": 15
+      },
+      "spanValidation": {
+        "sentenceSpansChecked": 0,
+        "sentenceSpanMismatches": 0,
+        "phraseSpansChecked": 0,
+        "phraseSpanDrifts": 0
+      },
+      "classification": "TN",
+      "attributionCorrect": true
+    }
+  ]
+}

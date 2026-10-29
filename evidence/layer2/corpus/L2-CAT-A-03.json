@@ -1,0 +1,39 @@
+{
+  "fixtureId": "L2-CAT-A-03",
+  "corpusVersion": "1.0.0",
+  "category": "A",
+  "categoryDescription": "Exact copied passage - Full document identical clone",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-A-03",
+      "title": "Generalization Geometry in Stochastic Gradient Optimization",
+      "authors": [
+        "Prof. K. Hinton",
+        "Dr. J. Dean"
+      ],
+      "text": "Deep neural networks trained via stochastic gradient descent often converge to flat minima that exhibit superior generalization capabilities on out-of-distribution validation benchmarks."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-A-03",
+    "title": "Optimization Landscapes in Deep Learning",
+    "text": "Deep neural networks trained via stochastic gradient descent often converge to flat minima that exhibit superior generalization capabilities on out-of-distribution validation benchmarks."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 100,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-A-03",
+        "studentTextSnippet": "Deep neural networks trained via stochastic gradient descent often converge to flat minima that exhibit superior generalization capabilities on out-of-distribution validation benchmarks.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Identical 100% duplicate document. Coverage and similarity must be exactly 100.0%.",
+  "knownLimitations": "None."
+}

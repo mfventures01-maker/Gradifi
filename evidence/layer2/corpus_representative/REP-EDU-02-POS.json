@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-EDU-02-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Education",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDU-002",
+      "title": "Foundational Literacy Interventions in Northern Nigerian Classrooms",
+      "authors": [
+        "Dr. A. Danjuma"
+      ],
+      "text": "Continuous teacher professional development is essential for upgrading pedagogical competencies in foundational literacy and numeracy across rural primary schools in Kaduna State."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDU-002",
+    "title": "Instructional Leadership and Early Childhood Education Quality",
+    "text": "School principals must serve as instructional mentors to newly posted teachers. Continuous teacher professional development is essential for upgrading pedagogical competencies in foundational literacy and numeracy across rural primary schools in Kaduna State. Structured classroom observation guides and regular peer mentoring sessions provide tangible pathways to enhance instructional delivery."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 35,
+    "maxOverallSimilarity": 65,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-EDU-002",
+        "studentTextSnippet": "Continuous teacher professional development is essential for upgrading pedagogical competencies in foundational literacy and numeracy across rural primary schools in Kaduna State.",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Substantive sentence copied into student paper without credit.",
+  "provenance": "Faculty of Education symposium presentation"
+}

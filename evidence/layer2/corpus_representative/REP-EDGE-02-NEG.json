@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-EDGE-02-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Law",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDGE-002",
+      "title": "Evidence Law in Customary Courts of Appeal",
+      "authors": [
+        "Justice S. Uwais"
+      ],
+      "text": "The burden of proof in civil proceedings rests squarely on the claimant who asserts the affirmative of the issue in accordance with the Evidence Act."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDGE-002",
+    "title": "Standard of Proof in Criminal Prosecutions",
+    "text": "Under Nigerian criminal law, the prosecution bears the statutory burden of proof beyond reasonable doubt, and any material doubt arising from the testimony must be resolved in favor of the accused person."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 25,
+    "expectedMatches": []
+  },
+  "labelRationale": "Short negative control: shared legal phrase \"burden of proof\" without substantive n-gram plagiarism.",
+  "provenance": "Undergraduate law exam tutorial"
+}

@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-EDGE-01-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Economics",
+  "documentLengthCategory": "Long",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDGE-001",
+      "title": "Financing Infrastructure Through Public-Private Partnerships in Sub-Saharan Africa",
+      "authors": [
+        "Prof. A. Yerima"
+      ],
+      "text": "Public-private partnerships in infrastructure development offer a viable mechanism to bridge Nigeria's estimated thirty-five billion dollar annual infrastructure financing deficit.\nThe Infrastructure Concession Regulatory Commission Act of 2005 empowers federal ministries to enter into long-term build-operate-transfer concession agreements.\nHowever, currency exchange risks, regulatory expropriation concerns, and opaque sovereign dispute settlement clauses deter foreign direct investment consortia from reaching financial close."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDGE-001",
+    "title": "Alternative Financing for West African Transport Corridors",
+    "text": "National economic transformation requires sustained capital injection into transportation networks and energy distribution grids.\nPublic-private partnerships in infrastructure development offer a viable mechanism to bridge Nigeria's estimated thirty-five billion dollar annual infrastructure financing deficit.\nThe Infrastructure Concession Regulatory Commission Act of 2005 empowers federal ministries to enter into long-term build-operate-transfer concession agreements.\nHowever, currency exchange risks, regulatory expropriation concerns, and opaque sovereign dispute settlement clauses deter foreign direct investment consortia from reaching financial close.\nWithout comprehensive sovereign guarantee structures and stable macroeconomic monetary management, domestic pension assets will remain reluctant to finance greenfield capital projects."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 55,
+    "maxOverallSimilarity": 80,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-EDGE-001",
+        "studentTextSnippet": "Public-private partnerships in infrastructure development offer a viable mechanism",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Long multi-paragraph document with 3 paragraphs copied verbatim in the middle.",
+  "provenance": "Infrastructure Concession Review"
+}

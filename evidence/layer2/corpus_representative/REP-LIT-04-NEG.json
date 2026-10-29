@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-LIT-04-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Humanities",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-LIT-004",
+      "title": "Historiography of the Benin Expedition of 1897",
+      "authors": [
+        "Prof. J. Falola"
+      ],
+      "text": "The British punitive military expedition of 1897 resulted in the burning of Benin City, the exile of Oba Ovonramwen to Calabar, and the widespread looting of royal ivory and bronze artworks."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-LIT-004",
+    "title": "Diplomatic Relations of the Sokoto Caliphate",
+    "text": "The Sokoto Caliphate established diplomatic embassies with neighboring Kanem-Borno and Tuareg sultanates to coordinate trans-Saharan caravan security and manage tribute collection along trading routes."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Negative control: student wrote on Sokoto Caliphate diplomacy; source is 1897 Benin expedition.",
+  "provenance": "Undergraduate history department research paper"
+}

@@ -1,0 +1,30 @@
+{
+  "fixtureId": "L2-CAT-D-03",
+  "corpusVersion": "1.0.0",
+  "category": "D",
+  "categoryDescription": "Unrelated original writing - Quantum Field Theory vs Volcanology",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-D-03",
+      "title": "Topological Invariants and Quantum Invariance",
+      "authors": [
+        "Dr. E. Witten"
+      ],
+      "text": "Topological quantum field theories compute topological invariants of manifolds using path integrals over gauge fields invariant under arbitrary diffeomorphism transformations."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-D-03",
+    "title": "Stratospheric Consequences of Subduction Volcanism",
+    "text": "Volcanic eruptions along convergent plate boundaries release significant quantities of sulfur dioxide into the upper stratosphere, producing sulfate aerosol layers that reflect solar irradiance."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Unrelated science fields. Expected score: 0.0%.",
+  "knownLimitations": "None."
+}

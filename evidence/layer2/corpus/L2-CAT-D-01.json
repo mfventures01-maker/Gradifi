@@ -1,0 +1,31 @@
+{
+  "fixtureId": "L2-CAT-D-01",
+  "corpusVersion": "1.0.0",
+  "category": "D",
+  "categoryDescription": "Unrelated original writing - Disjoint academic disciplines (Physics vs Roman History)",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-D-01",
+      "title": "Structural Properties of High-Tc Superconductors",
+      "authors": [
+        "Dr. J. Bednorz",
+        "Prof. K. Muller"
+      ],
+      "text": "Crystallographic analysis reveals that high-temperature superconducting cuprates possess a layered perovskite structure with alternating copper-oxide planes."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-D-01",
+    "title": "Political Structures of Ancient Rome",
+    "text": "The constitutional history of the Roman Republic illustrates the delicate balance of power between aristocratic senatorial bodies and popular tribunes. Plebeian assemblies exercised legislative power while consular magistrates led military campaigns abroad."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Completely disjoint vocabulary and topic. Zero 3-grams, zero 2-grams, near-zero token intersection (<5%). Expected similarity: 0.0%.",
+  "knownLimitations": "None."
+}

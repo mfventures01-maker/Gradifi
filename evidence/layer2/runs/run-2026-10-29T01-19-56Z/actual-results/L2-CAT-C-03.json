@@ -1,0 +1,363 @@
+{
+  "documentHash": "7bf625ceb746a4f4",
+  "evidenceHash": "017c00e637b1d32a",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallSimilarity": 100,
+  "uniqueMatchedCoverage": 100,
+  "highestSourceMatch": 55.1,
+  "totalSourcesEvaluated": 1,
+  "verifiedMatches": [
+    {
+      "sourceId": "SRC-C-03",
+      "title": "The Coercive Power of Trade Embargoes",
+      "authors": [
+        "Dr. G. Hufbauer",
+        "Dr. J. Schott"
+      ],
+      "url": "",
+      "matchedText": "",
+      "originalSnippet": "Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter disputed geopolitical policies.",
+      "matchType": "lexical",
+      "matchPercentage": 55.1,
+      "relevanceScore": 62.6,
+      "provenance": {
+        "provider": "openalex",
+        "providerRecordId": "SRC-C-03",
+        "retrievedAt": "2026-10-29T01:19:56.711Z",
+        "sourceType": "document",
+        "sourceUrl": "",
+        "title": "The Coercive Power of Trade Embargoes",
+        "authors": [
+          "Dr. G. Hufbauer",
+          "Dr. J. Schott"
+        ],
+        "provenanceState": "VERIFIED"
+      },
+      "matchCharacter": "SEMANTIC"
+    }
+  ],
+  "aggregation": {
+    "totalDocumentTokens": 15,
+    "totalUniqueMatchedTokens": 15,
+    "totalDocumentOverlap": 100,
+    "highestSourceMatch": 55.1,
+    "totalSourceMatches": 1,
+    "totalParagraphMatches": 1,
+    "totalSentenceMatches": 1,
+    "totalPhraseMatches": 1,
+    "sourceReports": [
+      {
+        "sourceId": "SRC-C-03",
+        "title": "The Coercive Power of Trade Embargoes",
+        "authors": [
+          "Dr. G. Hufbauer",
+          "Dr. J. Schott"
+        ],
+        "url": "",
+        "documentCoverage": 100,
+        "paragraphMatches": 1,
+        "sentenceMatches": 1,
+        "phraseMatches": 1,
+        "highestSentenceMatch": 25.1,
+        "highestPhraseMatch": 100,
+        "aggregateSourceScore": 55.1,
+        "paragraphEvidence": [
+          {
+            "level": "paragraph",
+            "documentUnitId": "PAR-001",
+            "sourceId": "SRC-C-03",
+            "submittedParagraph": "International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies.",
+            "sourcePassage": "Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter disputed geopolitical policies.",
+            "similarityPercentage": 25.1,
+            "coveragePercentage": 100,
+            "matchedSentences": [
+              {
+                "level": "sentence",
+                "documentUnitId": "SEN-001",
+                "paragraphId": "PAR-001",
+                "sourceId": "SRC-C-03",
+                "studentText": "International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies.",
+                "sourceText": "Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter disputed geopolitical policies.",
+                "similarityPercentage": 25.1,
+                "matchType": "ngram_overlap",
+                "algorithmVersion": "SIM-V1",
+                "documentLocation": {
+                  "startChar": 0,
+                  "endChar": 128
+                },
+                "matchedPhrases": [
+                  {
+                    "phraseId": "PHR-006",
+                    "sourceId": "SRC-C-03",
+                    "submittedPhrase": "to compel sovereign",
+                    "sourcePhrase": "to compel sovereign",
+                    "normalizedPhrase": "to compel sovereign",
+                    "documentLocation": {
+                      "startChar": 48,
+                      "endChar": 67,
+                      "sentenceId": "SEN-001",
+                      "paragraphId": "PAR-001"
+                    },
+                    "sourceLocation": {
+                      "startChar": 68,
+                      "endChar": 87
+                    },
+                    "tokenCount": 3,
+                    "characterCount": 19,
+                    "matchPercentage": 100,
+                    "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                    "algorithmVersion": "SIM-V1"
+                  }
+                ],
+                "flag": "LOW_SIMILARITY_SENTENCE"
+              }
+            ],
+            "matchedPhrases": [
+              {
+                "phraseId": "PHR-006",
+                "sourceId": "SRC-C-03",
+                "submittedPhrase": "to compel sovereign",
+                "sourcePhrase": "to compel sovereign",
+                "normalizedPhrase": "to compel sovereign",
+                "documentLocation": {
+                  "startChar": 48,
+                  "endChar": 67,
+                  "sentenceId": "SEN-001",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 68,
+                  "endChar": 87
+                },
+                "tokenCount": 3,
+                "characterCount": 19,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              }
+            ],
+            "flag": "LOW_SIMILARITY_PARAGRAPH",
+            "algorithmVersion": "SIM-V1"
+          }
+        ],
+        "sentenceEvidence": [
+          {
+            "level": "sentence",
+            "documentUnitId": "SEN-001",
+            "paragraphId": "PAR-001",
+            "sourceId": "SRC-C-03",
+            "studentText": "International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies.",
+            "sourceText": "Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter disputed geopolitical policies.",
+            "similarityPercentage": 25.1,
+            "matchType": "ngram_overlap",
+            "algorithmVersion": "SIM-V1",
+            "documentLocation": {
+              "startChar": 0,
+              "endChar": 128
+            },
+            "matchedPhrases": [
+              {
+                "phraseId": "PHR-006",
+                "sourceId": "SRC-C-03",
+                "submittedPhrase": "to compel sovereign",
+                "sourcePhrase": "to compel sovereign",
+                "normalizedPhrase": "to compel sovereign",
+                "documentLocation": {
+                  "startChar": 48,
+                  "endChar": 67,
+                  "sentenceId": "SEN-001",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 68,
+                  "endChar": 87
+                },
+                "tokenCount": 3,
+                "characterCount": 19,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              }
+            ],
+            "flag": "LOW_SIMILARITY_SENTENCE"
+          }
+        ],
+        "phraseEvidence": [
+          {
+            "phraseId": "PHR-006",
+            "sourceId": "SRC-C-03",
+            "submittedPhrase": "to compel sovereign",
+            "sourcePhrase": "to compel sovereign",
+            "normalizedPhrase": "to compel sovereign",
+            "documentLocation": {
+              "startChar": 48,
+              "endChar": 67,
+              "sentenceId": "SEN-001",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 68,
+              "endChar": 87
+            },
+            "tokenCount": 3,
+            "characterCount": 19,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          }
+        ]
+      }
+    ],
+    "paragraphFlags": [
+      {
+        "level": "paragraph",
+        "documentUnitId": "PAR-001",
+        "sourceId": "SRC-C-03",
+        "submittedParagraph": "International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies.",
+        "sourcePassage": "Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter disputed geopolitical policies.",
+        "similarityPercentage": 25.1,
+        "coveragePercentage": 100,
+        "matchedSentences": [
+          {
+            "level": "sentence",
+            "documentUnitId": "SEN-001",
+            "paragraphId": "PAR-001",
+            "sourceId": "SRC-C-03",
+            "studentText": "International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies.",
+            "sourceText": "Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter disputed geopolitical policies.",
+            "similarityPercentage": 25.1,
+            "matchType": "ngram_overlap",
+            "algorithmVersion": "SIM-V1",
+            "documentLocation": {
+              "startChar": 0,
+              "endChar": 128
+            },
+            "matchedPhrases": [
+              {
+                "phraseId": "PHR-006",
+                "sourceId": "SRC-C-03",
+                "submittedPhrase": "to compel sovereign",
+                "sourcePhrase": "to compel sovereign",
+                "normalizedPhrase": "to compel sovereign",
+                "documentLocation": {
+                  "startChar": 48,
+                  "endChar": 67,
+                  "sentenceId": "SEN-001",
+                  "paragraphId": "PAR-001"
+                },
+                "sourceLocation": {
+                  "startChar": 68,
+                  "endChar": 87
+                },
+                "tokenCount": 3,
+                "characterCount": 19,
+                "matchPercentage": 100,
+                "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+                "algorithmVersion": "SIM-V1"
+              }
+            ],
+            "flag": "LOW_SIMILARITY_SENTENCE"
+          }
+        ],
+        "matchedPhrases": [
+          {
+            "phraseId": "PHR-006",
+            "sourceId": "SRC-C-03",
+            "submittedPhrase": "to compel sovereign",
+            "sourcePhrase": "to compel sovereign",
+            "normalizedPhrase": "to compel sovereign",
+            "documentLocation": {
+              "startChar": 48,
+              "endChar": 67,
+              "sentenceId": "SEN-001",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 68,
+              "endChar": 87
+            },
+            "tokenCount": 3,
+            "characterCount": 19,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          }
+        ],
+        "flag": "LOW_SIMILARITY_PARAGRAPH",
+        "algorithmVersion": "SIM-V1"
+      }
+    ],
+    "sentenceFlags": [
+      {
+        "level": "sentence",
+        "documentUnitId": "SEN-001",
+        "paragraphId": "PAR-001",
+        "sourceId": "SRC-C-03",
+        "studentText": "International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies.",
+        "sourceText": "Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter disputed geopolitical policies.",
+        "similarityPercentage": 25.1,
+        "matchType": "ngram_overlap",
+        "algorithmVersion": "SIM-V1",
+        "documentLocation": {
+          "startChar": 0,
+          "endChar": 128
+        },
+        "matchedPhrases": [
+          {
+            "phraseId": "PHR-006",
+            "sourceId": "SRC-C-03",
+            "submittedPhrase": "to compel sovereign",
+            "sourcePhrase": "to compel sovereign",
+            "normalizedPhrase": "to compel sovereign",
+            "documentLocation": {
+              "startChar": 48,
+              "endChar": 67,
+              "sentenceId": "SEN-001",
+              "paragraphId": "PAR-001"
+            },
+            "sourceLocation": {
+              "startChar": 68,
+              "endChar": 87
+            },
+            "tokenCount": 3,
+            "characterCount": 19,
+            "matchPercentage": 100,
+            "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+            "algorithmVersion": "SIM-V1"
+          }
+        ],
+        "flag": "LOW_SIMILARITY_SENTENCE"
+      }
+    ],
+    "phraseFlags": [
+      {
+        "phraseId": "PHR-006",
+        "sourceId": "SRC-C-03",
+        "submittedPhrase": "to compel sovereign",
+        "sourcePhrase": "to compel sovereign",
+        "normalizedPhrase": "to compel sovereign",
+        "documentLocation": {
+          "startChar": 48,
+          "endChar": 67,
+          "sentenceId": "SEN-001",
+          "paragraphId": "PAR-001"
+        },
+        "sourceLocation": {
+          "startChar": 68,
+          "endChar": 87
+        },
+        "tokenCount": 3,
+        "characterCount": 19,
+        "matchPercentage": 100,
+        "flag": "SIGNIFICANT_PHRASE_OVERLAP",
+        "algorithmVersion": "SIM-V1"
+      }
+    ],
+    "engineVersion": "SIM-V1",
+    "normalizationVersion": "NORM-V1",
+    "evidenceHash": "017c00e637b1d32a",
+    "documentHash": "7bf625ceb746a4f4"
+  },
+  "reportText": "================================================================================\nGRADIFI SIMILARITY & PLAGIARISM FORENSIC REPORT\n================================================================================\nDocument:             Submitted Document Payload\nDocument Hash:        7bf625ceb746a4f4\nEngine Version:       SIM-V1\nNormalization Ver:    NORM-V1\nEvidence Hash:        017c00e637b1d32a\nAnalysis Timestamp:   2026-10-29T01:19:56.714Z\n\nOVERALL SUMMARY\n--------------------------------------------------------------------------------\nUnique Matched Coverage:  100.0%\nHighest Source Match:     55.1%\nSources With Matches:     1\nParagraphs Flagged:       1\nSentences Flagged:        1\nPhrases Flagged:          1\n\nSOURCE BREAKDOWN\n--------------------------------------------------------------------------------\nSource: [SRC-C-03] The Coercive Power of Trade Embargoes\n  Document Coverage:       100.0%\n  Aggregate Source Score:  55.1%\n  Highest Sentence Match:  25.1%\n  Highest Phrase Match:    100.0%\n  Paragraph Matches:       1\n  Sentence Matches:        1\n  Phrase Matches:          1\n\nPARAGRAPH FLAGS\n--------------------------------------------------------------------------------\nParagraph: PAR-001 [Flag: LOW_SIMILARITY_PARAGRAPH]\n  Similarity: 25.1% | Coverage: 100.0%\n  Source ID:  SRC-C-03\n  Evidence:   \"International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies....\"\n\nSENTENCE FLAGS\n--------------------------------------------------------------------------------\nSentence: SEN-001 [Flag: LOW_SIMILARITY_SENTENCE]\n  Similarity: 25.1% (ngram_overlap)\n  Source ID:  SRC-C-03\n  Student:    \"International bodies enforce economic sanctions to compel sovereign governments toward altering their disputed foreign policies.\"\n  Source:     \"Economic sanctions impose targeted commercial restrictions designed to compel sovereign foreign governments to alter dis...\"\n\nPHRASE FLAGS\n--------------------------------------------------------------------------------\nPhrase: PHR-006 [Flag: SIGNIFICANT_PHRASE_OVERLAP]\n  Tokens: 3 | Similarity: 100%\n  Source ID: SRC-C-03\n  Phrase:    \"to compel sovereign\"\n\nDETERMINISTIC ENGINE\n--------------------------------------------------------------------------------\nNormalization Version: NORM-V1\nSimilarity Version:    SIM-V1\nMatching Method:       Sliding N-Gram + Exact Phrase + Token Jaccard\nAggregation Method:    Non-Overlapping Unique Document Token Coverage\nEvidence Hash:         017c00e637b1d32a\n================================================================================"
+}

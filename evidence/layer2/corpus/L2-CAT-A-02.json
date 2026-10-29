@@ -1,0 +1,39 @@
+{
+  "fixtureId": "L2-CAT-A-02",
+  "corpusVersion": "1.0.0",
+  "category": "A",
+  "categoryDescription": "Exact copied passage - Single embedded sentence in original text",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-A-02",
+      "title": "Biochemistry of Carbon Fixation",
+      "authors": [
+        "Dr. H. Green",
+        "Dr. L. Plant"
+      ],
+      "text": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. Ribulose-1,5-bisphosphate carboxylase-oxygenase catalyzes the primary carboxylation reaction fixing atmospheric carbon dioxide into 3-phosphoglycerate."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-A-02",
+    "title": "Plant Energy Transduction",
+    "text": "In biological systems, photosynthesis is essential for life on Earth. Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts. This concludes our introduction to plant biochemistry."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 30,
+    "maxOverallSimilarity": 70,
+    "expectedFindingCount": 1,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-A-02",
+        "studentTextSnippet": "Photosynthetic carbon fixation occurs through the Calvin cycle within the stroma of chloroplasts.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "The middle sentence is copied verbatim. Surrounding sentences are original. Expected coverage reflects exact middle sentence token proportion.",
+  "knownLimitations": "None."
+}

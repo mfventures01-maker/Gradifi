@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-ECO-03-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Economics",
+  "documentLengthCategory": "Short",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-ECO-003",
+      "title": "National Bureau of Statistics Informal Economy Assessment",
+      "authors": [
+        "Dr. Y. Kale"
+      ],
+      "text": "The Nigerian informal sector accounts for over fifty-seven percent of rebased gross domestic product and employs approximately eighty percent of the active labor force in non-agricultural microenterprises."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-ECO-003",
+    "title": "Informal Labor Dynamics in Urban Commercial Centers",
+    "text": "The Nigerian informal sector accounts for over fifty-seven percent of rebased gross domestic product and employs approximately eighty percent of the active labor force in non-agricultural microenterprises."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 100,
+    "maxOverallSimilarity": 100,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-ECO-003",
+        "studentTextSnippet": "The Nigerian informal sector accounts for over fifty-seven percent",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Complete verbatim duplicate of statistical finding.",
+  "provenance": "NBS Quarterly Digest extract"
+}

@@ -1,0 +1,30 @@
+{
+  "fixtureId": "L2-CAT-E-03",
+  "corpusVersion": "1.0.0",
+  "category": "E",
+  "categoryDescription": "Clean negative control - Architectural History vs Cardiology source",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-E-03",
+      "title": "Endothelial Physiology and Hemodynamic Adaptation",
+      "authors": [
+        "Dr. R. Furchgott"
+      ],
+      "text": "Cardiovascular exercise enhances endothelial nitric oxide synthase expression, promoting vasodilation and improving arterial compliance in hypertensive patient cohorts."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-E-03",
+    "title": "Structural Engineering of High Gothic Cathedrals",
+    "text": "Architectural principles of Gothic cathedrals emphasize verticality and illumination through the integration of pointed arches, ribbed vaults, and external flying buttresses."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Negative control: 0 findings expected.",
+  "knownLimitations": "None."
+}

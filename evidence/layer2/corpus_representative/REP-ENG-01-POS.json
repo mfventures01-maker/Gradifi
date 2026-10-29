@@ -1,0 +1,50 @@
+{
+  "fixtureId": "REP-ENG-01-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Engineering",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-ENG-001",
+      "title": "Agricultural Waste Ash for Pavement Subgrade Stabilization",
+      "authors": [
+        "Dr. M. Haruna",
+        "Prof. J. Osinowo"
+      ],
+      "text": "Expansive black cotton soils in northeastern Nigeria undergo severe swelling and shrinkage during alternating wet and dry seasons. Stabilization with pulverized locust bean waste ash and hydrated lime significantly increases the unconfined compressive strength and California Bearing Ratio."
+    },
+    {
+      "sourceId": "SRC-NG-ENG-002",
+      "title": "Geotechnical Investigation of Highway Distress in Borno State",
+      "authors": [
+        "Dr. A. Kyari"
+      ],
+      "text": "Road pavement failures along the Maiduguri-Bama highway corridor are exacerbated by poor subgrade drainage and inadequate sub-base compaction."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-ENG-001",
+    "title": "Highway Subgrade Stabilization in Semiarid Formations",
+    "text": "Expansive black cotton soils in northeastern Nigeria undergo severe swelling and shrinkage during alternating wet and dry seasons. Stabilization with pulverized locust bean waste ash and hydrated lime significantly increases the unconfined compressive strength and California Bearing Ratio. Furthermore, road pavement failures along the maiduguri-bama highway corridor are exacerbated by poor subgrade drainage and inadequate sub-base compaction."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 85,
+    "maxOverallSimilarity": 100,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-ENG-001",
+        "studentTextSnippet": "Expansive black cotton soils in northeastern Nigeria",
+        "shouldMatch": true
+      },
+      {
+        "sourceId": "SRC-NG-ENG-002",
+        "studentTextSnippet": "road pavement failures along the Maiduguri-Bama",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Verbatim composition constructed entirely by stitching two distinct geotechnical research papers.",
+  "provenance": "Nigerian Journal of Technology (2021)"
+}

@@ -1,0 +1,46 @@
+{
+  "fixtureId": "L2-CAT-B-01",
+  "corpusVersion": "1.0.0",
+  "category": "B",
+  "categoryDescription": "Lightly modified passage - Controlled word substitutions",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-B-01",
+      "title": "Mechanisms of Targeted DNA Cleavage",
+      "authors": [
+        "Dr. J. Doudna",
+        "Dr. E. Charpentier"
+      ],
+      "text": "The CRISPR-Cas9 endonuclease creates precise double-stranded breaks at target genomic loci complementary to a twenty-nucleotide guide RNA sequence. Following cleavage, endogenous cellular repair mechanisms resolve the break."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-B-01",
+    "title": "Precision Gene Editing Technologies",
+    "text": "The CRISPR-Cas9 endonuclease generates precise double-stranded breaks at target genomic loci complementary to a custom engineered guide RNA sequence. Following cleavage, endogenous cellular repair mechanisms resolve the break."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 75,
+    "maxOverallSimilarity": 100,
+    "expectedFindingCount": 2,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-B-01",
+        "studentTextSnippet": "Following cleavage, endogenous cellular repair mechanisms resolve the break.",
+        "matchType": "exact_match",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      },
+      {
+        "sourceId": "SRC-B-01",
+        "studentTextSnippet": "The CRISPR-Cas9 endonuclease generates precise double-stranded breaks at target genomic loci complementary to a custom engineered guide RNA sequence.",
+        "matchType": "ngram_overlap",
+        "expectedFlag": "HIGH_SIMILARITY_SENTENCE",
+        "shouldMatch": true
+      }
+    ],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Sentence 1 has 2 substituted phrases but retains high 3-gram and 2-gram overlap (>75%). Sentence 2 is exact copy.",
+  "knownLimitations": "Lexical n-gram matcher detects high overlap despite synonyms."
+}

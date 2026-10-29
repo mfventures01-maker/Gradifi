@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-ECO-04-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Economics",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-ECO-004",
+      "title": "Sovereign Debt Sustainability in Emerging African Economies",
+      "authors": [
+        "Prof. B. Utomi"
+      ],
+      "text": "External debt servicing consumes an unsustainable proportion of federally collected revenue, crowding out capital expenditure in public infrastructure and human capital development."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-ECO-004",
+    "title": "Microfinance Institutions and Small Business Credit in Ibadan",
+    "text": "Community microcredit schemes provide working capital to informal market women cooperatives in Oyo State. High interest rates charged by informal moneylenders reinforce poverty cycles, whereas peer-monitored group borrowing models achieve high loan recovery rates without collateral requirements."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Clean negative control across unrelated microeconomics topic.",
+  "provenance": "Undergraduate development economics essay"
+}

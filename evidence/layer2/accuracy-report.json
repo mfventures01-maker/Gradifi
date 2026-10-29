@@ -1,0 +1,85 @@
+{
+  "reportId": "GRADIFI-L2-ACCURACY-REPORT-run-2026-10-29T11-13-35Z",
+  "runId": "run-2026-10-29T11-13-35Z",
+  "timestamp": "2026-10-29T11:13:35.529Z",
+  "engineVersion": "SIM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "normalizationVersion": "NORM-V1",
+  "corpusManifestHash": "3a8083657cdce5955403a966fec3a25efc01c91acac2d4e7ade006e6b0247571",
+  "totalFixtures": 25,
+  "passedFixtures": 25,
+  "failedFixtures": 0,
+  "metrics": {
+    "documentLevel": {
+      "tp": 15,
+      "fp": 0,
+      "tn": 10,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "fpr": 0,
+      "fnr": 0
+    },
+    "passageLevel": {
+      "tp": 19,
+      "fp": 0,
+      "tn": 10,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "fpr": 0,
+      "fnr": 0
+    },
+    "sourceAttributionLevel": {
+      "totalChecks": 15,
+      "passedChecks": 15,
+      "accuracy": 1
+    },
+    "sentenceSpanLevel": {
+      "totalSpansChecked": 23,
+      "passedSpans": 23,
+      "mismatches": 0,
+      "accuracy": 1
+    },
+    "phraseSpanLevel": {
+      "totalSpansChecked": 796,
+      "passedSpans": 796,
+      "drifts": 0,
+      "accuracy": 1
+    }
+  },
+  "perCategorySummary": {
+    "A": {
+      "total": 3,
+      "passed": 3
+    },
+    "B": {
+      "total": 3,
+      "passed": 3
+    },
+    "C": {
+      "total": 3,
+      "passed": 3
+    },
+    "D": {
+      "total": 3,
+      "passed": 3
+    },
+    "E": {
+      "total": 3,
+      "passed": 3
+    },
+    "F": {
+      "total": 3,
+      "passed": 3
+    },
+    "G": {
+      "total": 2,
+      "passed": 2
+    },
+    "H": {
+      "total": 5,
+      "passed": 5
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "recordId": "THRESHOLD-DECISION-L2-CG-01",
+  "timestamp": "2026-10-29T11:13:35.532Z",
+  "decisionStatus": "PENDING_OWNER_APPROVAL",
+  "governingRule": "HOEOS v2 Phase 4 Threshold Governance (Do not invent acceptance thresholds. Mark BLOCKED if unapproved.)",
+  "decisionOwner": "System Owner / Executive Authority",
+  "proposedThresholds": {
+    "documentLevelPrecision": {
+      "proposed": 0.95,
+      "observed": 1,
+      "rationale": "Commercial plagiarism detection requires minimal false positives to prevent false accusations."
+    },
+    "documentLevelRecall": {
+      "proposed": 0.9,
+      "observed": 1,
+      "rationale": "Standard academic detection must reliably capture >=90% of copied or lightly modified passages."
+    },
+    "falsePositiveRate": {
+      "proposed": 0.05,
+      "observed": 0,
+      "rationale": "False positive rate on negative controls and original text must stay <= 5%."
+    },
+    "sentenceSpanAccuracy": {
+      "proposed": 0.95,
+      "observed": 1,
+      "rationale": "Text span coordinates into canonical text must have >=95% raw text slice match."
+    },
+    "aiAdvisoryIsolation": {
+      "proposed": 1,
+      "observed": 1,
+      "rationale": "Deterministic findings and scores must remain 100% bit-for-bit invariant under AI outages."
+    }
+  },
+  "ownerApprovalStatus": "UNAPPROVED",
+  "gateImpact": "BLOCKED: OWNER THRESHOLD DECISION REQUIRED"
+}

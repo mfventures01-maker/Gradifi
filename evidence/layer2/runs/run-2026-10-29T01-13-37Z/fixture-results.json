@@ -1,0 +1,1299 @@
+[
+  {
+    "fixtureId": "L2-CAT-A-01",
+    "category": "A",
+    "categoryDescription": "Exact copied passage - Reordered exact sentences",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 90,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 62,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-A-01"
+        ],
+        "detectedSources": [
+          "SRC-A-01"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 60,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-A-02",
+    "category": "A",
+    "categoryDescription": "Exact copied passage - Single embedded sentence in original text",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 43.3,
+      "uniqueMatchedCoverage": 43.3,
+      "highestSourceMatch": 77.3,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 30,
+      "maxOverallSimilarity": 70
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 28,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-A-02"
+        ],
+        "detectedSources": [
+          "SRC-A-02"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 27,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-A-03",
+    "category": "A",
+    "categoryDescription": "Exact copied passage - Full document identical clone",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 100,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 60,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-A-03"
+        ],
+        "detectedSources": [
+          "SRC-A-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 59,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-B-01",
+    "category": "B",
+    "categoryDescription": "Lightly modified passage - Controlled word substitutions",
+    "verdict": "FAIL",
+    "failureReasons": [
+      "Phrase slice mismatch: expected \"following cleavage endogenous cellular repair mechanisms resolve\", got \"following cleavage endogenous cellular repair mechanisms resolv\"",
+      "Phrase slice mismatch: expected \"cleavage endogenous cellular repair mechanisms resolve the\", got \"cleavage endogenous cellular repair mechanisms resolve th\"",
+      "Phrase slice mismatch: expected \"endogenous cellular repair mechanisms resolve the break\", got \"endogenous cellular repair mechanisms resolve the brea\"",
+      "Phrase slice mismatch: expected \"following cleavage endogenous cellular repair\", got \"following cleavage endogenous cellular repai\"",
+      "Phrase slice mismatch: expected \"cleavage endogenous cellular repair mechanisms\", got \"cleavage endogenous cellular repair mechanism\"",
+      "Phrase slice mismatch: expected \"endogenous cellular repair mechanisms resolve\", got \"endogenous cellular repair mechanisms resolv\"",
+      "Phrase slice mismatch: expected \"cellular repair mechanisms resolve the\", got \"cellular repair mechanisms resolve th\"",
+      "Phrase slice mismatch: expected \"repair mechanisms resolve the break\", got \"repair mechanisms resolve the brea\"",
+      "Phrase slice mismatch: expected \"following cleavage endogenous\", got \"following cleavage endogenou\"",
+      "Phrase slice mismatch: expected \"cleavage endogenous cellular\", got \"cleavage endogenous cellula\"",
+      "Phrase slice mismatch: expected \"endogenous cellular repair\", got \"endogenous cellular repai\"",
+      "Phrase slice mismatch: expected \"cellular repair mechanisms\", got \"cellular repair mechanism\"",
+      "Phrase slice mismatch: expected \"repair mechanisms resolve\", got \"repair mechanisms resolv\"",
+      "Phrase slice mismatch: expected \"mechanisms resolve the\", got \"mechanisms resolve th\"",
+      "Phrase slice mismatch: expected \"resolve the break\", got \"resolve the brea\""
+    ],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 75,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": false,
+      "totalSpansChecked": 41,
+      "offByOneCount": 0,
+      "mismatchCount": 15
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-B-01"
+        ],
+        "detectedSources": [
+          "SRC-B-01"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 39,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-B-02",
+    "category": "B",
+    "categoryDescription": "Lightly modified passage - Adverb and adjective insertions",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 88.2,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 70,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 30,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-B-02"
+        ],
+        "detectedSources": [
+          "SRC-B-02"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 29,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-B-03",
+    "category": "B",
+    "categoryDescription": "Lightly modified passage - Active to passive voice clause transformation",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 65,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 57,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-B-03"
+        ],
+        "detectedSources": [
+          "SRC-B-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 55,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-C-01",
+    "category": "C",
+    "categoryDescription": "Paraphrase - Moderate lexical overlap with shared domain terms",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 7.1,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 50
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-C-01"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-C-02",
+    "category": "C",
+    "categoryDescription": "Paraphrase - Full semantic restatement (out of scope for SIM-V1 lexical)",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 1.6,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 15
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-C-02"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-C-03",
+    "category": "C",
+    "categoryDescription": "Paraphrase - Hybrid with short 3-gram anchor retained",
+    "verdict": "FAIL",
+    "failureReasons": [
+      "Score 100% out of expected range [15%, 45%]"
+    ],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 55.1,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 15,
+      "maxOverallSimilarity": 45
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 2,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "FP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-C-03"
+        ],
+        "detectedSources": [
+          "SRC-C-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 1,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-D-01",
+    "category": "D",
+    "categoryDescription": "Unrelated original writing - Disjoint academic disciplines (Physics vs Roman History)",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 0,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-D-01"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-D-02",
+    "category": "D",
+    "categoryDescription": "Unrelated original writing - Biochemistry vs Musicology",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 1.6,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-D-02"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-D-03",
+    "category": "D",
+    "categoryDescription": "Unrelated original writing - Quantum Field Theory vs Volcanology",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 0.7,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-D-03"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-E-01",
+    "category": "E",
+    "categoryDescription": "Clean negative control - Original anthropology essay",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 1.2,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-E-01"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-E-02",
+    "category": "E",
+    "categoryDescription": "Clean negative control - Computer Systems text vs Geology source",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 0.7,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-E-02"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-E-03",
+    "category": "E",
+    "categoryDescription": "Clean negative control - Architectural History vs Cardiology source",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 1.7,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-E-03"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-F-01",
+    "category": "F",
+    "categoryDescription": "Mixed content - Exact middle paragraph embedded between two original paragraphs",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 48,
+      "uniqueMatchedCoverage": 48,
+      "highestSourceMatch": 79.2,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 30,
+      "maxOverallSimilarity": 55
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 61,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-F-01"
+        ],
+        "detectedSources": [
+          "SRC-F-01"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 60,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-F-02",
+    "category": "F",
+    "categoryDescription": "Mixed content - Copied first paragraph followed by original second paragraph",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 50,
+      "uniqueMatchedCoverage": 50,
+      "highestSourceMatch": 80,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 40,
+      "maxOverallSimilarity": 65
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 46,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-F-02"
+        ],
+        "detectedSources": [
+          "SRC-F-02"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 45,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-F-03",
+    "category": "F",
+    "categoryDescription": "Mixed content - Repeated identical copied paragraphs enclosing original sentence",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 80.7,
+      "uniqueMatchedCoverage": 80.7,
+      "highestSourceMatch": 92.3,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 70,
+      "maxOverallSimilarity": 90
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 116,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-F-03"
+        ],
+        "detectedSources": [
+          "SRC-F-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 114,
+      "totalParagraphFlags": 2
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-G-01",
+    "category": "G",
+    "categoryDescription": "Multi-source - Spans drawn from two distinct independent sources",
+    "verdict": "FAIL",
+    "failureReasons": [
+      "Phrase slice mismatch: expected \"byzantine fault tolerant protocols guarantee safety and\", got \"byzantine fault tolerant protocols guarantee safety an\"",
+      "Phrase slice mismatch: expected \"fault tolerant protocols guarantee safety and liveness\", got \"fault tolerant protocols guarantee safety and livenes\"",
+      "Phrase slice mismatch: expected \"tolerant protocols guarantee safety and liveness provided\", got \"tolerant protocols guarantee safety and liveness provide\"",
+      "Phrase slice mismatch: expected \"protocols guarantee safety and liveness provided that\", got \"protocols guarantee safety and liveness provided tha\"",
+      "Phrase slice mismatch: expected \"guarantee safety and liveness provided that fewer\", got \"guarantee safety and liveness provided that fewe\"",
+      "Phrase slice mismatch: expected \"safety and liveness provided that fewer than\", got \"safety and liveness provided that fewer tha\"",
+      "Phrase slice mismatch: expected \"and liveness provided that fewer than one\", got \"and liveness provided that fewer than on\"",
+      "Phrase slice mismatch: expected \"liveness provided that fewer than one third\", got \"liveness provided that fewer than one thir\"",
+      "Phrase slice mismatch: expected \"provided that fewer than one third of\", got \"provided that fewer than one third o\"",
+      "Phrase slice mismatch: expected \"that fewer than one third of participating\", got \"that fewer than one third of participatin\"",
+      "Phrase slice mismatch: expected \"fewer than one third of participating nodes\", got \"fewer than one third of participating node\"",
+      "Phrase slice mismatch: expected \"than one third of participating nodes act\", got \"than one third of participating nodes ac\"",
+      "Phrase slice mismatch: expected \"one third of participating nodes act maliciously\", got \"one third of participating nodes act maliciousl\"",
+      "Phrase slice mismatch: expected \"third of participating nodes act maliciously or\", got \"third of participating nodes act maliciously o\"",
+      "Phrase slice mismatch: expected \"of participating nodes act maliciously or exhibit\", got \"of participating nodes act maliciously or exhibi\"",
+      "Phrase slice mismatch: expected \"participating nodes act maliciously or exhibit arbitrary\", got \"participating nodes act maliciously or exhibit arbitrar\"",
+      "Phrase slice mismatch: expected \"nodes act maliciously or exhibit arbitrary failure\", got \"nodes act maliciously or exhibit arbitrary failur\"",
+      "Phrase slice mismatch: expected \"act maliciously or exhibit arbitrary failure modes\", got \"act maliciously or exhibit arbitrary failure mode\"",
+      "Phrase slice mismatch: expected \"byzantine fault tolerant protocols guarantee\", got \"byzantine fault tolerant protocols guarante\"",
+      "Phrase slice mismatch: expected \"fault tolerant protocols guarantee safety\", got \"fault tolerant protocols guarantee safet\"",
+      "Phrase slice mismatch: expected \"tolerant protocols guarantee safety and\", got \"tolerant protocols guarantee safety an\"",
+      "Phrase slice mismatch: expected \"protocols guarantee safety and liveness\", got \"protocols guarantee safety and livenes\"",
+      "Phrase slice mismatch: expected \"guarantee safety and liveness provided\", got \"guarantee safety and liveness provide\"",
+      "Phrase slice mismatch: expected \"safety and liveness provided that\", got \"safety and liveness provided tha\"",
+      "Phrase slice mismatch: expected \"and liveness provided that fewer\", got \"and liveness provided that fewe\"",
+      "Phrase slice mismatch: expected \"liveness provided that fewer than\", got \"liveness provided that fewer tha\"",
+      "Phrase slice mismatch: expected \"provided that fewer than one\", got \"provided that fewer than on\"",
+      "Phrase slice mismatch: expected \"that fewer than one third\", got \"that fewer than one thir\"",
+      "Phrase slice mismatch: expected \"fewer than one third of\", got \"fewer than one third o\"",
+      "Phrase slice mismatch: expected \"than one third of participating\", got \"than one third of participatin\"",
+      "Phrase slice mismatch: expected \"one third of participating nodes\", got \"one third of participating node\"",
+      "Phrase slice mismatch: expected \"third of participating nodes act\", got \"third of participating nodes ac\"",
+      "Phrase slice mismatch: expected \"of participating nodes act maliciously\", got \"of participating nodes act maliciousl\"",
+      "Phrase slice mismatch: expected \"participating nodes act maliciously or\", got \"participating nodes act maliciously o\"",
+      "Phrase slice mismatch: expected \"nodes act maliciously or exhibit\", got \"nodes act maliciously or exhibi\"",
+      "Phrase slice mismatch: expected \"act maliciously or exhibit arbitrary\", got \"act maliciously or exhibit arbitrar\"",
+      "Phrase slice mismatch: expected \"maliciously or exhibit arbitrary failure\", got \"maliciously or exhibit arbitrary failur\"",
+      "Phrase slice mismatch: expected \"or exhibit arbitrary failure modes\", got \"or exhibit arbitrary failure mode\"",
+      "Phrase slice mismatch: expected \"byzantine fault tolerant\", got \"byzantine fault toleran\"",
+      "Phrase slice mismatch: expected \"fault tolerant protocols\", got \"fault tolerant protocol\"",
+      "Phrase slice mismatch: expected \"tolerant protocols guarantee\", got \"tolerant protocols guarante\"",
+      "Phrase slice mismatch: expected \"protocols guarantee safety\", got \"protocols guarantee safet\"",
+      "Phrase slice mismatch: expected \"guarantee safety and\", got \"guarantee safety an\"",
+      "Phrase slice mismatch: expected \"safety and liveness\", got \"safety and livenes\"",
+      "Phrase slice mismatch: expected \"and liveness provided\", got \"and liveness provide\"",
+      "Phrase slice mismatch: expected \"liveness provided that\", got \"liveness provided tha\"",
+      "Phrase slice mismatch: expected \"provided that fewer\", got \"provided that fewe\"",
+      "Phrase slice mismatch: expected \"that fewer than\", got \"that fewer tha\"",
+      "Phrase slice mismatch: expected \"fewer than one\", got \"fewer than on\"",
+      "Phrase slice mismatch: expected \"than one third\", got \"than one thir\"",
+      "Phrase slice mismatch: expected \"one third of\", got \"one third o\"",
+      "Phrase slice mismatch: expected \"third of participating\", got \"third of participatin\"",
+      "Phrase slice mismatch: expected \"of participating nodes\", got \"of participating node\"",
+      "Phrase slice mismatch: expected \"participating nodes act\", got \"participating nodes ac\"",
+      "Phrase slice mismatch: expected \"nodes act maliciously\", got \"nodes act maliciousl\"",
+      "Phrase slice mismatch: expected \"act maliciously or\", got \"act maliciously o\"",
+      "Phrase slice mismatch: expected \"maliciously or exhibit\", got \"maliciously or exhibi\"",
+      "Phrase slice mismatch: expected \"or exhibit arbitrary\", got \"or exhibit arbitrar\"",
+      "Phrase slice mismatch: expected \"exhibit arbitrary failure\", got \"exhibit arbitrary failur\"",
+      "Phrase slice mismatch: expected \"arbitrary failure modes\", got \"arbitrary failure mode\""
+    ],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 79.7,
+      "totalSourcesEvaluated": 2
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 85,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": false,
+      "totalSpansChecked": 122,
+      "offByOneCount": 0,
+      "mismatchCount": 60
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-G-01A",
+          "SRC-G-01B"
+        ],
+        "detectedSources": [
+          "SRC-G-01A",
+          "SRC-G-01B"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 120,
+      "totalParagraphFlags": 2
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-G-02",
+    "category": "G",
+    "categoryDescription": "Multi-source - Multiple sources embedded with original intro paragraph",
+    "verdict": "FAIL",
+    "failureReasons": [
+      "Phrase slice mismatch: expected \"prime editing couples a catalytically impaired cas9\", got \"prime editing couples a catalytically impaired cas\"",
+      "Phrase slice mismatch: expected \"editing couples a catalytically impaired cas9 nickase\", got \"editing couples a catalytically impaired cas9 nickas\"",
+      "Phrase slice mismatch: expected \"couples a catalytically impaired cas9 nickase to\", got \"couples a catalytically impaired cas9 nickase t\"",
+      "Phrase slice mismatch: expected \"a catalytically impaired cas9 nickase to an\", got \"a catalytically impaired cas9 nickase to a\"",
+      "Phrase slice mismatch: expected \"catalytically impaired cas9 nickase to an engineered\", got \"catalytically impaired cas9 nickase to an engineere\"",
+      "Phrase slice mismatch: expected \"impaired cas9 nickase to an engineered reverse\", got \"impaired cas9 nickase to an engineered revers\"",
+      "Phrase slice mismatch: expected \"cas9 nickase to an engineered reverse transcriptase\", got \"cas9 nickase to an engineered reverse transcriptas\"",
+      "Phrase slice mismatch: expected \"nickase to an engineered reverse transcriptase programmed\", got \"nickase to an engineered reverse transcriptase programme\"",
+      "Phrase slice mismatch: expected \"to an engineered reverse transcriptase programmed by\", got \"to an engineered reverse transcriptase programmed b\"",
+      "Phrase slice mismatch: expected \"an engineered reverse transcriptase programmed by a\", got \"an engineered reverse transcriptase programmed by\"",
+      "Phrase slice mismatch: expected \"engineered reverse transcriptase programmed by a prime\", got \"engineered reverse transcriptase programmed by a prim\"",
+      "Phrase slice mismatch: expected \"reverse transcriptase programmed by a prime editing\", got \"reverse transcriptase programmed by a prime editin\"",
+      "Phrase slice mismatch: expected \"transcriptase programmed by a prime editing guide\", got \"transcriptase programmed by a prime editing guid\"",
+      "Phrase slice mismatch: expected \"programmed by a prime editing guide rna\", got \"programmed by a prime editing guide rn\"",
+      "Phrase slice mismatch: expected \"prime editing couples a catalytically\", got \"prime editing couples a catalyticall\"",
+      "Phrase slice mismatch: expected \"editing couples a catalytically impaired\", got \"editing couples a catalytically impaire\"",
+      "Phrase slice mismatch: expected \"couples a catalytically impaired cas9\", got \"couples a catalytically impaired cas\"",
+      "Phrase slice mismatch: expected \"a catalytically impaired cas9 nickase\", got \"a catalytically impaired cas9 nickas\"",
+      "Phrase slice mismatch: expected \"catalytically impaired cas9 nickase to\", got \"catalytically impaired cas9 nickase t\"",
+      "Phrase slice mismatch: expected \"impaired cas9 nickase to an\", got \"impaired cas9 nickase to a\"",
+      "Phrase slice mismatch: expected \"cas9 nickase to an engineered\", got \"cas9 nickase to an engineere\"",
+      "Phrase slice mismatch: expected \"nickase to an engineered reverse\", got \"nickase to an engineered revers\"",
+      "Phrase slice mismatch: expected \"to an engineered reverse transcriptase\", got \"to an engineered reverse transcriptas\"",
+      "Phrase slice mismatch: expected \"an engineered reverse transcriptase programmed\", got \"an engineered reverse transcriptase programme\"",
+      "Phrase slice mismatch: expected \"engineered reverse transcriptase programmed by\", got \"engineered reverse transcriptase programmed b\"",
+      "Phrase slice mismatch: expected \"reverse transcriptase programmed by a\", got \"reverse transcriptase programmed by\"",
+      "Phrase slice mismatch: expected \"transcriptase programmed by a prime\", got \"transcriptase programmed by a prim\"",
+      "Phrase slice mismatch: expected \"programmed by a prime editing\", got \"programmed by a prime editin\"",
+      "Phrase slice mismatch: expected \"by a prime editing guide\", got \"by a prime editing guid\"",
+      "Phrase slice mismatch: expected \"a prime editing guide rna\", got \"a prime editing guide rn\"",
+      "Phrase slice mismatch: expected \"prime editing couples\", got \"prime editing couple\"",
+      "Phrase slice mismatch: expected \"editing couples a\", got \"editing couples\"",
+      "Phrase slice mismatch: expected \"couples a catalytically\", got \"couples a catalyticall\"",
+      "Phrase slice mismatch: expected \"a catalytically impaired\", got \"a catalytically impaire\"",
+      "Phrase slice mismatch: expected \"catalytically impaired cas9\", got \"catalytically impaired cas\"",
+      "Phrase slice mismatch: expected \"impaired cas9 nickase\", got \"impaired cas9 nickas\"",
+      "Phrase slice mismatch: expected \"cas9 nickase to\", got \"cas9 nickase t\"",
+      "Phrase slice mismatch: expected \"nickase to an\", got \"nickase to a\"",
+      "Phrase slice mismatch: expected \"to an engineered\", got \"to an engineere\"",
+      "Phrase slice mismatch: expected \"an engineered reverse\", got \"an engineered revers\"",
+      "Phrase slice mismatch: expected \"engineered reverse transcriptase\", got \"engineered reverse transcriptas\"",
+      "Phrase slice mismatch: expected \"reverse transcriptase programmed\", got \"reverse transcriptase programme\"",
+      "Phrase slice mismatch: expected \"transcriptase programmed by\", got \"transcriptase programmed b\"",
+      "Phrase slice mismatch: expected \"programmed by a\", got \"programmed by\"",
+      "Phrase slice mismatch: expected \"by a prime\", got \"by a prim\"",
+      "Phrase slice mismatch: expected \"a prime editing\", got \"a prime editin\"",
+      "Phrase slice mismatch: expected \"prime editing guide\", got \"prime editing guid\"",
+      "Phrase slice mismatch: expected \"editing guide rna\", got \"editing guide rn\""
+    ],
+    "actualScores": {
+      "overallSimilarity": 80.4,
+      "uniqueMatchedCoverage": 80.4,
+      "highestSourceMatch": 77.4,
+      "totalSourcesEvaluated": 2
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 65,
+      "maxOverallSimilarity": 90
+    },
+    "spanValidation": {
+      "valid": false,
+      "totalSpansChecked": 86,
+      "offByOneCount": 0,
+      "mismatchCount": 48
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-G-02A",
+          "SRC-G-02B"
+        ],
+        "detectedSources": [
+          "SRC-G-02A",
+          "SRC-G-02B"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 84,
+      "totalParagraphFlags": 2
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-01",
+    "category": "H",
+    "categoryDescription": "Boundary - All-caps case mutation and exclamation marks",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 95,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 40,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-01"
+        ],
+        "detectedSources": [
+          "SRC-H-01"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 39,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-02",
+    "category": "H",
+    "categoryDescription": "Boundary - Irregular tabs, leading/trailing whitespace, and internal newlines",
+    "verdict": "FAIL",
+    "failureReasons": [
+      "Sentence span slice mismatch: expected \"Mitochondrial    oxidative\", got \"   Mitochondrial    oxidat\"",
+      "Phrase slice mismatch: expected \"phosphorylation generates adenosine triphosphate through an electrochemical\", got \"phosphorylation generates adenosine triphosphate through an electroche\"",
+      "Phrase slice mismatch: expected \"generates adenosine triphosphate through an electrochemical proton\", got \"generates adenosine triphosphate through an electrochemical p\"",
+      "Phrase slice mismatch: expected \"adenosine triphosphate through an electrochemical proton gradient\", got \"s adenosine triphosphate through an electrochemical proton gra\"",
+      "Phrase slice mismatch: expected \"triphosphate through an electrochemical proton gradient across\", got \"ne triphosphate through an electrochemical proton gradient a\"",
+      "Phrase slice mismatch: expected \"through an electrochemical proton gradient across the\", got \"te through an electrochemical proton gradient acros\"",
+      "Phrase slice mismatch: expected \"an electrochemical proton gradient across the inner\", got \"ough an electrochemical proton gradient across the\"",
+      "Phrase slice mismatch: expected \"electrochemical proton gradient across the inner mitochondrial\", got \"h an electrochemical proton gradient across the inner mitochon\"",
+      "Phrase slice mismatch: expected \"proton gradient across the inner mitochondrial membrane\", got \"ical proton gradient across the inner mitochondrial mem\"",
+      "Phrase slice mismatch: expected \"phosphorylation generates adenosine triphosphate through\", got \"phosphorylation generates adenosine triphosphate th\"",
+      "Phrase slice mismatch: expected \"generates adenosine triphosphate through an\", got \"generates adenosine triphosphate throu\"",
+      "Phrase slice mismatch: expected \"adenosine triphosphate through an electrochemical\", got \"s adenosine triphosphate through an electroche\"",
+      "Phrase slice mismatch: expected \"triphosphate through an electrochemical proton\", got \"ne triphosphate through an electrochemical p\"",
+      "Phrase slice mismatch: expected \"through an electrochemical proton gradient\", got \"te through an electrochemical proton gra\"",
+      "Phrase slice mismatch: expected \"an electrochemical proton gradient across\", got \"ough an electrochemical proton gradient a\"",
+      "Phrase slice mismatch: expected \"electrochemical proton gradient across the\", got \"h an electrochemical proton gradient acros\"",
+      "Phrase slice mismatch: expected \"proton gradient across the inner\", got \"ical proton gradient across the\"",
+      "Phrase slice mismatch: expected \"gradient across the inner mitochondrial\", got \"oton gradient across the inner mitochon\"",
+      "Phrase slice mismatch: expected \"across the inner mitochondrial membrane\", got \"ient across the inner mitochondrial mem\"",
+      "Phrase slice mismatch: expected \"phosphorylation generates adenosine\", got \"phosphorylation generates adenos\"",
+      "Phrase slice mismatch: expected \"generates adenosine triphosphate\", got \"generates adenosine triphosph\"",
+      "Phrase slice mismatch: expected \"adenosine triphosphate through\", got \"s adenosine triphosphate th\"",
+      "Phrase slice mismatch: expected \"triphosphate through an\", got \"ne triphosphate throu\"",
+      "Phrase slice mismatch: expected \"through an electrochemical\", got \"te through an electroche\"",
+      "Phrase slice mismatch: expected \"an electrochemical proton\", got \"ough an electrochemical p\"",
+      "Phrase slice mismatch: expected \"electrochemical proton gradient\", got \"h an electrochemical proton gra\"",
+      "Phrase slice mismatch: expected \"proton gradient across\", got \"ical proton gradient a\"",
+      "Phrase slice mismatch: expected \"gradient across the\", got \"oton gradient acros\"",
+      "Phrase slice mismatch: expected \"across the inner\", got \"ient across the\"",
+      "Phrase slice mismatch: expected \"the inner mitochondrial\", got \"ross the inner mitochon\"",
+      "Phrase slice mismatch: expected \"inner mitochondrial membrane\", got \"the inner mitochondrial mem\"",
+      "Missing expected passage match for source SRC-H-02: \"Mitochondrial    oxidative\n\nphosphorylation   gene...\""
+    ],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 95,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": false,
+      "totalSpansChecked": 32,
+      "offByOneCount": 0,
+      "mismatchCount": 31
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 1
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-02"
+        ],
+        "detectedSources": [
+          "SRC-H-02"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 30,
+      "totalParagraphFlags": 2
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-03",
+    "category": "H",
+    "categoryDescription": "Boundary - Short phrase (5 tokens, 40 characters)",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 95,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 5,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-03"
+        ],
+        "detectedSources": [
+          "SRC-H-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 4,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-04",
+    "category": "H",
+    "categoryDescription": "Boundary - Empty student document payload",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 0,
+      "totalSourcesEvaluated": 0
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 0,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-04"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-05",
+    "category": "H",
+    "categoryDescription": "Boundary - Adversarial Unicode homoglyphs and diacritics",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 90,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "valid": true,
+      "totalSpansChecked": 31,
+      "offByOneCount": 0,
+      "mismatchCount": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-05"
+        ],
+        "detectedSources": [
+          "SRC-H-05"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 30,
+      "totalParagraphFlags": 1
+    }
+  }
+]

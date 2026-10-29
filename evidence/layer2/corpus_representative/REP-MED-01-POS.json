@@ -1,0 +1,37 @@
+{
+  "fixtureId": "REP-MED-01-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Medicine",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-MED-001",
+      "title": "Clinical Epidemiology of Hemoglobinopathies in Lagos State",
+      "authors": [
+        "Prof. B. Adeleke",
+        "Dr. O. Babatunde"
+      ],
+      "text": "Sickle cell anemia represents a major public health challenge across sub-Saharan Africa, with Nigeria recording the highest annual birth prevalence of homozygous hemoglobin S. Maintenance therapy with hydroxyurea increases fetal hemoglobin expression and significantly reduces painful vaso-occlusive crises."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-MED-001",
+    "title": "Pharmacotherapeutic Management of Sickle Cell Crisis",
+    "text": "Sickle cell anemia represents a major public health challenge across sub-Saharan Africa, with Nigeria recording the highest annual birth prevalence of homozygous hemoglobin S. Maintenance therapy with hydroxyurea increases fetal hemoglobin expression and significantly reduces painful vaso-occlusive crises."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 100,
+    "maxOverallSimilarity": 100,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-MED-001",
+        "studentTextSnippet": "Sickle cell anemia represents a major public health challenge",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Verbatim identical short submission.",
+  "provenance": "Nigerian Medical Journal Abstract Archive"
+}

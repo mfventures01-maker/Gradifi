@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-EDU-01-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Education",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-EDU-001",
+      "title": "Vocational Technical Training Curricula in South-South Polytechnics",
+      "authors": [
+        "Prof. P. Briggs"
+      ],
+      "text": "Technical college pedagogy requires hands-on lathe turning, foundry molding, and circuit diagnosis rather than theoretical memorization."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-EDU-001",
+    "title": "Subnational Governance Impediments to Basic Education Financing",
+    "text": "The Universal Basic Education Act of 2004 established free, compulsory nine-year continuous education for every Nigerian child of primary and junior secondary school age. However, persistent counter-part funding bottlenecks among subnational state governments impede infrastructure disbursement from the consolidated intervention fund."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Negative control: student wrote educational policy review; zero overlap with technical curriculum source.",
+  "provenance": "Educational administration term paper"
+}

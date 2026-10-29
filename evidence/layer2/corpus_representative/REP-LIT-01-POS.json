@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-LIT-01-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Humanities",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-LIT-001",
+      "title": "Reclaiming the African Narrative: The Poetics of Chinua Achebe",
+      "authors": [
+        "Prof. E. Emenyonu"
+      ],
+      "text": "In Things Fall Apart, Chinua Achebe challenges colonial anthropological discourse by depicting pre-colonial Igbo society as a complex, structured civilization with sophisticated juridical customs, communal decision-making assemblies, and rich oral traditions."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-LIT-001",
+    "title": "Discursive Resistance in African Anticolonial Literature",
+    "text": "In Things Fall Apart, Chinua Achebe challenges colonial anthropological discourse by depicting pre-colonial Igbo society as a complex, structured civilization with sophisticated juridical customs, communal decision-making assemblies, and rich oral traditions."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 100,
+    "maxOverallSimilarity": 100,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-LIT-001",
+        "studentTextSnippet": "In Things Fall Apart, Chinua Achebe challenges colonial anthropological discourse by depicting pre-colonial Igbo society as a complex, structured civilization with sophisticated juridical customs, communal decision-making assemblies, and rich oral traditions.",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Verbatim humanities clone.",
+  "provenance": "Journal of African Cultural Studies"
+}

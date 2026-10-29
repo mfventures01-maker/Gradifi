@@ -1,0 +1,160 @@
+{
+  "validationId": "GRADIFI-LAYER2-CORPUS-VALIDATION",
+  "corpusVersion": "1.0.0",
+  "validatedAt": "2026-10-29T11:12:31.305Z",
+  "totalFixtures": 25,
+  "allValid": true,
+  "failedCount": 0,
+  "fixtures": [
+    {
+      "fixtureId": "L2-CAT-A-01",
+      "valid": true,
+      "errors": [],
+      "sha256": "2170f14acf5cf816532cc48b4e8dcd5f7b76e43862f734cb608237241e8fc560"
+    },
+    {
+      "fixtureId": "L2-CAT-A-02",
+      "valid": true,
+      "errors": [],
+      "sha256": "67001f348d66f1f84aeb4b5e0d7f6c819c0415bd41db7a015eb17311d05fac10"
+    },
+    {
+      "fixtureId": "L2-CAT-A-03",
+      "valid": true,
+      "errors": [],
+      "sha256": "8e98fbe21b244491b8b8d636d99bd9ca6653fe872e7df3c4dca368d4ed00cff8"
+    },
+    {
+      "fixtureId": "L2-CAT-B-01",
+      "valid": true,
+      "errors": [],
+      "sha256": "460d4983620a00743cd811b305e6e4994439076065dc3a429a656b50a7933d48"
+    },
+    {
+      "fixtureId": "L2-CAT-B-02",
+      "valid": true,
+      "errors": [],
+      "sha256": "faee885bac9bbef67da11219ecf6cfe9b71f87fdf450a9d837112c37c6c70c2f"
+    },
+    {
+      "fixtureId": "L2-CAT-B-03",
+      "valid": true,
+      "errors": [],
+      "sha256": "9f13ac46131d0cd1c44776847c780a1dcd301713ef5ecb07510cca005ff95ccc"
+    },
+    {
+      "fixtureId": "L2-CAT-C-01",
+      "valid": true,
+      "errors": [],
+      "sha256": "265c5951de8a33d547d13bf257aa24e50cb54b3c582eaf74b74fa694fff21af0"
+    },
+    {
+      "fixtureId": "L2-CAT-C-02",
+      "valid": true,
+      "errors": [],
+      "sha256": "28b0a1ec852f25af447efd0c6eeef9a68f3c4e61817812002d7f7cab2fede60b"
+    },
+    {
+      "fixtureId": "L2-CAT-C-03",
+      "valid": true,
+      "errors": [],
+      "sha256": "e3664cdc84b23ce66aea641c3b8910f1a0234a52c16fb58f0985a48ab796e75c"
+    },
+    {
+      "fixtureId": "L2-CAT-D-01",
+      "valid": true,
+      "errors": [],
+      "sha256": "31a0f82695658f885e57392c2429ab4160a9dc4471d29ff593c31a45cf88d4e2"
+    },
+    {
+      "fixtureId": "L2-CAT-D-02",
+      "valid": true,
+      "errors": [],
+      "sha256": "d00bcc25356107ea044fa45d63d718964dca86d20205ac8501b4f41e43cbf698"
+    },
+    {
+      "fixtureId": "L2-CAT-D-03",
+      "valid": true,
+      "errors": [],
+      "sha256": "9c3c72407e79a3f52347b3158a82f734b48ad774e255378f0f818dc7c2f91a8c"
+    },
+    {
+      "fixtureId": "L2-CAT-E-01",
+      "valid": true,
+      "errors": [],
+      "sha256": "844d26f1a91fc341c4f97456c3ed8e9830ca9b155b3907e899ca384acaf657ff"
+    },
+    {
+      "fixtureId": "L2-CAT-E-02",
+      "valid": true,
+      "errors": [],
+      "sha256": "eb556f1ad617615b0d1bc6285901c9741a0f259dacebfdc2d47e520462a28499"
+    },
+    {
+      "fixtureId": "L2-CAT-E-03",
+      "valid": true,
+      "errors": [],
+      "sha256": "fd4c7c7b87c04b8a4b0361bdd71e8042a235800f4a28a64a3c7745d3b7c9c520"
+    },
+    {
+      "fixtureId": "L2-CAT-F-01",
+      "valid": true,
+      "errors": [],
+      "sha256": "4dd250fd1adb1f670b1988b8fccc4a40e94646961e60339a78c50837c42b6874"
+    },
+    {
+      "fixtureId": "L2-CAT-F-02",
+      "valid": true,
+      "errors": [],
+      "sha256": "eeae2058df623db1f833f471525815cc42749aa21d72306c8d6a4a7780891fd9"
+    },
+    {
+      "fixtureId": "L2-CAT-F-03",
+      "valid": true,
+      "errors": [],
+      "sha256": "feca141b70b653f620e6a80dd9410a23604c457245dd498c101091a52c7c1d2e"
+    },
+    {
+      "fixtureId": "L2-CAT-G-01",
+      "valid": true,
+      "errors": [],
+      "sha256": "cbb8307aa7b7fc8fc7a83ddb85598a2b11cb580780e36866a8117f8d9c9c475c"
+    },
+    {
+      "fixtureId": "L2-CAT-G-02",
+      "valid": true,
+      "errors": [],
+      "sha256": "e708d4da9d9eebaf2c34308008833399cb30bc9ca0382c465a2b03cbfcf219f8"
+    },
+    {
+      "fixtureId": "L2-CAT-H-01",
+      "valid": true,
+      "errors": [],
+      "sha256": "95e7888e68b897179a74779c06c9f168f1aff8984b5f3085feb4d3196d263eea"
+    },
+    {
+      "fixtureId": "L2-CAT-H-02",
+      "valid": true,
+      "errors": [],
+      "sha256": "4f02fa5d8f8a3bb31c42d7575b803e208a8cbba8ab926d9135cd1493ea1ba1a4"
+    },
+    {
+      "fixtureId": "L2-CAT-H-03",
+      "valid": true,
+      "errors": [],
+      "sha256": "1f2f7143888925d035f092051682d873b92abb9646a9f2fd1356eaa8af4b3fab"
+    },
+    {
+      "fixtureId": "L2-CAT-H-04",
+      "valid": true,
+      "errors": [],
+      "sha256": "821c5db0425a3c8c059626d70ce619fb1c7713f275f6aa74ead8e48df9d8d1f4"
+    },
+    {
+      "fixtureId": "L2-CAT-H-05",
+      "valid": true,
+      "errors": [],
+      "sha256": "2de49e94add482141d583295c76a09b20a97f60815cad86b7f0126b3b756dc3e"
+    }
+  ]
+}

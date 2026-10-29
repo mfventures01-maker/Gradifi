@@ -1,0 +1,30 @@
+{
+  "fixtureId": "REP-AGR-02-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Agriculture",
+  "documentLengthCategory": "Medium",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-AGR-002",
+      "title": "Agronomic Performance of Drought-Tolerant Maize Hybrids",
+      "authors": [
+        "Dr. S. Ajayi"
+      ],
+      "text": "Nitrogen use efficiency in tropical maize genotypes depends on root system architecture and mycorrhizal symbiosis under drought stress conditions in the Guinea savannah zone."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-AGR-002",
+    "title": "Yam Tuber Dormancy and Post-Harvest Rot Management",
+    "text": "Dioscorea rotundata post-harvest storage losses are primarily driven by fungal rot pathogens including Aspergillus niger and Penicillium sclerotigenum. Pre-storage treatment with biological biocontrol antagonists significantly reduces decay rates during ambient warehouse curing in traditional yam barns."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Clean negative: student wrote on yam rot management; source discusses maize agronomy.",
+  "provenance": "Agricultural extension postgraduate seminar paper"
+}

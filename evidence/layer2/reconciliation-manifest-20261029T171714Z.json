@@ -1,0 +1,1183 @@
+{
+    "manifestId":  "GRADIFI-LAYER2-RECONCILIATION-MANIFEST-20261029T171714Z",
+    "timestamp":  "2026-10-29T17:17:15.483Z",
+    "governingStandard":  "HOEOS v2 Article 1 \u0026 4, G1 Evidence Reconciliation",
+    "sourceCommit":  "9ee57c353163e58c18459c1c0efb114c9e7456a8",
+    "manifestScope":  "All files under evidence/layer2/ except this manifest and except the superseded reconciliation-manifest-20261029T080000Z.json. Excludes itself because including it creates a self-referential hash cycle; excludes the superseded manifest because that file documents a prior state.",
+    "aggregateMethod":  "SHA-256 over UTF-8 bytes of newline-separated entries in the form path|sizeBytes|mtimeUtc|sha256, sorted by lowercased path.",
+    "supersedes":  "reconciliation-manifest-20261029T080000Z.json (file hash 4c8844bfa2727097944f4d8d8f47261629a0375d8ff8e4f20cd91d00824d5b41, self-declared aggregate d2060b720ec52003baefa4acf59fd679bd6e5c4ceacb19e1d3f295d62b5a64db, which did not match its file hash)",
+    "totalArtifacts":  195,
+    "manifestAggregateSha256":  "a8c9fa43f876561ddd5fca13a98181c97329db92137e81463eed06d3f97a5f6d",
+    "artifacts":  [
+                      {
+                          "path":  "evidence/layer2/accuracy-report.json",
+                          "sizeBytes":  1609,
+                          "mtimeUtc":  "2026-10-29T11:13:35.533Z",
+                          "sha256":  "7ea19efe818de3bff73e8715e8485eeda4a7ad1ba33dd6fe51f1b69dacf210fe"
+                      },
+                      {
+                          "path":  "evidence/layer2/accuracy-report.md",
+                          "sizeBytes":  17168,
+                          "mtimeUtc":  "2026-10-29T07:08:07.189Z",
+                          "sha256":  "3953dd180a2dbedc3cf080b4e56269f81bef9aa60da70991e625f8e5a3dde501"
+                      },
+                      {
+                          "path":  "evidence/layer2/ai-isolation-report.json",
+                          "sizeBytes":  5710,
+                          "mtimeUtc":  "2026-10-29T12:02:18.896Z",
+                          "sha256":  "3361588b83fb87317d6c61e14d4eef1486ca6b7d9ebed09d7ca58c760b79e990"
+                      },
+                      {
+                          "path":  "evidence/layer2/authority-contract.json",
+                          "sizeBytes":  6517,
+                          "mtimeUtc":  "2026-10-29T00:58:24.311Z",
+                          "sha256":  "e4bfd477bfdda5b0d223ebfe56cab1081c828cbc005a8384ca33f0873844d966"
+                      },
+                      {
+                          "path":  "evidence/layer2/authority-contract.md",
+                          "sizeBytes":  3350,
+                          "mtimeUtc":  "2026-10-29T07:08:07.477Z",
+                          "sha256":  "a69bc58c992e40d6db06556fb5d10c2955b5f07357a692298ecccf8450b273f9"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-A-01.json",
+                          "sizeBytes":  2096,
+                          "mtimeUtc":  "2026-10-29T01:19:13.173Z",
+                          "sha256":  "2170f14acf5cf816532cc48b4e8dcd5f7b76e43862f734cb608237241e8fc560"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-A-02.json",
+                          "sizeBytes":  1648,
+                          "mtimeUtc":  "2026-10-29T01:19:13.173Z",
+                          "sha256":  "67001f348d66f1f84aeb4b5e0d7f6c819c0415bd41db7a015eb17311d05fac10"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-A-03.json",
+                          "sizeBytes":  1613,
+                          "mtimeUtc":  "2026-10-29T01:19:13.173Z",
+                          "sha256":  "8e98fbe21b244491b8b8d636d99bd9ca6653fe872e7df3c4dca368d4ed00cff8"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-B-01.json",
+                          "sizeBytes":  1997,
+                          "mtimeUtc":  "2026-10-29T01:19:13.173Z",
+                          "sha256":  "460d4983620a00743cd811b305e6e4994439076065dc3a429a656b50a7933d48"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-B-02.json",
+                          "sizeBytes":  1721,
+                          "mtimeUtc":  "2026-10-29T01:19:13.173Z",
+                          "sha256":  "faee885bac9bbef67da11219ecf6cfe9b71f87fdf450a9d837112c37c6c70c2f"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-B-03.json",
+                          "sizeBytes":  1766,
+                          "mtimeUtc":  "2026-10-29T01:19:13.190Z",
+                          "sha256":  "9f13ac46131d0cd1c44776847c780a1dcd301713ef5ecb07510cca005ff95ccc"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-C-01.json",
+                          "sizeBytes":  1315,
+                          "mtimeUtc":  "2026-10-29T01:19:13.190Z",
+                          "sha256":  "265c5951de8a33d547d13bf257aa24e50cb54b3c582eaf74b74fa694fff21af0"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-C-02.json",
+                          "sizeBytes":  1413,
+                          "mtimeUtc":  "2026-10-29T01:19:13.190Z",
+                          "sha256":  "28b0a1ec852f25af447efd0c6eeef9a68f3c4e61817812002d7f7cab2fede60b"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-C-03.json",
+                          "sizeBytes":  1523,
+                          "mtimeUtc":  "2026-10-29T11:12:14.242Z",
+                          "sha256":  "e3664cdc84b23ce66aea641c3b8910f1a0234a52c16fb58f0985a48ab796e75c"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-D-01.json",
+                          "sizeBytes":  1333,
+                          "mtimeUtc":  "2026-10-29T01:19:13.190Z",
+                          "sha256":  "31a0f82695658f885e57392c2429ab4160a9dc4471d29ff593c31a45cf88d4e2"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-D-02.json",
+                          "sizeBytes":  1214,
+                          "mtimeUtc":  "2026-10-29T01:19:13.190Z",
+                          "sha256":  "d00bcc25356107ea044fa45d63d718964dca86d20205ac8501b4f41e43cbf698"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-D-03.json",
+                          "sizeBytes":  1165,
+                          "mtimeUtc":  "2026-10-29T01:19:13.190Z",
+                          "sha256":  "9c3c72407e79a3f52347b3158a82f734b48ad774e255378f0f818dc7c2f91a8c"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-E-01.json",
+                          "sizeBytes":  1239,
+                          "mtimeUtc":  "2026-10-29T01:19:13.208Z",
+                          "sha256":  "844d26f1a91fc341c4f97456c3ed8e9830ca9b155b3907e899ca384acaf657ff"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-E-02.json",
+                          "sizeBytes":  1137,
+                          "mtimeUtc":  "2026-10-29T01:19:13.208Z",
+                          "sha256":  "eb556f1ad617615b0d1bc6285901c9741a0f259dacebfdc2d47e520462a28499"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-E-03.json",
+                          "sizeBytes":  1137,
+                          "mtimeUtc":  "2026-10-29T01:19:13.208Z",
+                          "sha256":  "fd4c7c7b87c04b8a4b0361bdd71e8042a235800f4a28a64a3c7745d3b7c9c520"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-F-01.json",
+                          "sizeBytes":  1960,
+                          "mtimeUtc":  "2026-10-29T01:19:13.208Z",
+                          "sha256":  "4dd250fd1adb1f670b1988b8fccc4a40e94646961e60339a78c50837c42b6874"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-F-02.json",
+                          "sizeBytes":  1738,
+                          "mtimeUtc":  "2026-10-29T01:19:13.208Z",
+                          "sha256":  "eeae2058df623db1f833f471525815cc42749aa21d72306c8d6a4a7780891fd9"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-F-03.json",
+                          "sizeBytes":  1962,
+                          "mtimeUtc":  "2026-10-29T01:19:13.208Z",
+                          "sha256":  "feca141b70b653f620e6a80dd9410a23604c457245dd498c101091a52c7c1d2e"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-G-01.json",
+                          "sizeBytes":  2797,
+                          "mtimeUtc":  "2026-10-29T01:19:13.208Z",
+                          "sha256":  "cbb8307aa7b7fc8fc7a83ddb85598a2b11cb580780e36866a8117f8d9c9c475c"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-G-02.json",
+                          "sizeBytes":  2341,
+                          "mtimeUtc":  "2026-10-29T01:19:13.208Z",
+                          "sha256":  "e708d4da9d9eebaf2c34308008833399cb30bc9ca0382c465a2b03cbfcf219f8"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-H-01.json",
+                          "sizeBytes":  1629,
+                          "mtimeUtc":  "2026-10-29T01:19:13.224Z",
+                          "sha256":  "95e7888e68b897179a74779c06c9f168f1aff8984b5f3085feb4d3196d263eea"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-H-02.json",
+                          "sizeBytes":  1510,
+                          "mtimeUtc":  "2026-10-29T11:04:22.471Z",
+                          "sha256":  "4f02fa5d8f8a3bb31c42d7575b803e208a8cbba8ab926d9135cd1493ea1ba1a4"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-H-03.json",
+                          "sizeBytes":  1270,
+                          "mtimeUtc":  "2026-10-29T01:19:13.224Z",
+                          "sha256":  "1f2f7143888925d035f092051682d873b92abb9646a9f2fd1356eaa8af4b3fab"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-H-04.json",
+                          "sizeBytes":  865,
+                          "mtimeUtc":  "2026-10-29T01:19:13.241Z",
+                          "sha256":  "821c5db0425a3c8c059626d70ce619fb1c7713f275f6aa74ead8e48df9d8d1f4"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus/L2-CAT-H-05.json",
+                          "sizeBytes":  1521,
+                          "mtimeUtc":  "2026-10-29T01:19:13.241Z",
+                          "sha256":  "2de49e94add482141d583295c76a09b20a97f60815cad86b7f0126b3b756dc3e"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-AGR-01-POS.json",
+                          "sizeBytes":  1705,
+                          "mtimeUtc":  "2026-10-29T14:14:13.125Z",
+                          "sha256":  "5bc36d3fb6d4c6732156f42e44f8305c8e20b8ebdbdbc8a0f105efcf5cf2cf26"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-AGR-02-NEG.json",
+                          "sizeBytes":  1344,
+                          "mtimeUtc":  "2026-10-29T14:14:13.130Z",
+                          "sha256":  "81ad21429502b7334d5b04586029966ae812e9e5f325589bc8642ae8863dab1e"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-AGR-03-POS.json",
+                          "sizeBytes":  2175,
+                          "mtimeUtc":  "2026-10-29T14:14:13.133Z",
+                          "sha256":  "f72e4bd056161407169ce03f89a7d111fda141ee4c22bca23f42d4ed1ce6a754"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-AGR-04-NEG.json",
+                          "sizeBytes":  1232,
+                          "mtimeUtc":  "2026-10-29T14:14:13.135Z",
+                          "sha256":  "3eee43b28ed3396d9090d1aa7ae7e777c82f392cbeb28892a52860a69f269838"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-CS-01-NEG.json",
+                          "sizeBytes":  1317,
+                          "mtimeUtc":  "2026-10-29T14:14:13.158Z",
+                          "sha256":  "d20267f763fdb46f9dddac86cdd254b170281ed5585e00cfb9d058eeb8ae715e"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-CS-02-POS.json",
+                          "sizeBytes":  2430,
+                          "mtimeUtc":  "2026-10-29T14:14:13.166Z",
+                          "sha256":  "50faa354b1db6437e37d446827464110ec54f50a1c2275be9c6e4be8cff1c067"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-ECO-01-POS.json",
+                          "sizeBytes":  2167,
+                          "mtimeUtc":  "2026-10-29T14:14:13.137Z",
+                          "sha256":  "df8e117b30f150bc4449bb8c34fc63f6918946632461c7270004deaf259dd65a"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-ECO-02-NEG.json",
+                          "sizeBytes":  1225,
+                          "mtimeUtc":  "2026-10-29T14:14:13.140Z",
+                          "sha256":  "99fa87327ca86ecbd1199ce1ed97846c59136fbf6c42b21d15f6fc44dd5c6580"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-ECO-03-POS.json",
+                          "sizeBytes":  1413,
+                          "mtimeUtc":  "2026-10-29T14:14:13.143Z",
+                          "sha256":  "ceef62e7e3ce2859ef6ab032ed1e52a5e61cd3bcf44484e4d926325b82ee993f"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-ECO-04-NEG.json",
+                          "sizeBytes":  1326,
+                          "mtimeUtc":  "2026-10-29T14:14:13.146Z",
+                          "sha256":  "e03fa43c27f9e853c8ec794824580aa2253fc2187f65f5ab07ca4e1eac39e513"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDGE-01-POS.json",
+                          "sizeBytes":  2469,
+                          "mtimeUtc":  "2026-10-29T14:14:13.474Z",
+                          "sha256":  "5db56cb50a58184656cc3e72ef5af7462291274c7f3d654f64fe426a61616360"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDGE-02-NEG.json",
+                          "sizeBytes":  1196,
+                          "mtimeUtc":  "2026-10-29T14:14:13.483Z",
+                          "sha256":  "e381a76e45f9c2a7a6951802638b2cf5450ce8d4a306b89faec282bb474ab5ba"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDGE-03-POS.json",
+                          "sizeBytes":  1714,
+                          "mtimeUtc":  "2026-10-29T14:14:13.495Z",
+                          "sha256":  "d5b842b2c26b6fef66a3ac030b7c4f5e3803695806ea5316035a8d310381688a"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDGE-04-NEG.json",
+                          "sizeBytes":  1241,
+                          "mtimeUtc":  "2026-10-29T14:14:13.512Z",
+                          "sha256":  "5447c2d7a0a46eba71fbb75e29996b899bbbfe162ad81cf0ff6b30f756d3a8c0"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDGE-05-POS.json",
+                          "sizeBytes":  1523,
+                          "mtimeUtc":  "2026-10-29T14:14:13.530Z",
+                          "sha256":  "2f3fd5afd45f5e77193cd70129bcf0b3b54030ceaa5ef7f3a1cbb254d2009fba"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDGE-06-NEG.json",
+                          "sizeBytes":  1261,
+                          "mtimeUtc":  "2026-10-29T14:14:13.536Z",
+                          "sha256":  "decb299abda98e9162aeb5f6b6780903c98ed02b7eae44228d437d655f45edad"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDU-01-NEG.json",
+                          "sizeBytes":  1370,
+                          "mtimeUtc":  "2026-10-29T14:14:13.448Z",
+                          "sha256":  "f1c7e4dc339d2b83a150a97c2a09de685c2ea13b5f0eb3dbb896b9f4e4fca6fb"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDU-02-POS.json",
+                          "sizeBytes":  1737,
+                          "mtimeUtc":  "2026-10-29T14:14:13.459Z",
+                          "sha256":  "0a049a402721329558e8e4f7797a20eead2015612e0be364b6ed67487198a3b6"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDU-03-POS.json",
+                          "sizeBytes":  1609,
+                          "mtimeUtc":  "2026-10-29T14:14:13.462Z",
+                          "sha256":  "7b9f21abdcbd31ee6bedd690c189f409329fca339452f6498925e18d39abbe32"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-EDU-04-NEG.json",
+                          "sizeBytes":  1210,
+                          "mtimeUtc":  "2026-10-29T14:14:13.467Z",
+                          "sha256":  "c23bbf53adbfbacd9fed1046c397a83e0a4e19135c5e3fe4c922feaa3cbada8c"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-ENG-01-POS.json",
+                          "sizeBytes":  2315,
+                          "mtimeUtc":  "2026-10-29T14:14:13.171Z",
+                          "sha256":  "5c7dd5ce43a1a43cb22bfc198de0c21e18f1ffe9c005f2911968f22d71c9a7fb"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-ENG-02-NEG.json",
+                          "sizeBytes":  1247,
+                          "mtimeUtc":  "2026-10-29T14:14:13.181Z",
+                          "sha256":  "f1f8373578d329ca06bbfddfb1ed514b740a8510496d126433fbe608c9015e4a"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-LAW-01-POS.json",
+                          "sizeBytes":  1910,
+                          "mtimeUtc":  "2026-10-29T14:14:12.989Z",
+                          "sha256":  "a2081e510ad892351c0aac5e712d17386e59b194edc3707d179121f7273b534a"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-LAW-02-NEG.json",
+                          "sizeBytes":  1435,
+                          "mtimeUtc":  "2026-10-29T14:14:12.997Z",
+                          "sha256":  "e86c4271630fd8fcd1f07ebc995ef996cde35e77d461d771985a2274c63ce489"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-LAW-03-POS.json",
+                          "sizeBytes":  1479,
+                          "mtimeUtc":  "2026-10-29T14:14:12.999Z",
+                          "sha256":  "518c3d65e0971da62d0d9e71ab88bf73dc26b3fb5f1b81bab1771f3e7b1c2cde"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-LAW-04-NEG.json",
+                          "sizeBytes":  1274,
+                          "mtimeUtc":  "2026-10-29T14:14:13.021Z",
+                          "sha256":  "a5f0222f49723e5284af9cccd1053e88c6ff2ec0cb13572b5d61ef9f095c4083"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-LIT-01-POS.json",
+                          "sizeBytes":  1710,
+                          "mtimeUtc":  "2026-10-29T14:14:13.184Z",
+                          "sha256":  "9edf8577c0e971c3c26888922ec99a35c79baf6dc02b588f2df5d5f26b081ae5"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-LIT-02-NEG.json",
+                          "sizeBytes":  1209,
+                          "mtimeUtc":  "2026-10-29T14:14:13.188Z",
+                          "sha256":  "63d339d3a4b2ef8076bb417a627474b3aed09941f55f092d1a6b61832d689ddd"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-LIT-03-POS.json",
+                          "sizeBytes":  1749,
+                          "mtimeUtc":  "2026-10-29T14:14:13.193Z",
+                          "sha256":  "8975542738778e744a59c287ba5d60d1f14a124e355736d2e1f3c3af07d804c8"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-LIT-04-NEG.json",
+                          "sizeBytes":  1252,
+                          "mtimeUtc":  "2026-10-29T14:14:13.334Z",
+                          "sha256":  "e7ecf8d12c82d902b1fb2b3fca87a8ab77d4466870fe1724b4425e8669657482"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-MED-01-POS.json",
+                          "sizeBytes":  1641,
+                          "mtimeUtc":  "2026-10-29T14:14:13.025Z",
+                          "sha256":  "12eccb701bf1ccab42c5bd43ce420dd8b3520c7482d8874b61ab2c7999ed5ee4"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-MED-02-NEG.json",
+                          "sizeBytes":  1380,
+                          "mtimeUtc":  "2026-10-29T14:14:13.032Z",
+                          "sha256":  "6a1ca844b8e27f73d9b54120be722b59b6f3ac7f536fe2ea3276d0aad80bb9c3"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-MED-03-POS.json",
+                          "sizeBytes":  1724,
+                          "mtimeUtc":  "2026-10-29T14:14:13.036Z",
+                          "sha256":  "4cae652c7de9e2b248913460b2a80bd0845260dd5c19fd7c3cb0bfe59e490f15"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus_representative/REP-MED-04-NEG.json",
+                          "sizeBytes":  1376,
+                          "mtimeUtc":  "2026-10-29T14:14:13.123Z",
+                          "sha256":  "96e1a33083c5c74578c71f1e3521ced7325bceb37fe3d8fc41cc46b5cb0782ce"
+                      },
+                      {
+                          "path":  "evidence/layer2/CORPUS-AND-DECISION-CHRONOLOGY.md",
+                          "sizeBytes":  6479,
+                          "mtimeUtc":  "2026-10-29T17:15:59.136Z",
+                          "sha256":  "5dd087063ddff980eee61da41d041bb50a795d119c17f057d070a2ad3c34f629"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus-manifest.json",
+                          "sizeBytes":  13375,
+                          "mtimeUtc":  "2026-10-29T11:12:31.293Z",
+                          "sha256":  "7ede27b624061e26c30cefa0f3a7763026d6818278fe77afcbd3a865e095325d"
+                      },
+                      {
+                          "path":  "evidence/layer2/corpus-validation.json",
+                          "sizeBytes":  4487,
+                          "mtimeUtc":  "2026-10-29T11:12:31.309Z",
+                          "sha256":  "cec0d918e1c214f5ac98b7a273ef2b4311c7129a7bcaf06f1e2f0692731c7d44"
+                      },
+                      {
+                          "path":  "evidence/layer2/FREEZE-RECONCILIATION-NOTE.md",
+                          "sizeBytes":  5721,
+                          "mtimeUtc":  "2026-10-29T07:23:22.802Z",
+                          "sha256":  "6bc0ba60936a256ca78577d815de6b066b67af09e0e8cc9bb20bab388e7a70e7"
+                      },
+                      {
+                          "path":  "evidence/layer2/G0_BASELINE_REPORT.md",
+                          "sizeBytes":  6582,
+                          "mtimeUtc":  "2026-10-29T15:10:56.857Z",
+                          "sha256":  "dfd0056abcb91fd820820ee7e42dcf562352c36abab87daf25a457d359c34c29"
+                      },
+                      {
+                          "path":  "evidence/layer2/G1_EVIDENCE_RECONCILIATION.md",
+                          "sizeBytes":  8633,
+                          "mtimeUtc":  "2026-10-29T15:10:57.240Z",
+                          "sha256":  "a67ee0e1a82f03667d5f027bf2d66390c406222d4354affdae537288b41f6117"
+                      },
+                      {
+                          "path":  "evidence/layer2/G2_ROOT_CAUSE_AND_REPAIR_PLAN.md",
+                          "sizeBytes":  8871,
+                          "mtimeUtc":  "2026-10-29T15:10:57.618Z",
+                          "sha256":  "b2d22bbef14a7723b200884f26b4be866368477fe3c804e4ed4d8bf68a73dca7"
+                      },
+                      {
+                          "path":  "evidence/layer2/G3_REPAIR_VERIFICATION.md",
+                          "sizeBytes":  5347,
+                          "mtimeUtc":  "2026-10-29T15:10:57.867Z",
+                          "sha256":  "9ad0ec3cfb3726e8d613afa2c5fb69e6452dcda174194ec17abceb1a5e37fdaa"
+                      },
+                      {
+                          "path":  "evidence/layer2/G4_CORPUS_METHODOLOGY_AND_RESULTS.md",
+                          "sizeBytes":  9761,
+                          "mtimeUtc":  "2026-10-29T15:10:58.267Z",
+                          "sha256":  "7c924b20b9fb2513bdb0fc058598e54d7a6ae89d2c3dbbf5e5d14fe53769aed7"
+                      },
+                      {
+                          "path":  "evidence/layer2/G5_END_TO_END_VALIDATION.md",
+                          "sizeBytes":  8011,
+                          "mtimeUtc":  "2026-10-29T15:10:58.477Z",
+                          "sha256":  "1429882583c5891b1f17929be1efb7658836762180ce102a60a34e6cc78497fe"
+                      },
+                      {
+                          "path":  "evidence/layer2/g5-e2e-validation-report.json",
+                          "sizeBytes":  2915,
+                          "mtimeUtc":  "2026-10-29T14:44:13.181Z",
+                          "sha256":  "bc359f1107641bc49573bc5e6a51d61dd2047ab95616f32bd190f7612e560fd8"
+                      },
+                      {
+                          "path":  "evidence/layer2/G6_DEMO_READINESS.md",
+                          "sizeBytes":  9493,
+                          "mtimeUtc":  "2026-10-29T15:10:58.621Z",
+                          "sha256":  "d86830c9ff9ad7cd20e44f555ed915182e2119c6ff75b4823132e71fc6fdc693"
+                      },
+                      {
+                          "path":  "evidence/layer2/G7_INSTITUTIONAL_BUYER_VALIDATION.md",
+                          "sizeBytes":  13999,
+                          "mtimeUtc":  "2026-10-29T15:10:58.768Z",
+                          "sha256":  "d66b76abdfcdea602ececcf9d2ffe6eee38293a54653d0240497aec2dbf918e5"
+                      },
+                      {
+                          "path":  "evidence/layer2/G8_COMMERCIAL_DECISION.md",
+                          "sizeBytes":  10902,
+                          "mtimeUtc":  "2026-10-29T15:10:58.923Z",
+                          "sha256":  "6b9df0069bafc5d4e0e4464107ce9e9b867995f1bcc534dff9f1cafd6569ae69"
+                      },
+                      {
+                          "path":  "evidence/layer2/regression-report.json",
+                          "sizeBytes":  1257,
+                          "mtimeUtc":  "2026-10-29T12:30:02.006Z",
+                          "sha256":  "b8b4ba7cde7b58cfe276eba4237185113427694328000f3e2515fa7fad169f6b"
+                      },
+                      {
+                          "path":  "evidence/layer2/repeatability-report.json",
+                          "sizeBytes":  13720,
+                          "mtimeUtc":  "2026-10-29T12:30:01.990Z",
+                          "sha256":  "c1a4e5910e8d343c7aa3baf63dd91b8b01c01d5472ff19cebbba1795deb64af6"
+                      },
+                      {
+                          "path":  "evidence/layer2/representative-accuracy-report.json",
+                          "sizeBytes":  26005,
+                          "mtimeUtc":  "2026-10-29T14:15:01.729Z",
+                          "sha256":  "a7ac92c5b34c729001d930c5df04f7a47bfd5978f48fb15a66162f0df945f452"
+                      },
+                      {
+                          "path":  "evidence/layer2/representative-corpus-manifest.json",
+                          "sizeBytes":  18285,
+                          "mtimeUtc":  "2026-10-29T14:14:14.082Z",
+                          "sha256":  "c2c0e818c1739780cbde48a74fd669abd5976cf000f53d0acfe40aab9f947924"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-A-01.json",
+                          "sizeBytes":  419292,
+                          "mtimeUtc":  "2026-10-29T01:13:37.407Z",
+                          "sha256":  "75e4ec7b744d3467de6ed643faacc76a1b569ab85902e86e6cdc32aa24ef281d"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-A-02.json",
+                          "sizeBytes":  192243,
+                          "mtimeUtc":  "2026-10-29T01:13:37.419Z",
+                          "sha256":  "7fb574eacca4968c991555d93f36094a6cdc0774f7e18cb3ec724781547b0d0f"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-A-03.json",
+                          "sizeBytes":  405896,
+                          "mtimeUtc":  "2026-10-29T01:13:37.442Z",
+                          "sha256":  "13de6a0658cfe7a9276baf2558d7eddcdab97f03d13af61f3154ab9906114141"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-B-01.json",
+                          "sizeBytes":  272919,
+                          "mtimeUtc":  "2026-10-29T01:13:37.465Z",
+                          "sha256":  "c7391f2d85476cd3e679040c67bd1e348a72a45f921f1003cd0ff6cb48ca71b7"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-B-02.json",
+                          "sizeBytes":  199021,
+                          "mtimeUtc":  "2026-10-29T01:13:37.483Z",
+                          "sha256":  "321aa4c94420088e40b1433d30f3e6287ca6cd5a7e42004c71841e3e6a164dcd"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-B-03.json",
+                          "sizeBytes":  380067,
+                          "mtimeUtc":  "2026-10-29T01:13:37.507Z",
+                          "sha256":  "7b9d485ebb2578df166c0eeb9e9fcd4c2d878d33d0e8ffacd3ad624660ad1931"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-C-01.json",
+                          "sizeBytes":  4165,
+                          "mtimeUtc":  "2026-10-29T01:13:37.514Z",
+                          "sha256":  "e826f9b7bc629a2245393b7baa652c5c85c27b3b4228e2f12fde884d802e7322"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-C-02.json",
+                          "sizeBytes":  4247,
+                          "mtimeUtc":  "2026-10-29T01:13:37.519Z",
+                          "sha256":  "2cc6b48fa8d1c5ec1f9a7642ca4ddf3acadf2ce68966e6e4987275cbdaedd462"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-C-03.json",
+                          "sizeBytes":  16058,
+                          "mtimeUtc":  "2026-10-29T01:13:37.526Z",
+                          "sha256":  "33edddbf7ba653f030f3e41e90e1301b703891678df265888eedbeae85be7cce"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-D-01.json",
+                          "sizeBytes":  3470,
+                          "mtimeUtc":  "2026-10-29T01:13:37.532Z",
+                          "sha256":  "400eec4fd6328eda5c89c02254e1afbc5d57240627c510d4248a000f5893d12a"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-D-02.json",
+                          "sizeBytes":  4229,
+                          "mtimeUtc":  "2026-10-29T01:13:37.547Z",
+                          "sha256":  "7bc6d7f0d2179ae440b2f4e625830f6a9bdf6fa2901ac2df882731d745c3fa3a"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-D-03.json",
+                          "sizeBytes":  4193,
+                          "mtimeUtc":  "2026-10-29T01:13:37.558Z",
+                          "sha256":  "dfbdd45a5353ec13c1bea8ac9214f4bf0d315b4efe2d6deabf5c23e518118817"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-E-01.json",
+                          "sizeBytes":  4141,
+                          "mtimeUtc":  "2026-10-29T01:13:37.565Z",
+                          "sha256":  "9f3febc4c04de6375e4b6c95b06a4b6bf64d3ce9df55a75bb16ee420a7e1b2b5"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-E-02.json",
+                          "sizeBytes":  4156,
+                          "mtimeUtc":  "2026-10-29T01:13:37.572Z",
+                          "sha256":  "bd20bb250efdba8823cdcd5027d6411d25a0e5c6d09e550379331c2d98be5a7b"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-E-03.json",
+                          "sizeBytes":  4211,
+                          "mtimeUtc":  "2026-10-29T01:13:37.581Z",
+                          "sha256":  "bc0d4af563baa275eaac405d83a7ad5f1308733f382bd86055e17beb7d36be5f"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-F-01.json",
+                          "sizeBytes":  411569,
+                          "mtimeUtc":  "2026-10-29T01:13:37.625Z",
+                          "sha256":  "69f5870421973cd98339cab08cae4e74d0049c579ffbba234794fd592e3398f4"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-F-02.json",
+                          "sizeBytes":  314879,
+                          "mtimeUtc":  "2026-10-29T01:13:37.641Z",
+                          "sha256":  "06d6680ac6b30c6d19799bbfcc0bb72b060ec6b78065e1c9d61b430d7630b51f"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-F-03.json",
+                          "sizeBytes":  768249,
+                          "mtimeUtc":  "2026-10-29T01:13:37.689Z",
+                          "sha256":  "a730a4dd6dccc063dc9eb5f2dd10b3fd0196b03891fa0c53098d4f78fe2b5372"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-G-01.json",
+                          "sizeBytes":  825861,
+                          "mtimeUtc":  "2026-10-29T01:13:37.712Z",
+                          "sha256":  "256b393315e2e18ab16a36aac64cd732ac1580e2935a3e84e63ca7f81e7ecb3b"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-G-02.json",
+                          "sizeBytes":  573338,
+                          "mtimeUtc":  "2026-10-29T01:13:37.751Z",
+                          "sha256":  "4af4fe2401f2290519ff03911c2ef370de2d632b04e369750cf7731c0b532247"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-H-01.json",
+                          "sizeBytes":  278828,
+                          "mtimeUtc":  "2026-10-29T01:13:37.785Z",
+                          "sha256":  "c13aeb6c3affb52d6a075b1f4115a9da8504ce690acb0a0819c192afcc578444"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-H-02.json",
+                          "sizeBytes":  220257,
+                          "mtimeUtc":  "2026-10-29T01:13:37.796Z",
+                          "sha256":  "1ed58abfd998dc96e7eba4946188665c0158573764d3b233e23d3b80f2f4c7bc"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-H-03.json",
+                          "sizeBytes":  34161,
+                          "mtimeUtc":  "2026-10-29T01:13:37.806Z",
+                          "sha256":  "40af87da4e1f939aca6c993e879b15aaaa1a13bf837a06fe365fc98395b5933f"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-H-04.json",
+                          "sizeBytes":  2518,
+                          "mtimeUtc":  "2026-10-29T01:13:37.809Z",
+                          "sha256":  "41029a9d0be8378d662a266e0bca907f0ae4b6234aceda4a7e61abc403e769d1"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/actual-results/L2-CAT-H-05.json",
+                          "sizeBytes":  213828,
+                          "mtimeUtc":  "2026-10-29T01:13:37.826Z",
+                          "sha256":  "8c696c264c9d3e1295195b8ea4a86d60d66df54b9de9f0ff31eefa0bc3992380"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/execution.log",
+                          "sizeBytes":  27571,
+                          "mtimeUtc":  "2026-10-29T01:13:37.850Z",
+                          "sha256":  "0470d01e080975a5029c687f0fff7bd0d63df8d40d0ae50fbf8631edcb27e804"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-13-37Z/fixture-results.json",
+                          "sizeBytes":  46365,
+                          "mtimeUtc":  "2026-10-29T01:13:37.835Z",
+                          "sha256":  "43d2ee163724d8bcb348d1ae71fe3ab4456b53c306349903e5e8a06f45abaee2"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-A-01.json",
+                          "sizeBytes":  419292,
+                          "mtimeUtc":  "2026-10-29T01:19:56.615Z",
+                          "sha256":  "55e369d4348f1f5e638178ac068aa5af0c95cb502d2ab57542d0f16787c33221"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-A-02.json",
+                          "sizeBytes":  192243,
+                          "mtimeUtc":  "2026-10-29T01:19:56.632Z",
+                          "sha256":  "c3196bd42aba234e52c3268130726f5b4e159e4b2c589c6254dd1a5a41a90baa"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-A-03.json",
+                          "sizeBytes":  405896,
+                          "mtimeUtc":  "2026-10-29T01:19:56.649Z",
+                          "sha256":  "e7cee9bec3e103b70b723e249ba0b2eca9f467c72c740c0b2bf7d352f2c0b822"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-B-01.json",
+                          "sizeBytes":  272919,
+                          "mtimeUtc":  "2026-10-29T01:19:56.665Z",
+                          "sha256":  "e4ed791028a0ae69bce698e408abf64b2184e9ca41cd78c03cdec77f0a4d7857"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-B-02.json",
+                          "sizeBytes":  199021,
+                          "mtimeUtc":  "2026-10-29T01:19:56.673Z",
+                          "sha256":  "68acc709b9f0b46b1cc0d8f0457f0c8880644859c4054f39dc8123a47e716c86"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-B-03.json",
+                          "sizeBytes":  380067,
+                          "mtimeUtc":  "2026-10-29T01:19:56.699Z",
+                          "sha256":  "94dc12f318ee4761c061b7694293e9ec17247bbb0be72ce0697ae4497cc701ab"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-C-01.json",
+                          "sizeBytes":  4165,
+                          "mtimeUtc":  "2026-10-29T01:19:56.712Z",
+                          "sha256":  "2b37490e4fb4dd06f2af1b4dad8b895fb235350dcde799a6915499e2969bcacf"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-C-02.json",
+                          "sizeBytes":  4247,
+                          "mtimeUtc":  "2026-10-29T01:19:56.713Z",
+                          "sha256":  "d4f7dbfd4bcd4d6aa9c0bd352168db2fd78565a72b9c6063b74991b1cd695b91"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-C-03.json",
+                          "sizeBytes":  16058,
+                          "mtimeUtc":  "2026-10-29T01:19:56.723Z",
+                          "sha256":  "5b0efcdc2e1a07a659bf2f11b3dc732fc7bec3aa19aef2a440b0069c910aed8d"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-D-01.json",
+                          "sizeBytes":  3470,
+                          "mtimeUtc":  "2026-10-29T01:19:56.729Z",
+                          "sha256":  "a890e23f7ea0b8fe8b72c7f72d85bd2e9d202fa888fa78aa9f8034298ded7728"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-D-02.json",
+                          "sizeBytes":  4229,
+                          "mtimeUtc":  "2026-10-29T01:19:56.729Z",
+                          "sha256":  "9b55638a6c29fd06f5e6f495526d486287b81ed7da109038bb88e98206e704b7"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-D-03.json",
+                          "sizeBytes":  4193,
+                          "mtimeUtc":  "2026-10-29T01:19:56.754Z",
+                          "sha256":  "6e787ac989cd5b8ab98fcd179f7915269b7c5e1b594a1ebc8cc55f88bb15cb9f"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-E-01.json",
+                          "sizeBytes":  4141,
+                          "mtimeUtc":  "2026-10-29T01:19:56.756Z",
+                          "sha256":  "834232e0cc396486dc4cedc2e95414ed1899a7c716cc43d4a8b59b30e54bfb9b"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-E-02.json",
+                          "sizeBytes":  4156,
+                          "mtimeUtc":  "2026-10-29T01:19:56.780Z",
+                          "sha256":  "0a463e0ea268d2d210ee2659b8943926d763416625b3d8d93a73709c7a78d106"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-E-03.json",
+                          "sizeBytes":  4211,
+                          "mtimeUtc":  "2026-10-29T01:19:56.790Z",
+                          "sha256":  "1083da0f2b4ffb7e58ced6b2b66bce5f9b5c6909c83020041e39f82b9c0f1eac"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-F-01.json",
+                          "sizeBytes":  411569,
+                          "mtimeUtc":  "2026-10-29T01:19:56.798Z",
+                          "sha256":  "0ff73c7ff3b51cb07a0dad8acfda4629da6d11465abf325f270b33024e0015f4"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-F-02.json",
+                          "sizeBytes":  314879,
+                          "mtimeUtc":  "2026-10-29T01:19:56.817Z",
+                          "sha256":  "a94f8e6700b62c6c106cd725773b15900efae4949d548c46f32e8e0e3295e1d7"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-F-03.json",
+                          "sizeBytes":  768249,
+                          "mtimeUtc":  "2026-10-29T01:19:56.856Z",
+                          "sha256":  "4a9c3582783affbde5148988ebd38fbb167e10864d9bcdca1c4820b9948373ef"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-G-01.json",
+                          "sizeBytes":  825861,
+                          "mtimeUtc":  "2026-10-29T01:19:56.873Z",
+                          "sha256":  "c0de3acf1d5ed14f1b56e76f005e9105f7f16f51d4a9749b7084e1f94c2431cf"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-G-02.json",
+                          "sizeBytes":  573338,
+                          "mtimeUtc":  "2026-10-29T01:19:56.913Z",
+                          "sha256":  "a9484802675d63983c277f675e2b02b851893cf3dbf7c271926826c678c200f0"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-H-01.json",
+                          "sizeBytes":  278828,
+                          "mtimeUtc":  "2026-10-29T01:19:56.929Z",
+                          "sha256":  "fb6217d5797fcc087944965bd2b55bd5b3cf8352cac93d5e3e78ba3e25747322"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-H-02.json",
+                          "sizeBytes":  220257,
+                          "mtimeUtc":  "2026-10-29T01:19:56.937Z",
+                          "sha256":  "f7bff09925c85a373ad20fff1e4f26a6bb492a7e26933c96a64de04d0a0f687a"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-H-03.json",
+                          "sizeBytes":  34161,
+                          "mtimeUtc":  "2026-10-29T01:19:56.944Z",
+                          "sha256":  "42a3662000eee7608c340c0b97dba4cd5c94dd8d599946d69c898897a0d23b02"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-H-04.json",
+                          "sizeBytes":  2518,
+                          "mtimeUtc":  "2026-10-29T01:19:56.944Z",
+                          "sha256":  "63369f2f52e2de2d21d59a367f1ff6574aa8ed4f32bf0f87e017a11a0689e7f0"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/actual-results/L2-CAT-H-05.json",
+                          "sizeBytes":  213828,
+                          "mtimeUtc":  "2026-10-29T01:19:56.981Z",
+                          "sha256":  "4c4819b291dc15f15dfca21954b4af20e56cd0f237349e5fc3779751e3422c33"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/execution.log",
+                          "sizeBytes":  10630,
+                          "mtimeUtc":  "2026-10-29T01:19:57.021Z",
+                          "sha256":  "4132ec5a22fc87105cb543646451f54d75a7f3a8fa13a002f2d894dd654ceb77"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T01-19-56Z/fixture-results.json",
+                          "sizeBytes":  27714,
+                          "mtimeUtc":  "2026-10-29T01:19:56.998Z",
+                          "sha256":  "86f7d097e4c5570c8ebb3bbfd7a25e3ba0a7086bd53ac5ae3658167215f3abab"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-A-01.json",
+                          "sizeBytes":  419292,
+                          "mtimeUtc":  "2026-10-29T11:04:00.798Z",
+                          "sha256":  "3388aa255b0335cbd59f86767f1747904b6bd0b8fb0ab90f8c583a25b6ae84b3"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-A-02.json",
+                          "sizeBytes":  192243,
+                          "mtimeUtc":  "2026-10-29T11:04:00.814Z",
+                          "sha256":  "3462c5cb42b8958118f4403c6ce941c084cf755cebf568398032d14f253a7145"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-A-03.json",
+                          "sizeBytes":  405896,
+                          "mtimeUtc":  "2026-10-29T11:04:00.855Z",
+                          "sha256":  "0e16d565dd63de00c7feea88a0e757d7cddf42282fe11d77a0ee899cf53ab183"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-B-01.json",
+                          "sizeBytes":  272919,
+                          "mtimeUtc":  "2026-10-29T11:04:00.873Z",
+                          "sha256":  "d1cdd1acd6f133cd760b0dc7f1ad5dfc0fc5c1342fc160644b6e828eff06e678"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-B-02.json",
+                          "sizeBytes":  199021,
+                          "mtimeUtc":  "2026-10-29T11:04:00.881Z",
+                          "sha256":  "bbc738a19a28445e65c5858ef79c836c4f4024c9991273d03fc97c08326c3625"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-B-03.json",
+                          "sizeBytes":  380067,
+                          "mtimeUtc":  "2026-10-29T11:04:00.890Z",
+                          "sha256":  "a87c747699850a095b38a57cce98cfa57ac04661e72d8a7aaa2fad7cda32cd68"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-C-01.json",
+                          "sizeBytes":  4165,
+                          "mtimeUtc":  "2026-10-29T11:04:00.946Z",
+                          "sha256":  "c1dfa324b371517623c86aee6c42f5b10182a2a3158bff8a0becbe67fd0af692"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-C-02.json",
+                          "sizeBytes":  4247,
+                          "mtimeUtc":  "2026-10-29T11:04:00.980Z",
+                          "sha256":  "aefd2bb9c5806a0b86aa7b8e687b9d30e4b7254de977a1db207faa4162126248"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-C-03.json",
+                          "sizeBytes":  16046,
+                          "mtimeUtc":  "2026-10-29T11:04:00.980Z",
+                          "sha256":  "91fcb1daa7e247fbfad59fc9b4f1cce5229cb0128796a2b9983e4667b5720a84"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-D-01.json",
+                          "sizeBytes":  3470,
+                          "mtimeUtc":  "2026-10-29T11:04:00.988Z",
+                          "sha256":  "8967c1a9162c6107f9964187bffb64a292f0f362477590537d5aa66d5f9865b6"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-D-02.json",
+                          "sizeBytes":  4229,
+                          "mtimeUtc":  "2026-10-29T11:04:00.996Z",
+                          "sha256":  "dc1280d01a8d78bfc0a402bf1e5fa62763826fb35b524583622cccd216c74196"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-D-03.json",
+                          "sizeBytes":  4193,
+                          "mtimeUtc":  "2026-10-29T11:04:00.996Z",
+                          "sha256":  "996af8648fb959733aa0e3abe38628dc4fa8fd7cdc5ae131a983345552c62480"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-E-01.json",
+                          "sizeBytes":  4141,
+                          "mtimeUtc":  "2026-10-29T11:04:01.012Z",
+                          "sha256":  "c00b790d65dfba39e57e46d26d9f7fc398224979270af18fb528f345949b1e98"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-E-02.json",
+                          "sizeBytes":  4156,
+                          "mtimeUtc":  "2026-10-29T11:04:01.028Z",
+                          "sha256":  "4f5d2aa5196ac44b229e0849fecf6768905fa7ed8078d5859708653cbccd5594"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-E-03.json",
+                          "sizeBytes":  4211,
+                          "mtimeUtc":  "2026-10-29T11:04:01.079Z",
+                          "sha256":  "24cd78bba7c7baceef4c083ebfdd916d52372f034df358a24a4e4e35008a7b40"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-F-01.json",
+                          "sizeBytes":  411569,
+                          "mtimeUtc":  "2026-10-29T11:04:01.103Z",
+                          "sha256":  "659c51bb012a18e10b1531374b798b5bc06a3f87316fa0c182ab19b477176d47"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-F-02.json",
+                          "sizeBytes":  314879,
+                          "mtimeUtc":  "2026-10-29T11:04:01.111Z",
+                          "sha256":  "228d42b925db8ad0edf3510119f1b096204b0544c1000420cc262d2e890b7cc8"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-F-03.json",
+                          "sizeBytes":  768249,
+                          "mtimeUtc":  "2026-10-29T11:04:01.144Z",
+                          "sha256":  "90eb4669c4e9dbf2078c2e1cf77fe6e6c50f7757885ac2e49fc3433880d56734"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-G-01.json",
+                          "sizeBytes":  825861,
+                          "mtimeUtc":  "2026-10-29T11:04:01.168Z",
+                          "sha256":  "11cb97f4fab46d2f28212e819b6165ac5d6d5da37c008b762f5a94a105e8a5ed"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-G-02.json",
+                          "sizeBytes":  573338,
+                          "mtimeUtc":  "2026-10-29T11:04:01.184Z",
+                          "sha256":  "115af8bacb8216109c1093fb6b512cb6838b2e37bc1935b5392cf2fc111c09f3"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-H-01.json",
+                          "sizeBytes":  278828,
+                          "mtimeUtc":  "2026-10-29T11:04:01.203Z",
+                          "sha256":  "fd4396d1a1a315c89ac09859cc3fb38d5a48fbc631c7c56cb6e9916b396da215"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-H-02.json",
+                          "sizeBytes":  220254,
+                          "mtimeUtc":  "2026-10-29T11:04:01.211Z",
+                          "sha256":  "25d4c8b322122cc48d3f0f64a7497f4df8b5f969cbd75192570c79fe39d847d2"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-H-03.json",
+                          "sizeBytes":  34161,
+                          "mtimeUtc":  "2026-10-29T11:04:01.211Z",
+                          "sha256":  "22c8b91b0677022ede95e3024e876993a24b2af0da68647d0c2dff828bc97701"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-H-04.json",
+                          "sizeBytes":  2518,
+                          "mtimeUtc":  "2026-10-29T11:04:01.219Z",
+                          "sha256":  "b73e6715b6bb625e03d48ee34fd0215a472f754c4b7052e81551fa217e5a2340"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/actual-results/L2-CAT-H-05.json",
+                          "sizeBytes":  213828,
+                          "mtimeUtc":  "2026-10-29T11:04:01.227Z",
+                          "sha256":  "452794b7cebaf477d8487c8e90212ce4efb04ccbd4bdf36d19faba40b5c6c40c"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/execution.log",
+                          "sizeBytes":  10661,
+                          "mtimeUtc":  "2026-10-29T11:04:01.253Z",
+                          "sha256":  "2eececab04e02cdea525cc2b3226168a335fdb90535fcb265a6a636982c38f38"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-04-00Z/fixture-results.json",
+                          "sizeBytes":  27711,
+                          "mtimeUtc":  "2026-10-29T11:04:01.227Z",
+                          "sha256":  "52ca8490953c03bf93b322cc9df617371b298c36bcdfee8e577fe8934c1df876"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-A-01.json",
+                          "sizeBytes":  419292,
+                          "mtimeUtc":  "2026-10-29T11:13:35.149Z",
+                          "sha256":  "27b1004cce1ae18ab899267f801d003ca6b47ec051c4b943590d4576b2aeacc3"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-A-02.json",
+                          "sizeBytes":  192243,
+                          "mtimeUtc":  "2026-10-29T11:13:35.158Z",
+                          "sha256":  "a317081481960f4ede2fd85792c5298200fed62e325f3be05a6d56b24577035c"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-A-03.json",
+                          "sizeBytes":  405896,
+                          "mtimeUtc":  "2026-10-29T11:13:35.174Z",
+                          "sha256":  "8fba441777b1a619a5da053ff49670a4164a5f02a2c41efa7c731e0a2be3de87"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-B-01.json",
+                          "sizeBytes":  272919,
+                          "mtimeUtc":  "2026-10-29T11:13:35.182Z",
+                          "sha256":  "853a84d54438b603da9b8d52227e7a20b14122eb311943a884012e65dfa71e9a"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-B-02.json",
+                          "sizeBytes":  199021,
+                          "mtimeUtc":  "2026-10-29T11:13:35.196Z",
+                          "sha256":  "ecc03fe37c58a7ff31636c4138954c85ecbc082542992d06383e798db8f0a1e4"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-B-03.json",
+                          "sizeBytes":  380067,
+                          "mtimeUtc":  "2026-10-29T11:13:35.227Z",
+                          "sha256":  "2c395e3a0355f6a824142ccea7500c5f3e0c04f711f91b2d695ef77b2823e511"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-C-01.json",
+                          "sizeBytes":  4165,
+                          "mtimeUtc":  "2026-10-29T11:13:35.233Z",
+                          "sha256":  "004ad4bc9ebab841f9095b61917d8f1e52061eb90438c17a409b24e9ad24e831"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-C-02.json",
+                          "sizeBytes":  4247,
+                          "mtimeUtc":  "2026-10-29T11:13:35.233Z",
+                          "sha256":  "b0f0c1ec4e469d067f17f3e8aaa81947e364aae98fcf5392579171eca967ede2"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-C-03.json",
+                          "sizeBytes":  16046,
+                          "mtimeUtc":  "2026-10-29T11:13:35.242Z",
+                          "sha256":  "9e37c316062fbd898241f8351f81f58d0c3d3bacbe5898c7aa76ae80e5c9038a"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-D-01.json",
+                          "sizeBytes":  3470,
+                          "mtimeUtc":  "2026-10-29T11:13:35.250Z",
+                          "sha256":  "2cb85f70f701811fc9d8175c7926fa63154f082df6002c585a8ca9f56d55e6ac"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-D-02.json",
+                          "sizeBytes":  4229,
+                          "mtimeUtc":  "2026-10-29T11:13:35.258Z",
+                          "sha256":  "692305da35bb6c4feea2c1a7099ef9a675973f392457ffdc6fe0be0232f6ec40"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-D-03.json",
+                          "sizeBytes":  4193,
+                          "mtimeUtc":  "2026-10-29T11:13:35.285Z",
+                          "sha256":  "660018400df5bcb42dee9077fa022de09a20b2a3ac79fd6ce22bf190246c68e9"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-E-01.json",
+                          "sizeBytes":  4141,
+                          "mtimeUtc":  "2026-10-29T11:13:35.293Z",
+                          "sha256":  "13e073740499f7476a97754fe20e9d6ac05773ee1ecdfe8b93b9e242dac4d75d"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-E-02.json",
+                          "sizeBytes":  4156,
+                          "mtimeUtc":  "2026-10-29T11:13:35.293Z",
+                          "sha256":  "d9b0b73755916a4b4859d270a16172ca64adacb2a0d18257de7d7710c63a1f43"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-E-03.json",
+                          "sizeBytes":  4211,
+                          "mtimeUtc":  "2026-10-29T11:13:35.301Z",
+                          "sha256":  "f37a3e72fe2f6baf37252db36ac5d224fe3ca184a65b62f222c7b92e1b0b70ba"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-F-01.json",
+                          "sizeBytes":  411569,
+                          "mtimeUtc":  "2026-10-29T11:13:35.309Z",
+                          "sha256":  "5547157e8730563c0e2d2009a08308de9b87a24ac827970e919056c41414fc3a"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-F-02.json",
+                          "sizeBytes":  314879,
+                          "mtimeUtc":  "2026-10-29T11:13:35.327Z",
+                          "sha256":  "80a1605b288f412a0699e48b34d0d9fd45811a08ec8267983a0e1434d8c80466"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-F-03.json",
+                          "sizeBytes":  768249,
+                          "mtimeUtc":  "2026-10-29T11:13:35.378Z",
+                          "sha256":  "1af4ae3dde0f17550733da380dbf4bf3b49da4d741621d08951e2a6727d3a75f"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-G-01.json",
+                          "sizeBytes":  825861,
+                          "mtimeUtc":  "2026-10-29T11:13:35.411Z",
+                          "sha256":  "c00d91ac977526f3010057429b81d5aaea85ca45fd8bf6b6b8ea69e2ee88950a"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-G-02.json",
+                          "sizeBytes":  573338,
+                          "mtimeUtc":  "2026-10-29T11:13:35.426Z",
+                          "sha256":  "393378feb9b65e8a2f4fda673fcc8a585bb1b79d0695689c97918d626edc0d2e"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-H-01.json",
+                          "sizeBytes":  278828,
+                          "mtimeUtc":  "2026-10-29T11:13:35.442Z",
+                          "sha256":  "8a5a874a85c80fb44fae7a9b69d27650a6a795a29b5a47278acb8321e192b1da"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-H-02.json",
+                          "sizeBytes":  220254,
+                          "mtimeUtc":  "2026-10-29T11:13:35.447Z",
+                          "sha256":  "3fe3398e6e690a4143f2a9ac31be8efed5ff979c9f957d0fbdd2460b3252a9e1"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-H-03.json",
+                          "sizeBytes":  34161,
+                          "mtimeUtc":  "2026-10-29T11:13:35.463Z",
+                          "sha256":  "66a77242f40287c989d72742681372aa693ac4c225566c97a93e0adf1e463212"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-H-04.json",
+                          "sizeBytes":  2518,
+                          "mtimeUtc":  "2026-10-29T11:13:35.471Z",
+                          "sha256":  "1a75f9e635b8f152927d172aa131479c1ddcbf2cf377645e4045e0c070a0c155"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/actual-results/L2-CAT-H-05.json",
+                          "sizeBytes":  213828,
+                          "mtimeUtc":  "2026-10-29T11:13:35.517Z",
+                          "sha256":  "455b3fb6764e83c49620a5c3c33166e4392fdd9161591a7ff96d84ecad53e70b"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/execution.log",
+                          "sizeBytes":  10382,
+                          "mtimeUtc":  "2026-10-29T11:13:35.526Z",
+                          "sha256":  "3da7f80129cb65c649fe00a5f86f5f2405c16eca4c5dd95bc148503ef10db193"
+                      },
+                      {
+                          "path":  "evidence/layer2/runs/run-2026-10-29T11-13-35Z/fixture-results.json",
+                          "sizeBytes":  27465,
+                          "mtimeUtc":  "2026-10-29T11:13:35.526Z",
+                          "sha256":  "16479564ec8bd479543333732069cc2a3c86c89143e0a28e3ec05291bd39bf16"
+                      },
+                      {
+                          "path":  "evidence/layer2/threshold-decision.json.overwritten-at-2026-10-29T11-13-35Z",
+                          "sizeBytes":  1397,
+                          "mtimeUtc":  "2026-10-29T11:13:35.533Z",
+                          "sha256":  "c5bbe8a369b46d5f8ae80aa19a2b6acdfdb9752e5b715f42963e05a7faff3b1e"
+                      },
+                      {
+                          "path":  "evidence/layer2/threshold-decision-2026-10-29T01-19-57Z-PREREPAIR.json",
+                          "sizeBytes":  4425,
+                          "mtimeUtc":  "2026-10-29T17:15:24.988Z",
+                          "sha256":  "4b714cfe81f5cc705605790a9e91a6a849cc204e24f347eaf43c1ed50fddaa31"
+                      },
+                      {
+                          "path":  "evidence/layer2/threshold-decision-2026-10-29T11-13-35Z-POSTREPAIR.json",
+                          "sizeBytes":  4402,
+                          "mtimeUtc":  "2026-10-29T17:12:13.796Z",
+                          "sha256":  "70c7a72fd66a65bd85b0893ccac50e2688b4e2e54c3680687710c2f6d743456f"
+                      },
+                      {
+                          "path":  "evidence/layer2/threshold-decision-amendment-20261029T072434Z.json",
+                          "sizeBytes":  2036,
+                          "mtimeUtc":  "2026-10-29T07:24:34.504Z",
+                          "sha256":  "393fbf8a25729fd0f87378e32e13e99f95b4dd530b44bc74a67510d03e6d67be"
+                      },
+                      {
+                          "path":  "evidence/layer2/ui-validation-report.json",
+                          "sizeBytes":  3694,
+                          "mtimeUtc":  "2026-10-29T01:23:28.197Z",
+                          "sha256":  "871f80289047543500476c1db65f5006f17732ec90ed376acb73e6284b0c9ddb"
+                      }
+                  ]
+}

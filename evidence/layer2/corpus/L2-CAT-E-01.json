@@ -1,0 +1,30 @@
+{
+  "fixtureId": "L2-CAT-E-01",
+  "corpusVersion": "1.0.0",
+  "category": "E",
+  "categoryDescription": "Clean negative control - Original anthropology essay",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-E-01",
+      "title": "Gauge Symmetries in the Standard Model",
+      "authors": [
+        "Dr. S. Weinberg"
+      ],
+      "text": "The standard model of particle physics classifies all known elementary particles into leptons, quarks, and gauge bosons mediating fundamental forces."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-E-01",
+    "title": "Neolithic Fermentation Practices",
+    "text": "In culinary anthropology, fermentation techniques developed independently across neolithic human cultures to preserve perishable organic foodstuffs. Sourdough baking, beer brewing, and lacto-fermented vegetables provided vital nutritional stability during seasonal scarcities."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Negative control: student document contains zero plagiarism. Absolute zero false positives required.",
+  "knownLimitations": "None."
+}

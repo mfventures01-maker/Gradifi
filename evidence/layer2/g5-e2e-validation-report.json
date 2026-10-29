@@ -1,0 +1,108 @@
+{
+  "reportId": "GRADIFI-G5-END-TO-END-VALIDATION-REPORT",
+  "timestamp": "2026-10-29T14:44:13.181Z",
+  "engineVersion": "SIM-V1",
+  "normalizationVersion": "NORM-V1",
+  "policyVersion": "2026.09-academic-evidence",
+  "overallVerdict": "PASS",
+  "totalStepsEvaluated": 9,
+  "passedSteps": 9,
+  "lifecycleLogs": [
+    {
+      "step": 1,
+      "name": "Submit Known-Positive Document",
+      "passed": true,
+      "details": {
+        "documentHash": "acfe052304ff438d",
+        "evidenceHash": "41e835c0ca44ba22",
+        "overallSimilarity": 64.8,
+        "uniqueMatchedCoverage": 64.8,
+        "highestSourceMatch": 85.9
+      }
+    },
+    {
+      "step": 2,
+      "name": "Submit Negative-Control Document",
+      "passed": true,
+      "details": {
+        "documentHash": "846687aa19f307c4",
+        "evidenceHash": "5ac6eca2ed4c6d84",
+        "overallSimilarity": 0,
+        "uniqueMatchedCoverage": 0
+      }
+    },
+    {
+      "step": 3,
+      "name": "Inspect Document-Level Result & Dual Metrics",
+      "passed": true,
+      "details": {
+        "overallSimilarity": 64.8,
+        "uniqueMatchedCoverage": 64.8,
+        "highestSourceMatch": 85.9,
+        "federationMatrixRows": 9
+      }
+    },
+    {
+      "step": 4,
+      "name": "Inspect Findings, Passage Spans, Boundaries & Attribution",
+      "passed": true,
+      "details": {
+        "sentenceFlagsChecked": 7,
+        "phraseFlagsChecked": 132,
+        "boundaryFailures": []
+      }
+    },
+    {
+      "step": 9,
+      "name": "Repeat Submission & Compare Deterministic Evidence",
+      "passed": true,
+      "details": {
+        "pass1DocHash": "acfe052304ff438d",
+        "pass2DocHash": "acfe052304ff438d",
+        "pass1EvHash": "41e835c0ca44ba22",
+        "pass2EvHash": "41e835c0ca44ba22",
+        "pass1Score": 64.8,
+        "pass2Score": 64.8
+      }
+    },
+    {
+      "step": 10,
+      "name": "Persist Result and Retrieve Verification Record",
+      "passed": true,
+      "details": {
+        "derivedVerificationId": "VRF-ACFE052341E8",
+        "retrievedId": "VRF-ACFE052341E8",
+        "qrReceiptGenerated": true
+      }
+    },
+    {
+      "step": 12,
+      "name": "Confirm Retrieved Result Matches Original Authoritative Evidence",
+      "passed": true,
+      "details": {
+        "originalEvidenceHash": "41e835c0ca44ba22",
+        "retrievedEvidenceHash": "41e835c0ca44ba22",
+        "originalScore": 64.8,
+        "retrievedScore": 64.8
+      }
+    },
+    {
+      "step": 13,
+      "name": "Verify AI Advisory Output Remains Strictly Isolated",
+      "passed": true,
+      "details": {
+        "aiAdvisoryIsolationRatio": 1,
+        "deterministicAuthorityPreserved": true
+      }
+    },
+    {
+      "step": 14,
+      "name": "Test Unsupported Inputs and Dependency Failures",
+      "passed": true,
+      "details": {
+        "emptyInputHandledCleanly": true,
+        "whitespaceInputHandledCleanly": true
+      }
+    }
+  ]
+}

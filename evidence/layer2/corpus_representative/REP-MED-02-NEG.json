@@ -1,0 +1,31 @@
+{
+  "fixtureId": "REP-MED-02-NEG",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Medicine",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": false,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-MED-002",
+      "title": "Epidemiology of Lassa Fever Outbreaks in Edo State",
+      "authors": [
+        "Dr. F. Okonjo",
+        "Prof. G. Enahoro"
+      ],
+      "text": "Lassa mammarenavirus transmission is primarily sustained through domestic contamination of stored foodstuffs by the multi-mammate rat Mastomys natalensis during the dry harmattan season."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-MED-002",
+    "title": "Insecticide Resistance Surveillance in Southwest Nigeria",
+    "text": "Pyrethroid resistance in Anopheles gambiae populations across agrarian communities in Ogun State threatens vector control initiatives. Metabolic detoxification mechanisms mediated by elevated cytochrome P450 monooxygenase activity represent the predominant biochemical pathway conferring cross-resistance to organochlorines."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedMatches": []
+  },
+  "labelRationale": "Original entomology writing; zero overlap with Lassa fever source.",
+  "provenance": "Postgraduate medical biology laboratory report"
+}

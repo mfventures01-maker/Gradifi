@@ -1,0 +1,30 @@
+{
+  "fixtureId": "L2-CAT-E-02",
+  "corpusVersion": "1.0.0",
+  "category": "E",
+  "categoryDescription": "Clean negative control - Computer Systems text vs Geology source",
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-E-02",
+      "title": "Structural Geology and Metamorphic Petrology",
+      "authors": [
+        "Dr. C. Lyell"
+      ],
+      "text": "Microscopic examination of metamorphic rocks reveals foliation planes created by directed tectonic pressures during continental collision events."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-E-02",
+    "title": "Principles of Operating System Virtualization",
+    "text": "Modern operating system kernels manage hardware resources by providing virtual memory abstractions, preemptive task scheduling, and isolated process address spaces to prevent unauthorized cross-memory corruption."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 0,
+    "maxOverallSimilarity": 0,
+    "expectedFindingCount": 0,
+    "expectedMatches": [],
+    "expectedErrorState": null
+  },
+  "labelRationale": "Negative control: 0 findings expected.",
+  "knownLimitations": "None."
+}

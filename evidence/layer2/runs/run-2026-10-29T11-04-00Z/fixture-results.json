@@ -1,0 +1,1143 @@
+[
+  {
+    "fixtureId": "L2-CAT-A-01",
+    "category": "A",
+    "categoryDescription": "Exact copied passage - Reordered exact sentences",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 90,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 2,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 60,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-A-01"
+        ],
+        "detectedSources": [
+          "SRC-A-01"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 60,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-A-02",
+    "category": "A",
+    "categoryDescription": "Exact copied passage - Single embedded sentence in original text",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 43.3,
+      "uniqueMatchedCoverage": 43.3,
+      "highestSourceMatch": 77.3,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 30,
+      "maxOverallSimilarity": 70
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 27,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-A-02"
+        ],
+        "detectedSources": [
+          "SRC-A-02"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 27,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-A-03",
+    "category": "A",
+    "categoryDescription": "Exact copied passage - Full document identical clone",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 100,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 59,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-A-03"
+        ],
+        "detectedSources": [
+          "SRC-A-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 59,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-B-01",
+    "category": "B",
+    "categoryDescription": "Lightly modified passage - Controlled word substitutions",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 75,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 2,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 39,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-B-01"
+        ],
+        "detectedSources": [
+          "SRC-B-01"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 39,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-B-02",
+    "category": "B",
+    "categoryDescription": "Lightly modified passage - Adverb and adjective insertions",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 88.2,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 70,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 29,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-B-02"
+        ],
+        "detectedSources": [
+          "SRC-B-02"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 29,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-B-03",
+    "category": "B",
+    "categoryDescription": "Lightly modified passage - Active to passive voice clause transformation",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 65,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 2,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 55,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-B-03"
+        ],
+        "detectedSources": [
+          "SRC-B-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 55,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-C-01",
+    "category": "C",
+    "categoryDescription": "Paraphrase - Moderate lexical overlap with shared domain terms",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 7.1,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 50
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-C-01"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-C-02",
+    "category": "C",
+    "categoryDescription": "Paraphrase - Full semantic restatement (out of scope for SIM-V1 lexical)",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 1.6,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 15
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-C-02"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-C-03",
+    "category": "C",
+    "categoryDescription": "Paraphrase - Hybrid with short 3-gram anchor retained",
+    "verdict": "FAIL",
+    "failureReasons": [
+      "Found 1 unexpected passage flags on negative fixture"
+    ],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 15.1,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 10
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 1,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 1,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-C-03"
+        ],
+        "detectedSources": [
+          "SRC-C-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 1,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-D-01",
+    "category": "D",
+    "categoryDescription": "Unrelated original writing - Disjoint academic disciplines (Physics vs Roman History)",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 0,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-D-01"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-D-02",
+    "category": "D",
+    "categoryDescription": "Unrelated original writing - Biochemistry vs Musicology",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 1.6,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-D-02"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-D-03",
+    "category": "D",
+    "categoryDescription": "Unrelated original writing - Quantum Field Theory vs Volcanology",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 0.7,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-D-03"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-E-01",
+    "category": "E",
+    "categoryDescription": "Clean negative control - Original anthropology essay",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 1.2,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-E-01"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-E-02",
+    "category": "E",
+    "categoryDescription": "Clean negative control - Computer Systems text vs Geology source",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 0.7,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-E-02"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-E-03",
+    "category": "E",
+    "categoryDescription": "Clean negative control - Architectural History vs Cardiology source",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 1.7,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-E-03"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-F-01",
+    "category": "F",
+    "categoryDescription": "Mixed content - Exact middle paragraph embedded between two original paragraphs",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 48,
+      "uniqueMatchedCoverage": 48,
+      "highestSourceMatch": 79.2,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 30,
+      "maxOverallSimilarity": 55
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 60,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-F-01"
+        ],
+        "detectedSources": [
+          "SRC-F-01"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 60,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-F-02",
+    "category": "F",
+    "categoryDescription": "Mixed content - Copied first paragraph followed by original second paragraph",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 50,
+      "uniqueMatchedCoverage": 50,
+      "highestSourceMatch": 80,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 40,
+      "maxOverallSimilarity": 65
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 45,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-F-02"
+        ],
+        "detectedSources": [
+          "SRC-F-02"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 45,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-F-03",
+    "category": "F",
+    "categoryDescription": "Mixed content - Repeated identical copied paragraphs enclosing original sentence",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 80.7,
+      "uniqueMatchedCoverage": 80.7,
+      "highestSourceMatch": 92.3,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 70,
+      "maxOverallSimilarity": 90
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 2,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 114,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-F-03"
+        ],
+        "detectedSources": [
+          "SRC-F-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 114,
+      "totalParagraphFlags": 2
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-G-01",
+    "category": "G",
+    "categoryDescription": "Multi-source - Spans drawn from two distinct independent sources",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 79.7,
+      "totalSourcesEvaluated": 2
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 85,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 2,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 120,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-G-01A",
+          "SRC-G-01B"
+        ],
+        "detectedSources": [
+          "SRC-G-01A",
+          "SRC-G-01B"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 120,
+      "totalParagraphFlags": 2
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-G-02",
+    "category": "G",
+    "categoryDescription": "Multi-source - Multiple sources embedded with original intro paragraph",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 80.4,
+      "uniqueMatchedCoverage": 80.4,
+      "highestSourceMatch": 77.4,
+      "totalSourcesEvaluated": 2
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 65,
+      "maxOverallSimilarity": 90
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 2,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 84,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-G-02A",
+          "SRC-G-02B"
+        ],
+        "detectedSources": [
+          "SRC-G-02A",
+          "SRC-G-02B"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 84,
+      "totalParagraphFlags": 2
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-01",
+    "category": "H",
+    "categoryDescription": "Boundary - All-caps case mutation and exclamation marks",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 95,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 39,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-01"
+        ],
+        "detectedSources": [
+          "SRC-H-01"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 39,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-02",
+    "category": "H",
+    "categoryDescription": "Boundary - Irregular tabs, leading/trailing whitespace, and internal newlines",
+    "verdict": "FAIL",
+    "failureReasons": [
+      "Score 87.5% out of expected range [95%, 100%]",
+      "Missing expected passage match for source SRC-H-02: \"Mitochondrial    oxidative\n\nphosphorylation   gene...\""
+    ],
+    "actualScores": {
+      "overallSimilarity": 87.5,
+      "uniqueMatchedCoverage": 87.5,
+      "highestSourceMatch": 95,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 95,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 2,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 30,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 1
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-02"
+        ],
+        "detectedSources": [
+          "SRC-H-02"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 2,
+      "totalPhraseFlags": 30,
+      "totalParagraphFlags": 2
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-03",
+    "category": "H",
+    "categoryDescription": "Boundary - Short phrase (5 tokens, 40 characters)",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 95,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 4,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-03"
+        ],
+        "detectedSources": [
+          "SRC-H-03"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 4,
+      "totalParagraphFlags": 1
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-04",
+    "category": "H",
+    "categoryDescription": "Boundary - Empty student document payload",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 0,
+      "uniqueMatchedCoverage": 0,
+      "highestSourceMatch": 0,
+      "totalSourcesEvaluated": 0
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 0,
+      "maxOverallSimilarity": 0
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 0,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 0,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TN",
+      "passageLevel": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-04"
+        ],
+        "detectedSources": [],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 0,
+      "totalPhraseFlags": 0,
+      "totalParagraphFlags": 0
+    }
+  },
+  {
+    "fixtureId": "L2-CAT-H-05",
+    "category": "H",
+    "categoryDescription": "Boundary - Adversarial Unicode homoglyphs and diacritics",
+    "verdict": "PASS",
+    "failureReasons": [],
+    "actualScores": {
+      "overallSimilarity": 100,
+      "uniqueMatchedCoverage": 100,
+      "highestSourceMatch": 100,
+      "totalSourcesEvaluated": 1
+    },
+    "expectedScores": {
+      "minOverallSimilarity": 90,
+      "maxOverallSimilarity": 100
+    },
+    "spanValidation": {
+      "sentenceSpansChecked": 1,
+      "sentenceSpanMismatches": 0,
+      "phraseSpansChecked": 30,
+      "phraseSpanDrifts": 0
+    },
+    "confusionCounts": {
+      "documentLevel": "TP",
+      "passageLevel": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0
+      },
+      "attributionLevel": {
+        "expectedSources": [
+          "SRC-H-05"
+        ],
+        "detectedSources": [
+          "SRC-H-05"
+        ],
+        "attributionCorrect": true
+      }
+    },
+    "actualFindingsSummary": {
+      "totalSentenceFlags": 1,
+      "totalPhraseFlags": 30,
+      "totalParagraphFlags": 1
+    }
+  }
+]

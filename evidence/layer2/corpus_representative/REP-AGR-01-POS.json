@@ -1,0 +1,37 @@
+{
+  "fixtureId": "REP-AGR-01-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Agriculture",
+  "documentLengthCategory": "Short",
+  "split": "HELD_OUT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-AGR-001",
+      "title": "Biochemical Transformations in Garri and Fufu Processing",
+      "authors": [
+        "Prof. N. Okafor",
+        "Dr. C. Ene"
+      ],
+      "text": "Cassava root post-harvest processing requires efficient cyanogenic glucoside detoxification. Solid-state fermentation of grated mash for seventy-two hours enables endogenous linamarase hydrolysis of linamarin and lotaustralin into acetone cyanohydrin, which volatilizes during subsequent dehydration."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-AGR-001",
+    "title": "Cyanogenesis and Processing Safety of Manihot esculenta",
+    "text": "Cassava root post-harvest processing requires highly efficient cyanogenic glucoside detoxification. Solid-state natural fermentation of grated cassava mash for seventy-two hours enables endogenous linamarase enzyme hydrolysis of linamarin into acetone cyanohydrin, which volatilizes during subsequent dehydration roasting."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 75,
+    "maxOverallSimilarity": 100,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-AGR-001",
+        "studentTextSnippet": "Cassava root post-harvest processing requires",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Lightly modified copying with adjective insertions. Substantive n-gram overlap retains high sentence similarity.",
+  "provenance": "Nigerian Food Science Society Proceedings"
+}

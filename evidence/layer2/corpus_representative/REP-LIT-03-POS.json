@@ -1,0 +1,36 @@
+{
+  "fixtureId": "REP-LIT-03-POS",
+  "corpusVersion": "2.0.0-NIGERIAN-ACADEMIC",
+  "discipline": "Humanities",
+  "documentLengthCategory": "Medium",
+  "split": "DEVELOPMENT",
+  "groundTruthPlagiarized": true,
+  "sourceDocuments": [
+    {
+      "sourceId": "SRC-NG-LIT-003",
+      "title": "Eco-Critical Consciousness in Modern African Poetry",
+      "authors": [
+        "Dr. G. Okoh"
+      ],
+      "text": "Postcolonial disillusionment in the poetry of Niyi Osundare manifests through ecological degradation imagery in the oil-producing Niger Delta creeks, where petroleum spills poison agrarian livelihoods."
+    }
+  ],
+  "studentDocument": {
+    "documentId": "STU-NG-LIT-003",
+    "title": "Environmental Activism in Contemporary Nigerian Verse",
+    "text": "Nigerian poets increasingly engage with the extractive destruction of the environment. Postcolonial disillusionment in the poetry of Niyi Osundare manifests through ecological degradation imagery in the oil-producing Niger Delta creeks, where petroleum spills poison agrarian livelihoods. The verse becomes a site of civic contestation against multinational corporate impunity."
+  },
+  "expectedResults": {
+    "minOverallSimilarity": 40,
+    "maxOverallSimilarity": 70,
+    "expectedMatches": [
+      {
+        "sourceId": "SRC-NG-LIT-003",
+        "studentTextSnippet": "Postcolonial disillusionment in the poetry of Niyi Osundare manifests through ecological degradation imagery in the oil-producing Niger Delta creeks, where petroleum spills poison agrarian livelihoods.",
+        "shouldMatch": true
+      }
+    ]
+  },
+  "labelRationale": "Uncited inclusion of key analytical thesis sentence within original framing commentary.",
+  "provenance": "Literary criticism term paper"
+}
