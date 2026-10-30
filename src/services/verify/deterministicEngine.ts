@@ -822,6 +822,36 @@ export function evaluateDocumentSimilarity(
 /**
  * Extracts explainable SimilarityFinding items from evaluated candidate evidence matches.
  */
+/**
+ * Deterministic suppression predicate for malformed or low-signal similarity findings.
+ * Rejects findings that cannot carry semantic weight as evidence.
+ *
+ * Rejection rules (any one triggers):
+ *   1. sourceSegment contains three or more consecutive dots (TOC dot leaders).
+ *   2. sourceSegment is a bare page number (e.g. "31", " 12 ").
+ *   3. matchMethod is not EXACT_PHRASE and sourceSegment has fewer than 4 tokens.
+ *      Short token overlaps (single characters, single words, numeric fragments)
+ *      are noise; short exact phrases are signal and are preserved regardless of length.
+ *
+ * The threshold of 4 tokens is chosen so that exact phrases like "Health and safety"
+ * (3 tokens, EXACT_PHRASE) survive while single-token overlaps like "A", "9", "Level"
+ * (1 token, TOKEN_OVERLAP) are suppressed.
+ */
+const TOC_DOT_LEADER_RE = /\.{3,}/;
+const BARE_PAGE_NUMBER_RE = /^\s*\d+\s*$/;
+
+function isRejectableFinding(
+  sourceSegment: string | undefined,
+  matchMethod: SimilarityMatchMethod
+): boolean {
+  if (typeof sourceSegment !== 'string') return true;
+  const seg = sourceSegment;
+  if (TOC_DOT_LEADER_RE.test(seg)) return true;
+  if (BARE_PAGE_NUMBER_RE.test(seg)) return true;
+  if (matchMethod === 'EXACT_PHRASE') return false;
+  const tokenCount = seg.trim().split(/\s+/).filter(Boolean).length;
+  return tokenCount < 4;
+}
 export function extractSimilarityFindingsFromEvidenceMatches(
   documentText: string,
   documentHash: string,
@@ -837,6 +867,8 @@ export function extractSimilarityFindingsFromEvidenceMatches(
       const matchMethod: SimilarityMatchMethod = s.matchType === 'exact_match'
         ? 'EXACT_PHRASE'
         : (s.matchType === 'ngram_overlap' ? 'NGRAM' : 'TOKEN_OVERLAP');
+
+      if (isRejectableFinding(s.studentText, matchMethod)) continue;
 
       const findingId = computeHash(
         `${documentHash}:${s.sourceId}:${s.documentUnitId}:${s.similarityPercentage}`
@@ -867,6 +899,15 @@ export function extractSimilarityFindingsFromEvidenceMatches(
   // Fallback extraction from raw matches
   for (const match of matches) {
     if (match.matchPercentage <= 0) continue;
+
+    // Compute a provisional match method from the raw match shape so
+    // the predicate can reject noise before the full lookup runs.
+    const provisionalMethod: SimilarityMatchMethod =
+      match.matchType === 'exact'
+        ? 'EXACT_PHRASE'
+        : (match.title && match.title.length >= 12 ? 'NGRAM' : 'TOKEN_OVERLAP');
+    const provisionalSegment = (match as any).matchedText || (match as any).originalSnippet || (match as any).title || '';
+    if (isRejectableFinding(provisionalSegment, provisionalMethod)) continue;
 
     const lookupSnippet = match.matchedText || match.originalSnippet || match.title;
     if (!lookupSnippet) continue;
