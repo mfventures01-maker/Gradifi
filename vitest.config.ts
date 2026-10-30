@@ -28,14 +28,6 @@ export default defineConfig({
       'tests/g2_offset_fidelity.test.ts',
       'tests/g1_epub_ocr.test.ts',
 
-      // Test E in granularSimilarityResult.test.ts asserts that
-      // documentNormalizer.ts has no git diff. The diff it checks for is
-      // the intended G2 sentence-admission-floor repair, not a regression.
-      // Excluded until the test is rewritten to assert the repair lines
-      // are present rather than asserting no diff exists. Runnable
-      // individually: `npx vitest run tests/granularSimilarityResult.test.ts`
-      'tests/granularSimilarityResult.test.ts',
-
       // tests/ocrService.test.ts calls the real OCR service against a
       // placeholder Buffer.from('test image'). The file's own header comment
       // marks it as a mock test requiring an actual image. Two runtime

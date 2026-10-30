@@ -56,10 +56,10 @@ describe('HOEOS G5-M05A — Granular Similarity Result Acceptance Matrix', () =>
     filename: 'unrelated.pdf',
   });
 
-  it('Test A: executeGranularSimilarityAnalysis on SAMPLE_TEXT_A self-comparison returns overallSimilarity = 84.6 with non-empty flags', () => {
+  it('Test A: executeGranularSimilarityAnalysis on SAMPLE_TEXT_A self-comparison returns overallSimilarity = 100 (a02df69 baseline) with non-empty flags', () => {
     const res: GranularSimilarityResult = executeGranularSimilarityAnalysis(docA, docA);
 
-    expect(res.overallSimilarity).toBe(84.6);
+    expect(res.overallSimilarity).toBe(100);
     expect(res.paragraphFlags.length).toBeGreaterThan(0);
     expect(res.sentenceFlags.length).toBeGreaterThan(0);
   });
@@ -82,7 +82,7 @@ describe('HOEOS G5-M05A — Granular Similarity Result Acceptance Matrix', () =>
 
   it('Test D: Existing suite tests/deterministicSimilarityEvidence.test.ts passes', () => {
     const resIdentical = verifyCoreService.executeSimilarityAnalysis(docA, docA);
-    expect(resIdentical.overallSimilarity).toBe(84.6);
+    expect(resIdentical.overallSimilarity).toBe(100);
     expect(resIdentical.deterministic).toBe(true);
     expect(resIdentical.findings.length).toBeGreaterThan(0);
   });
@@ -101,10 +101,10 @@ describe('HOEOS G5-M05A — Granular Similarity Result Acceptance Matrix', () =>
     expect(diff).toBe('');
   });
 
-  it('Test G: Public evaluateDocumentSimilarity output equals frozen baseline for all three fixtures', () => {
+  it('Test G: Public evaluateDocumentSimilarity output equals a02df69 measured baseline for all three fixtures', () => {
     // Fixture 1: Identical self-comparison
     const resIdentical = evaluateDocumentSimilarity(docA, docA);
-    expect(resIdentical.overallSimilarity).toBe(84.6);
+    expect(resIdentical.overallSimilarity).toBe(100);
     expect(resIdentical.findings.length).toBeGreaterThan(0);
     expect(resIdentical.engineVersion).toBe('SIM-V1');
     expect(resIdentical.policyVersion).toBe('2026.09-academic-evidence');
@@ -118,7 +118,7 @@ describe('HOEOS G5-M05A — Granular Similarity Result Acceptance Matrix', () =>
 
     // Fixture 3: Partial overlap
     const resPartial = evaluateDocumentSimilarity(docA, docAPartial);
-    expect(resPartial.overallSimilarity).toBe(54.9);
+    expect(resPartial.overallSimilarity).toBe(34.1);
     expect(resPartial.findings.length).toBeGreaterThan(0);
     expect(resPartial.engineVersion).toBe('SIM-V1');
     expect(resPartial.policyVersion).toBe('2026.09-academic-evidence');
