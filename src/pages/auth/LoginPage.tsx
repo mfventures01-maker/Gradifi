@@ -4,7 +4,10 @@ import { Mail, Lock, Phone, KeyRound, ArrowRight, Shield, AlertCircle } from 'lu
 import { authService } from '../../services/authService';
 
 export const LoginPage: React.FC = () => {
-  const navigate = useNavigate();\n  const [searchParams] = useSearchParams();\n  const requestedNext = searchParams.get('next');\n  const nextPath = requestedNext && requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/portal/principal';
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const requestedNext = searchParams.get('next');
+  const nextPath = requestedNext && requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/portal/principal';
   const [authMethod, setAuthMethod] = useState<'email' | 'pin'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
