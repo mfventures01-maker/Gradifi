@@ -42,6 +42,16 @@ function unwrap<T>(data: unknown, error: { message?: string } | null): T {
 }
 
 export const cbtService = {
+  async getAuthoringCatalog(schoolId: string): Promise<{
+    classes: Array<{ id: string; name: string }>;
+    subjects: Array<{ id: string; name: string }>;
+  }> {
+    const { data, error } = await supabase.rpc('get_cbt_authoring_catalog' as any, {
+      p_school_id: schoolId,
+    } as any);
+    return unwrap(data, error);
+  },
+
   async getExams(schoolId: string): Promise<CbtExamRecord[]> {
     if (!schoolId) return [];
     const { data, error } = await supabase.from('cbt_exams').select('*')
