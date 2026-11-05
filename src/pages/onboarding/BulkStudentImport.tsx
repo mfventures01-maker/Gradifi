@@ -233,6 +233,20 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
           </div>
         </div>
 
+        {summary.results.some((r: any) => r.status === 'success') && (
+          <div className="mb-4 max-h-48 overflow-y-auto">
+            <p className="mb-2 text-xs font-medium text-emerald-700">Persisted Student Numbers:</p>
+            <div className="space-y-1">
+              {summary.results.filter((r: any) => r.status === 'success').map((result: any) => (
+                <div key={result.student_id} className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-xs">
+                  <span>{result.first_name} {result.last_name} · {result.class}</span>
+                  <strong className="font-mono">{result.student_number}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {summary.results.some((r: any) => r.status === 'failed') && (
           <div className="mb-4 max-h-48 overflow-y-auto">
             <p className="text-xs font-medium text-rose-700 mb-2">Failed Rows:</p>
