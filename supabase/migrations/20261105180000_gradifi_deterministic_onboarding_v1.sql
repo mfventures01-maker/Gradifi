@@ -455,54 +455,6 @@ using (exists (
 
 revoke all on function public.auth_pin_login(text,text) from public;
 grant execute on function public.auth_pin_login(text,text) to anon,authenticated;
- then raise exception 'INVALID_STAFF_PIN' using errcode='22023'; end if;
-  select m.school_id,s.institution_id into v_school_id,v_institution_id
-  from public.gradifi_school_memberships m
-  join public.schools s on s.id=m.school_id
-  where m.user_id=auth.uid() and m.member_role='principal' and m.status='active'
-    and s.provisioning_status='active'
-  limit 1;
-  if v_school_id is null then raise exception 'ACTIVE_PRINCIPAL_REQUIRED' using errcode='42501'; end if;
-  select lower(email) into v_user_email from auth.users where id=p_user_id and lower(email)=lower(p_email);
-  if v_user_email is null then raise exception 'STAFF_AUTH_USER_EMAIL_MISMATCH' using errcode='23503'; end if;
-  if exists(select 1 from public.profiles where user_id=p_user_id)
-     or exists(select 1 from public.identity_actors where auth_user_id=p_user_id) then
-    raise exception 'STAFF_IDENTITY_ALREADY_PROVISIONED' using errcode='23505';
-  end if;
-
-  insert into public.profiles
-    (user_id,institution_id,school_id,full_name,email,phone,role,pin_hash,pin_type,
-     authentication_method,pin_requires_change)
-  values
-    (p_user_id,v_institution_id,v_school_id,trim(p_name),lower(trim(p_email)),
-     nullif(trim(p_phone),''),p_role,crypt(p_pin,gen_salt('bf',12)),'6-digit','pin',true)
-  returning id into v_profile_id;
-
-  insert into public.identity_actors
-    (auth_user_id,institution_id,school_id,actor_type,actor_record_id,login_identifier,auth_method,status,pin_hash)
-  values
-    (p_user_id,v_institution_id,v_school_id,p_role,v_profile_id,lower(trim(p_email)),'pin','active',
-     crypt(p_pin,gen_salt('bf',12)));
-
-  insert into public.gradifi_school_memberships
-    (school_id,user_id,member_role,status,invited_by,activated_at)
-  values (v_school_id,p_user_id,p_role,'active',auth.uid(),now());
-
-  if p_role='teacher' then
-    insert into public.teachers (user_id,school_id,institution_id,name,email,phone)
-    values (p_user_id,v_school_id,v_institution_id,trim(p_name),lower(trim(p_email)),nullif(trim(p_phone),'' ));
-  end if;
-
-  update public.institution_onboarding
-  set teachers_created = teachers_created or p_role='teacher',
-      current_step=greatest(current_step,10),updated_at=now()
-  where institution_id=v_institution_id;
-
-  return jsonb_build_object('success',true,'profile_id',v_profile_id,'user_id',p_user_id,
-    'role',p_role,'full_name',trim(p_name),'email',lower(trim(p_email)));
-end;
-$function$;
-
 create or replace function public.gradifi_update_onboarding_progress(
   p_institution_id uuid,p_current_step smallint,p_is_completed boolean default false
 )
