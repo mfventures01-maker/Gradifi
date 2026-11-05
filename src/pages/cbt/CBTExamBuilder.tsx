@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Save, Send, Loader2 } from 'lucide-react';
-import { authService } from '../../services/authService';
 import { cbtService, CbtExamRecord } from '../../services/cbtService';
 
 type BuilderOption = { id: string; letter: string; text: string };
@@ -55,11 +54,10 @@ export const CBTExamBuilder: React.FC = () => {
     let alive = true;
     (async () => {
       try {
-        const identity = await authService.resolveCurrentIdentity();
-        if (!identity.schoolId) throw new Error('Your authenticated account is not linked to a school.');
-        const catalog = await cbtService.getAuthoringCatalog(identity.schoolId);
+        const catalog = await cbtService.getAuthoringCatalog();
+        if (!catalog.school_id) throw new Error('Your authenticated account is not linked to an active school.');
         if (!alive) return;
-        setSchoolId(identity.schoolId);
+        setSchoolId(catalog.school_id);
         setClasses(catalog.classes);
         setSubjects(catalog.subjects);
         if (catalog.classes[0]) setClassId(catalog.classes[0].id);
