@@ -171,7 +171,7 @@ export const onboardingService = {
   },
 
   async createStaffAccount(input: { role: StaffRole; name: string; email: string; phone: string }) {
-    if (!input.name.trim() || !input.email.trim()) throw new Error('Staff name and email are required.');
+    if (!input.name.trim() || !input.email.trim() || input.phone.trim().length < 7) throw new Error('Staff name, email and a valid phone number are required.');
     const { data, error } = await supabase.functions.invoke('gradifi-staff-provision', {
       body: {
         role: input.role,
