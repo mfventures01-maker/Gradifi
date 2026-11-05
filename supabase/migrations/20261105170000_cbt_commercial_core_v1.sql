@@ -250,6 +250,76 @@ begin
 end;
 $function$;
 
+-- Do not disclose running score or correctness through the answer-save response.
+create or replace function public.submit_cbt_answer(
+  p_attempt_id uuid,
+  p_question_id uuid,
+  p_selected_option_id uuid
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'pg_catalog', 'public', 'auth'
+as $function$
+declare
+  v_attempt public.cbt_attempts%rowtype;
+  v_snapshot public.gradifi_exam_question_snapshots%rowtype;
+  v_correct_option uuid;
+  v_marks integer;
+  v_remaining integer;
+  v_correct boolean;
+  v_current_score integer;
+begin
+  select a.* into v_attempt
+  from public.cbt_attempts a
+  join public.students s on s.id=a.student_id
+  where a.id=p_attempt_id and s.user_id=auth.uid()
+  for update of a;
+
+  if not found then raise exception 'CBT attempt not found or unauthorized'; end if;
+  if v_attempt.status<>'in_progress' then
+    return jsonb_build_object('success',false,'error','CBT attempt is not active','status',v_attempt.status);
+  end if;
+  if now()>=v_attempt.deadline_at then
+    perform public.cbt_finalize_attempt(p_attempt_id);
+    return jsonb_build_object('success',false,'error','CBT attempt deadline has expired','status','timeout');
+  end if;
+
+  select * into v_snapshot
+  from public.gradifi_exam_question_snapshots s
+  where s.exam_id=v_attempt.exam_id
+    and s.question_payload->>'question_id'=p_question_id::text;
+  if not found then raise exception 'Question is not part of this attempt paper'; end if;
+
+  if not exists (
+    select 1 from jsonb_array_elements(v_snapshot.question_payload->'options') o
+    where o->>'id'=p_selected_option_id::text
+  ) then raise exception 'Selected option does not belong to this snapshot question'; end if;
+
+  v_correct_option := (v_snapshot.answer_key_payload->>'correct_option_id')::uuid;
+  v_marks := (v_snapshot.answer_key_payload->>'marks')::integer;
+  v_correct := p_selected_option_id=v_correct_option;
+
+  insert into public.cbt_answers
+    (attempt_id,question_id,selected_option_id,is_correct,marks_awarded,updated_at)
+  values (p_attempt_id,p_question_id,p_selected_option_id,v_correct,
+          case when v_correct then v_marks else 0 end,now())
+  on conflict (attempt_id,question_id) do update
+  set selected_option_id=excluded.selected_option_id,
+      is_correct=excluded.is_correct,marks_awarded=excluded.marks_awarded,updated_at=now();
+
+  select coalesce(sum(marks_awarded),0) into v_current_score
+  from public.cbt_answers where attempt_id=p_attempt_id;
+  update public.cbt_attempts set score=v_current_score where id=p_attempt_id;
+
+  v_remaining := greatest(0,extract(epoch from (v_attempt.deadline_at-now()))::integer);
+  return jsonb_build_object(
+    'success',true,'attempt_id',p_attempt_id,'question_id',p_question_id,
+    'saved',true,'time_remaining',v_remaining
+  );
+end;
+$function$;
+
 create or replace function public.update_cbt_question(
   p_question_id uuid,
   p_question_text text,
