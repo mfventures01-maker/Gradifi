@@ -830,6 +830,9 @@ begin
   if exists(select 1 from public.profiles p where lower(p.email)=v_user_email and p.user_id<>p_user_id) then
     raise exception 'PARENT_EMAIL_ALREADY_LINKED_TO_ANOTHER_PROFILE' using errcode='23505';
   end if;
+  if exists(select 1 from public.identity_actors a where lower(a.login_identifier)=v_user_email and a.auth_user_id<>p_user_id) then
+    raise exception 'PARENT_EMAIL_ALREADY_LINKED_TO_ANOTHER_IDENTITY' using errcode='23505';
+  end if;
   if exists(select 1 from public.profiles p where p.phone=p_parent_phone and p.user_id<>p_user_id and p.role='parent') then
     raise exception 'PARENT_PHONE_ALREADY_LINKED_TO_ANOTHER_ACCOUNT' using errcode='23505';
   end if;
@@ -860,7 +863,7 @@ begin
   values
     (p_user_id,v_institution_id,v_school_id,'parent',v_profile_id,v_user_email,'pin','active',
      crypt(p_pin,gen_salt('bf',12)))
-  on conflict do update set
+  on conflict (auth_user_id) do update set
     institution_id=excluded.institution_id,school_id=excluded.school_id,
     actor_type='parent',actor_record_id=v_profile_id,login_identifier=v_user_email,
     auth_method='pin',status='active',pin_hash=excluded.pin_hash;
@@ -936,3 +939,34 @@ revoke all on function public.gradifi_bulk_create_students(jsonb,uuid) from publ
 revoke all on function public.gradifi_create_parent_profile(uuid,uuid,text,text,text,text,boolean,text) from public,anon;
 grant execute on function public.gradifi_bulk_create_students(jsonb,uuid) to authenticated;
 grant execute on function public.gradifi_create_parent_profile(uuid,uuid,text,text,text,text,boolean,text) to authenticated;
+
+
+-- Sequence allocation is atomic and starts at 00001, including the first student in a school.
+create or replace function public.generate_student_number(p_school_id uuid)
+returns text
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $function$
+declare
+  v_next_number integer;
+  v_prefix text;
+  v_school_name text;
+begin
+  select school_name into v_school_name from public.schools where id=p_school_id;
+  if v_school_name is null then raise exception 'SCHOOL_NOT_FOUND' using errcode='P0002'; end if;
+  v_prefix:=upper(left(regexp_replace(v_school_name,'[^a-zA-Z]','','g'),3));
+  if v_prefix is null or v_prefix='' then v_prefix:='SCH'; end if;
+
+  insert into public.student_number_sequences(school_id,last_number,prefix)
+  values(p_school_id,1,v_prefix)
+  on conflict(school_id) do update
+    set last_number=public.student_number_sequences.last_number+1,
+        updated_at=now()
+  returning last_number into v_next_number;
+
+  return v_prefix||'-'||to_char(current_date,'YYYY')||'-'||lpad(v_next_number::text,5,'0');
+end;
+$function$;
+
+revoke execute on function public.generate_student_number(uuid) from public,anon,authenticated;
