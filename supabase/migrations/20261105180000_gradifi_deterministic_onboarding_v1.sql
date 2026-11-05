@@ -2,7 +2,8 @@
 -- Additive only. All writes are performed through authenticated, tenant-scoped RPCs.
 
 alter table public.profiles add column if not exists email text;
-alter table public.schools add column if not exists state text;\nalter table public.schools add column if not exists lga text;
+alter table public.schools add column if not exists state text;
+alter table public.schools add column if not exists lga text;
 
 alter table public.institution_onboarding
   add column if not exists current_step smallint not null default 1,
