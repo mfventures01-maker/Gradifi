@@ -108,7 +108,7 @@ export const authService = {
     if (profileError) throw profileError;
 
     // 2. Fetch the caller-owned, active identity actor. No alternate user_id fallback.
-    const { data: actor, error: actorError } = await supabase
+    const { data: actor, error: actorError } = await (supabase as any)
       .from('identity_actors')
       .select('*')
       .eq('auth_user_id' as any, user.id)
