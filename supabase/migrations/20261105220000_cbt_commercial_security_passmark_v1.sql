@@ -103,7 +103,7 @@ revoke insert, update, delete on public.cbt_session_snapshots from anon, authent
 -- but remove every client and service execution path.
 revoke all on function public.start_cbt_exam_v2(uuid,uuid) from public, anon, authenticated, service_role;
 
--- Pass marks are percentages (0..100), matching authoring and result calculations.
+-- Pass marks remain raw examination marks, bounded by the sum of question marks.
 -- Preserve the existing publication validations and immutable snapshot construction.
 create or replace function public.publish_cbt_exam(p_exam_id uuid)
 returns jsonb
@@ -134,8 +134,8 @@ begin
   if v_exam.total_marks<>v_question_marks then
     raise exception 'Exam total marks do not match question marks';
   end if;
-  if v_exam.pass_mark is null or v_exam.pass_mark<0 or v_exam.pass_mark>100 then
-    raise exception 'Pass mark must be between 0 and 100 percent';
+  if v_exam.pass_mark is null or v_exam.pass_mark<0 or v_exam.pass_mark>v_question_marks then
+    raise exception 'Pass mark cannot exceed total examination marks';
   end if;
   if exists (
     select 1 from public.cbt_questions q
@@ -194,7 +194,7 @@ begin
     'success',true,'exam_id',p_exam_id,'status',v_exam.status,
     'start_time',v_exam.start_time,'end_time',v_exam.end_time,
     'duration_minutes',v_exam.duration_minutes,'total_questions',v_question_count,
-    'total_marks',v_question_marks,'pass_mark_percent',v_exam.pass_mark,
+    'total_marks',v_question_marks,'pass_mark',v_exam.pass_mark,
     'snapshot_count',v_question_count
   );
 end;
