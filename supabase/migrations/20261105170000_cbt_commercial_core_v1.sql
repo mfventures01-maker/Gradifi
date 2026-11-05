@@ -322,6 +322,7 @@ begin
   if not found then raise exception 'Question not found'; end if;
   perform public.assert_exam_access(v_exam_id);
   if v_status<>'draft' then raise exception 'Published exam questions are immutable'; end if;
+  delete from public.cbt_options where question_id=p_question_id;
   delete from public.cbt_questions where id=p_question_id;
   update public.cbt_exams set total_marks=greatest(0,total_marks-v_marks),updated_at=now()
   where id=v_exam_id;
@@ -517,7 +518,8 @@ as $function$
   join public.classes c on c.id=e.class_id
   where o.is_listed=true and e.status='published'
     and (o.available_from is null or o.available_from<=now())
-    and (o.available_until is null or o.available_until>now());
+    and (o.available_until is null or o.available_until>now())
+    and (e.end_time is null or e.end_time>now());
 $function$;
 
 create or replace function public.cbt_public_create_offer(
@@ -585,6 +587,7 @@ begin
     and e.status='published'
     and (o.available_from is null or o.available_from<=now())
     and (o.available_until is null or o.available_until>now())
+    and (e.end_time is null or e.end_time>now())
   for update of o;
   if not found then raise exception 'Public exam offer is unavailable'; end if;
 
