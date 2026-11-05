@@ -173,6 +173,17 @@ export const cbtService = {
     if (error) throw error;
   },
 
+  async getAttemptState(attemptId: string): Promise<{
+    success: boolean; attempt_id: string; exam_id: string; deadline_at: string;
+    status: string; session_id: string; session_state: string; current_question: number;
+    answers: Record<string, string>;
+  }> {
+    const { data, error } = await supabase.rpc('get_cbt_attempt_state' as any, {
+      p_attempt_id: attemptId,
+    } as any);
+    return unwrap(data, error);
+  },
+
   async createAttempt(examId: string): Promise<CbtAttemptStart> {
     const { data, error } = await supabase.rpc('create_cbt_attempt' as any, { p_exam_id: examId } as any);
     return unwrap<CbtAttemptStart>(data, error);
