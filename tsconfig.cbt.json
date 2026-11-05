@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/App.tsx",
+    "src/pages/cbt/**/*.tsx",
+    "src/services/cbtService.ts",
+    "src/services/cbtPaymentService.ts",
+    "src/services/authService.ts",
+    "src/services/classService.ts",
+    "src/services/subjectService.ts",
+    "src/components/AuthGuard.tsx",
+    "src/components/cbt/**/*.tsx",
+    "src/types/phase4.types.ts",
+    "src/contracts/**/*.ts",
+    "src/types/database.types.ts",
+    "src/lib/supabase.ts",
+    "src/vite-env.d.ts"
+  ],
+  "exclude": ["node_modules", "dist", "runtime", "tests", "supabase"]
+}

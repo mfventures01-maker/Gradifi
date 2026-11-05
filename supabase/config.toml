@@ -1,0 +1,4 @@
+project_id = "ehkmfnaqkdgkjmdxxbwj"
+
+[functions.cbt-payments]
+verify_jwt = false
