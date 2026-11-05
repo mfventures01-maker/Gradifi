@@ -21,7 +21,7 @@ function securePin(): string {
 }
 
 serve(async (req: Request) => {
-  const configuredOrigin = (Deno.env.get("APP_URL") || "").replace(/\\/+$/, "");
+  const configuredOrigin = (Deno.env.get("APP_URL") || "").replace(/\/+$/, "");
   const requestOrigin = req.headers.get("origin") || "";
   const allowedOrigin = configuredOrigin && requestOrigin === configuredOrigin ? configuredOrigin : "";
   if (req.method === "OPTIONS") {
