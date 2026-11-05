@@ -137,7 +137,9 @@ export const authService = {
    * Called when Principal creates VP, Bursar, or Teacher
    */
   generatePin(): string {
-    const bytes = new Uint32Array(1);\n    crypto.getRandomValues(bytes);\n    return String(100000 + (bytes[0] % 900000));
+    const bytes = new Uint32Array(1);
+    crypto.getRandomValues(bytes);
+    return String(100000 + (bytes[0] % 900000));
   },
 
   /**
