@@ -118,7 +118,7 @@ export const authService = {
 
     const institutionId = actor?.institution_id || profile?.institution_id || null;
     const schoolId = actor?.school_id || profile?.school_id || null;
-    const actorType = actor?.actor_type || actor?.role || null;
+    const actorType = (actor as any)?.actor_type || (actor as any)?.role || null;
     const role = (actorType === 'principal_admin' ? 'principal' : actorType || profile?.role || null) as AuthSessionState['role'];
 
     return {
