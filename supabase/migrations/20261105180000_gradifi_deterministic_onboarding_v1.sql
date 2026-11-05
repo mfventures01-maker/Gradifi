@@ -1028,3 +1028,135 @@ end;
 $function$;
 
 revoke execute on function public.generate_student_number(uuid) from public,anon,authenticated;
+
+
+-- SECURITY DEFINER predicates prevent recursive RLS evaluation across parent/student joins.
+create or replace function public.gradifi_parent_can_access_student(p_student_id uuid)
+returns boolean language sql stable security definer
+set search_path = pg_catalog, public, auth
+as $function$
+  select exists (
+    select 1 from public.student_parent_relationships spr
+    join public.parents p on p.id=spr.parent_id
+    join public.profiles pf on pf.id=p.profile_id
+    where spr.student_id=p_student_id and pf.user_id=auth.uid()
+  );
+$function$;
+
+create or replace function public.gradifi_parent_can_access_school(p_school_id uuid)
+returns boolean language sql stable security definer
+set search_path = pg_catalog, public, auth
+as $function$
+  select exists (
+    select 1 from public.student_parent_relationships spr
+    join public.parents p on p.id=spr.parent_id
+    join public.profiles pf on pf.id=p.profile_id
+    where spr.school_id=p_school_id and pf.user_id=auth.uid()
+  );
+$function$;
+
+create or replace function public.gradifi_parent_can_access_class(p_class_id uuid)
+returns boolean language sql stable security definer
+set search_path = pg_catalog, public, auth
+as $function$
+  select exists (
+    select 1 from public.students st
+    join public.student_parent_relationships spr on spr.student_id=st.id
+    join public.parents p on p.id=spr.parent_id
+    join public.profiles pf on pf.id=p.profile_id
+    where st.class_id=p_class_id and pf.user_id=auth.uid()
+  );
+$function$;
+
+create or replace function public.gradifi_parent_can_access_parent(p_parent_id uuid)
+returns boolean language sql stable security definer
+set search_path = pg_catalog, public, auth
+as $function$
+  select exists (
+    select 1 from public.parents p
+    join public.profiles pf on pf.id=p.profile_id
+    where p.id=p_parent_id and pf.user_id=auth.uid()
+  );
+$function$;
+
+create or replace function public.gradifi_school_id_for_student(p_student_id uuid)
+returns uuid language sql stable security definer
+set search_path = pg_catalog, public, auth
+as $function$
+  select s.school_id from public.students s where s.id=p_student_id limit 1;
+$function$;
+
+revoke all on function public.gradifi_parent_can_access_student(uuid) from public,anon;
+revoke all on function public.gradifi_parent_can_access_school(uuid) from public,anon;
+revoke all on function public.gradifi_parent_can_access_class(uuid) from public,anon;
+revoke all on function public.gradifi_parent_can_access_parent(uuid) from public,anon;
+revoke all on function public.gradifi_school_id_for_student(uuid) from public,anon;
+grant execute on function public.gradifi_parent_can_access_student(uuid) to authenticated;
+grant execute on function public.gradifi_parent_can_access_school(uuid) to authenticated;
+grant execute on function public.gradifi_parent_can_access_class(uuid) to authenticated;
+grant execute on function public.gradifi_parent_can_access_parent(uuid) to authenticated;
+grant execute on function public.gradifi_school_id_for_student(uuid) to authenticated;
+
+drop policy if exists students_select_scoped on public.students;
+create policy students_select_scoped on public.students
+for select to authenticated
+using (
+  user_id=(select auth.uid())
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+  or public.gradifi_parent_can_access_student(id)
+);
+
+drop policy if exists parents_select_scoped on public.parents;
+create policy parents_select_scoped on public.parents
+for select to authenticated
+using (
+  exists(select 1 from public.profiles pf where pf.id=parents.profile_id and pf.user_id=(select auth.uid()))
+  or public.has_active_school_role(
+    public.gradifi_school_id_for_student(parents.child_student_id),
+    array['principal','school_admin']
+  )
+);
+
+drop policy if exists student_parent_relationships_select_scoped on public.student_parent_relationships;
+create policy student_parent_relationships_select_scoped on public.student_parent_relationships
+for select to authenticated
+using (
+  public.gradifi_parent_can_access_parent(parent_id)
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+);
+
+drop policy if exists schools_select_active_school_admin on public.schools;
+create policy schools_select_active_school_admin on public.schools
+for select to authenticated
+using (
+  public.has_active_school_role(id,array['principal','school_admin'])
+  or public.gradifi_parent_can_access_school(id)
+);
+
+drop policy if exists institutions_select_active_school_admin on public.institutions;
+create policy institutions_select_active_school_admin on public.institutions
+for select to authenticated
+using (exists (
+  select 1 from public.schools s
+  where s.institution_id=institutions.id
+    and (
+      public.has_active_school_role(s.id,array['principal','school_admin'])
+      or public.gradifi_parent_can_access_school(s.id)
+    )
+));
+
+drop policy if exists classes_select_active_school_member on public.classes;
+create policy classes_select_active_school_member on public.classes
+for select to authenticated
+using (
+  public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer'])
+  or public.gradifi_parent_can_access_class(id)
+);
+
+drop policy if exists class_subjects_select_active_school_member on public.class_subjects;
+create policy class_subjects_select_active_school_member on public.class_subjects
+for select to authenticated
+using (
+  public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer'])
+  or public.gradifi_parent_can_access_class(class_id)
+);
