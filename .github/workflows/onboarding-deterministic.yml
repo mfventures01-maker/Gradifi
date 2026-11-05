@@ -18,6 +18,8 @@ on:
       - 'tests/onboardingDeterministicContract.test.ts'
       - 'tsconfig.onboarding.json'
       - 'e2e/onboarding-deterministic.spec.ts'
+      - 'e2e/phase2-onboarding.spec.ts'
+      - 'tests/onboarding.spec.ts'
       - 'playwright.config.ts'
       - '.github/workflows/onboarding-deterministic.yml'
 
@@ -40,7 +42,7 @@ jobs:
       - name: Playwright onboarding E2E
         run: |
           npx playwright install --with-deps chromium
-          npx playwright test e2e/onboarding-deterministic.spec.ts --reporter=line
+          npx playwright test --reporter=line
 
   edge-functions:
     runs-on: ubuntu-latest
