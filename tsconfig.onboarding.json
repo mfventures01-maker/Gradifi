@@ -7,6 +7,8 @@
     "src/pages/onboarding/OnboardingWizard.tsx",
     "src/pages/onboarding/CreateStaffAccount.tsx",
     "src/pages/onboarding/CreateStudent.tsx",
+    "src/pages/onboarding/BulkStudentImport.tsx",
+    "src/pages/onboarding/CreateParent.tsx",
     "src/pages/onboarding/CreateVP.tsx",
     "src/pages/onboarding/CreateBursar.tsx",
     "src/pages/onboarding/CreateTeacher.tsx",
