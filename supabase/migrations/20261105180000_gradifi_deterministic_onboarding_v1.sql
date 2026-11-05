@@ -471,19 +471,29 @@ as $function$
 declare
   v_profile public.profiles%rowtype;
   v_required_length integer;
+  v_match_count integer;
 begin
+  select count(distinct p.id) into v_match_count
+  from public.profiles p
+  left join public.students s on s.user_id=p.user_id
+  where lower(coalesce(p.phone,''))=lower(coalesce(p_identifier,''))
+     or lower(coalesce(p.email,''))=lower(coalesce(p_identifier,''))
+     or s.student_number=p_identifier;
+
+  if v_match_count=0 then
+    return jsonb_build_object('success',false,'error','Invalid credentials');
+  end if;
+  if v_match_count>1 then
+    return jsonb_build_object('success',false,'error','Identifier is ambiguous; use your registered email address.');
+  end if;
+
   select p.* into v_profile
   from public.profiles p
   left join public.students s on s.user_id=p.user_id
   where lower(coalesce(p.phone,''))=lower(coalesce(p_identifier,''))
      or lower(coalesce(p.email,''))=lower(coalesce(p_identifier,''))
      or s.student_number=p_identifier
-  order by p.created_at desc
   limit 1;
-
-  if not found then
-    return jsonb_build_object('success',false,'error','Invalid credentials');
-  end if;
   if v_profile.pin_hash is null then
     return jsonb_build_object('success',false,'error','PIN not configured for this account');
   end if;
