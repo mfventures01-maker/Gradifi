@@ -1,310 +1,311 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CBTQuestion } from '../../types/phase4.types';
-import { 
-  Plus, 
-  Trash2, 
-  Save, 
-  ArrowLeft, 
-  ArrowRight, 
-  CheckCircle2, 
-  HelpCircle, 
-  Clock, 
-  BookOpen 
-} from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Send, Loader2 } from 'lucide-react';
+import { cbtService, CbtExamRecord } from '../../services/cbtService';
+
+type BuilderOption = { id: string; letter: string; text: string };
+type BuilderQuestion = {
+  id: string;
+  persistedId?: string;
+  text: string;
+  marks: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  options: BuilderOption[];
+  correctOptionId: string;
+};
+
+const makeQuestion = (number: number): BuilderQuestion => ({
+  id: 'local-' + crypto.randomUUID(),
+  text: '',
+  marks: 1,
+  difficulty: 'medium',
+  options: ['A', 'B', 'C', 'D'].map(letter => ({
+    id: 'local-' + crypto.randomUUID(), letter, text: '',
+  })),
+  correctOptionId: '',
+});
 
 export const CBTExamBuilder: React.FC = () => {
   const navigate = useNavigate();
   const { examId } = useParams<{ examId?: string }>();
-
-  const [step, setStep] = useState<1 | 2>(1);
-
-  // Form Step 1 State
-  const [title, setTitle] = useState('WAEC CBT Practice Test 2026');
-  const [subjectName, setSubjectName] = useState('Mathematics');
-  const [className, setClassName] = useState('JSS 3 Gold');
+  const [schoolId, setSchoolId] = useState('');
+  const [classes, setClasses] = useState<Array<{ id: string; name: string }>>([]);
+  const [subjects, setSubjects] = useState<Array<{ id: string; name: string }>>([]);
+  const [exam, setExam] = useState<CbtExamRecord | null>(null);
+  const [createdExamId, setCreatedExamId] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [classId, setClassId] = useState('');
+  const [subjectId, setSubjectId] = useState('');
   const [durationMinutes, setDurationMinutes] = useState(60);
-  const [passMarkPercentage, setPassMarkPercentage] = useState(50);
-  const [examDate, setExamDate] = useState('2026-08-25');
+  const [passMark, setPassMark] = useState(50);
+  const [startTime, setStartTime] = useState(() => {
+    const value = new Date(Date.now() + 15 * 60 * 1000);
+    value.setSeconds(0, 0);
+    return new Date(value.getTime() - value.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  });
+  const [questions, setQuestions] = useState<BuilderQuestion[]>([]);
+  const [removedQuestionIds, setRemovedQuestionIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
-  // Form Step 2 Questions State
-  const [questions, setQuestions] = useState<CBTQuestion[]>([
-    {
-      id: 'q_1',
-      questionNumber: 1,
-      text: 'Which of the following process is responsible for the formation of waterfalls in river courses?',
-      options: [
-        { id: 'opt_a', letter: 'A', text: 'Weathering' },
-        { id: 'opt_b', letter: 'B', text: 'River erosion' },
-        { id: 'opt_c', letter: 'C', text: 'Deforestation' },
-        { id: 'opt_d', letter: 'D', text: 'Urbanization' },
-      ],
-      correctOptionId: 'opt_b',
-      marks: 5,
-      difficulty: 'Medium',
-    },
-    {
-      id: 'q_2',
-      questionNumber: 2,
-      text: 'Solve for x in the linear equation: 2x + 5 = 15.',
-      options: [
-        { id: 'opt_2a', letter: 'A', text: 'x = 5' },
-        { id: 'opt_2b', letter: 'B', text: 'x = 10' },
-        { id: 'opt_2c', letter: 'C', text: 'x = 15' },
-        { id: 'opt_2d', letter: 'D', text: 'x = 20' },
-      ],
-      correctOptionId: 'opt_2a',
-      marks: 5,
-      difficulty: 'Easy',
-    },
-  ]);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const catalog = await cbtService.getAuthoringCatalog();
+        if (!catalog.school_id) throw new Error('Your authenticated account is not linked to an active school.');
+        if (!alive) return;
+        setSchoolId(catalog.school_id);
+        setClasses(catalog.classes);
+        setSubjects(catalog.subjects);
+        if (catalog.classes[0]) setClassId(catalog.classes[0].id);
+        if (catalog.subjects[0]) setSubjectId(catalog.subjects[0].id);
 
-  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
+        if (examId) {
+          const loaded = await cbtService.getExamWithQuestions(examId);
+          if (!alive) return;
+          setExam(loaded.exam);
+          setTitle(loaded.exam.title);
+          setDescription(loaded.exam.description || '');
+          setClassId(loaded.exam.class_id);
+          setSubjectId(loaded.exam.subject_id);
+          setDurationMinutes(loaded.exam.duration_minutes);
+          setPassMark(loaded.exam.pass_mark || 0);
+          if (loaded.exam.start_time) {
+            const date = new Date(loaded.exam.start_time);
+            setStartTime(new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16));
+          }
+          setQuestions(loaded.questions.map(question => ({
+            id: question.id,
+            persistedId: question.id,
+            text: question.question_text,
+            marks: question.marks,
+            difficulty: (question.difficulty || 'medium').toLowerCase() as BuilderQuestion['difficulty'],
+            options: question.options.map(option => ({
+              id: option.id, letter: option.option_letter, text: option.option_text,
+            })),
+            correctOptionId: question.options.find(option => option.is_correct)?.id || '',
+          })));
+        }
+      } catch (cause) {
+        if (alive) setError(cause instanceof Error ? cause.message : 'Unable to load CBT authoring data');
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [examId]);
 
-  const currentQ = questions[selectedQuestionIndex];
+  const totalMarks = useMemo(() => questions.reduce((sum, question) => sum + Number(question.marks || 0), 0), [questions]);
+  const isDraft = !exam || exam.status === 'draft';
 
-  const handleAddQuestion = () => {
-    const newQ: CBTQuestion = {
-      id: `q_${Date.now()}`,
-      questionNumber: questions.length + 1,
-      text: 'New Question Prompt',
-      options: [
-        { id: `opt_${Date.now()}_a`, letter: 'A', text: 'Option A' },
-        { id: `opt_${Date.now()}_b`, letter: 'B', text: 'Option B' },
-        { id: `opt_${Date.now()}_c`, letter: 'C', text: 'Option C' },
-        { id: `opt_${Date.now()}_d`, letter: 'D', text: 'Option D' },
-      ],
-      correctOptionId: `opt_${Date.now()}_a`,
-      marks: 5,
-      difficulty: 'Medium',
-    };
-    setQuestions([...questions, newQ]);
-    setSelectedQuestionIndex(questions.length);
+  const updateQuestion = (id: string, patch: Partial<BuilderQuestion>) => {
+    setQuestions(current => current.map(question => question.id === id ? { ...question, ...patch } : question));
   };
 
-  const handleSave = (publish = false) => {
-    alert(publish ? 'CBT Exam published successfully!' : 'CBT Exam draft saved.');
-    navigate('/cbt/manager');
+  const updateOption = (questionId: string, optionId: string, text: string) => {
+    setQuestions(current => current.map(question => question.id === questionId
+      ? { ...question, options: question.options.map(option => option.id === optionId ? { ...option, text } : option) }
+      : question));
   };
+
+  const addQuestion = () => setQuestions(current => [...current, makeQuestion(current.length + 1)]);
+  const removeQuestion = (id: string) => {
+    const question = questions.find(item => item.id === id);
+    if (question?.persistedId) setRemovedQuestionIds(current => [...current, question.persistedId!]);
+    setQuestions(current => current.filter(item => item.id !== id));
+  };
+
+  const validate = () => {
+    if (!schoolId || !classId || !subjectId) throw new Error('Select a school class and subject.');
+    if (!title.trim()) throw new Error('Exam title is required.');
+    if (!Number.isInteger(durationMinutes) || durationMinutes < 1 || durationMinutes > 600) throw new Error('Duration must be between 1 and 600 minutes.');
+    if (!Number.isInteger(passMark) || passMark < 0 || passMark > 100) {
+      throw new Error('Pass mark must be between 0 and 100 percent.');
+    }
+    for (let index = 0; index < questions.length; index++) {
+      const question = questions[index];
+      if (!question.text.trim()) throw new Error('Question ' + (index + 1) + ' requires text.');
+      if (!Number.isInteger(Number(question.marks)) || Number(question.marks) <= 0) throw new Error('Question ' + (index + 1) + ' must have positive marks.');
+      if (question.options.length < 2 || question.options.some(option => !option.text.trim())) {
+        throw new Error('Question ' + (index + 1) + ' requires at least two completed options.');
+      }
+      if (!question.correctOptionId || !question.options.some(option => option.id === question.correctOptionId)) {
+        throw new Error('Select exactly one correct option for question ' + (index + 1) + '.');
+      }
+    }
+  };
+
+  const save = async (publish: boolean) => {
+    setError('');
+    try {
+      validate();
+      if (publish && questions.length === 0) throw new Error('Add at least one question before publishing.');
+      setSaving(true);
+
+      let currentExamId = exam?.id || examId || createdExamId || '';
+      if (!currentExamId) {
+        const created = await cbtService.createExam({
+          schoolId, classId, subjectId, title, description, durationMinutes,
+          passMark, startTime: new Date(startTime).toISOString(),
+        });
+        currentExamId = created.exam_id;
+        setCreatedExamId(currentExamId);
+      }
+
+      for (const questionId of removedQuestionIds) {
+        await cbtService.deleteQuestion(questionId);
+        setRemovedQuestionIds(current => current.filter(id => id !== questionId));
+      }
+
+      for (let index = 0; index < questions.length; index++) {
+        const question = questions[index];
+        const payload = {
+          examId: currentExamId,
+          questionText: question.text.trim(),
+          marks: Number(question.marks),
+          questionNumber: index + 1,
+          difficulty: question.difficulty,
+          options: question.options.map(option => ({
+            letter: option.letter,
+            text: option.text.trim(),
+            is_correct: option.id === question.correctOptionId,
+          })),
+        };
+        if (question.persistedId) {
+          await cbtService.updateQuestion({
+            questionId: question.persistedId,
+            questionText: payload.questionText,
+            marks: payload.marks,
+            questionNumber: payload.questionNumber,
+            difficulty: payload.difficulty,
+            options: payload.options,
+          });
+        } else {
+          const persistedId = await cbtService.addQuestion(payload);
+          setQuestions(current => current.map(item => item.id === question.id
+            ? { ...item, persistedId }
+            : item));
+        }
+      }
+
+      if (publish) {
+        await cbtService.publishExam(currentExamId);
+        navigate('/cbt/manager', { replace: true });
+      } else {
+        navigate('/cbt/manager', { replace: true });
+      }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Unable to save exam');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <div className="min-h-screen grid place-items-center text-slate-500">Loading CBT authoring workspace…</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 p-4 sm:p-6 md:p-8 font-sans max-w-5xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <button
-            onClick={() => navigate('/cbt/manager')}
-            className="text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 cursor-pointer font-medium"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Exam Manager
+    <main className="min-h-screen bg-slate-50 text-slate-900 p-4 sm:p-7 max-w-5xl mx-auto space-y-5">
+      <header className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between gap-3">
+        <div>
+          <button onClick={() => navigate('/cbt/manager')} className="text-xs text-slate-500 flex items-center gap-2 mb-2">
+            <ArrowLeft size={14} /> Exam manager
           </button>
-          <h1 className="text-2xl font-extrabold text-slate-900">
-            {examId ? 'Edit CBT Exam' : 'Create CBT Exam'}
-          </h1>
-          <p className="text-xs text-slate-500">Configure exam settings and question bank items.</p>
+          <h1 className="text-2xl font-extrabold">{examId || createdExamId ? 'Edit draft exam' : 'Create CBT exam'}</h1>
+          <p className="text-sm text-slate-500">Questions, answers and publishing are persisted through protected database functions.</p>
         </div>
+        <div className="text-right text-xs text-slate-500">
+          <div>{questions.length} questions</div>
+          <div className="font-bold text-slate-800">{totalMarks} total marks</div>
+        </div>
+      </header>
 
-        {/* Step Indicator */}
-        <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-xl text-xs font-semibold">
-          <button
-            onClick={() => setStep(1)}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-              step === 1 ? 'bg-white text-indigo-600 shadow-xs font-bold' : 'text-slate-500'
-            }`}
-          >
-            1. Exam Details
+      {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
+      {!isDraft && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">This exam is published. Its question snapshot is immutable.</div>}
+
+      <section className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+        <h2 className="font-bold">Exam configuration</h2>
+        <label className="block text-sm">Exam title
+          <input disabled={!isDraft} value={title} onChange={e => setTitle(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
+        </label>
+        <label className="block text-sm">Description
+          <textarea disabled={!isDraft} value={description} onChange={e => setDescription(e.target.value)} rows={2} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
+        </label>
+        <div className="grid md:grid-cols-2 gap-3">
+          <label className="block text-sm">Class
+            <select disabled={!isDraft} value={classId} onChange={e => setClassId(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 p-3">
+              {classes.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}
+            </select>
+          </label>
+          <label className="block text-sm">Subject
+            <select disabled={!isDraft} value={subjectId} onChange={e => setSubjectId(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 p-3">
+              {subjects.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}
+            </select>
+          </label>
+          <label className="block text-sm">Duration (minutes)
+            <input disabled={!isDraft} type="number" min={1} max={600} value={durationMinutes} onChange={e => setDurationMinutes(Number(e.target.value))} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
+          </label>
+          <label className="block text-sm">Pass mark (%)
+            <input disabled={!isDraft} type="number" min={0} max={100} value={passMark} onChange={e => setPassMark(Number(e.target.value))} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
+          </label>
+          <label className="block text-sm md:col-span-2">Scheduled start
+            <input disabled={!isDraft} type="datetime-local" value={startTime} onChange={e => setStartTime(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
+          </label>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold">Question bank for this exam</h2>
+          <button disabled={!isDraft} onClick={addQuestion} className="rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm font-bold flex items-center gap-2 disabled:opacity-40">
+            <Plus size={16} /> Add question
           </button>
-          <button
-            onClick={() => setStep(2)}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-              step === 2 ? 'bg-white text-indigo-600 shadow-xs font-bold' : 'text-slate-500'
-            }`}
-          >
-            2. Add Questions ({questions.length})
-          </button>
         </div>
-      </div>
-
-      {step === 1 ? (
-        /* Step 1: Exam Details */
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-5">
-          <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Step 1: Exam Configuration</h3>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Exam Title</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Subject</label>
-              <select
-                value={subjectName}
-                onChange={(e) => setSubjectName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option>Mathematics</option>
-                <option>English Language</option>
-                <option>Basic Science</option>
-                <option>Civic Education</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Target Class</label>
-              <select
-                value={className}
-                onChange={(e) => setClassName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option>JSS 3 Gold</option>
-                <option>JSS 3 Silver</option>
-                <option>SS 1 Emerald</option>
-                <option>SS 2 Gold</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Duration (Minutes)</label>
-              <input
-                type="number"
-                value={durationMinutes}
-                onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Pass Mark Percentage (%)</label>
-              <input
-                type="number"
-                value={passMarkPercentage}
-                onChange={(e) => setPassMarkPercentage(Number(e.target.value))}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end pt-4 border-t border-slate-100">
-            <button
-              onClick={() => setStep(2)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-md shadow-indigo-600/20"
-            >
-              <span>Next: Add Questions</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      ) : (
-        /* Step 2: Add Questions */
-        <div className="space-y-5">
-          {/* Question Palette Header */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-3 overflow-x-auto">
-            <div className="flex items-center gap-2">
-              {questions.map((q, idx) => (
-                <button
-                  key={q.id}
-                  onClick={() => setSelectedQuestionIndex(idx)}
-                  className={`w-9 h-9 rounded-xl border text-xs font-mono font-bold flex items-center justify-center cursor-pointer ${
-                    selectedQuestionIndex === idx
-                      ? 'bg-indigo-600 text-white border-indigo-700'
-                      : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-                  }`}
-                >
-                  {idx + 1}
-                </button>
-              ))}
-
-              <button
-                onClick={handleAddQuestion}
-                className="w-9 h-9 rounded-xl border border-dashed border-indigo-400 bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
+        {questions.map((question, index) => (
+          <article key={question.id} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold">Question {index + 1}</h3>
+              <button disabled={!isDraft} onClick={() => removeQuestion(question.id)} className="text-rose-600 text-xs flex items-center gap-1 disabled:opacity-40">
+                <Trash2 size={14} /> Remove
               </button>
             </div>
-
-            <span className="text-xs font-bold text-slate-500 shrink-0">
-              Total Marks: {questions.reduce((a, b) => a + b.marks, 0)}
-            </span>
-          </div>
-
-          {/* Current Question Edit Form */}
-          {currentQ && (
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 className="text-sm font-bold text-slate-900">Question #{selectedQuestionIndex + 1}</h3>
-                <span className="text-xs font-semibold text-slate-500 font-mono">{currentQ.marks} Marks</span>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Question Prompt</label>
-                <textarea
-                  rows={3}
-                  value={currentQ.text}
-                  onChange={(e) => {
-                    const updated = [...questions];
-                    updated[selectedQuestionIndex].text = e.target.value;
-                    setQuestions(updated);
-                  }}
-                  className="w-full p-3 rounded-xl border border-slate-300 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-
-              {/* Options List */}
-              <div className="space-y-3 pt-2">
-                <label className="block text-xs font-semibold text-slate-700">Answer Options (Select Correct Choice)</label>
-                {currentQ.options.map((opt, oIdx) => (
-                  <div key={opt.id} className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name={`correct_${currentQ.id}`}
-                      checked={currentQ.correctOptionId === opt.id}
-                      onChange={() => {
-                        const updated = [...questions];
-                        updated[selectedQuestionIndex].correctOptionId = opt.id;
-                        setQuestions(updated);
-                      }}
-                      className="w-4 h-4 accent-indigo-600 cursor-pointer"
-                    />
-                    <span className="w-6 text-xs font-bold text-slate-500 font-mono">{opt.letter}.</span>
-                    <input
-                      type="text"
-                      value={opt.text}
-                      onChange={(e) => {
-                        const updated = [...questions];
-                        updated[selectedQuestionIndex].options[oIdx].text = e.target.value;
-                        setQuestions(updated);
-                      }}
-                      className="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                ))}
-              </div>
+            <textarea disabled={!isDraft} rows={2} value={question.text} onChange={e => updateQuestion(question.id, { text: e.target.value })} placeholder="Enter the question prompt" className="w-full rounded-lg border border-slate-300 p-3" />
+            <div className="grid sm:grid-cols-3 gap-3">
+              <label className="text-sm">Marks
+                <input disabled={!isDraft} type="number" min={1} value={question.marks} onChange={e => updateQuestion(question.id, { marks: Number(e.target.value) })} className="mt-1 w-full rounded-lg border border-slate-300 p-2" />
+              </label>
+              <label className="text-sm">Difficulty
+                <select disabled={!isDraft} value={question.difficulty} onChange={e => updateQuestion(question.id, { difficulty: e.target.value as BuilderQuestion['difficulty'] })} className="mt-1 w-full rounded-lg border border-slate-300 p-2">
+                  <option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option>
+                </select>
+              </label>
+              <div className="text-xs text-slate-500 self-end pb-2">Select the radio button for the correct answer.</div>
             </div>
-          )}
+            <div className="space-y-2">
+              {question.options.map(option => (
+                <div key={option.id} className="flex items-center gap-2">
+                  <input disabled={!isDraft} type="radio" name={'correct-' + question.id} checked={question.correctOptionId === option.id} onChange={() => updateQuestion(question.id, { correctOptionId: option.id })} />
+                  <span className="w-5 text-xs font-bold text-slate-500">{option.letter}</span>
+                  <input disabled={!isDraft} value={option.text} onChange={e => updateOption(question.id, option.id, e.target.value)} placeholder={'Option ' + option.letter} className="flex-1 rounded-lg border border-slate-300 p-2 text-sm" />
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+        {questions.length === 0 && <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">No questions added yet. Add the first question to begin.</div>}
+      </section>
 
-          {/* Action Bar */}
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <button
-              onClick={() => handleSave(false)}
-              className="bg-white border border-slate-200 text-slate-700 px-5 py-3 rounded-xl text-xs font-bold hover:bg-slate-50 cursor-pointer"
-            >
-              Save Draft
-            </button>
-            <button
-              onClick={() => handleSave(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 cursor-pointer"
-            >
-              Publish Exam
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+      <footer className="flex flex-wrap justify-end gap-3 pb-10">
+        <button onClick={() => navigate('/cbt/manager')} className="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold">Cancel</button>
+        <button disabled={saving || !isDraft} onClick={() => save(false)} className="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold flex items-center gap-2 disabled:opacity-50">
+          {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} Save draft
+        </button>
+        <button disabled={saving || !isDraft} onClick={() => save(true)} className="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50">
+          {saving ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />} Publish exam
+        </button>
+      </footer>
+    </main>
   );
 };
