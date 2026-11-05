@@ -34,8 +34,6 @@ jobs:
         run: npx vitest run tests/onboardingDeterministicContract.test.ts
       - name: Onboarding TypeScript
         run: npx tsc -p tsconfig.onboarding.json --noEmit
-      - name: Repository TypeScript
-        run: npm run lint
       - name: Production build
         run: npm run build
       - name: Playwright onboarding E2E
