@@ -146,7 +146,7 @@ export const CBTExamRunner: React.FC = () => {
     const seconds = attempt.deadline_at
       ? Math.max(0, Math.ceil((Date.parse(attempt.deadline_at) - Date.now()) / 1000))
       : remainingTime;
-    await cbtService.saveSessionSnapshot(attempt.session_id, questionIndex, seconds, sessionState || 'ACTIVE_EXAM');
+    await cbtService.saveSessionSnapshot(attempt.session_id, questionIndex, seconds);
   }, [attempt, isOnline, remainingTime, sessionState]);
 
   const finalize = useCallback(async () => {
