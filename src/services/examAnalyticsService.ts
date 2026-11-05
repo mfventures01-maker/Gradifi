@@ -21,8 +21,7 @@ export const examAnalyticsService = {
         subjectName: report.exam.subjectName,
         className: report.exam.className,
         durationMinutes: report.exam.durationMinutes,
-        passMarkPercentage: report.exam.totalMarks > 0
-          ? (report.exam.passMark / report.exam.totalMarks) * 100 : 0,
+        passMarkPercentage: report.exam.passMark,
         examDate: report.exam.examDate || '',
         status: report.exam.status === 'published' ? 'Published' : 'Completed',
         totalQuestions: report.results.length,
