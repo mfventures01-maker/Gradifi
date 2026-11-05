@@ -131,7 +131,7 @@ begin
     (user_id,institution_id,school_id,full_name,email,phone,role,authentication_method)
   values
     (v_user_id,v_institution_id,v_school_id,trim(p_payload->>'principal_name'),
-     v_user_email,nullif(trim(p_payload->>'phone'),''),'principal_admin','email')
+     v_user_email,nullif(trim(p_payload->>'principal_phone'),''),'principal_admin','email')
   returning id into v_profile_id;
 
   insert into public.identity_actors
