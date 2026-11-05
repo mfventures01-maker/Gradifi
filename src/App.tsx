@@ -18,6 +18,7 @@ import { GradingReview } from './pages/grading/GradingReview';
 import { CBTExamBuilder } from './pages/cbt/CBTExamBuilder';
 import { CBTExamRunner } from './pages/cbt/CBTExamRunner';
 import { CBTExamManager } from './pages/cbt/CBTExamManager';
+import { CBTCandidateExamListPage } from './pages/cbt/CBTCandidateExamListPage';
 import { CBTResultsViewer } from './pages/cbt/CBTResultsViewer';
 import { PublicCbtMarketplacePage } from './pages/cbt/PublicCbtMarketplacePage';
 import { PublicCbtAuthPage } from './pages/cbt/PublicCbtAuthPage';
@@ -80,6 +81,7 @@ function App() {
         <Route path="/cbt/public/payment-return" element={<AuthGuard><PublicCbtPaymentReturnPage /></AuthGuard>} />
 
         <Route path="/cbt" element={<AuthGuard />}>
+          <Route index element={<CBTCandidateExamListPage />} />
           <Route path="builder" element={<CBTExamBuilder />} />
           <Route path="builder/:examId" element={<CBTExamBuilder />} />
           <Route path="runner/:examId" element={<CBTExamRunner />} />
