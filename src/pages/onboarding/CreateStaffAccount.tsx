@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AlertCircle, CheckCircle2, Copy, Loader2 } from 'lucide-react';
-import { onboardingService, StaffRole } from '../../services/onboardingService';
+import { onboardingService, type StaffRole } from '../../services/onboardingService';
 
 interface CreateStaffAccountProps {
   role: StaffRole;
