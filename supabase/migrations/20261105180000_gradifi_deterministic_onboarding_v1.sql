@@ -392,7 +392,15 @@ using (
 drop policy if exists schools_select_active_school_admin on public.schools;
 create policy schools_select_active_school_admin on public.schools
 for select to authenticated
-using (public.has_active_school_role(id,array['principal','school_admin']));
+using (
+  public.has_active_school_role(id,array['principal','school_admin'])
+  or exists (
+    select 1 from public.student_parent_relationships spr
+    join public.parents p on p.id=spr.parent_id
+    join public.profiles pf on pf.id=p.profile_id
+    where spr.school_id=schools.id and pf.user_id=(select auth.uid())
+  )
+);
 
 drop policy if exists institutions_select_active_school_admin on public.institutions;
 create policy institutions_select_active_school_admin on public.institutions
@@ -400,7 +408,15 @@ for select to authenticated
 using (exists (
   select 1 from public.schools s
   where s.institution_id=institutions.id
-    and public.has_active_school_role(s.id,array['principal','school_admin'])
+    and (
+      public.has_active_school_role(s.id,array['principal','school_admin'])
+      or exists (
+        select 1 from public.student_parent_relationships spr
+        join public.parents p on p.id=spr.parent_id
+        join public.profiles pf on pf.id=p.profile_id
+        where spr.school_id=s.id and pf.user_id=(select auth.uid())
+      )
+    )
 ));
 
 drop policy if exists gradifi_school_memberships_select_scoped on public.gradifi_school_memberships;
@@ -430,12 +446,31 @@ using (
 drop policy if exists class_subjects_select_active_school_member on public.class_subjects;
 create policy class_subjects_select_active_school_member on public.class_subjects
 for select to authenticated
-using (public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer']));
+using (
+  public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer'])
+  or exists (
+    select 1 from public.students st
+    join public.student_parent_relationships spr on spr.student_id=st.id
+    join public.parents p on p.id=spr.parent_id
+    join public.profiles pf on pf.id=p.profile_id
+    where st.class_id=class_subjects.class_id and pf.user_id=(select auth.uid())
+  )
+);
 
 -- Class reads are available to active school members; all writes use RPCs.
 drop policy if exists classes_select_active_school_member on public.classes;
 create policy classes_select_active_school_member on public.classes
-for select to authenticated using (public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer']));
+for select to authenticated
+using (
+  public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer'])
+  or exists (
+    select 1 from public.students st
+    join public.student_parent_relationships spr on spr.student_id=st.id
+    join public.parents p on p.id=spr.parent_id
+    join public.profiles pf on pf.id=p.profile_id
+    where st.class_id=classes.id and pf.user_id=(select auth.uid())
+  )
+);
 
 -- Retire unsafe anonymous/client-callable legacy onboarding RPCs.
 revoke execute on function public.create_institution_account(text,text,text,text,text,text,text,text,text,text,text,text,text,text) from public, anon, authenticated;
