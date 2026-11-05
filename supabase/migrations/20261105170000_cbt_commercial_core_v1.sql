@@ -365,6 +365,37 @@ begin
 end;
 $function$;
 
+create or replace function public.get_cbt_attempt_state(p_attempt_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'pg_catalog', 'public', 'auth'
+as $function$
+declare
+  v_state jsonb;
+begin
+  if auth.uid() is null then raise exception 'Authentication required'; end if;
+
+  select jsonb_build_object(
+    'success',true,'attempt_id',a.id,'exam_id',a.exam_id,
+    'deadline_at',a.deadline_at,'status',a.status,
+    'session_id',s.id,'session_state',s.state,
+    'current_question',s.current_question,
+    'answers',coalesce((
+      select jsonb_object_agg(ans.question_id::text,ans.selected_option_id::text)
+      from public.cbt_answers ans where ans.attempt_id=a.id and ans.selected_option_id is not null
+    ),'{}'::jsonb)
+  ) into v_state
+  from public.cbt_attempts a
+  join public.students st on st.id=a.student_id
+  join public.cbt_sessions s on s.attempt_id=a.id
+  where a.id=p_attempt_id and st.user_id=auth.uid();
+
+  if v_state is null then raise exception 'CBT_ATTEMPT_NOT_FOUND_OR_NOT_OWNED'; end if;
+  return v_state;
+end;
+$function$;
+
 create or replace function public.cbt_public_register_candidate(
   p_first_name text default null,
   p_last_name text default null
@@ -694,6 +725,9 @@ grant execute on function public.update_cbt_question(uuid,text,integer,integer,j
 
 revoke all on function public.delete_cbt_question(uuid) from public, anon;
 grant execute on function public.delete_cbt_question(uuid) to authenticated;
+
+revoke all on function public.get_cbt_attempt_state(uuid) from public, anon;
+grant execute on function public.get_cbt_attempt_state(uuid) to authenticated;
 
 revoke all on function public.get_cbt_active_attempt(uuid) from public, anon;
 grant execute on function public.get_cbt_active_attempt(uuid) to authenticated;
