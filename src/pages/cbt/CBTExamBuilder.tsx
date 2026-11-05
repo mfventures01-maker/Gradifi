@@ -41,8 +41,9 @@ export const CBTExamBuilder: React.FC = () => {
   const [durationMinutes, setDurationMinutes] = useState(60);
   const [passMark, setPassMark] = useState(40);
   const [startTime, setStartTime] = useState(() => {
-    const value = new Date(Date.now() + 15 * 60 * 1000);
-    value.setSeconds(0, 0);
+    const value = new Date();
+    value.setDate(value.getDate() + 1);
+    value.setHours(9, 0, 0, 0);
     return new Date(value.getTime() - value.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   });
   const [questions, setQuestions] = useState<BuilderQuestion[]>([]);
