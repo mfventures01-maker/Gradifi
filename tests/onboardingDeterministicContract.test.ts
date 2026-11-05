@@ -8,6 +8,7 @@ describe('Gradifi deterministic onboarding contract', () => {
   const migration = read('supabase/migrations/20261105180000_gradifi_deterministic_onboarding_v1.sql');
   const service = read('src/services/onboardingService.ts');
   const wizard = read('src/pages/onboarding/OnboardingWizard.tsx');
+  const legacyInstitutionForm = read('src/pages/onboarding/CreateInstitution.tsx');
   const student = read('src/pages/onboarding/CreateStudent.tsx');
   const staffForm = read('src/pages/onboarding/CreateStaffAccount.tsx');
   const teacherForm = read('src/pages/onboarding/CreateTeacher.tsx');
@@ -39,6 +40,7 @@ describe('Gradifi deterministic onboarding contract', () => {
     expect(migration).toContain('create policy gradifi_school_memberships_select_scoped');
     expect(migration).toContain('gradifi_bulk_create_students');
     expect(migration).toContain('gradifi_create_parent_profile');
+    expect(migration).toContain("'parent']::text[]");
     expect(migration).toContain('revoke execute on function public.bulk_enroll_students');
     expect(migration).toContain('revoke execute on function public.create_parent');
     expect(migration).toContain('select c.id into v_class_id');
@@ -65,6 +67,7 @@ describe('Gradifi deterministic onboarding contract', () => {
     expect(wizard).not.toMatch(/sch_demo_01|inst_demo_01|sch_[a-z]+_demo|inst_[a-z]+_demo/);
     expect(wizard).toContain("JSON.stringify({...formData,password:''})");
     expect(wizard).not.toContain('JSON.stringify(formData)');
+    expect(legacyInstitutionForm).toContain('<Navigate to="/onboarding" replace />');
     expect(student).not.toMatch(/cls_jss1|sch_demo_01|DEFAULT_CLASSES|Math\.random\(\)/);
     expect(student).toContain('onboardingService.getSchoolClasses');
   });
