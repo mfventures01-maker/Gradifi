@@ -45,6 +45,7 @@ export const CBTExamBuilder: React.FC = () => {
     return new Date(value.getTime() - value.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   });
   const [questions, setQuestions] = useState<BuilderQuestion[]>([]);
+  const [removedQuestionIds, setRemovedQuestionIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -112,7 +113,11 @@ export const CBTExamBuilder: React.FC = () => {
   };
 
   const addQuestion = () => setQuestions(current => [...current, makeQuestion(current.length + 1)]);
-  const removeQuestion = (id: string) => setQuestions(current => current.filter(question => question.id !== id));
+  const removeQuestion = (id: string) => {
+    const question = questions.find(item => item.id === id);
+    if (question?.persistedId) setRemovedQuestionIds(current => [...current, question.persistedId!]);
+    setQuestions(current => current.filter(item => item.id !== id));
+  };
 
   const validate = () => {
     if (!schoolId || !classId || !subjectId) throw new Error('Select a school class and subject.');
@@ -151,6 +156,8 @@ export const CBTExamBuilder: React.FC = () => {
         navigate('/cbt/builder/' + currentExamId, { replace: true });
       }
 
+      for (const questionId of removedQuestionIds) await cbtService.deleteQuestion(questionId);
+
       for (let index = 0; index < questions.length; index++) {
         const question = questions[index];
         const payload = {
@@ -179,7 +186,6 @@ export const CBTExamBuilder: React.FC = () => {
           setQuestions(current => current.map(item => item.id === question.id
             ? { ...item, persistedId }
             : item));
-          questions[index].persistedId = persistedId;
         }
       }
 
