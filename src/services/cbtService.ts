@@ -92,13 +92,14 @@ export const cbtService = {
     examId: string; questionText: string; marks: number; questionNumber: number;
     difficulty: 'easy' | 'medium' | 'hard';
     options: Array<{ letter: string; text: string; is_correct: boolean }>;
-  }): Promise<void> {
+  }): Promise<string> {
     const { data, error } = await supabase.rpc('add_cbt_question' as any, {
       p_exam_id: input.examId, p_question_text: input.questionText, p_marks: input.marks,
       p_question_number: input.questionNumber, p_options: input.options, p_difficulty: input.difficulty,
     } as any);
-    const result = unwrap<{ success: boolean }>(data, error);
-    if (!result.success) throw new Error('Question ' + input.questionNumber + ' was not saved');
+    const result = unwrap<{ success: boolean; question_id: string }>(data, error);
+    if (!result.success || !result.question_id) throw new Error('Question ' + input.questionNumber + ' was not saved');
+    return result.question_id;
   },
 
   async updateQuestion(input: {
