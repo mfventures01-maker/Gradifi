@@ -63,6 +63,9 @@ create index if not exists cbt_public_orders_user_created_idx
   on public.cbt_public_orders (user_id, created_at desc);
 create index if not exists cbt_public_entitlements_user_exam_idx
   on public.cbt_public_entitlements (user_id, exam_id, status);
+create unique index if not exists cbt_public_orders_provider_txn_unique
+  on public.cbt_public_orders (provider_transaction_id)
+  where provider_transaction_id is not null;
 
 alter table public.cbt_public_candidate_profiles enable row level security;
 alter table public.cbt_public_offers enable row level security;
@@ -596,6 +599,15 @@ begin
     return jsonb_build_object('success',true,'already_entitled',true,'exam_id',v_offer.exam_id);
   end if;
 
+  select * into v_order from public.cbt_public_orders
+  where user_id=v_user_id and exam_id=v_offer.exam_id and status='pending'
+  order by created_at desc limit 1 for update;
+  if found then
+    return jsonb_build_object('success',true,'order_id',v_order.id,'exam_id',v_order.exam_id,
+      'amount_minor',v_order.amount_minor,'currency',v_order.currency,'provider',v_order.provider,
+      'provider_reference',v_order.provider_reference,'status',v_order.status,'free',false);
+  end if;
+
   v_reference:='CBT-'||upper(replace(gen_random_uuid()::text,'-',''));
 
   insert into public.cbt_public_orders(
@@ -610,7 +622,8 @@ begin
   if v_offer.price_minor=0 then
     insert into public.cbt_public_entitlements(user_id,student_id,exam_id,order_id)
     values(v_user_id,v_candidate.student_id,v_offer.exam_id,v_order.id)
-    on conflict(user_id,exam_id) do nothing;
+    on conflict(user_id,exam_id) do update
+      set order_id=excluded.order_id,status='active',granted_at=now(),revoked_at=null;
   end if;
 
   return jsonb_build_object(
@@ -664,7 +677,8 @@ begin
 
   insert into public.cbt_public_entitlements(user_id,student_id,exam_id,order_id)
   values(v_order.user_id,v_order.student_id,v_order.exam_id,v_order.id)
-  on conflict(user_id,exam_id) do nothing;
+  on conflict(user_id,exam_id) do update
+    set order_id=excluded.order_id,status='active',granted_at=now(),revoked_at=null;
 
   return jsonb_build_object('success',true,'already_confirmed',false,
     'order_id',v_order.id,'exam_id',v_order.exam_id);
