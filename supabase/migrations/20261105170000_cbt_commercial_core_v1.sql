@@ -432,7 +432,9 @@ begin
   join public.subject_catalog sc on sc.id=e.subject_id
   join public.classes c on c.id=e.class_id
   left join public.cbt_attempts a on a.id=r.attempt_id
-  where r.exam_id=p_exam_id and r.student_id=v_student_id;
+  where r.exam_id=p_exam_id and r.student_id=v_student_id
+  order by r.created_at desc,r.id desc
+  limit 1;
 
   if v_result is null then raise exception 'CBT_RESULT_NOT_FOUND_FOR_CANDIDATE'; end if;
   return v_result;
