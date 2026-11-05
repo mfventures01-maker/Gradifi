@@ -79,10 +79,6 @@ create policy cbt_public_offer_read_listed
   on public.cbt_public_offers for select to anon, authenticated
   using (
     is_listed
-    and exists (
-      select 1 from public.cbt_exams e
-      where e.id = exam_id and e.status = 'published'
-    )
     and (available_from is null or available_from <= now())
     and (available_until is null or available_until > now())
   );
@@ -321,11 +317,15 @@ declare
   v_first_name text;
   v_last_name text;
   v_email text;
+  v_email_confirmed_at timestamptz;
 begin
   if v_user_id is null then raise exception 'Authentication required'; end if;
 
-  select u.email into v_email from auth.users u where u.id=v_user_id;
-  if coalesce(v_email,'')='' then raise exception 'A verified email address is required'; end if;
+  select u.email,u.email_confirmed_at into v_email,v_email_confirmed_at
+  from auth.users u where u.id=v_user_id;
+  if coalesce(v_email,'')='' or v_email_confirmed_at is null then
+    raise exception 'A verified email address is required';
+  end if;
 
   select s.id,s.first_name,s.last_name
   into v_student_id,v_first_name,v_last_name
@@ -446,7 +446,7 @@ begin
   select * into v_candidate from public.cbt_public_candidate_profiles where user_id=v_user_id;
   if not found then raise exception 'Public candidate registration is required'; end if;
 
-  select o.*,e.status into v_offer,v_exam_status
+  select o.* into v_offer
   from public.cbt_public_offers o join public.cbt_exams e on e.id=o.exam_id
   where o.id=p_offer_id and o.is_listed=true
     and e.status='published'
@@ -507,6 +507,7 @@ begin
   for update;
   if not found then raise exception 'CBT_PUBLIC_ORDER_NOT_FOUND'; end if;
 
+  if v_order.provider <> 'paystack' then raise exception 'CBT_PAYMENT_PROVIDER_MISMATCH'; end if;
   if v_order.status='paid' then
     if v_order.provider_transaction_id is not null
        and v_order.provider_transaction_id<>p_transaction_id then
@@ -557,7 +558,6 @@ $function$;
 create or replace function public.get_cbt_exam_results(p_exam_id uuid)
 returns jsonb
 language plpgsql
-stable
 security definer
 set search_path to 'pg_catalog', 'public', 'auth'
 as $function$
