@@ -66,7 +66,7 @@ serve(async (req: Request) => {
       return json(400, { success: false, error: "Unsupported staff role." }, allowedOrigin);
     }
     if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return json(400, { success: false, error: "A valid staff name and email are required." }, allowedOrigin);
+      return json(400, { success: false, error: "A valid staff name, email and phone number are required." }, allowedOrigin);
     }
 
     const admin = createClient(url, serviceKey, {
