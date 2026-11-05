@@ -126,7 +126,8 @@ export const authService = {
 
     const institutionId = actor?.institution_id || profile?.institution_id || null;
     const schoolId = actor?.school_id || null;
-    const actorType = actor?.actor_type || actor?.role || null;\n    const role = (actorType === 'principal_admin' ? 'principal' : actorType || profile?.role || null) as AuthSessionState['role'];
+    const actorType = actor?.actor_type || actor?.role || null;
+    const role = (actorType === 'principal_admin' ? 'principal' : actorType || profile?.role || null) as AuthSessionState['role'];
 
     return {
       isAuthenticated: true,
