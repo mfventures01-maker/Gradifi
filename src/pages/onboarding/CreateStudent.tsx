@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, Copy, Loader2 } from 'lucide-react';
 import { onboardingService, type EnrollStudentResponse, type SchoolClass } from '../../services/onboardingService';
 
@@ -10,6 +11,7 @@ interface CreateStudentProps {
 }
 
 export const CreateStudent: React.FC<CreateStudentProps> = ({schoolId,institutionId,onSuccess,onNavigateToDashboard}) => {
+  const navigate=useNavigate();
   const [firstName,setFirstName]=useState('');
   const [lastName,setLastName]=useState('');
   const [classId,setClassId]=useState('');
@@ -56,7 +58,7 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({schoolId,institutio
     <CheckCircle2 className="h-10 w-10 text-emerald-600"/><h1 className="mt-3 text-2xl font-bold">Student Enrollment Confirmed</h1>
     <p className="mt-1 text-sm text-slate-600">The server returned the persisted student record and authoritative student number.</p>
     <div className="mt-5 space-y-3 rounded-xl bg-slate-50 p-4"><div><p className="text-xs text-slate-500">Student</p><strong>{firstName} {lastName}</strong></div><div><p className="text-xs text-slate-500">Student number</p><div className="flex items-center gap-3"><strong className="font-mono text-lg">{student.student_number}</strong><button type="button" onClick={()=>{void navigator.clipboard.writeText(student.student_number);setCopied(true);}} className="rounded-lg border p-2">{copied?'Copied':<Copy className="h-4 w-4"/>}</button></div></div><div><p className="text-xs text-slate-500">Database ID</p><code className="break-all">{student.student_id}</code></div><div><p className="text-xs text-slate-500">Class</p>{classes.find(row=>row.id===student.class_id)?.name||student.class_id}</div></div>
-    <button type="button" onClick={()=>onNavigateToDashboard?.()} className="mt-5 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white">Continue</button>
+    <button type="button" onClick={()=>onNavigateToDashboard?onNavigateToDashboard():navigate('/portal/principal')} className="mt-5 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white">Continue</button>
   </section>;
 
   return <form onSubmit={submit} className="mx-auto max-w-2xl space-y-5 rounded-2xl border bg-white p-6">
