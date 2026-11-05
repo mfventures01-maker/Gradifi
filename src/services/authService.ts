@@ -14,7 +14,7 @@ export interface AuthSessionState {
   actor: IdentityActor | null;
   institutionId: string | null;
   schoolId: string | null;
-  role: 'admin' | 'principal' | 'teacher' | 'student' | 'parent' | null;
+  role: 'admin' | 'principal' | 'teacher' | 'student' | 'parent' | 'vice_principal' | 'bursar' | null;
 }
 
 export const authService = {
@@ -113,7 +113,7 @@ export const authService = {
 
     const institutionId = actor?.institution_id || profile?.institution_id || null;
     const schoolId = actor?.school_id || null;
-    const role = (actor?.role || profile?.role || null) as AuthSessionState['role'];
+    const actorType = actor?.actor_type || actor?.role || null;\n    const role = (actorType === 'principal_admin' ? 'principal' : actorType || profile?.role || null) as AuthSessionState['role'];
 
     return {
       isAuthenticated: true,
