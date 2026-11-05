@@ -7,15 +7,27 @@ export const CBTResultsViewer: React.FC = () => {
   const navigate = useNavigate();
   const { examId = '' } = useParams<{ examId: string }>();
   const [report, setReport] = useState<CbtExamResults | null>(null);
+  const [candidateResult, setCandidateResult] = useState<Awaited<ReturnType<typeof cbtService.getCandidateResult>> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let alive = true;
-    cbtService.getExamResults(examId)
-      .then(data => { if (alive) setReport(data); })
-      .catch(cause => { if (alive) setError(cause instanceof Error ? cause.message : 'Unable to retrieve examination results'); })
-      .finally(() => { if (alive) setLoading(false); });
+    (async () => {
+      try {
+        const data = await cbtService.getExamResults(examId);
+        if (alive) setReport(data);
+      } catch (teacherError) {
+        try {
+          const ownResult = await cbtService.getCandidateResult(examId);
+          if (alive) setCandidateResult(ownResult);
+        } catch (candidateError) {
+          if (alive) setError(candidateError instanceof Error ? candidateError.message : (teacherError instanceof Error ? teacherError.message : 'Unable to retrieve examination results'));
+        }
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
     return () => { alive = false; };
   }, [examId]);
 
@@ -40,6 +52,25 @@ export const CBTResultsViewer: React.FC = () => {
 
   if (loading) return <div className="min-h-screen grid place-items-center text-slate-500"><Loader2 className="animate-spin mr-2" /> Loading certified results…</div>;
   if (error) return <main className="min-h-screen grid place-items-center p-5 bg-slate-50"><section className="max-w-lg w-full bg-white border border-rose-200 rounded-2xl p-6 space-y-3"><h1 className="font-bold text-xl">Results unavailable</h1><p className="text-sm text-rose-700">{error}</p><button onClick={() => navigate('/cbt/manager')} className="rounded-lg bg-slate-900 text-white px-4 py-2 text-sm">Back to manager</button></section></main>;
+  if (candidateResult) {
+    const { exam, result } = candidateResult;
+    return (
+      <main className="min-h-screen bg-slate-50 grid place-items-center p-5">
+        <section className="w-full max-w-xl bg-white rounded-2xl border border-slate-200 p-7 space-y-5 text-center">
+          <Trophy size={32} className="mx-auto text-amber-500" />
+          <div><h1 className="text-2xl font-extrabold">{exam.title}</h1><p className="text-sm text-slate-500">{exam.subjectName} · {exam.className}</p></div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-xl bg-slate-50 p-3"><div className="text-xl font-extrabold">{result.score}/{result.maxScore}</div><div className="text-xs text-slate-500">Score</div></div>
+            <div className="rounded-xl bg-slate-50 p-3"><div className="text-xl font-extrabold">{Number(result.percentage).toFixed(1)}%</div><div className="text-xs text-slate-500">Percentage</div></div>
+            <div className="rounded-xl bg-slate-50 p-3"><div className="text-xl font-extrabold">{result.grade || '—'}</div><div className="text-xs text-slate-500">Grade</div></div>
+          </div>
+          <span className={'inline-flex rounded-full px-4 py-2 text-sm font-bold ' + (result.status === 'Passed' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700')}>{result.status}</span>
+          <p className="text-xs text-slate-500">Submitted {result.submittedAt ? new Date(result.submittedAt).toLocaleString() : 'successfully'}</p>
+          <button onClick={() => navigate('/cbt/public')} className="rounded-lg bg-indigo-600 text-white px-5 py-3 text-sm font-bold">Return to public examinations</button>
+        </section>
+      </main>
+    );
+  }
   if (!report) return null;
 
   const { exam, summary, results } = report;
