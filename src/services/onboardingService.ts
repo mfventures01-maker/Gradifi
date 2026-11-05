@@ -152,9 +152,22 @@ export const onboardingService = {
   },
 
   async initializeSecondaryClasses(schoolId: string): Promise<InitializeClassesResponse> {
-    const classes = await this.getSchoolClasses(schoolId);
-    if (classes.length === 0) throw new Error('No persisted classes are configured for this school.');
-    return { classes_created: classes.length, classes, success: true };
+    requireUuid(schoolId, 'School context');
+    const { data, error } = await supabase.rpc('gradifi_initialize_secondary_classes', { p_school_id: schoolId });
+    if (error) throw new Error(`Class initialization failed: ${error.message}`);
+    const result = requireObject(data, 'Class initialization');
+    if (result.success !== true || !Array.isArray(result.classes) || result.classes.length === 0) {
+      throw new Error('Class initialization returned no persisted class records.');
+    }
+    return {
+      classes_created: Number(result.classes_created),
+      classes: result.classes.map((row: any) => ({
+        id: requireUuid(row.id, 'Class initialization'),
+        name: String(row.name),
+        school_id: requireUuid(row.school_id, 'Class initialization'),
+      })),
+      success: true,
+    };
   },
 
   async createStaffAccount(input: { role: StaffRole; name: string; email: string; phone: string }) {
@@ -173,7 +186,7 @@ export const onboardingService = {
       throw new Error(result.error || 'Staff provisioning was not confirmed by the server.');
     }
     return {
-      profile_id: requireUuid(result.profile_id, 'Staff provisioning'),
+      profile_id: requireUuid(result.profile_id, 'Staff provisioning'),\n      teacher_id: result.teacher_id ? requireUuid(result.teacher_id, 'Staff provisioning') : undefined,
       full_name: String(result.full_name),
       role: input.role,
       email: String(result.email),
@@ -186,7 +199,7 @@ export const onboardingService = {
       role: 'teacher', name: input.name, email: input.email, phone: input.phone,
     });
     return {
-      teacher_id: result.profile_id,
+      teacher_id: result.teacher_id || (() => { throw new Error('Teacher row was not persisted by the server.'); })(),
       name: result.full_name,
       email: result.email,
       phone: input.phone,
