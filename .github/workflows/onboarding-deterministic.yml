@@ -1,0 +1,59 @@
+name: Gradifi Deterministic Onboarding
+
+on:
+  push:
+    branches:
+      - onboarding/deterministic-sync
+  pull_request:
+    branches:
+      - cbt/commercial-e2e-final
+    paths:
+      - 'src/pages/onboarding/**'
+      - 'src/services/onboardingService.ts'
+      - 'src/services/authService.ts'
+      - 'supabase/migrations/*onboarding*'
+      - 'supabase/functions/gradifi-staff-provision/**'
+      - 'supabase/functions/gradifi-parent-provision/**'
+      - 'supabase/functions/pin-login/**'
+      - 'tests/onboardingDeterministicContract.test.ts'
+      - 'tsconfig.onboarding.json'
+      - 'e2e/onboarding-deterministic.spec.ts'
+      - 'e2e/phase2-onboarding.spec.ts'
+      - 'tests/onboarding.spec.ts'
+      - 'playwright.config.ts'
+      - '.github/workflows/onboarding-deterministic.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Deterministic onboarding contract
+        run: npx vitest run tests/onboardingDeterministicContract.test.ts
+      - name: Onboarding TypeScript
+        run: npx tsc -p tsconfig.onboarding.json --noEmit
+      - name: Production build
+        run: npm run build
+      - name: Playwright onboarding E2E
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test --reporter=line
+
+  edge-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
+      - name: Check onboarding edge function
+        run: deno check supabase/functions/gradifi-staff-provision/index.ts
+      - name: Check PIN login edge function
+        run: deno check supabase/functions/pin-login/index.ts
+      - name: Check parent provisioning edge function
+        run: deno check supabase/functions/gradifi-parent-provision/index.ts

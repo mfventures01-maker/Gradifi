@@ -1,174 +1,156 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { onboardingService } from '../../services/onboardingService';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { onboardingService, type CreateInstitutionFormInput } from '../../services/onboardingService';
 import { authService } from '../../services/authService';
-import { ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
-import { CreateVP } from './CreateVP';
-import { CreateBursar } from './CreateBursar';
-import { CreateTeacher } from './CreateTeacher';
+import { CreateStaffAccount } from './CreateStaffAccount';
 import { CreateStudent } from './CreateStudent';
 import { BulkStudentImport } from './BulkStudentImport';
 import { CreateParent } from './CreateParent';
+
+type WizardData = CreateInstitutionFormInput & { password: string };
+
+const initialData: WizardData = {
+  institution_name: '',
+  institution_type: 'secondary',
+  registration_number: '',
+  address: '',
+  state: '',
+  lga: '',
+  phone: '',
+  email: '',
+  website: '',
+  principal_name: '',
+  principal_phone: '',
+  principal_email: '',
+  country: 'Nigeria',
+  school_type: 'private',
+  class_name: 'JSS 1',
+  subject: 'Mathematics',
+  password: '',
+};
 
 export const OnboardingWizard: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const view = searchParams.get('view');
+  const [step,setStep]=useState(1);
+  const [loading,setLoading]=useState(true);
+  const [submitting,setSubmitting]=useState(false);
+  const [authenticated,setAuthenticated]=useState(false);
+  const [schoolId,setSchoolId]=useState('');
+  const [institutionId,setInstitutionId]=useState('');
+  const [formData,setFormData]=useState<WizardData>(initialData);
+  const [error,setError]=useState<string|null>(null);
+  const [notice,setNotice]=useState<string|null>(null);
 
-  const [schoolId, setSchoolId] = useState<string>('');
-  const [institutionId, setInstitutionId] = useState<string>('');
+  useEffect(()=>{
+    let mounted=true;
+    (async()=>{
+      try{
+        let user = null;
+        try { user = await authService.getCurrentUser(); } catch { /* no session is a valid new-registration state */ }
+        const identity = await authService.resolveCurrentIdentity();
+        if(!mounted)return;
+        setAuthenticated(Boolean(user));
+        setSchoolId(identity.schoolId||'');
+        setInstitutionId(identity.institutionId||'');
+        const saved=window.localStorage.getItem('gradifi-onboarding-draft');
+        if(saved){
+          try{setFormData({...initialData,...JSON.parse(saved),password:''});}catch{window.localStorage.removeItem('gradifi-onboarding-draft');}
+        }
+      }catch(err){
+        if(mounted)setError(err instanceof Error?err.message:'Could not resolve authenticated identity.');
+      }finally{if(mounted)setLoading(false);}
+    })();
+    return ()=>{mounted=false;};
+  },[]);
 
-  useEffect(() => {
-    authService.resolveCurrentIdentity().then((identity) => {
-      if (identity.schoolId) setSchoolId(identity.schoolId);
-      if (identity.institutionId) setInstitutionId(identity.institutionId);
-    });
-  }, []);
+  const update=(patch:Partial<WizardData>)=>setFormData(current=>({...current,...patch}));
 
-  // Check for VP view
-  if (view === 'create-vp') {
-    return <CreateVP schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
-  }
+  const launch=async()=>{
+    setError(null);setNotice(null);
+    if(!formData.institution_name.trim()||!formData.principal_name.trim()||!formData.principal_email.trim()){
+      setError('Institution name, principal name and principal email are required.');return;
+    }
+    if(!authenticated){
+      if(formData.password.length<8){setError('Create a password with at least 8 characters for the principal account.');return;}
+      setSubmitting(true);
+      try{
+        window.localStorage.setItem('gradifi-onboarding-draft',JSON.stringify({...formData,password:''}));
+        const signup=await authService.signUpWithPassword(formData.principal_email,formData.password,formData.principal_name);
+        if(!signup.session){
+          setNotice('Your account was created. Confirm the email address, then sign in to resume institution provisioning. Your form draft is saved on this device.');
+          return;
+        }
+        setAuthenticated(true);
+      }catch(err){
+        setError(err instanceof Error?err.message:'Principal account creation failed.');return;
+      }finally{setSubmitting(false);}
+    }
 
-  // Check for Bursar view
-  if (view === 'create-bursar') {
-    return <CreateBursar schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
-  }
-
-  // Check for Teacher view
-  if (view === 'create-teacher') {
-    return <CreateTeacher schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
-  }
-
-  // Check for Student view
-  if (view === 'create-student') {
-    return <CreateStudent schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
-  }
-
-  // Check for Bulk Import view
-  if (view === 'bulk-import') {
-    return <BulkStudentImport schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
-  }
-
-  // Check for Parent view
-  if (view === 'create-parent') {
-    return <CreateParent schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
-  }
-
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    institution_name: '',
-    address: '',
-    state: 'Lagos',
-    lga: 'Ikeja',
-    principal_name: '',
-    principal_phone: '',
-    principal_email: '',
-    class_name: 'JSS 1',
-    subject: 'Mathematics'
-  });
-
-  const handleNext = () => {
-    if (step < 4) setStep(step + 1);
-    else handleSubmit();
-  };
-
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      await onboardingService.createInstitutionAccount({
-        _institution_name: formData.institution_name,
-        _institution_type: 'secondary',
-        _registration_number: 'REG-001',
-        _school_type: 'private',
-        _country: 'Nigeria',
-        _address: formData.address,
-        _state: formData.state,
-        _lga: formData.lga,
-        _phone: formData.principal_phone,
-        _email: formData.principal_email,
-        _website: '',
-        _principal_name: formData.principal_name,
-        _principal_phone: formData.principal_phone,
-        _principal_email: formData.principal_email
-      });
+    setSubmitting(true);
+    try{
+      const result=await onboardingService.createInstitutionAccount(formData);
+      window.localStorage.removeItem('gradifi-onboarding-draft');
+      setSchoolId(result.school_id);
+      setInstitutionId(result.institution_id);
       navigate('/portal/principal');
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    }catch(err){
+      setError(err instanceof Error?err.message:'Institution provisioning failed.');
+    }finally{setSubmitting(false);}
   };
 
-  const renderStep = () => {
-    switch(step) {
-      case 1: return <Step1 data={formData} setData={setFormData} />;
-      case 2: return <Step2 data={formData} setData={setFormData} />;
-      case 3: return <Step3 data={formData} setData={setFormData} />;
-      case 4: return <Step4 data={formData} />;
-      default: return null;
-    }
-  };
+  if(loading)return <div className="min-h-screen grid place-items-center"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
-  return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-6">
-        <div className="flex justify-between mb-8 text-xs text-slate-400">
-          <span className={step >= 1 ? "text-blue-600 font-bold" : ""}>School Basics</span>
-          <span className={step >= 2 ? "text-blue-600 font-bold" : ""}>Admin Account</span>
-          <span className={step >= 3 ? "text-blue-600 font-bold" : ""}>First Class</span>
-          <span className={step >= 4 ? "text-blue-600 font-bold" : ""}>Review</span>
-        </div>
-        {renderStep()}
-        <button 
-          onClick={handleNext} 
-          disabled={loading}
-          className="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 flex justify-center items-center gap-2"
-        >
-          {loading ? <Loader2 className="animate-spin" /> : step === 4 ? 'Launch Institution' : 'Continue'}
-          {!loading && <ArrowRight className="w-4 h-4" />}
-        </button>
+  if(view){
+    if(!authenticated||!schoolId||!institutionId){
+      return <div className="mx-auto mt-16 max-w-xl rounded-2xl border bg-white p-6"><h1 className="text-xl font-bold">School identity required</h1><p className="mt-2 text-sm text-slate-600">Sign in with an active school account. Demo school identifiers are not accepted.</p><Link className="mt-4 inline-block text-blue-700 underline" to="/login?next=%2Fonboarding">Sign in</Link></div>;
+    }
+    if(view==='create-teacher')return <CreateStaffAccount role="teacher" schoolId={schoolId} institutionId={institutionId}/>;
+    if(view==='create-vp')return <CreateStaffAccount role="vice_principal" schoolId={schoolId} institutionId={institutionId}/>;
+    if(view==='create-bursar')return <CreateStaffAccount role="bursar" schoolId={schoolId} institutionId={institutionId}/>;
+    if(view==='create-student')return <CreateStudent schoolId={schoolId} institutionId={institutionId}/>;
+    if(view==='bulk-import')return <BulkStudentImport schoolId={schoolId} institutionId={institutionId}/>;
+    if(view==='create-parent')return <CreateParent schoolId={schoolId} institutionId={institutionId}/>;
+  }
+
+  return <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="max-w-xl w-full bg-white rounded-2xl shadow-xl p-6">
+      <div className="flex justify-between mb-8 text-xs text-slate-500 gap-2">
+        {['School Basics','Principal Identity','First Class','Review'].map((label,index)=><span key={label} className={step>=index+1?'font-bold text-blue-700':''}>{label}</span>)}
       </div>
+      {error&&<div role="alert" className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"><AlertCircle className="mr-2 inline h-4 w-4"/>{error}</div>}
+      {notice&&<div role="status" className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">{notice}<div className="mt-2"><Link className="underline font-semibold" to="/login?next=%2Fonboarding%3Fresume%3D1">Sign in to resume</Link></div></div>}
+      {step===1&&<section className="space-y-3"><h1 className="text-2xl font-bold">School Basics</h1>
+        <label className="block text-sm">Institution name<input required value={formData.institution_name} onChange={e=>update({institution_name:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block text-sm">Institution type<select value={formData.institution_type} onChange={e=>update({institution_type:e.target.value as CreateInstitutionFormInput['institution_type']})} className="mt-1 w-full rounded-lg border p-3"><option value="secondary">Secondary school</option><option value="polytechnic">Polytechnic</option><option value="university">University</option><option value="enterprise">Other institution</option></select></label>
+          <label className="block text-sm">School ownership<select value={formData.school_type} onChange={e=>update({school_type:e.target.value})} className="mt-1 w-full rounded-lg border p-3"><option value="private">Private</option><option value="public">Public</option></select></label>
+        </div>
+        <div className="grid grid-cols-2 gap-3"><label className="block text-sm">Registration number (optional)<input value={formData.registration_number} onChange={e=>update({registration_number:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label><label className="block text-sm">Website (optional)<input type="url" value={formData.website} onChange={e=>update({website:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label></div>
+        <label className="block text-sm">Address<input required value={formData.address} onChange={e=>update({address:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>
+        <div className="grid grid-cols-2 gap-3"><label className="block text-sm">State<input required value={formData.state} onChange={e=>update({state:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label><label className="block text-sm">LGA<input required value={formData.lga} onChange={e=>update({lga:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label></div>
+        <label className="block text-sm">School phone<input required value={formData.phone} onChange={e=>update({phone:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>
+      </section>}
+      {step===2&&<section className="space-y-3"><h1 className="text-2xl font-bold">Principal Identity</h1>
+        <p className="text-sm text-slate-600">The principal must sign in with a confirmed Supabase Auth email. The server binds the institution and membership to that identity.</p>
+        <label className="block text-sm">Principal full name<input required value={formData.principal_name} onChange={e=>update({principal_name:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>
+        <label className="block text-sm">Principal email<input required type="email" value={formData.principal_email} onChange={e=>update({principal_email:e.target.value,email:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>
+        <label className="block text-sm">Principal phone<input required value={formData.principal_phone} onChange={e=>update({principal_phone:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>
+        {!authenticated&&<label className="block text-sm">Create password (minimum 8 characters)<input required type="password" minLength={8} value={formData.password} onChange={e=>update({password:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>}
+      </section>}
+      {step===3&&<section className="space-y-3"><h1 className="text-2xl font-bold">First Class & Subject</h1>
+        <label className="block text-sm">First class<input required value={formData.class_name} onChange={e=>update({class_name:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>
+        <label className="block text-sm">First subject<input required value={formData.subject} onChange={e=>update({subject:e.target.value})} className="mt-1 w-full rounded-lg border p-3"/></label>
+      </section>}
+      {step===4&&<section className="space-y-3"><h1 className="text-2xl font-bold">Review & Provision</h1>
+        <p><strong>Institution:</strong> {formData.institution_name}</p><p><strong>Principal:</strong> {formData.principal_name} ({formData.principal_email})</p><p><strong>First class:</strong> {formData.class_name}</p><p><strong>First subject:</strong> {formData.subject}</p>
+        <p className="text-sm text-slate-600">Provisioning, principal profile, active membership, six secondary classes and the first class-subject mapping commit in one database transaction.</p>
+      </section>}
+      <p className="mt-5 text-center text-sm text-slate-500">Already have a principal account? <Link className="font-semibold text-blue-700 underline" to="/login?next=%2Fonboarding%3Fresume%3D1">Sign in to continue</Link></p>
+      <div className="mt-6 flex gap-3"><button type="button" disabled={submitting||step===1} onClick={()=>setStep(s=>Math.max(1,s-1))} className="rounded-xl border px-5 py-3 disabled:opacity-40">Back</button>
+        <button type="button" disabled={submitting} onClick={()=>step<4?setStep(s=>s+1):void launch()} className="flex-1 rounded-xl bg-blue-600 py-3 font-bold text-white disabled:opacity-50">{submitting?<><Loader2 className="mr-2 inline h-4 w-4 animate-spin"/>Saving…</>:step===4?'Launch Institution':'Continue'}{!submitting&&<ArrowRight className="ml-2 inline h-4 w-4"/>}</button></div>
     </div>
-  );
+  </div>;
 };
-
-const Step1 = ({ data, setData }: any) => (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">School Basics</h2>
-    <input placeholder="Institution Name" value={data.institution_name} onChange={e => setData({...data, institution_name: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
-    <input placeholder="Address" value={data.address} onChange={e => setData({...data, address: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
-    <input placeholder="State" value={data.state} onChange={e => setData({...data, state: e.target.value})} className="w-full p-3 border rounded-xl" />
-  </div>
-);
-
-const Step2 = ({ data, setData }: any) => (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">Admin Account</h2>
-    <input placeholder="Principal Name" value={data.principal_name} onChange={e => setData({...data, principal_name: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
-    <input placeholder="Principal Phone" value={data.principal_phone} onChange={e => setData({...data, principal_phone: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
-    <input placeholder="Principal Email" value={data.principal_email} onChange={e => setData({...data, principal_email: e.target.value})} className="w-full p-3 border rounded-xl" />
-  </div>
-);
-
-const Step3 = ({ data, setData }: any) => (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">First Class</h2>
-    <input placeholder="Class Name (e.g. JSS 1)" value={data.class_name} onChange={e => setData({...data, class_name: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
-    <input placeholder="Subject (e.g. Mathematics)" value={data.subject} onChange={e => setData({...data, subject: e.target.value})} className="w-full p-3 border rounded-xl" />
-  </div>
-);
-
-const Step4 = ({ data }: any) => (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">Review & Launch</h2>
-    <div className="bg-slate-50 p-4 rounded-xl space-y-2 text-sm">
-      <p><strong>School:</strong> {data.institution_name}</p>
-      <p><strong>Principal:</strong> {data.principal_name}</p>
-      <p><strong>Phone:</strong> {data.principal_phone}</p>
-      <p><strong>First Class:</strong> {data.class_name}</p>
-    </div>
-    <p className="text-xs text-slate-500 mt-4">Click "Launch Institution" to finalize your school setup.</p>
-  </div>
-);

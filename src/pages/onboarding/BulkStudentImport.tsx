@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { onboardingService } from '../../services/onboardingService';
 import { 
   Upload, 
   Download, 
@@ -24,7 +24,6 @@ interface BulkStudentImportProps {
 interface ImportResult {
   student_id?: string;
   student_number?: string;
-  pin?: string;
   first_name?: string;
   last_name?: string;
   class?: string;
@@ -163,51 +162,12 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
         return;
       }
 
-      // Call RPC with fallback for offline/demo mode
-      let resultData: any = null;
-      try {
-        const { data, error } = await supabase.rpc('bulk_enroll_students' as any, {
-          p_students: students,
-          p_school_id: schoolId || null,
-          p_institution_id: institutionId || null
-        });
+      if (!schoolId || !institutionId) throw new Error('An authenticated school context is required.');
+      if (students.length > 500) throw new Error('Maximum 500 students per import.');
 
-        if (error || !data) {
-          throw error || new Error('No data returned from RPC');
-        }
-        resultData = data;
-      } catch (rpcErr: any) {
-        console.warn('RPC bulk_enroll_students fallback execution:', rpcErr?.message || rpcErr);
-        const results: ImportResult[] = students.map((s, idx) => {
-          if (s.class_name && s.class_name.toLowerCase().includes('invalid')) {
-            return {
-              status: 'failed',
-              first_name: s.first_name,
-              last_name: s.last_name,
-              class: s.class_name,
-              error: `Class "${s.class_name}" not found`
-            };
-          }
-          return {
-            status: 'success',
-            student_id: `std_bulk_${Date.now()}_${idx}`,
-            student_number: `GRD/2026/${1000 + idx}`,
-            pin: String(1000 + Math.floor(Math.random() * 9000)),
-            first_name: s.first_name,
-            last_name: s.last_name,
-            class: s.class_name
-          };
-        });
-
-        const successCount = results.filter(r => r.status === 'success').length;
-        const failedCount = results.filter(r => r.status === 'failed').length;
-
-        resultData = {
-          total_submitted: students.length,
-          success_count: successCount,
-          failed_count: failedCount,
-          results: results
-        };
+      const resultData = await onboardingService.bulkEnrollStudents(schoolId, students);
+      if (resultData.total_submitted !== students.length) {
+        throw new Error('Server result count does not match the submitted rows.');
       }
 
       setSummary({
@@ -272,6 +232,20 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
             </p>
           </div>
         </div>
+
+        {summary.results.some((r: any) => r.status === 'success') && (
+          <div className="mb-4 max-h-48 overflow-y-auto">
+            <p className="mb-2 text-xs font-medium text-emerald-700">Persisted Student Numbers:</p>
+            <div className="space-y-1">
+              {summary.results.filter((r: any) => r.status === 'success').map((result: any) => (
+                <div key={result.student_id} className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-xs">
+                  <span>{result.first_name} {result.last_name} · {result.class}</span>
+                  <strong className="font-mono">{result.student_number}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {summary.results.some((r: any) => r.status === 'failed') && (
           <div className="mb-4 max-h-48 overflow-y-auto">
@@ -452,7 +426,7 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
               <li>Maximum 500 students per import</li>
               <li>Required columns: first_name, last_name, class_name</li>
               <li>Class names must match existing classes (e.g., "JSS 1")</li>
-              <li>Each student receives a unique 4-digit PIN for login</li>
+              <li>Each successfully enrolled student receives a database-generated student number</li>
             </ul>
           </div>
         </div>

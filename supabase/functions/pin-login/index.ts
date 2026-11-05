@@ -21,8 +21,9 @@ serve(async (req: Request) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabaseUrl || !supabaseServiceKey || !supabaseAnonKey) {
       throw new Error("Supabase environment configuration missing in Edge Function runtime.");
     }
 
@@ -86,43 +87,43 @@ serve(async (req: Request) => {
       }
     }
 
-    // Default fallback email if pin actor is terminal student without external email
     if (!targetEmail) {
-      targetEmail = `${identifier || "actor"}_${pin}@sefaes.local`;
+      return new Response(JSON.stringify({ success: false, error: "No verified authentication email is associated with this account." }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     }
 
-    // Step 3: Generate authentic session link / token via Supabase Admin Auth
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: "magiclink",
       email: targetEmail,
     });
+    const tokenHash = linkData?.properties?.hashed_token;
+    if (linkError || !tokenHash) {
+      throw new Error(linkError?.message || "Could not generate a one-time authentication token.");
+    }
 
-    const accessToken = linkData?.properties?.action_link || authData.token || `jwt_${Date.now()}`;
-    const refreshToken = authData.refresh_token || `ref_${Date.now()}`;
+    const sessionClient = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+    const { data: verified, error: verifyError } = await sessionClient.auth.verifyOtp({
+      type: "magiclink",
+      token_hash: tokenHash,
+    });
+    if (verifyError || !verified.session) {
+      throw new Error(verifyError?.message || "PIN session exchange failed.");
+    }
 
-    // Step 4: Return session exchange payload to frontend AuthGuard
-    return new Response(
-      JSON.stringify({
-        success: true,
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        user_id: profileId,
-        profile_id: profileId,
-        institution_id: institutionId,
-        school_id: schoolId,
-        role: role,
-        user: {
-          id: profileId,
-          email: targetEmail,
-          role: role,
-          institution_id: institutionId,
-        },
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({
+      success: true,
+      access_token: verified.session.access_token,
+      refresh_token: verified.session.refresh_token,
+      user_id: verified.user?.id || profileId,
+      profile_id: profileId,
+      institution_id: institutionId,
+      school_id: schoolId,
+      role,
+      user: { id: verified.user?.id || profileId, email: targetEmail, role, institution_id: institutionId },
+    }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (error: any) {
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error during PIN auth exchange." }),

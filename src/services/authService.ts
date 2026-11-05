@@ -14,7 +14,7 @@ export interface AuthSessionState {
   actor: IdentityActor | null;
   institutionId: string | null;
   schoolId: string | null;
-  role: 'admin' | 'principal' | 'teacher' | 'student' | 'parent' | null;
+  role: 'admin' | 'principal' | 'teacher' | 'student' | 'parent' | 'vice_principal' | 'bursar' | null;
 }
 
 export const authService = {
@@ -34,6 +34,19 @@ export const authService = {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Register a principal using a real Supabase Auth identity.
+   */
+  async signUpWithPassword(email: string, password: string, fullName: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim().toLowerCase(),
+      password,
+      options: { data: { full_name: fullName.trim() } },
     });
     if (error) throw error;
     return data;
@@ -86,34 +99,27 @@ export const authService = {
       };
     }
 
-    // 1. Fetch Profile
-    const { data: profile } = await supabase
+    // 1. Fetch the caller-owned profile.
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle();
+    if (profileError) throw profileError;
 
-    // 2. Fetch Identity Actor (authoritative scoping)
-    let { data: actor, error: actorError } = await supabase
+    // 2. Fetch the caller-owned, active identity actor. No alternate user_id fallback.
+    const { data: actor, error: actorError } = await (supabase as any)
       .from('identity_actors')
       .select('*')
       .eq('auth_user_id' as any, user.id)
       .eq('status', 'active')
       .maybeSingle();
-
-    if (actorError) {
-      const { data: fallbackActor } = await supabase
-        .from('identity_actors')
-        .select('*')
-        .eq('user_id' as any, user.id)
-        .eq('status', 'active')
-        .maybeSingle();
-      if (fallbackActor) actor = fallbackActor;
-    }
+    if (actorError) throw actorError;
 
     const institutionId = actor?.institution_id || profile?.institution_id || null;
-    const schoolId = actor?.school_id || null;
-    const role = (actor?.role || profile?.role || null) as AuthSessionState['role'];
+    const schoolId = actor?.school_id || profile?.school_id || null;
+    const actorType = (actor as any)?.actor_type || (actor as any)?.role || null;
+    const role = (actorType === 'principal_admin' ? 'principal' : actorType || profile?.role || null) as AuthSessionState['role'];
 
     return {
       isAuthenticated: true,
@@ -131,7 +137,9 @@ export const authService = {
    * Called when Principal creates VP, Bursar, or Teacher
    */
   generatePin(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    const bytes = new Uint32Array(1);
+    crypto.getRandomValues(bytes);
+    return String(100000 + (bytes[0] % 900000));
   },
 
   /**
@@ -139,37 +147,23 @@ export const authService = {
    * For: VP, Bursar, Teacher roles
    */
   async signInWithPhoneAndPin(phone: string, pin: string) {
-    try {
-      const { data, error } = await supabase.rpc('auth_pin_login', {
-        p_phone: phone,
-        p_pin: pin,
-      });
-
-      if (error || !data) {
-        // Fallback profile query for dev simulation
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('phone', phone)
-          .maybeSingle();
-
-        if (profile) {
-          return {
-            success: true,
-            user_id: profile.user_id,
-            role: profile.role,
-            full_name: profile.full_name,
-            school_id: profile.school_id,
-          };
-        }
-        return { success: true, role: 'teacher', full_name: 'Teacher User' };
-      }
-      return data;
-    } catch (error) {
-      console.error('PIN login error:', error);
-      throw error;
+    const { data, error } = await supabase.functions.invoke('pin-login', {
+      body: { identifier: phone, pin },
+    });
+    if (error) throw error;
+    if (!data || data.success !== true || !data.access_token || !data.refresh_token) {
+      throw new Error(data?.error || 'PIN authentication did not return a valid Supabase session.');
     }
+    const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    });
+    if (sessionError || !sessionData.session) {
+      throw new Error(sessionError?.message || 'Could not establish the authenticated session.');
+    }
+    return data;
   },
+
 
   /**
    * Set/Change PIN for user (VP, Bursar, Teacher, Student, Parent)
@@ -230,37 +224,9 @@ export const authService = {
    * Edge Function Bridge: Exchanges PIN & identifier for an authentic Supabase session
    */
   async exchangePinForSession(pin: string, identifier?: string) {
-    try {
-      // 1. Attempt invoking the official Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('pin-login', {
-        body: { pin, identifier: identifier || '' },
-      });
-
-      if (!error && data && data.success) {
-        if (data.access_token && data.refresh_token && !data.access_token.startsWith('http')) {
-          await supabase.auth.setSession({
-            access_token: data.access_token,
-            refresh_token: data.refresh_token,
-          });
-        }
-        return data;
-      }
-    } catch (edgeErr) {
-      console.warn('Edge function invoke fallback to direct RPC:', edgeErr);
-    }
-
-    // 2. Direct RPC fallback
-    const rpcData = await this.signInWithPin(pin, identifier);
-    return {
-      success: true,
-      access_token: rpcData?.token || `token_${Date.now()}`,
-      refresh_token: rpcData?.token || `ref_${Date.now()}`,
-      role: rpcData?.role || 'student',
-      institution_id: rpcData?.institution_id,
-      profile_id: rpcData?.profile_id,
-      user_id: rpcData?.user_id,
-    };
+    return this.signInWithPhoneAndPin(identifier || '', pin);
   },
+
 
   /**
    * Listen to auth state changes

@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+  },
+  "include": [
+    "src/pages/onboarding/OnboardingWizard.tsx",
+    "src/pages/onboarding/CreateStaffAccount.tsx",
+    "src/pages/onboarding/CreateStudent.tsx",
+    "src/pages/onboarding/BulkStudentImport.tsx",
+    "src/pages/onboarding/CreateParent.tsx",
+    "src/pages/onboarding/CreateVP.tsx",
+    "src/pages/onboarding/CreateBursar.tsx",
+    "src/pages/onboarding/CreateTeacher.tsx",
+    "src/pages/auth/LoginPage.tsx",
+    "src/services/onboardingService.ts",
+    "src/services/authService.ts",
+    "src/contracts/schema.ts",
+    "src/contracts/rpc.ts",
+    "src/types/database.types.ts",
+    "src/lib/supabase.ts",
+    "src/vite-env.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
