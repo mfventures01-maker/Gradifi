@@ -26,6 +26,8 @@ describe('CBT commercial execution contract', () => {
   it('uses protected RPCs instead of browser-side attempt and answer inserts', () => {
     expect(service).toContain("rpc('create_cbt_attempt'");
     expect(service).toContain("rpc('submit_cbt_answer'");
+    expect(migration).toContain("'saved',true,'time_remaining',v_remaining");
+    expect(migration).not.toContain("'current_score',v_current_score");
     expect(service).toContain("rpc('submit_cbt_exam'");
     expect(service).not.toContain(".from('cbt_attempts').insert");
     expect(service).not.toContain(".from('cbt_answers').insert");
