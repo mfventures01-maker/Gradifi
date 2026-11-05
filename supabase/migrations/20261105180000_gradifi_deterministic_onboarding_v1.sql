@@ -352,6 +352,14 @@ begin
     and public.has_active_school_role(s.id,array['principal','school_admin'])
   limit 1;
   if v_school_id is null then raise exception 'SCHOOL_ACCESS_DENIED' using errcode='42501'; end if;
+  if p_is_completed and not exists (
+    select 1 from public.institution_onboarding io
+    where io.institution_id=p_institution_id
+      and io.institution_created=true and io.school_created=true
+      and io.classes_created=true and io.subjects_created=true
+  ) then
+    raise exception 'CORE_ONBOARDING_RECORDS_INCOMPLETE' using errcode='23514';
+  end if;
   update public.institution_onboarding
   set current_step=p_current_step,is_completed=p_is_completed,
       completed=p_is_completed,completed_at=case when p_is_completed then now() else null end,
