@@ -1,7 +1,8 @@
 -- Gradifi deterministic onboarding v1
 -- Additive only. All writes are performed through authenticated, tenant-scoped RPCs.
 
-alter table public.profiles add column if not exists email text;\nalter table public.schools add column if not exists state text;\nalter table public.schools add column if not exists lga text;
+alter table public.profiles add column if not exists email text;
+alter table public.schools add column if not exists state text;\nalter table public.schools add column if not exists lga text;
 
 alter table public.institution_onboarding
   add column if not exists current_step smallint not null default 1,
@@ -110,13 +111,15 @@ begin
   end if;
 
   insert into public.schools
-    (institution_id,school_name,principal_name,principal_email,email,phone,address,
+    (institution_id,school_name,principal_name,principal_email,email,phone,address,state,lga,
      campus_address,campus_phone,school_type,url_slug,slug,provisioning_status)
   values
     (v_institution_id,trim(p_payload->>'institution_name') || ' Main Campus',
      trim(p_payload->>'principal_name'),v_user_email,v_user_email,
      nullif(trim(p_payload->>'phone'),''),
      nullif(trim(p_payload->>'address'),''),
+     nullif(trim(p_payload->>'state'),''),
+     nullif(trim(p_payload->>'lga'),''),
      nullif(trim(p_payload->>'address'),''),
      nullif(trim(p_payload->>'phone'),''),
      coalesce(nullif(trim(p_payload->>'school_type'),''),'private'),
@@ -261,11 +264,12 @@ declare
   v_school_id uuid;
   v_institution_id uuid;
   v_profile_id uuid;
+  v_teacher_id uuid;
   v_user_email text;
 begin
   if auth.uid() is null then raise exception 'AUTHENTICATION_REQUIRED' using errcode='28000'; end if;
   if p_role not in ('teacher','vice_principal','bursar') then raise exception 'INVALID_STAFF_ROLE' using errcode='22023'; end if;
-  if p_pin is null or p_pin !~ '^[0-9]{6}
+  if p_pin is null or p_pin !~ '^[0-9]{6}$' then raise exception 'INVALID_STAFF_PIN' using errcode='22023'; end if;
   select m.school_id,s.institution_id into v_school_id,v_institution_id
   from public.gradifi_school_memberships m
   join public.schools s on s.id=m.school_id
@@ -300,7 +304,8 @@ begin
 
   if p_role='teacher' then
     insert into public.teachers (user_id,school_id,institution_id,name,email,phone)
-    values (p_user_id,v_school_id,v_institution_id,trim(p_name),lower(trim(p_email)),nullif(trim(p_phone),'' ));
+    values (p_user_id,v_school_id,v_institution_id,trim(p_name),lower(trim(p_email)),nullif(trim(p_phone),'' ))
+    returning id into v_teacher_id;
   end if;
 
   update public.institution_onboarding
