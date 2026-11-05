@@ -64,20 +64,35 @@ begin
   end if;
 
   -- Idempotent recovery after a client/network interruption.
-  select p.id as profile_id, p.institution_id, p.school_id
+  select p.id as profile_id, p.institution_id, p.school_id, p.role
     into v_existing
   from public.profiles p
   where p.user_id = v_user_id;
 
   if found then
     if v_existing.institution_id is null or v_existing.school_id is null
+       or v_existing.role <> 'principal_admin'
        or not exists (
          select 1 from public.gradifi_school_memberships m
+         join public.schools s on s.id=m.school_id
          where m.user_id = v_user_id and m.school_id = v_existing.school_id
            and m.member_role = 'principal' and m.status = 'active'
+           and s.provisioning_status = 'active'
+       )
+       or exists (
+         select 1 from public.identity_actors a
+         where a.auth_user_id=v_user_id
+           and (a.school_id<>v_existing.school_id or a.actor_type<>'principal_admin' or a.status<>'active')
        ) then
       raise exception 'EXISTING_IDENTITY_NOT_A_VALID_PRINCIPAL' using errcode = '23514';
     end if;
+
+    insert into public.identity_actors
+      (auth_user_id,institution_id,school_id,actor_type,actor_record_id,login_identifier,auth_method,status)
+    select v_user_id,v_existing.institution_id,v_existing.school_id,'principal_admin',
+      v_existing.profile_id,v_user_email,'email','active'
+    where not exists(select 1 from public.identity_actors a where a.auth_user_id=v_user_id)
+    on conflict do nothing;
 
     select jsonb_agg(jsonb_build_object('id',c.id,'name',c.name) order by c.name)
       into v_classes
