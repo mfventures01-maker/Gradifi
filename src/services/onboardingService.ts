@@ -186,7 +186,8 @@ export const onboardingService = {
       throw new Error(result.error || 'Staff provisioning was not confirmed by the server.');
     }
     return {
-      profile_id: requireUuid(result.profile_id, 'Staff provisioning'),\n      teacher_id: result.teacher_id ? requireUuid(result.teacher_id, 'Staff provisioning') : undefined,
+      profile_id: requireUuid(result.profile_id, 'Staff provisioning'),
+      teacher_id: result.teacher_id ? requireUuid(result.teacher_id, 'Staff provisioning') : undefined,
       full_name: String(result.full_name),
       role: input.role,
       email: String(result.email),
