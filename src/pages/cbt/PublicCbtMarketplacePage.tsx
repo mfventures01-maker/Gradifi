@@ -62,7 +62,7 @@ export const PublicCbtMarketplacePage: React.FC = () => {
             <h1 className="text-3xl font-extrabold mt-2">Public examination marketplace</h1>
             <p className="text-sm text-slate-300 mt-2">Discover, purchase and sit verified examinations from participating schools.</p>
           </div>
-          <button onClick={() => navigate('/cbt/public/auth')} className="rounded-xl border border-slate-600 px-4 py-2 text-sm font-semibold flex items-center gap-2">
+          <button onClick={() => navigate('/cbt/public/auth?mode=login')} className="rounded-xl border border-slate-600 px-4 py-2 text-sm font-semibold flex items-center gap-2">
             <Lock size={15} /> Candidate sign in
           </button>
         </div>
