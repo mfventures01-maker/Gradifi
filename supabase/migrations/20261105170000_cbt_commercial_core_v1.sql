@@ -204,7 +204,7 @@ begin
   if auth.uid() is null then raise exception 'Authentication required'; end if;
   if coalesce(length(btrim(p_title)),0)=0 then raise exception 'Exam title is required'; end if;
   if p_duration_minutes is null or p_duration_minutes <= 0 then raise exception 'Exam duration must be positive'; end if;
-  if p_pass_mark is null or p_pass_mark < 0 then raise exception 'Pass mark cannot be negative'; end if;
+  if p_pass_mark is null or p_pass_mark < 0 or p_pass_mark > 100 then raise exception 'Pass mark must be between 0 and 100 percent'; end if;
   if p_start_time is null then raise exception 'Exam start time is required'; end if;
 
   if not exists (
@@ -507,7 +507,7 @@ begin
       'className',c.name,'totalMarks',e.total_marks,'passMark',e.pass_mark),
     'result',jsonb_build_object('id',r.id,'score',r.score,'maxScore',r.total_marks,
       'percentage',r.percentage,'grade',r.grade,'status',
-      case when r.score>=coalesce(e.pass_mark,0) then 'Passed' else 'Failed' end,
+      case when coalesce(r.percentage,0)>=coalesce(e.pass_mark,0) then 'Passed' else 'Failed' end,
       'submittedAt',a.submitted_at)
   ) into v_result
   from public.cbt_results_summary r
@@ -860,7 +860,7 @@ begin
     'grade',coalesce(grade,'F'),'position',
       rank::text || case when rank%100 between 11 and 13 then 'th'
         else case rank%10 when 1 then 'st' when 2 then 'nd' when 3 then 'rd' else 'th' end end,
-    'submittedAt',submitted_at,'status',case when score >= (v_exam->>'passMark')::integer then 'Passed' else 'Failed' end
+    'submittedAt',submitted_at,'status',case when coalesce(percentage,0) >= coalesce((v_exam->>'passMark')::numeric,0) then 'Passed' else 'Failed' end
   ) order by rank),'[]'::jsonb)
   into v_results
   from ranked;
@@ -875,7 +875,7 @@ begin
   )
   select jsonb_build_object(
     'averageScore',coalesce(round(avg(percentage),1),0),
-    'passRate',coalesce(round(count(*) filter(where score >= (v_exam->>'passMark')::integer)*100.0/nullif(count(*),0),1),0),
+    'passRate',coalesce(round(count(*) filter(where coalesce(percentage,0) >= coalesce((v_exam->>'passMark')::numeric,0))*100.0/nullif(count(*),0),1),0),
     'topScore',coalesce(max(percentage),0),
     'totalStudents',count(*),
     'gradeDistribution',coalesce((select jsonb_object_agg(grade,total) from distribution),'{}'::jsonb)
