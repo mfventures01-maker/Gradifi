@@ -9,7 +9,7 @@ export const PublicCbtAuthPage: React.FC = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const offerId = params.get('offer') || '';
-  const [mode, setMode] = useState<'register' | 'login'>('register');
+  const [mode, setMode] = useState<'register' | 'login' | 'complete'>(() => params.get('mode') === 'login' ? 'login' : 'register');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -57,11 +57,28 @@ export const PublicCbtAuthPage: React.FC = () => {
           return;
         }
         await continueAfterAuth(data.user);
-      } else {
+      } else if (mode === 'login') {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (signInError) throw signInError;
         if (!data.user) throw new Error('Authentication returned no user.');
-        await continueAfterAuth(data.user);
+        try {
+          await continueAfterAuth(data.user);
+        } catch (cause) {
+          if (cause instanceof Error && cause.message.includes('First name and last name are required')) {
+            setMode('complete');
+            setError('Complete your candidate profile with your first and last name.');
+          } else {
+            throw cause;
+          }
+        }
+      } else {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError || !userData.user) throw new Error('Your candidate session has expired. Sign in again.');
+        const { data: updated, error: updateError } = await supabase.auth.updateUser({
+          data: { first_name: firstName.trim(), last_name: lastName.trim(), account_channel: 'public_cbt' },
+        });
+        if (updateError) throw updateError;
+        await continueAfterAuth(updated.user || userData.user);
       }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Candidate authentication failed');
@@ -76,17 +93,17 @@ export const PublicCbtAuthPage: React.FC = () => {
         <button onClick={() => navigate('/cbt/public')} className="text-xs text-slate-500 flex items-center gap-2"><ArrowLeft size={14} /> Marketplace</button>
         <div>
           <div className="inline-flex rounded-full bg-indigo-50 text-indigo-700 px-3 py-1 text-xs font-bold items-center gap-2"><UserRound size={14} /> Public candidate account</div>
-          <h1 className="text-2xl font-extrabold mt-3">{mode === 'register' ? 'Create your candidate account' : 'Candidate sign in'}</h1>
+          <h1 className="text-2xl font-extrabold mt-3">{mode === 'register' ? 'Create your candidate account' : mode === 'complete' ? 'Complete candidate profile' : 'Candidate sign in'}</h1>
           <p className="text-sm text-slate-500 mt-1">Your candidate identity and exam access are verified by the Gradifi backend.</p>
         </div>
         <div className="grid grid-cols-2 bg-slate-100 p-1 rounded-xl text-sm font-semibold">
-          <button type="button" onClick={() => { setMode('register'); setError(''); setMessage(''); }} className={'rounded-lg py-2 ' + (mode === 'register' ? 'bg-white shadow-sm' : 'text-slate-500')}>Register</button>
-          <button type="button" onClick={() => { setMode('login'); setError(''); setMessage(''); }} className={'rounded-lg py-2 ' + (mode === 'login' ? 'bg-white shadow-sm' : 'text-slate-500')}>Sign in</button>
+          <button type="button" disabled={mode === 'complete'} onClick={() => { setMode('register'); setError(''); setMessage(''); }} className={'rounded-lg py-2 ' + (mode === 'register' ? 'bg-white shadow-sm' : 'text-slate-500')}>Register</button>
+          <button type="button" disabled={mode === 'complete'} onClick={() => { setMode('login'); setError(''); setMessage(''); }} className={'rounded-lg py-2 ' + (mode === 'login' ? 'bg-white shadow-sm' : 'text-slate-500')}>Sign in</button>
         </div>
         {message && <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{message}</div>}
         {error && <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
         <form onSubmit={submit} className="space-y-3">
-          {mode === 'register' && <div className="grid grid-cols-2 gap-3">
+          {mode !== 'login' && <div className="grid grid-cols-2 gap-3">
             <label className="text-xs font-semibold">First name<input required value={firstName} onChange={e => setFirstName(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 p-3 text-sm" /></label>
             <label className="text-xs font-semibold">Last name<input required value={lastName} onChange={e => setLastName(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 p-3 text-sm" /></label>
           </div>}
@@ -94,7 +111,7 @@ export const PublicCbtAuthPage: React.FC = () => {
           <label className="block text-xs font-semibold">Password<div className="relative mt-1"><Lock size={15} className="absolute left-3 top-3.5 text-slate-400" /><input required minLength={8} type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full rounded-lg border border-slate-300 py-3 pl-9 pr-3 text-sm" /></div></label>
           <button disabled={busy} className="w-full rounded-xl bg-indigo-600 text-white py-3 font-bold flex items-center justify-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 size={16} className="animate-spin" /> : null}
-            {mode === 'register' ? 'Create account' : 'Sign in and continue'}
+            {mode === 'register' ? 'Create account' : mode === 'complete' ? 'Save candidate profile' : 'Sign in and continue'}
           </button>
         </form>
       </section>
