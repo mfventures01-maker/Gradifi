@@ -204,18 +204,21 @@ export const onboardingService = {
 
   async getSchoolStudents(schoolId: string): Promise<SchoolStudent[]> {
     requireUuid(schoolId, 'School context');
-    const { data, error } = await (supabase as any)
-      .from('students')
-      .select('id,first_name,last_name,student_number,classes:class_id(name)')
-      .eq('school_id', schoolId)
-      .order('first_name');
+    const [{ data, error }, classes] = await Promise.all([
+      (supabase as any).from('students')
+        .select('id,first_name,last_name,student_number,class_id')
+        .eq('school_id', schoolId)
+        .order('first_name'),
+      this.getSchoolClasses(schoolId),
+    ]);
     if (error) throw new Error(`Could not load school students: ${error.message}`);
+    const classNames = new Map(classes.map((row) => [row.id, row.name]));
     return (data || []).map((row: any) => ({
       id: requireUuid(row.id, 'Student query'),
       first_name: String(row.first_name),
       last_name: String(row.last_name),
       student_number: String(row.student_number || ''),
-      class_name: String(row.classes?.name || 'Unassigned'),
+      class_name: classNames.get(row.class_id) || 'Unassigned',
     }));
   },
 
