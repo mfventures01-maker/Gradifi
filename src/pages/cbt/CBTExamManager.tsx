@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart2, BookOpen, Globe, Plus, RefreshCw, Search, X } from 'lucide-react';
+import { BarChart2, Globe, Plus, RefreshCw, Search, X } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { cbtService, CbtExamRecord, CbtPublicOffer } from '../../services/cbtService';
 
 export const CBTExamManager: React.FC = () => {
   const navigate = useNavigate();
-  const [schoolId, setSchoolId] = useState('');
   const [exams, setExams] = useState<CbtExamRecord[]>([]);
   const [classes, setClasses] = useState<Record<string, string>>({});
   const [subjects, setSubjects] = useState<Record<string, string>>({});
@@ -25,7 +24,6 @@ export const CBTExamManager: React.FC = () => {
     try {
       const identity = await authService.resolveCurrentIdentity();
       if (!identity.schoolId) throw new Error('Your account is not linked to an active school.');
-      setSchoolId(identity.schoolId);
       const [examRows, catalog, publicOffers] = await Promise.all([
         cbtService.getExams(identity.schoolId),
         cbtService.getAuthoringCatalog(identity.schoolId),
