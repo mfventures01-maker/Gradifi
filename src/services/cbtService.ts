@@ -60,6 +60,20 @@ export const cbtService = {
     return (data || []) as unknown as CbtExamRecord[];
   },
 
+  async getEligibleExams(): Promise<Array<{
+    id: string; title: string; description: string | null; duration_minutes: number;
+    total_marks: number; start_time: string | null; end_time: string | null;
+  }>> {
+    const { data, error } = await supabase.from('cbt_exams').select(
+      'id,title,description,duration_minutes,total_marks,start_time,end_time'
+    ).eq('status', 'published').order('start_time', { ascending: true });
+    if (error) throw error;
+    return (data || []) as unknown as Array<{
+      id: string; title: string; description: string | null; duration_minutes: number;
+      total_marks: number; start_time: string | null; end_time: string | null;
+    }>;
+  },
+
   async getExamWithQuestions(examId: string): Promise<{ exam: CbtExamRecord; questions: CbtQuestionRecord[] }> {
     const { data: exam, error: examError } = await supabase.from('cbt_exams')
       .select('*').eq('id', examId).single();
