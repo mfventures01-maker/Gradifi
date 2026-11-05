@@ -1,16 +1,11 @@
-/**
- * GRADIFI x SEFAES - ONBOARDING SERVICE
- * Canonical SSoT interaction with Supabase RPCs, institution_onboarding table, and validation.
- */
-
 import { supabase } from '../lib/supabase';
-import { InstitutionOnboarding } from '../contracts/schema';
-import { ReconcileAndLaunchParams, ReconciliationReport } from '../contracts/rpc';
+import type { InstitutionOnboarding } from '../contracts/schema';
+import type { ReconcileAndLaunchParams, ReconciliationReport } from '../contracts/rpc';
 
 export interface CreateInstitutionFormInput {
   institution_name: string;
-  institution_type: 'secondary' | 'primary' | 'k12' | 'tertiary' | 'group_of_schools';
-  registration_number: string;
+  institution_type: 'secondary' | 'polytechnic' | 'university' | 'enterprise';
+  registration_number?: string;
   address: string;
   state: string;
   lga: string;
@@ -21,23 +16,26 @@ export interface CreateInstitutionFormInput {
   principal_phone: string;
   principal_email: string;
   country?: string;
-  curriculum_type?: string;
+  school_type?: string;
+  class_name: string;
+  subject: string;
 }
 
 export interface CreateInstitutionAccountResponse {
   institution_id: string;
   school_id: string;
-  name: string;
-  type: string;
-  country: string;
-  created_at: string;
-  success: boolean;
+  profile_id: string;
+  success: true;
+  recovered?: boolean;
+  classes: Array<{ id: string; name: string }>;
+  subject_id?: string;
+  class_subject_id?: string;
 }
 
 export interface InitializeClassesResponse {
   classes_created: number;
-  classes: Array<{ id: string; name: string }>;
-  success: boolean;
+  classes: Array<{ id: string; name: string; school_id?: string }>;
+  success: true;
 }
 
 export interface CreateTeacherInput {
@@ -56,7 +54,7 @@ export interface CreateTeacherResponse {
   phone: string;
   school_id: string;
   institution_id?: string;
-  success: boolean;
+  success: true;
 }
 
 export interface EnrollStudentInput {
@@ -74,392 +72,182 @@ export interface EnrollStudentResponse {
   student_number: string;
   class_id: string;
   enrolled_at: string;
-  success: boolean;
+  success: true;
+}
+
+export interface SchoolClass {
+  id: string;
+  school_id: string;
+  name: string;
+}
+
+export type StaffRole = 'teacher' | 'vice_principal' | 'bursar';
+
+function requireObject(value: unknown, label: string): Record<string, any> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`${label} returned an invalid server response.`);
+  }
+  return value as Record<string, any>;
+}
+
+function requireUuid(value: unknown, label: string): string {
+  if (typeof value !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) {
+    throw new Error(`${label} did not return a valid database identifier.`);
+  }
+  return value;
 }
 
 export const onboardingService = {
-  /**
-   * 1. The Atomic Onboarding RPC: create_institution_account
-   * Accepts the 14 verified fields, creates the institution and default root campus.
-   */
   async createInstitutionAccount(input: CreateInstitutionFormInput): Promise<CreateInstitutionAccountResponse> {
-    try {
-      const { data, error } = await supabase.rpc('create_institution_account', {
-        name: input.institution_name,
-        type: input.institution_type,
-        country: input.country || 'Nigeria',
-        institution_name: input.institution_name,
+    const { data, error } = await supabase.rpc('gradifi_bootstrap_institution', {
+      p_payload: {
+        institution_name: input.institution_name.trim(),
         institution_type: input.institution_type,
-        registration_number: input.registration_number,
-        address: input.address,
-        state: input.state,
-        lga: input.lga,
-        phone: input.phone,
-        email: input.email,
-        website: input.website || '',
-        principal_name: input.principal_name,
-        principal_phone: input.principal_phone,
-        principal_email: input.principal_email,
-        p_name: input.institution_name,
-        p_type: input.institution_type,
-        p_country: input.country || 'Nigeria',
-      });
-
-      let instData = data;
-      if (error || !instData) {
-        console.warn('RPC create_institution_account returned error, using fallback:', error?.message);
-        instData = {
-          institution_id: `inst_${Date.now()}`,
-          school_id: `sch_${Date.now()}`,
-          name: input.institution_name,
-          type: input.institution_type,
-          country: input.country || 'Nigeria',
-          created_at: new Date().toISOString(),
-        };
-      }
-
-      const institutionId = instData.institution_id || `inst_${Date.now()}`;
-      const schoolId = instData.school_id || `sch_${Date.now()}`;
-
-      // Update onboarding record if available
-      try {
-        await supabase.from('institution_onboarding').upsert({
-          institution_id: institutionId,
-          current_step: 2,
-          is_completed: false,
-        } as any);
-      } catch (onboardingErr) {
-        console.warn('Non-blocking onboarding state update notice:', onboardingErr);
-      }
-
-      return {
-        institution_id: institutionId,
-        school_id: schoolId,
-        name: data.name || input.institution_name,
-        type: data.type || input.institution_type,
-        country: data.country || input.country || 'Nigeria',
-        created_at: data.created_at || new Date().toISOString(),
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.createInstitutionAccount catch block:', err);
-      throw new Error(err.message || 'Institution creation failed. Please check your network connection.');
-    }
+        registration_number: input.registration_number?.trim() || null,
+        school_type: input.school_type || 'private',
+        country: input.country || 'Nigeria',
+        address: input.address.trim(),
+        state: input.state.trim(),
+        lga: input.lga.trim(),
+        phone: input.phone.trim(),
+        email: input.email.trim(),
+        website: input.website?.trim() || null,
+        principal_name: input.principal_name.trim(),
+        principal_phone: input.principal_phone.trim(),
+        principal_email: input.principal_email.trim().toLowerCase(),
+        class_name: input.class_name.trim(),
+        subject: input.subject.trim(),
+      },
+    });
+    if (error) throw new Error(`Institution provisioning failed: ${error.message}`);
+    const result = requireObject(data, 'Institution provisioning');
+    if (result.success !== true) throw new Error(result.error || 'Institution provisioning was not confirmed.');
+    const classes = Array.isArray(result.classes) ? result.classes : [];
+    if (classes.length === 0) throw new Error('Provisioning returned no persisted class records.');
+    return {
+      institution_id: requireUuid(result.institution_id, 'Institution provisioning'),
+      school_id: requireUuid(result.school_id, 'Institution provisioning'),
+      profile_id: requireUuid(result.profile_id, 'Principal identity provisioning'),
+      success: true,
+      recovered: result.recovered === true,
+      classes: classes.map((row: any) => ({
+        id: requireUuid(row.id, 'Class provisioning'),
+        name: String(row.name),
+      })),
+      subject_id: result.subject_id ? requireUuid(result.subject_id, 'Subject provisioning') : undefined,
+      class_subject_id: result.class_subject_id ? requireUuid(result.class_subject_id, 'Class-subject provisioning') : undefined,
+    };
   },
 
-  /**
-   * 2. Initialize Secondary Classes RPC: initialize_secondary_classes
-   * Generates JSS 1 to SS 3 class levels for the given school.
-   */
+  async getSchoolClasses(schoolId: string): Promise<SchoolClass[]> {
+    requireUuid(schoolId, 'School context');
+    const { data, error } = await supabase.rpc('gradifi_get_school_classes', { p_school_id: schoolId });
+    if (error) throw new Error(`Could not load school classes: ${error.message}`);
+    if (!Array.isArray(data)) throw new Error('School class query returned an invalid response.');
+    return data.map((row: any) => ({
+      id: requireUuid(row.id, 'Class query'),
+      school_id: requireUuid(row.school_id, 'Class query'),
+      name: String(row.name),
+    }));
+  },
+
   async initializeSecondaryClasses(schoolId: string): Promise<InitializeClassesResponse> {
-    try {
-      const { data, error } = await supabase.rpc('initialize_secondary_classes', {
-        p_school_id: schoolId,
-        school_id: schoolId,
-      });
-
-      if (error) {
-        console.warn('RPC initialize_secondary_classes returned error, attempting fallback insert:', error.message);
-        
-        // Fallback: direct class check/insert for resilience
-        const initialClassNames = ['JSS 1', 'JSS 2', 'JSS 3', 'SS 1', 'SS 2', 'SS 3'];
-        const classInserts = initialClassNames.map(name => ({
-          school_id: schoolId,
-          name,
-          arm: 'Gold',
-        }));
-
-        const { data: insertedClasses } = await supabase
-          .from('classes')
-          .insert(classInserts as any)
-          .select('id, name');
-
-        return {
-          classes_created: insertedClasses?.length || 6,
-          classes: insertedClasses || initialClassNames.map((name, i) => ({ id: `cls_${i + 1}`, name })),
-          success: true,
-        };
-      }
-
-      return {
-        classes_created: data?.classes_created || 6,
-        classes: data?.classes || [],
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.initializeSecondaryClasses error:', err);
-      throw new Error(err.message || 'Secondary classes initialization encountered an error.');
-    }
+    const classes = await this.getSchoolClasses(schoolId);
+    if (classes.length === 0) throw new Error('No persisted classes are configured for this school.');
+    return { classes_created: classes.length, classes, success: true };
   },
 
-  /**
-   * 3. Create Teacher RPC: create_teacher
-   * Registers a certified teacher with an optional class_subject assignment.
-   */
+  async createStaffAccount(input: { role: StaffRole; name: string; email: string; phone: string }) {
+    if (!input.name.trim() || !input.email.trim()) throw new Error('Staff name and email are required.');
+    const { data, error } = await supabase.functions.invoke('gradifi-staff-provision', {
+      body: {
+        role: input.role,
+        name: input.name.trim(),
+        email: input.email.trim().toLowerCase(),
+        phone: input.phone.trim(),
+      },
+    });
+    if (error) throw new Error(`Staff provisioning failed: ${error.message}`);
+    const result = requireObject(data, 'Staff provisioning');
+    if (result.success !== true || !result.profile_id || !result.pin) {
+      throw new Error(result.error || 'Staff provisioning was not confirmed by the server.');
+    }
+    return {
+      profile_id: requireUuid(result.profile_id, 'Staff provisioning'),
+      full_name: String(result.full_name),
+      role: input.role,
+      email: String(result.email),
+      pin: String(result.pin),
+    };
+  },
+
   async createTeacher(input: CreateTeacherInput): Promise<CreateTeacherResponse> {
-    try {
-      let data: any = null;
-      let error: any = null;
-      try {
-        const res = await supabase.rpc('create_teacher', {
-          p_name: input.name,
-          p_email: input.email,
-          p_phone: input.phone,
-          p_school_id: input.school_id,
-          p_class_subject_id: input.class_subject_id || undefined,
-          institution_id: input.institution_id,
-          school_id: input.school_id,
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          class_subject_ids: input.class_subject_id ? [input.class_subject_id] : [],
-        });
-        data = res.data;
-        error = res.error;
-      } catch (rpcErr) {
-        error = rpcErr;
-      }
-
-      if (error || !data) {
-        console.warn('RPC create_teacher error or unavailable, using fallback response:', error?.message || error);
-        
-        let teacherId = `tch_${Date.now()}`;
-        try {
-          const { data: directTeacher } = await supabase
-            .from('teachers')
-            .insert({
-              school_id: input.school_id,
-              institution_id: input.institution_id || 'inst_default',
-              name: input.name,
-              email: input.email,
-              phone: input.phone,
-            } as any)
-            .select()
-            .single();
-          if (directTeacher?.id) teacherId = directTeacher.id;
-        } catch (dbErr) {
-          console.warn('Direct insert notice:', dbErr);
-        }
-
-        return {
-          teacher_id: teacherId,
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          school_id: input.school_id,
-          institution_id: input.institution_id,
-          success: true,
-        };
-      }
-
-      return {
-        teacher_id: data?.teacher_id || `tch_${Date.now()}`,
-        name: data?.name || input.name,
-        email: data?.email || input.email,
-        phone: data?.phone || input.phone,
-        school_id: data?.school_id || input.school_id,
-        institution_id: data?.institution_id || input.institution_id,
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.createTeacher error:', err);
-      return {
-        teacher_id: `tch_${Date.now()}`,
-        name: input.name,
-        email: input.email,
-        phone: input.phone,
-        school_id: input.school_id,
-        institution_id: input.institution_id,
-        success: true,
-      };
-    }
+    const result = await this.createStaffAccount({
+      role: 'teacher', name: input.name, email: input.email, phone: input.phone,
+    });
+    return {
+      teacher_id: result.profile_id,
+      name: result.full_name,
+      email: result.email,
+      phone: input.phone,
+      school_id: input.school_id,
+      institution_id: input.institution_id,
+      success: true,
+    };
   },
 
-  /**
-   * 4. Enroll Student RPC: enroll_student
-   * Registers a student and generates an authoritative student_number.
-   */
   async enrollStudent(input: EnrollStudentInput): Promise<EnrollStudentResponse> {
-    try {
-      let data: any = null;
-      let error: any = null;
-      try {
-        const res = await supabase.rpc('enroll_student', {
-          p_first_name: input.first_name,
-          p_last_name: input.last_name,
-          p_class_id: input.class_id,
-          p_school_id: input.school_id,
-          p_gender: input.gender,
-          p_date_of_birth: input.date_of_birth || undefined,
-          institution_id: input.institution_id,
-          school_id: input.school_id,
-          class_id: input.class_id,
-          first_name: input.first_name,
-          last_name: input.last_name,
-          gender: input.gender,
-          date_of_birth: input.date_of_birth,
-        });
-        data = res.data;
-        error = res.error;
-      } catch (rpcErr) {
-        error = rpcErr;
-      }
-
-      if (error || !data) {
-        console.warn('RPC enroll_student error or unavailable, using fallback response:', error?.message || error);
-        
-        const autoStudentNumber = `GRD/${new Date().getFullYear()}/${Math.floor(10000 + Math.random() * 90000)}`;
-        let studentId = `std_${Date.now()}`;
-
-        try {
-          const { data: directStudent } = await supabase
-            .from('students')
-            .insert({
-              school_id: input.school_id,
-              institution_id: input.institution_id || 'inst_default',
-              class_id: input.class_id,
-              student_number: autoStudentNumber,
-              first_name: input.first_name,
-              last_name: input.last_name,
-              gender: input.gender,
-              date_of_birth: input.date_of_birth || null,
-            } as any)
-            .select()
-            .single();
-          if (directStudent?.id) studentId = directStudent.id;
-        } catch (dbErr) {
-          console.warn('Direct student insert notice:', dbErr);
-        }
-
-        return {
-          student_id: studentId,
-          student_number: autoStudentNumber,
-          class_id: input.class_id,
-          enrolled_at: new Date().toISOString(),
-          success: true,
-        };
-      }
-
-      return {
-        student_id: data?.student_id || `std_${Date.now()}`,
-        student_number: data?.student_number || `GRD/${new Date().getFullYear()}/${Math.floor(100 + Math.random() * 900)}`,
-        class_id: data?.class_id || input.class_id,
-        enrolled_at: data?.enrolled_at || new Date().toISOString(),
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.enrollStudent error:', err);
-      throw new Error(err.message || 'Student enrollment failed. Please check your network and class assignment.');
-    }
+    const { data, error } = await supabase.rpc('gradifi_create_student', {
+      p_class_id: input.class_id,
+      p_first_name: input.first_name.trim(),
+      p_last_name: input.last_name.trim(),
+      p_gender: input.gender,
+      p_date_of_birth: input.date_of_birth || null,
+    });
+    if (error) throw new Error(`Student enrollment failed: ${error.message}`);
+    const result = requireObject(data, 'Student enrollment');
+    if (result.success !== true) throw new Error(result.error || 'Student enrollment was not confirmed.');
+    return {
+      student_id: requireUuid(result.student_id, 'Student enrollment'),
+      student_number: String(result.student_number || ''),
+      class_id: requireUuid(result.class_id, 'Student enrollment'),
+      enrolled_at: String(result.enrolled_at),
+      success: true,
+    };
   },
 
-  /**
-   * Fetch current canonical onboarding state for an institution
-   */
   async getOnboardingState(institutionId: string): Promise<InstitutionOnboarding | null> {
-    try {
-      const { data, error } = await supabase
-        .from('institution_onboarding')
-        .select('*')
-        .eq('institution_id', institutionId)
-        .maybeSingle();
-
-      if (error) {
-        console.warn('Could not fetch institution_onboarding:', error.message);
-        return null;
-      }
-      return (data as InstitutionOnboarding) || null;
-    } catch (err) {
-      console.warn('getOnboardingState caught:', err);
-      return null;
-    }
+    const { data, error } = await supabase.from('institution_onboarding')
+      .select('*').eq('institution_id', institutionId).maybeSingle();
+    if (error) throw new Error(`Could not retrieve onboarding progress: ${error.message}`);
+    return (data as InstitutionOnboarding) || null;
   },
 
-  /**
-   * Update step or progress
-   */
-  async updateOnboardingProgress(institutionId: string, currentStep: number, isCompleted: boolean = false) {
-    try {
-      const { data, error } = await supabase
-        .from('institution_onboarding')
-        .upsert({
-          institution_id: institutionId,
-          current_step: currentStep,
-          is_completed: isCompleted,
-          completed_at: isCompleted ? new Date().toISOString() : null,
-        } as any)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data as InstitutionOnboarding;
-    } catch (err: any) {
-      console.error('updateOnboardingProgress error:', err);
-      throw err;
-    }
+  async updateOnboardingProgress(institutionId: string, currentStep: number, isCompleted = false) {
+    const { data, error } = await supabase.rpc('gradifi_update_onboarding_progress', {
+      p_institution_id: institutionId,
+      p_current_step: currentStep,
+      p_is_completed: isCompleted,
+    });
+    if (error) throw new Error(`Could not save onboarding progress: ${error.message}`);
+    const result = requireObject(data, 'Onboarding progress');
+    if (result.success !== true) throw new Error('Onboarding progress was not persisted.');
+    return result;
   },
 
-  /**
-   * Authoritative final reconciliation and launch gatekeeper RPC
-   */
   async reconcileAndLaunch(params: ReconcileAndLaunchParams): Promise<ReconciliationReport> {
-    try {
-      const { data, error } = await supabase.rpc('reconcile_and_launch', {
-        institution_id: params.institution_id,
-        school_id: params.school_id,
-        parent_access: params.parent_access,
-        cbt_activated: params.cbt_activated,
-        ai_grading_activated: params.ai_grading_activated,
-      });
-
-      if (error || !data) {
-        // Deterministic validation query fallback
-        const [schoolRes, classesRes, subjectsRes, teachersRes, studentsRes] = await Promise.all([
-          supabase.from('schools').select('*').eq('id', params.school_id).maybeSingle(),
-          supabase.from('classes').select('*').eq('school_id', params.school_id),
-          supabase.from('class_subjects').select('*').eq('school_id', params.school_id),
-          supabase.from('teachers').select('*').eq('school_id', params.school_id),
-          supabase.from('students').select('*').eq('school_id', params.school_id),
-        ]);
-
-        const schoolData = schoolRes.data as any;
-        const errors: string[] = [];
-        if (!schoolData) errors.push('Authoritative school campus record missing');
-        if ((classesRes.data?.length || 0) === 0) errors.push('At least one class level must be defined');
-
-        const isValid = errors.length === 0;
-
-        if (isValid) {
-          await supabase
-            .from('institution_onboarding')
-            .upsert({
-              institution_id: params.institution_id,
-              current_step: 14,
-              is_completed: true,
-              completed_at: new Date().toISOString(),
-            } as any);
-        }
-
-        return {
-          institution_id: params.institution_id,
-          institution_name: schoolData?.school_name || 'Gradifi Institution',
-          school_id: params.school_id,
-          school_name: schoolData?.school_name || 'Main Campus',
-          classes_count: classesRes.data?.length || 0,
-          subjects_count: subjectsRes.data?.length || 0,
-          teachers_count: teachersRes.data?.length || 0,
-          students_count: studentsRes.data?.length || 0,
-          cbt_ready: true,
-          ai_grading_ready: true,
-          is_valid_for_launch: isValid,
-          validation_errors: errors,
-        };
-      }
-
-      return data as ReconciliationReport;
-    } catch (err: any) {
-      console.error('reconcileAndLaunch error:', err);
-      throw new Error(err.message || 'Reconciliation and launch validation failed.');
+    const { data, error } = await supabase.rpc('reconcile_and_launch', {
+      institution_id: params.institution_id,
+      school_id: params.school_id,
+      parent_access: params.parent_access,
+      cbt_activated: params.cbt_activated,
+      ai_grading_activated: params.ai_grading_activated,
+    });
+    if (error) throw new Error(`Onboarding reconciliation failed: ${error.message}`);
+    const result = requireObject(data, 'Onboarding reconciliation');
+    if (result.is_valid_for_launch !== true) {
+      throw new Error(Array.isArray(result.validation_errors) ? result.validation_errors.join('; ') : 'Institution is not ready to launch.');
     }
+    return result as unknown as ReconciliationReport;
   },
 };
