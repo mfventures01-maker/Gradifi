@@ -99,7 +99,7 @@ export const authService = {
       };
     }
 
-    // 1. Fetch Profile
+    // 1. Fetch the caller-owned profile.
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
@@ -107,7 +107,7 @@ export const authService = {
       .maybeSingle();
     if (profileError) throw profileError;
 
-    // 2. Fetch Identity Actor (authoritative scoping)
+    // 2. Fetch the caller-owned, active identity actor. No alternate user_id fallback.
     const { data: actor, error: actorError } = await supabase
       .from('identity_actors')
       .select('*')
@@ -117,7 +117,7 @@ export const authService = {
     if (actorError) throw actorError;
 
     const institutionId = actor?.institution_id || profile?.institution_id || null;
-    const schoolId = actor?.school_id || null;
+    const schoolId = actor?.school_id || profile?.school_id || null;
     const actorType = actor?.actor_type || actor?.role || null;
     const role = (actorType === 'principal_admin' ? 'principal' : actorType || profile?.role || null) as AuthSessionState['role'];
 
@@ -137,7 +137,7 @@ export const authService = {
    * Called when Principal creates VP, Bursar, or Teacher
    */
   generatePin(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    const bytes = new Uint32Array(1);\n    crypto.getRandomValues(bytes);\n    return String(100000 + (bytes[0] % 900000));
   },
 
   /**
@@ -161,7 +161,75 @@ export const authService = {
     }
     return data;
   },
+
+
+  /**
+   * Set/Change PIN for user (VP, Bursar, Teacher, Student, Parent)
+   * Constitutional Law 3: Architecture Before Implementation
+   */
+  async setPin(userId: string, newPin: string, forceChange: boolean = false) {
+    try {
+      const pinLength = newPin.length;
+      if (pinLength !== 4 && pinLength !== 6) {
+        throw new Error('PIN must be 4 or 6 digits');
+      }
+
+      const { data, error } = await supabase.rpc('set_pin', {
+        p_user_id: userId,
+        p_new_pin: newPin,
+        p_force_change: forceChange
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Failed to set PIN:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Reset user PIN (Principal/Bursar/VP only)
+   */
+  async resetPin(userId: string, resetBy: string) {
+    try {
+      const { data, error } = await supabase.rpc('reset_user_pin', {
+        p_user_id: userId,
+        p_reset_by: resetBy
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Failed to reset PIN:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * PIN-based quick authentication via verified SEFAES RPC auth_pin_login
+   */
+  async signInWithPin(pin: string, institutionSlug?: string) {
+    const { data, error } = await supabase.rpc('auth_pin_login', {
+      p_identifier: institutionSlug || '',
+      p_pin: pin,
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Edge Function Bridge: Exchanges PIN & identifier for an authentic Supabase session
+   */
   async exchangePinForSession(pin: string, identifier?: string) {
     return this.signInWithPhoneAndPin(identifier || '', pin);
   },
 
+
+  /**
+   * Listen to auth state changes
+   */
+  onAuthStateChange(callback: (event: string, session: any) => void) {
+    return supabase.auth.onAuthStateChange(callback);
+  },
+};
