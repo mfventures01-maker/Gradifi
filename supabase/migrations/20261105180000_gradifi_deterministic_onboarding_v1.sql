@@ -423,15 +423,7 @@ create policy class_subjects_select_active_school_member on public.class_subject
 for select to authenticated
 using (public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer']));
 
--- RLS read paths for the authenticated owner and active school members.
-drop policy if exists profiles_select_own_identity on public.profiles;
-create policy profiles_select_own_identity on public.profiles
-for select to authenticated using (user_id = (select auth.uid()));
-
-drop policy if exists identity_actors_select_own on public.identity_actors;
-create policy identity_actors_select_own on public.identity_actors
-for select to authenticated using (auth_user_id = (select auth.uid()));
-
+-- Class reads are available to active school members; all writes use RPCs.
 drop policy if exists classes_select_active_school_member on public.classes;
 create policy classes_select_active_school_member on public.classes
 for select to authenticated using (public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer']));
