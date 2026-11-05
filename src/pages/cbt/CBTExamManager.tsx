@@ -29,9 +29,8 @@ export const CBTExamManager: React.FC = () => {
       ]);
       setExams(examRows);
       setOffers(publicOffers);
-      const detailCatalog = await cbtService.getAuthoringCatalog(catalog.school_id);
-      setClasses(Object.fromEntries(detailCatalog.classes.map(row => [row.id, row.name])));
-      setSubjects(Object.fromEntries(detailCatalog.subjects.map(row => [row.id, row.name])));
+      setClasses(Object.fromEntries(catalog.classes.map(row => [row.id, row.name])));
+      setSubjects(Object.fromEntries(catalog.subjects.map(row => [row.id, row.name])));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Unable to load CBT exams');
     } finally {
