@@ -332,6 +332,39 @@ begin
 end;
 $function$;
 
+create or replace function public.get_cbt_active_attempt(p_exam_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'pg_catalog', 'public', 'auth'
+as $function$
+declare
+  v_student_id uuid;
+  v_result jsonb;
+begin
+  if auth.uid() is null then raise exception 'Authentication required'; end if;
+  select id into v_student_id from public.students
+  where user_id=auth.uid()
+  order by created_at nulls last,id limit 1;
+  if v_student_id is null then
+    return jsonb_build_object('active',false);
+  end if;
+
+  select jsonb_build_object(
+    'active',true,'attempt_id',a.id,'attempt_number',a.attempt_number,
+    'session_id',s.id,'start_time',a.start_time,'deadline_at',a.deadline_at,
+    'status',a.status,'session_state',s.state,'current_question',s.current_question
+  ) into v_result
+  from public.cbt_attempts a
+  join public.cbt_sessions s on s.attempt_id=a.id
+  where a.exam_id=p_exam_id and a.student_id=v_student_id and a.status='in_progress'
+  order by a.attempt_number desc,a.created_at desc
+  limit 1;
+
+  return coalesce(v_result,jsonb_build_object('active',false));
+end;
+$function$;
+
 create or replace function public.cbt_public_register_candidate(
   p_first_name text default null,
   p_last_name text default null
@@ -661,6 +694,9 @@ grant execute on function public.update_cbt_question(uuid,text,integer,integer,j
 
 revoke all on function public.delete_cbt_question(uuid) from public, anon;
 grant execute on function public.delete_cbt_question(uuid) to authenticated;
+
+revoke all on function public.get_cbt_active_attempt(uuid) from public, anon;
+grant execute on function public.get_cbt_active_attempt(uuid) to authenticated;
 
 revoke all on function public.cbt_public_register_candidate(text,text) from public, anon;
 grant execute on function public.cbt_public_register_candidate(text,text) to authenticated;
