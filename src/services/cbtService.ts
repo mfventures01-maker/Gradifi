@@ -42,12 +42,13 @@ function unwrap<T>(data: unknown, error: { message?: string } | null): T {
 }
 
 export const cbtService = {
-  async getAuthoringCatalog(schoolId: string): Promise<{
+  async getAuthoringCatalog(schoolId?: string): Promise<{
+    school_id: string;
     classes: Array<{ id: string; name: string }>;
     subjects: Array<{ id: string; name: string }>;
   }> {
     const { data, error } = await supabase.rpc('get_cbt_authoring_catalog' as any, {
-      p_school_id: schoolId,
+      p_school_id: schoolId || null,
     } as any);
     return unwrap(data, error);
   },
