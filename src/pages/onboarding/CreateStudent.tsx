@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AlertCircle, CheckCircle2, Copy, Loader2, User } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Copy, Loader2 } from 'lucide-react';
 import { onboardingService, EnrollStudentResponse, SchoolClass } from '../../services/onboardingService';
 
 interface CreateStudentProps {
