@@ -35,6 +35,17 @@ describe('CBT commercial execution contract', () => {
     expect(runner).not.toContain('correct_option');
   });
 
+  it('preserves raw examination-mark pass thresholds end to end', () => {
+    expect(migration).toContain("if p_pass_mark is null or p_pass_mark < 0");
+    expect(migration).not.toContain("p_pass_mark > 100");
+    expect(migration).toContain("coalesce(r.score,0)>=coalesce(e.pass_mark,0)");
+    expect(migration).toContain("coalesce(score,0) >= coalesce((v_exam->>'passMark')::numeric,0)");
+    expect(migration).toContain("count(*) filter(where coalesce(score,0) >= coalesce((v_exam->>'passMark')::numeric,0))");
+    expect(remediation).toContain("v_exam.pass_mark>v_question_marks");
+    expect(remediation).toContain("'pass_mark',v_exam.pass_mark");
+    expect(remediation).not.toContain("pass_mark_percent");
+  });
+
   it('has an idempotent server-side result lifecycle and candidate-owned retrieval', () => {
     expect(migration).toContain("if v_order.status='paid' then");
     expect(migration).toContain('on conflict(user_id,exam_id) do update');
