@@ -6,8 +6,8 @@
 --
 -- This rollback deliberately retains the security hardening. It does NOT
 -- restore direct client writes or execution of the obsolete start_cbt_exam_v2.
--- It also retains percentage pass-mark semantics because reverting to raw marks
--- would make authoring, publishing and result calculation inconsistent again.
+-- It retains raw examination-mark semantics. Pass thresholds are compared directly
+-- with awarded marks, and publication validates the threshold against total marks.
 
 begin;
 
@@ -19,7 +19,7 @@ revoke all on function public.start_cbt_exam_v2(uuid,uuid) from public, anon, au
 
 commit;
 
--- The publication function remains percentage-based by design.
+-- The publication function remains raw-mark-based by design.
 -- Commercial tables, orders, entitlements and payment records are not dropped.
 -- Do not execute a blanket grant or schema rollback that reopens the old
 -- client-side write paths.
