@@ -9,6 +9,10 @@ describe('Gradifi deterministic onboarding contract', () => {
   const service = read('src/services/onboardingService.ts');
   const wizard = read('src/pages/onboarding/OnboardingWizard.tsx');
   const student = read('src/pages/onboarding/CreateStudent.tsx');
+  const staffForm = read('src/pages/onboarding/CreateStaffAccount.tsx');
+  const teacherForm = read('src/pages/onboarding/CreateTeacher.tsx');
+  const vpForm = read('src/pages/onboarding/CreateVP.tsx');
+  const bursarForm = read('src/pages/onboarding/CreateBursar.tsx');
   const staffEdge = read('supabase/functions/gradifi-staff-provision/index.ts');
   const pinEdge = read('supabase/functions/pin-login/index.ts');
 
@@ -27,6 +31,9 @@ describe('Gradifi deterministic onboarding contract', () => {
     expect(migration).toContain('insert into public.class_subjects');
     expect(migration).toContain('add column if not exists state text');
     expect(migration).toContain('add column if not exists lga text');
+    expect(migration).toContain('create policy schools_select_active_school_admin');
+    expect(migration).toContain('create policy institutions_select_active_school_admin');
+    expect(migration).toContain('create policy gradifi_school_memberships_select_scoped');
     expect(migration).toContain('select c.id into v_class_id');
   });
 
@@ -49,8 +56,19 @@ describe('Gradifi deterministic onboarding contract', () => {
 
   it('does not accept demo identifiers or fabricate class records in the wizard/student flow', () => {
     expect(wizard).not.toMatch(/sch_demo_01|inst_demo_01|sch_[a-z]+_demo|inst_[a-z]+_demo/);
+    expect(wizard).toContain("JSON.stringify({...formData,password:''})");
+    expect(wizard).not.toContain('JSON.stringify(formData)');
     expect(student).not.toMatch(/cls_jss1|sch_demo_01|DEFAULT_CLASSES|Math\.random\(\)/);
     expect(student).toContain('onboardingService.getSchoolClasses');
+  });
+
+  it('routes teacher, vice-principal and bursar forms through the shared server provisioning component', () => {
+    for (const source of [teacherForm, vpForm, bursarForm]) {
+      expect(source).toContain('CreateStaffAccount');
+      expect(source).not.toMatch(/sch_demo_01|inst_demo_01|Math\\.random\\(\\)/);
+    }
+    expect(staffForm).toContain('onboardingService.createStaffAccount');
+    expect(staffForm).toContain('An authenticated principal with an active school membership is required.');
   });
 
   it('creates staff Auth identities server-side and rolls back an orphaned Auth user on RPC failure', () => {
