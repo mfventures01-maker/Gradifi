@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.gradifi-staff-provision]
 verify_jwt = true
+
+[functions.gradifi-parent-provision]
+verify_jwt = true
