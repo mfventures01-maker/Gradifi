@@ -178,14 +178,14 @@ export const cbtService = {
     return unwrap(data, error);
   },
 
-  async saveSessionSnapshot(sessionId: string, currentQuestion: number, remainingTime: number, state: string): Promise<void> {
-    const { error } = await (supabase as any).from('cbt_session_snapshots').insert({
-      session_id: sessionId,
-      current_question: currentQuestion,
-      remaining_time: Math.max(0, Math.floor(remainingTime)),
-      state,
-    });
-    if (error) throw error;
+  async saveSessionSnapshot(sessionId: string, currentQuestion: number, remainingTime: number): Promise<void> {
+    const { data, error } = await supabase.rpc('persist_cbt_session_snapshot' as any, {
+      p_session_id: sessionId,
+      p_current_question: currentQuestion,
+      p_remaining_time: Math.max(0, Math.floor(remainingTime)),
+    } as any);
+    const result = unwrap<{ success: boolean }>(data, error);
+    if (!result.success) throw new Error('Session snapshot persistence was not confirmed');
   },
 
   async getAttemptState(attemptId: string): Promise<{
