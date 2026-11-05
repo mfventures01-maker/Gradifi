@@ -217,9 +217,6 @@ begin
   from public.teachers t
   where t.user_id=auth.uid() and t.school_id=p_school_id
   order by t.id limit 1;
-  if v_teacher_id is null then
-    raise exception 'Authorized staff identity is not linked to a teacher record';
-  end if;
 
   insert into public.cbt_exams (
     school_id,class_id,subject_id,term_id,title,description,duration_minutes,
@@ -380,7 +377,8 @@ begin
     'success',true,'attempt_id',a.id,'exam_id',a.exam_id,
     'deadline_at',a.deadline_at,'status',a.status,
     'session_id',s.id,'session_state',s.state,
-    'current_question',s.current_question,
+    'current_question',coalesce((select snap.current_question from public.cbt_session_snapshots snap where snap.session_id=s.id order by snap.created_at desc,snap.id desc limit 1),s.current_question),
+    'remaining_time',coalesce((select snap.remaining_time from public.cbt_session_snapshots snap where snap.session_id=s.id order by snap.created_at desc,snap.id desc limit 1),s.remaining_time),
     'answers',coalesce((
       select jsonb_object_agg(ans.question_id::text,ans.selected_option_id::text)
       from public.cbt_answers ans where ans.attempt_id=a.id and ans.selected_option_id is not null
