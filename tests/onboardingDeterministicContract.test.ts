@@ -13,6 +13,9 @@ describe('Gradifi deterministic onboarding contract', () => {
   const teacherForm = read('src/pages/onboarding/CreateTeacher.tsx');
   const vpForm = read('src/pages/onboarding/CreateVP.tsx');
   const bursarForm = read('src/pages/onboarding/CreateBursar.tsx');
+  const parentForm = read('src/pages/onboarding/CreateParent.tsx');
+  const bulkForm = read('src/pages/onboarding/BulkStudentImport.tsx');
+  const parentEdge = read('supabase/functions/gradifi-parent-provision/index.ts');
   const staffEdge = read('supabase/functions/gradifi-staff-provision/index.ts');
   const pinEdge = read('supabase/functions/pin-login/index.ts');
 
@@ -34,6 +37,10 @@ describe('Gradifi deterministic onboarding contract', () => {
     expect(migration).toContain('create policy schools_select_active_school_admin');
     expect(migration).toContain('create policy institutions_select_active_school_admin');
     expect(migration).toContain('create policy gradifi_school_memberships_select_scoped');
+    expect(migration).toContain('gradifi_bulk_create_students');
+    expect(migration).toContain('gradifi_create_parent_profile');
+    expect(migration).toContain('revoke execute on function public.bulk_enroll_students');
+    expect(migration).toContain('revoke execute on function public.create_parent');
     expect(migration).toContain('select c.id into v_class_id');
   });
 
@@ -69,6 +76,15 @@ describe('Gradifi deterministic onboarding contract', () => {
     }
     expect(staffForm).toContain('onboardingService.createStaffAccount');
     expect(staffForm).toContain('An authenticated principal with an active school membership is required.');
+  });
+
+  it('removes parent and bulk-import demo fallbacks and requires server-confirmed persistence', () => {
+    expect(parentForm).toContain('onboardingService.createParentAccount');
+    expect(parentForm).not.toMatch(/DEFAULT_STUDENTS|std_demo_|Math\\.random|success:\\s*true/);
+    expect(bulkForm).toContain('onboardingService.bulkEnrollStudents');
+    expect(bulkForm).not.toMatch(/std_bulk_|Math\\.random|Date\\.now\\(\\)|fallback execution/);
+    expect(parentEdge).toContain('gradifi_create_parent_profile');
+    expect(parentEdge).toContain('auth.admin.inviteUserByEmail');
   });
 
   it('creates staff Auth identities server-side and rolls back an orphaned Auth user on RPC failure', () => {
