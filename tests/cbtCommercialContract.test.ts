@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
 const migration = readFileSync(new URL('../supabase/migrations/20261105170000_cbt_commercial_core_v1.sql', import.meta.url), 'utf8');
+const remediation = readFileSync(new URL('../supabase/migrations/20261105220000_cbt_commercial_security_passmark_v1.sql', import.meta.url), 'utf8');
 const service = readFileSync(new URL('../src/services/cbtService.ts', import.meta.url), 'utf8');
 const runner = readFileSync(new URL('../src/pages/cbt/CBTExamRunner.tsx', import.meta.url), 'utf8');
 const payment = readFileSync(new URL('../supabase/functions/cbt-payments/index.ts', import.meta.url), 'utf8');
