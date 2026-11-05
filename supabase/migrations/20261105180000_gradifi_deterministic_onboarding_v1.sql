@@ -13,7 +13,7 @@ alter table public.institution_onboarding
 
 alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles add constraint profiles_role_check
-  check (role = any (array['principal_admin','teacher','student','examiner','individual','vice_principal','bursar','vp']::text[]));
+  check (role = any (array['principal_admin','teacher','student','examiner','individual','vice_principal','bursar','vp','parent']::text[]));
 
 alter table public.gradifi_school_memberships drop constraint if exists gradifi_school_memberships_member_role_check;
 alter table public.gradifi_school_memberships add constraint gradifi_school_memberships_member_role_check
@@ -695,3 +695,244 @@ $function$;
 
 revoke all on function public.gradifi_initialize_secondary_classes(uuid) from public,anon;
 grant execute on function public.gradifi_initialize_secondary_classes(uuid) to authenticated;
+
+
+-- Secure bulk roster import. School and institution authority are derived from the caller's membership.
+create or replace function public.gradifi_bulk_create_students(p_students jsonb,p_school_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public, auth
+as $function$
+declare
+  v_school_id uuid;
+  v_institution_id uuid;
+  v_student jsonb;
+  v_class_id uuid;
+  v_student_id uuid;
+  v_student_number text;
+  v_results jsonb := '[]'::jsonb;
+  v_success_count integer := 0;
+  v_failed_count integer := 0;
+  v_total integer;
+  v_gender text;
+  v_dob date;
+begin
+  if auth.uid() is null then raise exception 'AUTHENTICATION_REQUIRED' using errcode='28000'; end if;
+  if jsonb_typeof(p_students)<>'array' then raise exception 'STUDENT_ROWS_MUST_BE_AN_ARRAY' using errcode='22023'; end if;
+  v_total:=jsonb_array_length(p_students);
+  if v_total<1 or v_total>500 then raise exception 'BULK_IMPORT_LIMIT_IS_500' using errcode='22023'; end if;
+
+  select m.school_id,s.institution_id into v_school_id,v_institution_id
+  from public.gradifi_school_memberships m
+  join public.schools s on s.id=m.school_id
+  where m.user_id=auth.uid() and m.member_role in ('principal','school_admin')
+    and m.status='active' and s.provisioning_status='active'
+    and (p_school_id is null or m.school_id=p_school_id)
+  limit 1;
+  if v_school_id is null then raise exception 'SCHOOL_ACCESS_DENIED' using errcode='42501'; end if;
+
+  for v_student in select value from jsonb_array_elements(p_students)
+  loop
+    begin
+      if length(trim(coalesce(v_student->>'first_name','')))=0
+         or length(trim(coalesce(v_student->>'last_name','')))=0
+         or length(trim(coalesce(v_student->>'class_name','')))=0 then
+        raise exception 'FIRST_NAME_LAST_NAME_AND_CLASS_ARE_REQUIRED';
+      end if;
+
+      select c.id into v_class_id from public.classes c
+      where c.school_id=v_school_id and lower(c.name)=lower(trim(v_student->>'class_name'))
+      limit 1;
+      if v_class_id is null then
+        raise exception 'CLASS_NOT_FOUND: %',trim(v_student->>'class_name');
+      end if;
+
+      v_gender:=case lower(trim(coalesce(v_student->>'gender','')))
+        when 'male' then 'Male' when 'female' then 'Female'
+        when '' then null else initcap(trim(v_student->>'gender')) end;
+      v_dob:=nullif(trim(coalesce(v_student->>'date_of_birth','')),'')::date;
+      v_student_number:=public.generate_student_number(v_school_id);
+
+      insert into public.students
+        (first_name,last_name,student_number,class_id,school_id,institution_id,gender,date_of_birth)
+      values
+        (trim(v_student->>'first_name'),trim(v_student->>'last_name'),v_student_number,
+         v_class_id,v_school_id,v_institution_id,v_gender,v_dob)
+      returning id into v_student_id;
+
+      v_success_count:=v_success_count+1;
+      v_results:=v_results||jsonb_build_array(jsonb_build_object(
+        'student_id',v_student_id,'student_number',v_student_number,
+        'first_name',trim(v_student->>'first_name'),'last_name',trim(v_student->>'last_name'),
+        'class',trim(v_student->>'class_name'),'status','success'
+      ));
+    exception when others then
+      v_failed_count:=v_failed_count+1;
+      v_results:=v_results||jsonb_build_array(jsonb_build_object(
+        'first_name',v_student->>'first_name','last_name',v_student->>'last_name',
+        'class',v_student->>'class_name','error',sqlerrm,'status','failed'
+      ));
+    end;
+  end loop;
+
+  if v_success_count>0 then
+    update public.institution_onboarding
+    set students_created=true,current_step=greatest(current_step,11),updated_at=now()
+    where institution_id=v_institution_id;
+  end if;
+
+  return jsonb_build_object('success',true,'total_submitted',v_total,
+    'success_count',v_success_count,'failed_count',v_failed_count,'results',v_results);
+end;
+$function$;
+
+-- Parent linking is school-authorized and uses the real Auth identity created by the Edge Function.
+create or replace function public.gradifi_create_parent_profile(
+  p_user_id uuid,p_student_id uuid,p_parent_name text,p_parent_phone text,
+  p_parent_email text,p_relationship text,p_is_primary boolean,p_pin text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public, auth
+as $function$
+declare
+  v_school_id uuid;
+  v_institution_id uuid;
+  v_profile_id uuid;
+  v_parent_id uuid;
+  v_student_name text;
+  v_user_email text;
+  v_relationship text;
+  v_existing boolean := false;
+  v_relationship_id uuid;
+begin
+  if auth.uid() is null then raise exception 'AUTHENTICATION_REQUIRED' using errcode='28000'; end if;
+  if p_pin is null or p_pin !~ '^[0-9]{4}$' then raise exception 'INVALID_PARENT_PIN' using errcode='22023'; end if;
+  v_relationship:=lower(trim(coalesce(p_relationship,'guardian')));
+  if v_relationship not in ('father','mother','guardian','other') then
+    raise exception 'INVALID_PARENT_RELATIONSHIP' using errcode='22023';
+  end if;
+
+  select s.school_id,s.institution_id,trim(s.first_name||' '||s.last_name)
+    into v_school_id,v_institution_id,v_student_name
+  from public.students s where s.id=p_student_id;
+  if v_school_id is null then raise exception 'STUDENT_NOT_FOUND' using errcode='P0002'; end if;
+  if not public.has_active_school_role(v_school_id,array['principal','school_admin']) then
+    raise exception 'SCHOOL_ACCESS_DENIED' using errcode='42501';
+  end if;
+
+  select lower(email) into v_user_email from auth.users
+  where id=p_user_id and lower(email)=lower(trim(p_parent_email));
+  if v_user_email is null then raise exception 'PARENT_AUTH_EMAIL_MISMATCH' using errcode='23503'; end if;
+
+  if exists(select 1 from public.profiles p where lower(p.email)=v_user_email and p.user_id<>p_user_id) then
+    raise exception 'PARENT_EMAIL_ALREADY_LINKED_TO_ANOTHER_PROFILE' using errcode='23505';
+  end if;
+  if exists(select 1 from public.profiles p where p.phone=p_parent_phone and p.user_id<>p_user_id and p.role='parent') then
+    raise exception 'PARENT_PHONE_ALREADY_LINKED_TO_ANOTHER_ACCOUNT' using errcode='23505';
+  end if;
+
+  select p.id into v_profile_id from public.profiles p where p.user_id=p_user_id and p.role='parent';
+  if v_profile_id is not null then
+    if not exists(select 1 from public.profiles p where p.id=v_profile_id and p.school_id=v_school_id and p.institution_id=v_institution_id) then
+      raise exception 'PARENT_ACCOUNT_BELONGS_TO_ANOTHER_SCHOOL' using errcode='42501';
+    end if;
+    v_existing:=true;
+    update public.profiles
+    set full_name=trim(p_parent_name),email=v_user_email,phone=trim(p_parent_phone),
+        pin_hash=crypt(p_pin,gen_salt('bf',12)),pin_type='4-digit',
+        authentication_method='pin',pin_requires_change=true
+    where id=v_profile_id;
+  else
+    insert into public.profiles
+      (user_id,full_name,email,phone,school_id,institution_id,role,pin_hash,pin_type,
+       authentication_method,pin_requires_change)
+    values
+      (p_user_id,trim(p_parent_name),v_user_email,trim(p_parent_phone),v_school_id,v_institution_id,
+       'parent',crypt(p_pin,gen_salt('bf',12)),'4-digit','pin',true)
+    returning id into v_profile_id;
+  end if;
+
+  insert into public.identity_actors
+    (auth_user_id,institution_id,school_id,actor_type,actor_record_id,login_identifier,auth_method,status,pin_hash)
+  values
+    (p_user_id,v_institution_id,v_school_id,'parent',v_profile_id,v_user_email,'pin','active',
+     crypt(p_pin,gen_salt('bf',12)))
+  on conflict do update set
+    institution_id=excluded.institution_id,school_id=excluded.school_id,
+    actor_type='parent',actor_record_id=v_profile_id,login_identifier=v_user_email,
+    auth_method='pin',status='active',pin_hash=excluded.pin_hash;
+
+  select id into v_parent_id from public.parents where profile_id=v_profile_id;
+  if v_parent_id is null then
+    insert into public.parents(profile_id,institution_id,child_student_id)
+    values(v_profile_id,v_institution_id,p_student_id)
+    returning id into v_parent_id;
+  end if;
+
+  insert into public.student_parent_relationships
+    (institution_id,school_id,student_id,parent_id,relationship_type,is_primary,
+     can_view_results,can_view_attendance,can_receive_notifications)
+  values
+    (v_institution_id,v_school_id,p_student_id,v_parent_id,v_relationship,p_is_primary,true,true,true)
+  on conflict(student_id,parent_id) do update set
+    relationship_type=excluded.relationship_type,is_primary=excluded.is_primary
+  returning id into v_relationship_id;
+
+  insert into public.system_activity_logs
+    (institution_id,school_id,profile_id,action_type,resource_type,resource_id)
+  values
+    (v_institution_id,v_school_id,v_profile_id,'PARENT_LINKED','student_parent_relationship',v_relationship_id);
+
+  return jsonb_build_object('success',true,'parent_id',v_parent_id,'profile_id',v_profile_id,
+    'user_id',p_user_id,'parent_name',trim(p_parent_name),'phone',trim(p_parent_phone),
+    'email',v_user_email,'student_id',p_student_id,'student_name',v_student_name,
+    'is_existing',v_existing);
+end;
+$function$;
+
+-- Parent and student records are readable only by the owner/linked parent or authorized school staff.
+drop policy if exists students_select_scoped on public.students;
+create policy students_select_scoped on public.students
+for select to authenticated
+using (
+  user_id=(select auth.uid())
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+  or exists (
+    select 1 from public.student_parent_relationships spr
+    join public.parents p on p.id=spr.parent_id
+    join public.profiles pf on pf.id=p.profile_id
+    where spr.student_id=students.id and pf.user_id=(select auth.uid())
+  )
+);
+
+drop policy if exists parents_select_scoped on public.parents;
+create policy parents_select_scoped on public.parents
+for select to authenticated
+using (
+  exists(select 1 from public.profiles pf where pf.id=parents.profile_id and pf.user_id=(select auth.uid()))
+  or public.has_active_school_role(
+    (select s.school_id from public.students s where s.id=parents.child_student_id),
+    array['principal','school_admin']
+  )
+);
+
+drop policy if exists student_parent_relationships_select_scoped on public.student_parent_relationships;
+create policy student_parent_relationships_select_scoped on public.student_parent_relationships
+for select to authenticated
+using (
+  exists (
+    select 1 from public.parents p join public.profiles pf on pf.id=p.profile_id
+    where p.id=student_parent_relationships.parent_id and pf.user_id=(select auth.uid())
+  )
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+);
+
+revoke execute on function public.bulk_enroll_students(jsonb,uuid,uuid) from public,anon,authenticated;
+revoke execute on function public.create_parent(uuid,text,text,text,text,boolean) from public,anon,authenticated;
+revoke all on function public.gradifi_bulk_create_students(jsonb,uuid) from public,anon;
+revoke all on function public.gradifi_create_parent_profile(uuid,uuid,text,text,text,text,boolean,text) from public,anon;
+grant execute on function public.gradifi_bulk_create_students(jsonb,uuid) to authenticated;
+grant execute on function public.gradifi_create_parent_profile(uuid,uuid,text,text,text,text,boolean,text) to authenticated;
