@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart2, Globe, Plus, RefreshCw, Search, X } from 'lucide-react';
-import { authService } from '../../services/authService';
 import { cbtService, CbtExamRecord, CbtPublicOffer } from '../../services/cbtService';
 
 export const CBTExamManager: React.FC = () => {
@@ -22,17 +21,17 @@ export const CBTExamManager: React.FC = () => {
     setError('');
     setLoading(true);
     try {
-      const identity = await authService.resolveCurrentIdentity();
-      if (!identity.schoolId) throw new Error('Your account is not linked to an active school.');
-      const [examRows, catalog, publicOffers] = await Promise.all([
-        cbtService.getExams(identity.schoolId),
-        cbtService.getAuthoringCatalog(identity.schoolId),
+      const catalog = await cbtService.getAuthoringCatalog();
+      if (!catalog.school_id) throw new Error('Your account is not linked to an active school.');
+      const [examRows, publicOffers] = await Promise.all([
+        cbtService.getExams(catalog.school_id),
         cbtService.getPublicOffers(),
       ]);
       setExams(examRows);
       setOffers(publicOffers);
-      setClasses(Object.fromEntries(catalog.classes.map(row => [row.id, row.name])));
-      setSubjects(Object.fromEntries(catalog.subjects.map(row => [row.id, row.name])));
+      const detailCatalog = await cbtService.getAuthoringCatalog(catalog.school_id);
+      setClasses(Object.fromEntries(detailCatalog.classes.map(row => [row.id, row.name])));
+      setSubjects(Object.fromEntries(detailCatalog.subjects.map(row => [row.id, row.name])));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Unable to load CBT exams');
     } finally {
