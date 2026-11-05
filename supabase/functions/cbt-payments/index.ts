@@ -124,6 +124,13 @@ Deno.serve(async (request) => {
       if (order?.already_entitled || order?.free) {
         return response(200, { success: true, free: Boolean(order.free), already_entitled: Boolean(order.already_entitled), exam_id: order.exam_id });
       }
+      if (order?.authorization_url) {
+        return response(200, {
+          success: true, order_id: order.order_id, exam_id: order.exam_id,
+          reference: order.provider_reference, authorization_url: order.authorization_url,
+          access_code: order.access_code,
+        });
+      }
 
       const callbackUrl = env('APP_URL').replace(/\/$/, '') + '/cbt/public/payment-return';
       const initResponse = await fetch('https://api.paystack.co/transaction/initialize', {
@@ -150,6 +157,12 @@ Deno.serve(async (request) => {
         });
         throw new Error(initialized.message || 'Unable to initialize Paystack checkout');
       }
+      const { error: checkoutSaveError } = await serviceClient().rpc('cbt_public_set_checkout', {
+        p_reference: order.provider_reference,
+        p_authorization_url: initialized.data.authorization_url,
+        p_access_code: initialized.data.access_code || null,
+      });
+      if (checkoutSaveError) throw checkoutSaveError;
       return response(200, {
         success: true,
         order_id: order.order_id,
