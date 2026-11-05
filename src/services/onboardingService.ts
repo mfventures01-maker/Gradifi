@@ -83,6 +83,38 @@ export interface SchoolClass {
 
 export type StaffRole = 'teacher' | 'vice_principal' | 'bursar';
 
+export interface SchoolStudent {
+  id: string;
+  first_name: string;
+  last_name: string;
+  student_number: string;
+  class_name: string;
+}
+
+export interface BulkStudentInput {
+  first_name: string;
+  last_name: string;
+  gender?: string;
+  date_of_birth?: string;
+  class_name: string;
+}
+
+export interface BulkStudentResponse {
+  success: true;
+  total_submitted: number;
+  success_count: number;
+  failed_count: number;
+  results: Array<{
+    status: 'success' | 'failed';
+    student_id?: string;
+    student_number?: string;
+    first_name?: string;
+    last_name?: string;
+    class?: string;
+    error?: string;
+  }>;
+}
+
 function requireObject(value: unknown, label: string): Record<string, any> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`${label} returned an invalid server response.`);
@@ -167,6 +199,79 @@ export const onboardingService = {
         school_id: requireUuid(row.school_id, 'Class initialization'),
       })),
       success: true,
+    };
+  },
+
+  async getSchoolStudents(schoolId: string): Promise<SchoolStudent[]> {
+    requireUuid(schoolId, 'School context');
+    const { data, error } = await (supabase as any)
+      .from('students')
+      .select('id,first_name,last_name,student_number,classes:class_id(name)')
+      .eq('school_id', schoolId)
+      .order('first_name');
+    if (error) throw new Error(`Could not load school students: ${error.message}`);
+    return (data || []).map((row: any) => ({
+      id: requireUuid(row.id, 'Student query'),
+      first_name: String(row.first_name),
+      last_name: String(row.last_name),
+      student_number: String(row.student_number || ''),
+      class_name: String(row.classes?.name || 'Unassigned'),
+    }));
+  },
+
+  async bulkEnrollStudents(schoolId: string, students: BulkStudentInput[]): Promise<BulkStudentResponse> {
+    requireUuid(schoolId, 'School context');
+    if (!students.length || students.length > 500) throw new Error('Bulk import must contain between 1 and 500 students.');
+    const { data, error } = await supabase.rpc('gradifi_bulk_create_students', {
+      p_students: students,
+      p_school_id: schoolId,
+    });
+    if (error) throw new Error(`Bulk student enrollment failed: ${error.message}`);
+    const result = requireObject(data, 'Bulk student enrollment');
+    if (result.success !== true || !Array.isArray(result.results)) {
+      throw new Error('Bulk student enrollment was not confirmed by the server.');
+    }
+    return {
+      success: true,
+      total_submitted: Number(result.total_submitted),
+      success_count: Number(result.success_count),
+      failed_count: Number(result.failed_count),
+      results: result.results,
+    };
+  },
+
+  async createParentAccount(input: {
+    student_id: string; name: string; phone: string; email: string;
+    relationship: 'father' | 'mother' | 'guardian' | 'other'; is_primary: boolean;
+  }) {
+    requireUuid(input.student_id, 'Student context');
+    if (!input.name.trim() || input.phone.trim().length < 7 || !input.email.trim()) {
+      throw new Error('Parent name, valid phone number and email are required.');
+    }
+    const { data, error } = await supabase.functions.invoke('gradifi-parent-provision', {
+      body: {
+        student_id: input.student_id,
+        name: input.name.trim(),
+        phone: input.phone.trim(),
+        email: input.email.trim().toLowerCase(),
+        relationship: input.relationship,
+        is_primary: input.is_primary,
+      },
+    });
+    if (error) throw new Error(`Parent provisioning failed: ${error.message}`);
+    const result = requireObject(data, 'Parent provisioning');
+    if (result.success !== true || !result.parent_id || !result.profile_id || !result.pin) {
+      throw new Error(result.error || 'Parent profile and student relationship were not confirmed.');
+    }
+    return {
+      parent_id: requireUuid(result.parent_id, 'Parent provisioning'),
+      profile_id: requireUuid(result.profile_id, 'Parent provisioning'),
+      parent_name: String(result.parent_name),
+      phone: String(result.phone),
+      email: String(result.email),
+      student_id: requireUuid(result.student_id, 'Parent provisioning'),
+      pin: String(result.pin),
+      is_existing: result.is_existing === true,
     };
   },
 
