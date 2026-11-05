@@ -48,17 +48,16 @@ export const OnboardingWizard: React.FC = () => {
     let mounted=true;
     (async()=>{
       try{
-        const [user,identity]=await Promise.all([
-          authService.getCurrentUser(),
-          authService.resolveCurrentIdentity(),
-        ]);
+        let user = null;
+        try { user = await authService.getCurrentUser(); } catch { /* no session is a valid new-registration state */ }
+        const identity = await authService.resolveCurrentIdentity();
         if(!mounted)return;
         setAuthenticated(Boolean(user));
         setSchoolId(identity.schoolId||'');
         setInstitutionId(identity.institutionId||'');
         const saved=window.localStorage.getItem('gradifi-onboarding-draft');
         if(saved){
-          try{setFormData({...initialData,...JSON.parse(saved)});}catch{window.localStorage.removeItem('gradifi-onboarding-draft');}
+          try{setFormData({...initialData,...JSON.parse(saved),password:''});}catch{window.localStorage.removeItem('gradifi-onboarding-draft');}
         }
       }catch(err){
         if(mounted)setError(err instanceof Error?err.message:'Could not resolve authenticated identity.');
@@ -78,7 +77,7 @@ export const OnboardingWizard: React.FC = () => {
       if(formData.password.length<8){setError('Create a password with at least 8 characters for the principal account.');return;}
       setSubmitting(true);
       try{
-        window.localStorage.setItem('gradifi-onboarding-draft',JSON.stringify(formData));
+        window.localStorage.setItem('gradifi-onboarding-draft',JSON.stringify({...formData,password:''}));
         const signup=await authService.signUpWithPassword(formData.principal_email,formData.password,formData.principal_name);
         if(!signup.session){
           setNotice('Your account was created. Confirm the email address, then sign in to resume institution provisioning. Your form draft is saved on this device.');
