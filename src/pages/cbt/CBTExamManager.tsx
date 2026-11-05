@@ -144,7 +144,7 @@ export const CBTExamManager: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div className="rounded-lg bg-slate-50 p-2"><div className="text-lg font-bold">{exam.duration_minutes}</div><div className="text-[10px] text-slate-500">Minutes</div></div>
                   <div className="rounded-lg bg-slate-50 p-2"><div className="text-lg font-bold">{exam.total_marks}</div><div className="text-[10px] text-slate-500">Marks</div></div>
-                  <div className="rounded-lg bg-slate-50 p-2"><div className="text-lg font-bold">{exam.pass_mark ?? 0}</div><div className="text-[10px] text-slate-500">Pass mark</div></div>
+                  <div className="rounded-lg bg-slate-50 p-2"><div className="text-lg font-bold">{exam.pass_mark ?? 0}%</div><div className="text-[10px] text-slate-500">Pass threshold</div></div>
                 </div>
                 {exam.start_time && <p className="text-xs text-slate-500">Scheduled: {new Date(exam.start_time).toLocaleString()}</p>}
                 <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-3">
