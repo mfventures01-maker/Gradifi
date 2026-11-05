@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
-import { onboardingService, CreateInstitutionFormInput } from '../../services/onboardingService';
+import { onboardingService, type CreateInstitutionFormInput } from '../../services/onboardingService';
 import { authService } from '../../services/authService';
 import { CreateStaffAccount } from './CreateStaffAccount';
 import { CreateStudent } from './CreateStudent';
