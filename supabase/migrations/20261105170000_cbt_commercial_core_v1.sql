@@ -38,6 +38,8 @@ create table if not exists public.cbt_public_orders (
   provider text not null check (provider in ('paystack','free')),
   provider_reference text not null unique,
   provider_transaction_id text,
+  authorization_url text,
+  access_code text,
   status text not null default 'pending' check (status in ('pending','paid','failed','refunded')),
   provider_payload jsonb not null default '{}'::jsonb,
   failure_reason text,
@@ -682,13 +684,20 @@ begin
     return jsonb_build_object('success',true,'already_entitled',true,'exam_id',v_offer.exam_id);
   end if;
 
+  update public.cbt_public_orders
+  set status='failed',failure_reason='Checkout session expired'
+  where user_id=v_user_id and exam_id=v_offer.exam_id and status='pending'
+    and created_at < now()-interval '30 minutes';
+
   select * into v_order from public.cbt_public_orders
   where user_id=v_user_id and exam_id=v_offer.exam_id and status='pending'
+    and created_at >= now()-interval '30 minutes'
   order by created_at desc limit 1 for update;
   if found then
     return jsonb_build_object('success',true,'order_id',v_order.id,'exam_id',v_order.exam_id,
       'amount_minor',v_order.amount_minor,'currency',v_order.currency,'provider',v_order.provider,
-      'provider_reference',v_order.provider_reference,'status',v_order.status,'free',false);
+      'provider_reference',v_order.provider_reference,'status',v_order.status,'free',false,
+      'authorization_url',v_order.authorization_url,'access_code',v_order.access_code);
   end if;
 
   v_reference:='CBT-'||upper(replace(gen_random_uuid()::text,'-',''));
@@ -715,6 +724,29 @@ begin
     'provider',v_order.provider,'provider_reference',v_order.provider_reference,
     'status',v_order.status,'free',v_offer.price_minor=0
   );
+end;
+$function$;
+
+create or replace function public.cbt_public_set_checkout(
+  p_reference text,
+  p_authorization_url text,
+  p_access_code text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'pg_catalog', 'public'
+as $function$
+declare
+  v_order_id uuid;
+begin
+  if coalesce(p_authorization_url,'')='' then raise exception 'Checkout URL is required'; end if;
+  update public.cbt_public_orders
+  set authorization_url=p_authorization_url,access_code=p_access_code
+  where provider_reference=p_reference and provider='paystack' and status='pending'
+  returning id into v_order_id;
+  if v_order_id is null then raise exception 'Pending checkout order not found'; end if;
+  return jsonb_build_object('success',true,'order_id',v_order_id);
 end;
 $function$;
 
@@ -885,6 +917,9 @@ grant execute on function public.cbt_public_create_offer(uuid,bigint,text,boolea
 
 revoke all on function public.cbt_public_create_order(uuid) from public, anon;
 grant execute on function public.cbt_public_create_order(uuid) to authenticated;
+
+revoke all on function public.cbt_public_set_checkout(text,text,text) from public, anon, authenticated;
+grant execute on function public.cbt_public_set_checkout(text,text,text) to service_role;
 
 revoke all on function public.cbt_public_confirm_payment(text,text,bigint,text,jsonb) from public, anon, authenticated;
 grant execute on function public.cbt_public_confirm_payment(text,text,bigint,text,jsonb) to service_role;
