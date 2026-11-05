@@ -1160,3 +1160,30 @@ using (
   public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer'])
   or public.gradifi_parent_can_access_class(class_id)
 );
+
+
+create or replace function public.gradifi_school_admin_can_access_parent(p_parent_id uuid)
+returns boolean language sql stable security definer
+set search_path = pg_catalog, public, auth
+as $function$
+  select exists (
+    select 1 from public.parents p
+    join public.students st on st.id=p.child_student_id
+    join public.gradifi_school_memberships m on m.school_id=st.school_id
+    where p.id=p_parent_id and m.user_id=auth.uid()
+      and m.member_role in ('principal','school_admin') and m.status='active'
+  );
+$function$;
+
+revoke all on function public.gradifi_school_admin_can_access_parent(uuid) from public,anon;
+grant execute on function public.gradifi_school_admin_can_access_parent(uuid) to authenticated;
+revoke all on function public.gradifi_school_id_for_student(uuid) from public,anon,authenticated;
+drop function public.gradifi_school_id_for_student(uuid);
+
+drop policy if exists parents_select_scoped on public.parents;
+create policy parents_select_scoped on public.parents
+for select to authenticated
+using (
+  exists(select 1 from public.profiles pf where pf.id=parents.profile_id and pf.user_id=(select auth.uid()))
+  or public.gradifi_school_admin_can_access_parent(id)
+);
