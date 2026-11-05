@@ -38,7 +38,7 @@ export const CBTExamBuilder: React.FC = () => {
   const [classId, setClassId] = useState('');
   const [subjectId, setSubjectId] = useState('');
   const [durationMinutes, setDurationMinutes] = useState(60);
-  const [passMark, setPassMark] = useState(40);
+  const [passMark, setPassMark] = useState(50);
   const [startTime, setStartTime] = useState(() => {
     const value = new Date(Date.now() + 15 * 60 * 1000);
     value.setSeconds(0, 0);
@@ -122,8 +122,8 @@ export const CBTExamBuilder: React.FC = () => {
     if (!schoolId || !classId || !subjectId) throw new Error('Select a school class and subject.');
     if (!title.trim()) throw new Error('Exam title is required.');
     if (!Number.isInteger(durationMinutes) || durationMinutes < 1 || durationMinutes > 600) throw new Error('Duration must be between 1 and 600 minutes.');
-    if (!Number.isInteger(passMark) || passMark < 0 || passMark > totalMarks) {
-      if (questions.length) throw new Error('Pass mark cannot exceed the total question marks.');
+    if (!Number.isInteger(passMark) || passMark < 0 || passMark > 100) {
+      throw new Error('Pass mark must be between 0 and 100 percent.');
     }
     for (let index = 0; index < questions.length; index++) {
       const question = questions[index];
@@ -247,8 +247,8 @@ export const CBTExamBuilder: React.FC = () => {
           <label className="block text-sm">Duration (minutes)
             <input disabled={!isDraft} type="number" min={1} max={600} value={durationMinutes} onChange={e => setDurationMinutes(Number(e.target.value))} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
           </label>
-          <label className="block text-sm">Pass mark (marks)
-            <input disabled={!isDraft} type="number" min={0} value={passMark} onChange={e => setPassMark(Number(e.target.value))} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
+          <label className="block text-sm">Pass mark (%)
+            <input disabled={!isDraft} type="number" min={0} max={100} value={passMark} onChange={e => setPassMark(Number(e.target.value))} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
           </label>
           <label className="block text-sm md:col-span-2">Scheduled start
             <input disabled={!isDraft} type="datetime-local" value={startTime} onChange={e => setStartTime(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 p-3" />
