@@ -178,8 +178,8 @@ export const CBTExamRunner: React.FC = () => {
   const onTimeUp = useCallback(() => { void finalize(); }, [finalize]);
 
   const currentQuestion = questions[currentIndex];
-  const answeredQuestions = new Set(
-    questions.map((question, index) => answers[question.question_id] ? index : -1).filter(index => index >= 0)
+  const answeredQuestions = new Set<number>(
+    questions.map((question, index) => answers[question.question_id] ? index : -1).filter((index: number) => index >= 0)
   );
 
   const selectAnswer = async (optionId: string) => {
@@ -328,8 +328,8 @@ export const CBTExamRunner: React.FC = () => {
                 <QuestionNavigator
                   totalQuestions={questions.length}
                   currentQuestion={currentIndex + 1}
-                  answeredQuestions={new Set(Array.from(answeredQuestions).map(index => index + 1))}
-                  flaggedQuestions={new Set(Array.from(flagged).map(index => index + 1))}
+                  answeredQuestions={new Set<number>(Array.from(answeredQuestions).map((index: number) => index + 1))}
+                  flaggedQuestions={new Set<number>(Array.from(flagged).map((index: number) => index + 1))}
                   onQuestionSelect={number => void goToQuestion(number - 1)}
                 />
                 <div className="text-xs text-slate-500">
