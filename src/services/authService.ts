@@ -139,13 +139,19 @@ export const authService = {
    * For: VP, Bursar, Teacher roles
    */
   async signInWithPhoneAndPin(phone: string, pin: string) {
-    const { data, error } = await supabase.rpc('auth_pin_login', {
-      p_identifier: phone,
-      p_pin: pin,
+    const { data, error } = await supabase.functions.invoke('pin-login', {
+      body: { identifier: phone, pin },
     });
     if (error) throw error;
-    if (!data || data.success !== true) {
-      throw new Error(data?.error || 'Invalid phone number or PIN.');
+    if (!data || data.success !== true || !data.access_token || !data.refresh_token) {
+      throw new Error(data?.error || 'PIN authentication did not return a valid Supabase session.');
+    }
+    const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    });
+    if (sessionError || !sessionData.session) {
+      throw new Error(sessionError?.message || 'Could not establish the authenticated session.');
     }
     return data;
   },
