@@ -375,3 +375,77 @@ grant execute on function public.gradifi_get_school_classes(uuid) to authenticat
 grant execute on function public.gradifi_create_student(uuid,text,text,text,date) to authenticated;
 grant execute on function public.gradifi_create_staff_profile(uuid,text,text,text,text,text) to authenticated;
 grant execute on function public.gradifi_update_onboarding_progress(uuid,smallint,boolean) to authenticated;
+
+
+-- Keep PIN authentication aligned with the actual profiles/teachers/students schema.
+-- The previous implementation referenced teachers.staff_id, which is not a live column.
+create or replace function public.auth_pin_login(p_identifier text,p_pin text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public, auth
+as $function$
+declare
+  v_profile public.profiles%rowtype;
+  v_required_length integer;
+begin
+  select p.* into v_profile
+  from public.profiles p
+  left join public.students s on s.user_id=p.user_id
+  where lower(coalesce(p.phone,''))=lower(coalesce(p_identifier,''))
+     or lower(coalesce(p.email,''))=lower(coalesce(p_identifier,''))
+     or s.student_number=p_identifier
+  order by p.created_at desc
+  limit 1;
+
+  if not found then
+    return jsonb_build_object('success',false,'error','Invalid credentials');
+  end if;
+  if v_profile.pin_hash is null then
+    return jsonb_build_object('success',false,'error','PIN not configured for this account');
+  end if;
+  if v_profile.locked_until is not null and v_profile.locked_until>now() then
+    return jsonb_build_object('success',false,'error','Account temporarily locked');
+  end if;
+
+  if v_profile.role in ('vice_principal','vp','bursar','teacher') then
+    v_required_length:=6;
+  elsif v_profile.role in ('student','parent') then
+    v_required_length:=4;
+  else
+    return jsonb_build_object('success',false,'error','Invalid role for PIN login');
+  end if;
+
+  if length(coalesce(p_pin,''))<>v_required_length
+     or v_profile.pin_hash<>crypt(p_pin,v_profile.pin_hash) then
+    update public.profiles
+    set failed_attempts=coalesce(failed_attempts,0)+1,
+        locked_until=case when coalesce(failed_attempts,0)+1>=5 then now()+interval '30 minutes' else null end
+    where id=v_profile.id;
+    return jsonb_build_object('success',false,'error','Invalid PIN');
+  end if;
+
+  update public.profiles
+  set failed_attempts=0,locked_until=null,last_login_at=now(),authentication_method='pin'
+  where id=v_profile.id;
+
+  return jsonb_build_object(
+    'success',true,'profile_id',v_profile.id,'user_id',v_profile.user_id,
+    'role',v_profile.role,'institution_id',v_profile.institution_id,
+    'school_id',v_profile.school_id,'full_name',v_profile.full_name,
+    'email',v_profile.email,'requires_change',v_profile.pin_requires_change
+  );
+end;
+$function$;
+
+drop policy if exists institution_onboarding_select_member on public.institution_onboarding;
+create policy institution_onboarding_select_member on public.institution_onboarding
+for select to authenticated
+using (exists (
+  select 1 from public.schools s
+  where s.institution_id=institution_onboarding.institution_id
+    and public.has_active_school_role(s.id,array['principal','school_admin'])
+));
+
+revoke all on function public.auth_pin_login(text,text) from public;
+grant execute on function public.auth_pin_login(text,text) to anon,authenticated;
