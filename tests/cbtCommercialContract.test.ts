@@ -33,7 +33,8 @@ describe('CBT commercial execution contract', () => {
   });
 
   it('has an idempotent server-side result lifecycle and candidate-owned retrieval', () => {
-    expect(migration).toContain('on conflict(attempt_id) do nothing');
+    expect(migration).toContain("if v_order.status='paid' then");
+    expect(migration).toContain('on conflict(user_id,exam_id) do update');
     expect(migration).toContain('get_cbt_candidate_result');
     expect(migration).toContain('get_cbt_exam_results');
   });
