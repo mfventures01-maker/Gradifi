@@ -29,7 +29,9 @@ jobs:
       - run: npm ci
       - name: Deterministic onboarding contract
         run: npx vitest run tests/onboardingDeterministicContract.test.ts
-      - name: TypeScript
+      - name: Onboarding TypeScript
+        run: npx tsc -p tsconfig.onboarding.json --noEmit
+      - name: Repository TypeScript
         run: npm run lint
       - name: Production build
         run: npm run build
