@@ -1,0 +1,19 @@
+-- CBT-02 rollback guidance.
+-- This script intentionally does NOT restore direct client INSERT/UPDATE/DELETE
+-- privileges or re-enable the obsolete start_cbt_exam_v2 RPC.
+-- Such a rollback would reintroduce known privilege and identity vulnerabilities.
+--
+-- Rollback is therefore a controlled application rollback:
+-- 1. Deploy a frontend build that does not invoke persist_cbt_session_snapshot.
+-- 2. Keep the RPC and tightened grants in place until an approved replacement
+--    persistence path is verified.
+-- 3. If the publication function must be reverted, restore the exact pre-change
+--    definition from the captured database migration/backup artifact, not a
+--    guessed approximation. The old implementation used raw-marks pass_mark
+--    semantics and is incompatible with the current 0..100 percentage contract.
+--
+-- Safe reversible object removal (ONLY after all clients stop calling it):
+-- DROP FUNCTION IF EXISTS public.persist_cbt_session_snapshot(uuid,integer,integer);
+--
+-- Do not drop commercial tables, entitlements, orders, or payment records here.
+-- Do not grant direct table writes or restore execution on start_cbt_exam_v2.
