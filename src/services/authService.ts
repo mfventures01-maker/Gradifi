@@ -100,29 +100,21 @@ export const authService = {
     }
 
     // 1. Fetch Profile
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle();
+    if (profileError) throw profileError;
 
     // 2. Fetch Identity Actor (authoritative scoping)
-    let { data: actor, error: actorError } = await supabase
+    const { data: actor, error: actorError } = await supabase
       .from('identity_actors')
       .select('*')
       .eq('auth_user_id' as any, user.id)
       .eq('status', 'active')
       .maybeSingle();
-
-    if (actorError) {
-      const { data: fallbackActor } = await supabase
-        .from('identity_actors')
-        .select('*')
-        .eq('user_id' as any, user.id)
-        .eq('status', 'active')
-        .maybeSingle();
-      if (fallbackActor) actor = fallbackActor;
-    }
+    if (actorError) throw actorError;
 
     const institutionId = actor?.institution_id || profile?.institution_id || null;
     const schoolId = actor?.school_id || null;
@@ -168,5 +160,8 @@ export const authService = {
       throw new Error(sessionError?.message || 'Could not establish the authenticated session.');
     }
     return data;
+  },
+  async exchangePinForSession(pin: string, identifier?: string) {
+    return this.signInWithPhoneAndPin(identifier || '', pin);
   },
 
