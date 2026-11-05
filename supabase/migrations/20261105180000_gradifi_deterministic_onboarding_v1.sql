@@ -362,6 +362,67 @@ begin
 end;
 $function$;
 
+
+-- Read access remains tenant-scoped. Mutations continue through the SECURITY DEFINER RPCs above.
+drop policy if exists profiles_select_own_identity on public.profiles;
+create policy profiles_select_own_identity on public.profiles
+for select to authenticated
+using (
+  user_id = (select auth.uid())
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+);
+
+drop policy if exists identity_actors_select_own on public.identity_actors;
+create policy identity_actors_select_own on public.identity_actors
+for select to authenticated
+using (
+  auth_user_id = (select auth.uid())
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+);
+
+drop policy if exists schools_select_active_school_admin on public.schools;
+create policy schools_select_active_school_admin on public.schools
+for select to authenticated
+using (public.has_active_school_role(id,array['principal','school_admin']));
+
+drop policy if exists institutions_select_active_school_admin on public.institutions;
+create policy institutions_select_active_school_admin on public.institutions
+for select to authenticated
+using (exists (
+  select 1 from public.schools s
+  where s.institution_id=institutions.id
+    and public.has_active_school_role(s.id,array['principal','school_admin'])
+));
+
+drop policy if exists gradifi_school_memberships_select_scoped on public.gradifi_school_memberships;
+create policy gradifi_school_memberships_select_scoped on public.gradifi_school_memberships
+for select to authenticated
+using (
+  user_id=(select auth.uid())
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+);
+
+drop policy if exists teachers_select_scoped on public.teachers;
+create policy teachers_select_scoped on public.teachers
+for select to authenticated
+using (
+  user_id=(select auth.uid())
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+);
+
+drop policy if exists students_select_scoped on public.students;
+create policy students_select_scoped on public.students
+for select to authenticated
+using (
+  user_id=(select auth.uid())
+  or public.has_active_school_role(school_id,array['principal','school_admin'])
+);
+
+drop policy if exists class_subjects_select_active_school_member on public.class_subjects;
+create policy class_subjects_select_active_school_member on public.class_subjects
+for select to authenticated
+using (public.has_active_school_role(school_id,array['principal','school_admin','teacher','exam_officer']));
+
 -- RLS read paths for the authenticated owner and active school members.
 drop policy if exists profiles_select_own_identity on public.profiles;
 create policy profiles_select_own_identity on public.profiles
