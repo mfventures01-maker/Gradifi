@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Save, Send, Loader2 } from 'lucide-react';
 import { authService } from '../../services/authService';
-import { classService } from '../../services/classService';
-import { subjectService } from '../../services/subjectService';
 import { cbtService, CbtExamRecord } from '../../services/cbtService';
 
 type BuilderOption = { id: string; letter: string; text: string };
@@ -57,16 +55,13 @@ export const CBTExamBuilder: React.FC = () => {
       try {
         const identity = await authService.resolveCurrentIdentity();
         if (!identity.schoolId) throw new Error('Your authenticated account is not linked to a school.');
-        const [classRows, subjectRows] = await Promise.all([
-          classService.getClasses(identity.schoolId),
-          subjectService.getSubjectCatalog(),
-        ]);
+        const catalog = await cbtService.getAuthoringCatalog(identity.schoolId);
         if (!alive) return;
         setSchoolId(identity.schoolId);
-        setClasses(classRows.map(row => ({ id: row.id, name: row.name })));
-        setSubjects(subjectRows.map(row => ({ id: row.id, name: row.name })));
-        if (classRows[0]) setClassId(classRows[0].id);
-        if (subjectRows[0]) setSubjectId(subjectRows[0].id);
+        setClasses(catalog.classes);
+        setSubjects(catalog.subjects);
+        if (catalog.classes[0]) setClassId(catalog.classes[0].id);
+        if (catalog.subjects[0]) setSubjectId(catalog.subjects[0].id);
 
         if (examId) {
           const loaded = await cbtService.getExamWithQuestions(examId);
@@ -182,7 +177,7 @@ export const CBTExamBuilder: React.FC = () => {
         } else {
           const persistedId = await cbtService.addQuestion(payload);
           setQuestions(current => current.map(item => item.id === question.id
-            ? { ...item, persistedId, id: persistedId, options: item.options.map(option => ({ ...option, id: option.id })) }
+            ? { ...item, persistedId }
             : item));
           questions[index].persistedId = persistedId;
         }
