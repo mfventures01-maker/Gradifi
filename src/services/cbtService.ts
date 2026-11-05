@@ -212,6 +212,16 @@ export const cbtService = {
     return result;
   },
 
+  async getCandidateResult(examId: string): Promise<{
+    exam: { id: string; title: string; subjectName: string; className: string; totalMarks: number; passMark: number };
+    result: { id: string; score: number; maxScore: number; percentage: number; grade: string; status: 'Passed' | 'Failed'; submittedAt: string | null };
+  }> {
+    const { data, error } = await supabase.rpc('get_cbt_candidate_result' as any, {
+      p_exam_id: examId,
+    } as any);
+    return unwrap(data, error);
+  },
+
   async getExamResults(examId: string): Promise<CbtExamResults> {
     const { data, error } = await supabase.rpc('get_cbt_exam_results' as any, { p_exam_id: examId } as any);
     return unwrap<CbtExamResults>(data, error);
