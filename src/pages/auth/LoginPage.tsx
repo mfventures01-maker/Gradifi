@@ -51,6 +51,7 @@ export const LoginPage: React.FC = () => {
       if (res && res.role) {
         if (res.role === 'vice_principal' || res.role === 'vp') navigate('/portal/vp');
         else if (res.role === 'bursar') navigate('/portal/bursar');
+        else if (res.role === 'parent') navigate('/portal/parent');
         else navigate('/portal/teacher');
       } else {
         navigate('/portal/teacher');
