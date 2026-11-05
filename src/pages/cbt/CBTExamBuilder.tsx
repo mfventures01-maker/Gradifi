@@ -33,6 +33,7 @@ export const CBTExamBuilder: React.FC = () => {
   const [classes, setClasses] = useState<Array<{ id: string; name: string }>>([]);
   const [subjects, setSubjects] = useState<Array<{ id: string; name: string }>>([]);
   const [exam, setExam] = useState<CbtExamRecord | null>(null);
+  const [createdExamId, setCreatedExamId] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [classId, setClassId] = useState('');
@@ -146,17 +147,20 @@ export const CBTExamBuilder: React.FC = () => {
       if (publish && questions.length === 0) throw new Error('Add at least one question before publishing.');
       setSaving(true);
 
-      let currentExamId = exam?.id || examId || '';
+      let currentExamId = exam?.id || examId || createdExamId || '';
       if (!currentExamId) {
         const created = await cbtService.createExam({
           schoolId, classId, subjectId, title, description, durationMinutes,
           passMark, startTime: new Date(startTime).toISOString(),
         });
         currentExamId = created.exam_id;
-        navigate('/cbt/builder/' + currentExamId, { replace: true });
+        setCreatedExamId(currentExamId);
       }
 
-      for (const questionId of removedQuestionIds) await cbtService.deleteQuestion(questionId);
+      for (const questionId of removedQuestionIds) {
+        await cbtService.deleteQuestion(questionId);
+        setRemovedQuestionIds(current => current.filter(id => id !== questionId));
+      }
 
       for (let index = 0; index < questions.length; index++) {
         const question = questions[index];
@@ -211,7 +215,7 @@ export const CBTExamBuilder: React.FC = () => {
           <button onClick={() => navigate('/cbt/manager')} className="text-xs text-slate-500 flex items-center gap-2 mb-2">
             <ArrowLeft size={14} /> Exam manager
           </button>
-          <h1 className="text-2xl font-extrabold">{examId ? 'Edit draft exam' : 'Create CBT exam'}</h1>
+          <h1 className="text-2xl font-extrabold">{examId || createdExamId ? 'Edit draft exam' : 'Create CBT exam'}</h1>
           <p className="text-sm text-slate-500">Questions, answers and publishing are persisted through protected database functions.</p>
         </div>
         <div className="text-right text-xs text-slate-500">
