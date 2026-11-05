@@ -346,6 +346,7 @@ declare v_school_id uuid;
 begin
   if auth.uid() is null then raise exception 'AUTHENTICATION_REQUIRED' using errcode='28000'; end if;
   if p_current_step < 1 or p_current_step > 14 then raise exception 'INVALID_ONBOARDING_STEP' using errcode='22023'; end if;
+  if p_is_completed and p_current_step < 8 then raise exception 'CORE_ONBOARDING_STEPS_INCOMPLETE' using errcode='23514'; end if;
   select s.id into v_school_id from public.schools s
   where s.institution_id=p_institution_id
     and public.has_active_school_role(s.id,array['principal','school_admin'])
@@ -883,6 +884,10 @@ begin
   on conflict(student_id,parent_id) do update set
     relationship_type=excluded.relationship_type,is_primary=excluded.is_primary
   returning id into v_relationship_id;
+
+  update public.institution_onboarding
+  set current_step=greatest(current_step,12),updated_at=now()
+  where institution_id=v_institution_id;
 
   insert into public.system_activity_logs
     (institution_id,school_id,profile_id,action_type,resource_type,resource_id)
