@@ -56,7 +56,7 @@ export const CreateStaffAccount: React.FC<CreateStaffAccountProps> = ({ role, sc
     {error&&<div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"><AlertCircle className="mr-2 inline h-4 w-4"/>{error}</div>}
     <label className="block text-sm">Full name<input required minLength={2} value={name} onChange={e=>setName(e.target.value)} className="mt-1 w-full rounded-lg border p-3"/></label>
     <label className="block text-sm">Email address<input required type="email" value={email} onChange={e=>setEmail(e.target.value)} className="mt-1 w-full rounded-lg border p-3"/></label>
-    <label className="block text-sm">Phone number<input value={phone} onChange={e=>setPhone(e.target.value)} className="mt-1 w-full rounded-lg border p-3"/></label>
+    <label className="block text-sm">Phone number<input required value={phone} onChange={e=>setPhone(e.target.value)} className="mt-1 w-full rounded-lg border p-3"/></label>
     <button disabled={loading||!schoolId||!institutionId} className="w-full rounded-xl bg-blue-600 p-3 font-semibold text-white disabled:opacity-50">{loading?<><Loader2 className="mr-2 inline h-4 w-4 animate-spin"/>Provisioning on server…</>:'Create account and send invitation'}</button>
   </form>;
 };
