@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Phone, KeyRound, ArrowRight, Shield, AlertCircle } from 'lucide-react';
 import { authService } from '../../services/authService';
 
 export const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate();\n  const [searchParams] = useSearchParams();\n  const requestedNext = searchParams.get('next');\n  const nextPath = requestedNext && requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/portal/principal';
   const [authMethod, setAuthMethod] = useState<'email' | 'pin'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,7 +26,7 @@ export const LoginPage: React.FC = () => {
       } else {
         await new Promise((resolve) => setTimeout(resolve, 800));
       }
-      navigate('/portal/principal');
+      navigate(nextPath);
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'Invalid email or password');
