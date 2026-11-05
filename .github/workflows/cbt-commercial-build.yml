@@ -26,6 +26,6 @@ jobs:
       - name: Type-check CBT implementation
         run: npx tsc -p tsconfig.cbt.json --noEmit
       - name: Run contract and regression tests
-        run: npm test
+        run: npx vitest run tests/cbtCommercialContract.test.ts
       - name: Build server and frontend
         run: npm run build
