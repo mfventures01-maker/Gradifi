@@ -1,19 +1,25 @@
--- CBT-02 rollback guidance.
--- This script intentionally does NOT restore direct client INSERT/UPDATE/DELETE
--- privileges or re-enable the obsolete start_cbt_exam_v2 RPC.
--- Such a rollback would reintroduce known privilege and identity vulnerabilities.
+-- CBT-02 controlled rollback.
+-- Preconditions:
+--   1. Roll back the frontend to a version that no longer calls
+--      persist_cbt_session_snapshot.
+--   2. Confirm no deployed client depends on the RPC.
 --
--- Rollback is therefore a controlled application rollback:
--- 1. Deploy a frontend build that does not invoke persist_cbt_session_snapshot.
--- 2. Keep the RPC and tightened grants in place until an approved replacement
---    persistence path is verified.
--- 3. If the publication function must be reverted, restore the exact pre-change
---    definition from the captured database migration/backup artifact, not a
---    guessed approximation. The old implementation used raw-marks pass_mark
---    semantics and is incompatible with the current 0..100 percentage contract.
---
--- Safe reversible object removal (ONLY after all clients stop calling it):
--- DROP FUNCTION IF EXISTS public.persist_cbt_session_snapshot(uuid,integer,integer);
---
--- Do not drop commercial tables, entitlements, orders, or payment records here.
--- Do not grant direct table writes or restore execution on start_cbt_exam_v2.
+-- This rollback deliberately retains the security hardening. It does NOT
+-- restore direct client writes or execution of the obsolete start_cbt_exam_v2.
+-- It also retains percentage pass-mark semantics because reverting to raw marks
+-- would make authoring, publishing and result calculation inconsistent again.
+
+begin;
+
+drop function if exists public.persist_cbt_session_snapshot(uuid,integer,integer);
+
+revoke insert, update, delete on public.cbt_sessions from anon, authenticated;
+revoke insert, update, delete on public.cbt_session_snapshots from anon, authenticated;
+revoke all on function public.start_cbt_exam_v2(uuid,uuid) from public, anon, authenticated, service_role;
+
+commit;
+
+-- The publication function remains percentage-based by design.
+-- Commercial tables, orders, entitlements and payment records are not dropped.
+-- Do not execute a blanket grant or schema rollback that reopens the old
+-- client-side write paths.
