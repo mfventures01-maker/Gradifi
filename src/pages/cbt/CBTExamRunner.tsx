@@ -1,265 +1,345 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { CBTQuestion } from '../../types/phase4.types';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, Flag, Loader2, Send, ShieldCheck, Wifi, WifiOff } from 'lucide-react';
 import { ExamTimer } from '../../components/cbt/ExamTimer';
 import { QuestionNavigator } from '../../components/cbt/QuestionNavigator';
 import { AnswerOptions } from '../../components/cbt/AnswerOptions';
-import { OfflineSyncStatus } from '../../components/cbt/OfflineSyncStatus';
 import { ExamProgress } from '../../components/cbt/ExamProgress';
-import { offlineSyncService } from '../../services/offlineSyncService';
-import { 
-  Flag, 
-  ArrowLeft, 
-  ArrowRight, 
-  CheckCircle2, 
-  AlertTriangle 
-} from 'lucide-react';
+import { cbtService, CbtAttemptStart, CbtSnapshotQuestion } from '../../services/cbtService';
+
+type CandidateExam = {
+  id: string; title: string; description: string | null; duration_minutes: number;
+  total_marks: number; pass_mark: number | null; start_time: string | null;
+  end_time: string | null; status: string | null;
+};
 
 export const CBTExamRunner: React.FC = () => {
-  const { examId } = useParams<{ examId?: string }>();
   const navigate = useNavigate();
+  const { examId = '' } = useParams<{ examId: string }>();
+  const [exam, setExam] = useState<CandidateExam | null>(null);
+  const [questions, setQuestions] = useState<CbtSnapshotQuestion[]>([]);
+  const [attempt, setAttempt] = useState<CbtAttemptStart | null>(null);
+  const [sessionState, setSessionState] = useState('');
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [flagged, setFlagged] = useState<Set<number>>(new Set());
+  const [remainingTime, setRemainingTime] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [savingAnswer, setSavingAnswer] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [isOnline, setIsOnline] = useState(() => typeof navigator === 'undefined' ? true : navigator.onLine);
+  const [error, setError] = useState('');
+  const submitLock = useRef(false);
 
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
-  const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set());
-  const [pendingSyncCount, setPendingSyncCount] = useState<number>(0);
-  const [showConfirmSubmit, setShowConfirmSubmit] = useState<boolean>(false);
-
-  const sampleQuestions: CBTQuestion[] = [
-    {
-      id: 'q_1',
-      questionNumber: 1,
-      text: 'Which of the following processes is responsible for the formation of waterfalls in West African river courses?',
-      options: [
-        { id: 'opt_1a', letter: 'A', text: 'Weathering and soil creep' },
-        { id: 'opt_1b', letter: 'B', text: 'Differential river erosion of hard and soft rock layers' },
-        { id: 'opt_1c', letter: 'C', text: 'Deforestation and surface runoff' },
-        { id: 'opt_1d', letter: 'D', text: 'Urbanization and river damming' },
-      ],
-      correctOptionId: 'opt_1b',
-      marks: 5,
-    },
-    {
-      id: 'q_2',
-      questionNumber: 2,
-      text: 'Solve for x in the linear algebraic equation: 2x + 5 = 15.',
-      options: [
-        { id: 'opt_2a', letter: 'A', text: 'x = 5' },
-        { id: 'opt_2b', letter: 'B', text: 'x = 10' },
-        { id: 'opt_2c', letter: 'C', text: 'x = 15' },
-        { id: 'opt_2d', letter: 'D', text: 'x = 20' },
-      ],
-      correctOptionId: 'opt_2a',
-      marks: 5,
-    },
-    {
-      id: 'q_3',
-      questionNumber: 3,
-      text: 'What is the primary function of decomposers in an ecosystem?',
-      options: [
-        { id: 'opt_3a', letter: 'A', text: 'To produce oxygen for animals' },
-        { id: 'opt_3b', letter: 'B', text: 'To recycle essential nutrients back into the soil' },
-        { id: 'opt_3c', letter: 'C', text: 'To generate solar energy for plants' },
-        { id: 'opt_3d', letter: 'D', text: 'To prevent soil erosion' },
-      ],
-      correctOptionId: 'opt_3b',
-      marks: 5,
-    },
-    {
-      id: 'q_4',
-      questionNumber: 4,
-      text: 'Which organelle is known as the powerhouse of the cell?',
-      options: [
-        { id: 'opt_4a', letter: 'A', text: 'Nucleus' },
-        { id: 'opt_4b', letter: 'B', text: 'Ribosome' },
-        { id: 'opt_4c', letter: 'C', text: 'Mitochondrion' },
-        { id: 'opt_4d', letter: 'D', text: 'Golgi Apparatus' },
-      ],
-      correctOptionId: 'opt_4c',
-      marks: 5,
-    },
-    {
-      id: 'q_5',
-      questionNumber: 5,
-      text: 'Which arm of government is responsible for interpreting laws in Nigeria?',
-      options: [
-        { id: 'opt_5a', letter: 'A', text: 'Executive' },
-        { id: 'opt_5b', letter: 'B', text: 'Legislature' },
-        { id: 'opt_5c', letter: 'C', text: 'Judiciary' },
-        { id: 'opt_5d', letter: 'D', text: 'Press' },
-      ],
-      correctOptionId: 'opt_5c',
-      marks: 5,
-    },
-  ];
-
-  const currentQ = sampleQuestions[currentQuestionIndex];
-  const totalQ = sampleQuestions.length;
-
-  // Auto-save timer every 30 seconds
   useEffect(() => {
-    const autoSaveTimer = setInterval(() => {
-      offlineSyncService.queueForSync('auto_save_answers', selectedAnswers);
-      setPendingSyncCount(offlineSyncService.getPendingSyncCount());
-    }, 30000);
+    const online = () => setIsOnline(true);
+    const offline = () => setIsOnline(false);
+    window.addEventListener('online', online);
+    window.addEventListener('offline', offline);
+    return () => {
+      window.removeEventListener('online', online);
+      window.removeEventListener('offline', offline);
+    };
+  }, []);
 
-    return () => clearInterval(autoSaveTimer);
-  }, [selectedAnswers]);
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        if (!examId) throw new Error('Exam identifier is missing.');
+        const [examRecord, active] = await Promise.all([
+          cbtService.getCandidateExam(examId),
+          cbtService.getActiveAttempt(examId),
+        ]);
+        let attemptId = '';
+        let sessionId = '';
+        let deadlineAt = '';
+        let state = '';
 
-  const handleSelectOption = (optionId: string) => {
-    const qNum = currentQuestionIndex + 1;
-    const updated = { ...selectedAnswers, [qNum]: optionId };
-    setSelectedAnswers(updated);
-    offlineSyncService.queueForSync('save_answer', { questionNumber: qNum, optionId });
-    setPendingSyncCount(offlineSyncService.getPendingSyncCount());
+        if (active.active && active.attempt_id && active.session_id) {
+          attemptId = active.attempt_id;
+          sessionId = active.session_id;
+          deadlineAt = active.deadline_at || '';
+          state = active.session_state || '';
+        } else {
+          const created = await cbtService.createAttempt(examId);
+          attemptId = created.attempt_id;
+          sessionId = created.session_id;
+          deadlineAt = created.deadline_at;
+          state = 'INITIALIZING';
+          await cbtService.transitionSession(sessionId, 'AUTHENTICATED');
+          state = 'AUTHENTICATED';
+          await cbtService.transitionSession(sessionId, 'LOADING_EXAM');
+          state = 'LOADING_EXAM';
+          await cbtService.transitionSession(sessionId, 'INSTRUCTIONS_VIEW');
+          state = 'INSTRUCTIONS_VIEW';
+        }
+
+        const [paper, saved] = await Promise.all([
+          cbtService.getPublishedQuestions(examId),
+          cbtService.getAttemptState(attemptId),
+        ]);
+        if (!alive) return;
+
+        if (saved.session_state === 'INITIALIZING') {
+          await cbtService.transitionSession(sessionId, 'AUTHENTICATED');
+          await cbtService.transitionSession(sessionId, 'LOADING_EXAM');
+          await cbtService.transitionSession(sessionId, 'INSTRUCTIONS_VIEW');
+          state = 'INSTRUCTIONS_VIEW';
+        } else if (saved.session_state === 'AUTHENTICATED') {
+          await cbtService.transitionSession(sessionId, 'LOADING_EXAM');
+          await cbtService.transitionSession(sessionId, 'INSTRUCTIONS_VIEW');
+          state = 'INSTRUCTIONS_VIEW';
+        } else if (saved.session_state === 'LOADING_EXAM') {
+          await cbtService.transitionSession(sessionId, 'INSTRUCTIONS_VIEW');
+          state = 'INSTRUCTIONS_VIEW';
+        } else {
+          state = saved.session_state;
+        }
+
+        if (state === 'PAUSED') {
+          await cbtService.transitionSession(sessionId, 'ACTIVE_EXAM');
+          state = 'ACTIVE_EXAM';
+        }
+        if (state === 'SUBMITTED' || state === 'SCORED') {
+          navigate('/cbt/results/' + examId, { replace: true });
+          return;
+        }
+
+        setExam(examRecord);
+        setQuestions(paper);
+        setAttempt({
+          success: true,
+          attempt_id: attemptId,
+          attempt_number: active.attempt_number || 1,
+          session_id: sessionId,
+          start_time: active.start_time || new Date().toISOString(),
+          deadline_at: deadlineAt,
+          status: active.status || 'in_progress',
+          snapshot_questions: paper.length,
+        });
+        setSessionState(state);
+        setAnswers(saved.answers || {});
+        setCurrentIndex(Math.max(0, Math.min(saved.current_question || 0, paper.length - 1)));
+        setHasStarted(state === 'ACTIVE_EXAM');
+        setRemainingTime(Math.max(0, Math.ceil((Date.parse(deadlineAt) - Date.now()) / 1000)));
+      } catch (cause) {
+        if (alive) setError(cause instanceof Error ? cause.message : 'Unable to start this CBT exam.');
+      } finally {
+        if (alive) setLoading(false);
+      }
+    };
+    void load();
+    return () => { alive = false; };
+  }, [examId, navigate]);
+
+  const persistSnapshot = useCallback(async (questionIndex: number) => {
+    if (!attempt || !isOnline) return;
+    const seconds = attempt.deadline_at
+      ? Math.max(0, Math.ceil((Date.parse(attempt.deadline_at) - Date.now()) / 1000))
+      : remainingTime;
+    await cbtService.saveSessionSnapshot(attempt.session_id, questionIndex, seconds, sessionState || 'ACTIVE_EXAM');
+  }, [attempt, isOnline, remainingTime, sessionState]);
+
+  const finalize = useCallback(async () => {
+    if (!attempt || submitLock.current) return;
+    if (!isOnline) {
+      setError('Reconnect to the internet to submit. Your previously saved answers remain on the server.');
+      return;
+    }
+    submitLock.current = true;
+    setSubmitting(true);
+    setError('');
+    try {
+      await cbtService.submitAttempt(attempt.attempt_id);
+      const state = await cbtService.getAttemptState(attempt.attempt_id);
+      if (state.session_state === 'ACTIVE_EXAM' || state.session_state === 'PAUSED') {
+        await cbtService.transitionSession(attempt.session_id, 'SUBMITTED');
+        await cbtService.transitionSession(attempt.session_id, 'SCORED');
+      } else if (state.session_state === 'SUBMITTED') {
+        await cbtService.transitionSession(attempt.session_id, 'SCORED');
+      }
+      navigate('/cbt/results/' + examId, { replace: true });
+    } catch (cause) {
+      submitLock.current = false;
+      setSubmitting(false);
+      setError(cause instanceof Error ? cause.message : 'Submission failed. Retry when connected.');
+    }
+  }, [attempt, examId, isOnline, navigate]);
+
+  const onTimeUp = useCallback(() => { void finalize(); }, [finalize]);
+
+  const currentQuestion = questions[currentIndex];
+  const answeredQuestions = new Set(
+    questions.map((question, index) => answers[question.question_id] ? index : -1).filter(index => index >= 0)
+  );
+
+  const selectAnswer = async (optionId: string) => {
+    if (!attempt || !currentQuestion || !hasStarted || savingAnswer || submitting) return;
+    if (!isOnline) {
+      setError('You are offline. Reconnect before changing an answer.');
+      return;
+    }
+    setSavingAnswer(true);
+    setError('');
+    try {
+      await cbtService.submitAnswer(attempt.attempt_id, currentQuestion.question_id, optionId);
+      setAnswers(current => ({ ...current, [currentQuestion.question_id]: optionId }));
+      try { await persistSnapshot(currentIndex); } catch { /* The answer itself is already durably saved by the answer RPC. */ }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Answer was not saved. Please retry.');
+    } finally {
+      setSavingAnswer(false);
+    }
   };
 
-  const toggleFlag = () => {
-    const qNum = currentQuestionIndex + 1;
-    const updated = new Set(flaggedQuestions);
-    if (updated.has(qNum)) updated.delete(qNum);
-    else updated.add(qNum);
-    setFlaggedQuestions(updated);
+  const goToQuestion = async (index: number) => {
+    if (index < 0 || index >= questions.length) return;
+    setCurrentIndex(index);
+    try { await persistSnapshot(index); } catch { /* Navigation does not invalidate the server-saved answers. */ }
   };
 
-  const handleTimeUp = () => {
-    alert('Time has expired! Submitting CBT exam automatically.');
-    navigate(`/cbt/results/${examId || 'ex_demo'}`);
+  const startExam = async () => {
+    if (!attempt || !isOnline) return;
+    setError('');
+    try {
+      await cbtService.transitionSession(attempt.session_id, 'ACTIVE_EXAM');
+      setSessionState('ACTIVE_EXAM');
+      setHasStarted(true);
+      await persistSnapshot(currentIndex);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Unable to activate exam session.');
+    }
   };
 
-  const handleConfirmSubmit = () => {
-    navigate(`/cbt/results/${examId || 'ex_demo'}`);
-  };
+  const toggleFlag = () => setFlagged(current => {
+    const next = new Set(current);
+    if (next.has(currentIndex)) next.delete(currentIndex);
+    else next.add(currentIndex);
+    return next;
+  });
 
-  const answeredSet = new Set(Object.keys(selectedAnswers).map(Number));
+  if (loading) return <div className="min-h-screen grid place-items-center text-slate-500"><Loader2 className="animate-spin mr-2" /> Preparing secure exam session…</div>;
+
+  if (error && !exam) {
+    return <main className="min-h-screen grid place-items-center bg-slate-50 p-5">
+      <section className="max-w-lg w-full rounded-2xl border border-rose-200 bg-white p-6 space-y-3">
+        <AlertCircle className="text-rose-600" size={28} />
+        <h1 className="text-xl font-bold">Unable to start exam</h1>
+        <p className="text-sm text-slate-600">{error}</p>
+        <button onClick={() => navigate(-1)} className="rounded-lg bg-slate-900 text-white px-4 py-2 text-sm">Go back</button>
+      </section>
+    </main>;
+  }
+
+  if (!exam || !attempt || !currentQuestion) return <main className="min-h-screen grid place-items-center p-5 text-slate-600">No published questions are available for this exam.</main>;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 p-3 sm:p-6 font-sans max-w-md mx-auto space-y-4 pb-12">
-      {/* Top Fixed Runner Bar */}
-      <div className="bg-slate-900 text-white p-4 rounded-3xl shadow-xl flex items-center justify-between gap-2">
-        <div className="space-y-0.5">
-          <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
-            WAEC CBT Simulation
-          </span>
-          <h2 className="text-sm font-extrabold text-white leading-tight">Mathematics CBT</h2>
-        </div>
+    <main className="min-h-screen bg-slate-50 text-slate-900 p-3 sm:p-6">
+      <div className="max-w-6xl mx-auto space-y-4">
+        <header className="rounded-2xl bg-slate-950 text-white p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <button onClick={() => navigate('/portal/student')} className="text-xs text-slate-300 flex items-center gap-1 mb-2">
+              <ArrowLeft size={13} /> Student portal
+            </button>
+            <h1 className="font-extrabold text-lg">{exam.title}</h1>
+            <p className="text-xs text-slate-400">Attempt {attempt.attempt_number} · Server-timed session</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className={'text-xs flex items-center gap-1 ' + (isOnline ? 'text-emerald-300' : 'text-amber-300')}>
+              {isOnline ? <Wifi size={14} /> : <WifiOff size={14} />}
+              {isOnline ? 'Connected' : 'Offline'}
+            </span>
+            <ExamTimer duration={exam.duration_minutes} deadlineAt={attempt.deadline_at} onTimeUp={onTimeUp} onTick={setRemainingTime} />
+          </div>
+        </header>
 
-        <div className="flex items-center gap-2">
-          <ExamTimer duration={60} onTimeUp={handleTimeUp} />
-          <button
-            type="button"
-            onClick={toggleFlag}
-            className={`p-2 rounded-xl border transition-colors ${
-              flaggedQuestions.has(currentQuestionIndex + 1)
-                ? 'bg-amber-400 text-slate-950 border-amber-500'
-                : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white'
-            }`}
-            title="Flag question for review"
-          >
-            <Flag className="w-4 h-4 fill-current" />
-          </button>
-        </div>
-      </div>
+        {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
 
-      {/* Progress Counter */}
-      <ExamProgress current={currentQuestionIndex + 1} total={totalQ} title="Mathematics Test" />
+        {!hasStarted && (
+          <section className="rounded-2xl border border-indigo-200 bg-white p-6 space-y-4">
+            <div className="flex items-center gap-2 text-indigo-700"><ShieldCheck size={20} /><h2 className="font-bold text-lg">Exam instructions</h2></div>
+            <ul className="list-disc pl-5 text-sm text-slate-600 space-y-2">
+              <li>Your attempt has already been created and its deadline is controlled by the server.</li>
+              <li>Each answer is checked and saved by the server when you select it.</li>
+              <li>Correct answers are not sent to this browser during the exam.</li>
+              <li>Reconnect before changing answers or submitting if your connection drops.</li>
+              <li>When the server deadline expires, submission is finalized automatically on the next valid request.</li>
+            </ul>
+            <div className="flex flex-wrap gap-4 text-sm text-slate-500">
+              <span>{questions.length} questions</span><span>{exam.total_marks} marks</span><span>{exam.duration_minutes} minutes</span>
+            </div>
+            <button disabled={!isOnline} onClick={() => void startExam()} className="rounded-xl bg-indigo-600 px-5 py-3 text-white font-bold disabled:opacity-50">
+              Start examination
+            </button>
+          </section>
+        )}
 
-      {/* Main Question Box */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">
-            Question {currentQuestionIndex + 1} of {totalQ}
-          </span>
-          <span className="text-xs font-semibold text-slate-400 font-mono">{currentQ.marks} Marks</span>
-        </div>
+        {hasStarted && (
+          <>
+            <div className="rounded-xl bg-white border border-slate-200 p-3 flex flex-wrap items-center justify-between gap-3">
+              <ExamProgress current={currentIndex + 1} total={questions.length} title="Examination progress" timeRemaining={remainingTime} />
+              <div className="text-xs text-slate-500 flex items-center gap-2">
+                {savingAnswer ? <><Loader2 size={14} className="animate-spin" /> Saving answer…</> : <><CheckCircle2 size={14} className="text-emerald-600" /> Answers save to server</>}
+              </div>
+            </div>
 
-        <h3 className="text-sm font-bold text-slate-900 leading-relaxed">{currentQ.text}</h3>
+            <div className="grid lg:grid-cols-[1fr_260px] gap-4">
+              <section className="rounded-2xl bg-white border border-slate-200 p-5 sm:p-7 space-y-5">
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>Question {currentIndex + 1} of {questions.length}</span>
+                  <span>{currentQuestion.marks} mark(s)</span>
+                </div>
+                <h2 className="text-lg sm:text-xl font-semibold leading-relaxed">{currentQuestion.text}</h2>
+                {currentQuestion.image_url && <img src={currentQuestion.image_url} alt="Question illustration" className="max-h-72 rounded-xl object-contain" />}
+                <AnswerOptions
+                  options={currentQuestion.options}
+                  selectedOptionId={answers[currentQuestion.question_id]}
+                  onSelect={selectAnswer}
+                  disabled={!isOnline || savingAnswer || submitting}
+                />
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                  <button disabled={currentIndex === 0 || savingAnswer} onClick={() => void goToQuestion(currentIndex - 1)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold disabled:opacity-40">
+                    Previous
+                  </button>
+                  <button onClick={toggleFlag} className={'rounded-lg px-3 py-2 text-sm font-semibold flex items-center gap-2 ' + (flagged.has(currentIndex) ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600')}>
+                    <Flag size={14} /> {flagged.has(currentIndex) ? 'Flagged' : 'Flag question'}
+                  </button>
+                  {currentIndex < questions.length - 1
+                    ? <button disabled={savingAnswer} onClick={() => void goToQuestion(currentIndex + 1)} className="rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm font-bold flex items-center gap-2 disabled:opacity-40">Next <ArrowRight size={15} /></button>
+                    : <button disabled={savingAnswer || submitting || !isOnline} onClick={() => {
+                        if (window.confirm('Submit this examination now? You cannot change answers after submission.')) void finalize();
+                      }} className="rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-bold flex items-center gap-2 disabled:opacity-40">
+                        {submitting ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />} Submit exam
+                      </button>}
+                </div>
+              </section>
 
-        <AnswerOptions
-          options={currentQ.options}
-          selectedOptionId={selectedAnswers[currentQuestionIndex + 1]}
-          onSelect={handleSelectOption}
-        />
-      </div>
-
-      {/* Prev / Next Navigation (Thumb-zone optimized 360px) */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          disabled={currentQuestionIndex === 0}
-          onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
-          className="flex-1 py-3.5 px-4 rounded-2xl border border-slate-200 bg-white text-slate-800 text-xs font-bold shadow-xs hover:bg-slate-50 transition-colors disabled:opacity-40 flex items-center justify-center gap-1.5 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Previous</span>
-        </button>
-
-        {currentQuestionIndex < totalQ - 1 ? (
-          <button
-            type="button"
-            onClick={() => setCurrentQuestionIndex((prev) => Math.min(totalQ - 1, prev + 1))}
-            className="flex-1 py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <span>Next</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowConfirmSubmit(true)}
-            className="flex-1 py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Submit Exam</span>
-          </button>
+              <aside className="rounded-2xl bg-white border border-slate-200 p-4 space-y-4">
+                <h3 className="font-bold text-sm">Question navigator</h3>
+                <QuestionNavigator
+                  totalQuestions={questions.length}
+                  currentQuestion={currentIndex + 1}
+                  answeredQuestions={new Set(Array.from(answeredQuestions).map(index => index + 1))}
+                  flaggedQuestions={new Set(Array.from(flagged).map(index => index + 1))}
+                  onQuestionSelect={number => void goToQuestion(number - 1)}
+                />
+                <div className="text-xs text-slate-500">
+                  {answeredQuestions.size} of {questions.length} answered
+                </div>
+                <button disabled={submitting || savingAnswer || !isOnline} onClick={() => {
+                  if (window.confirm('Submit this examination now?')) void finalize();
+                }} className="w-full rounded-xl bg-emerald-600 text-white py-3 text-sm font-bold disabled:opacity-40">
+                  Submit examination
+                </button>
+              </aside>
+            </div>
+          </>
         )}
       </div>
-
-      {/* Question Palette */}
-      <QuestionNavigator
-        totalQuestions={totalQ}
-        currentQuestion={currentQuestionIndex + 1}
-        answeredQuestions={answeredSet}
-        flaggedQuestions={flaggedQuestions}
-        onQuestionSelect={(qNum) => setCurrentQuestionIndex(qNum - 1)}
-        isMobile={true}
-      />
-
-      {/* Offline Sync Status */}
-      <OfflineSyncStatus pendingCount={pendingSyncCount} isOnline={true} />
-
-      {/* Confirmation Modal */}
-      {showConfirmSubmit && (
-        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-xs w-full text-center space-y-4 shadow-2xl animate-scaleUp">
-            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-7 h-7" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-slate-900">Submit Exam Now?</h3>
-              <p className="text-xs text-slate-500 mt-1">
-                You have answered <strong>{answeredSet.size}</strong> out of <strong>{totalQ}</strong> questions.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowConfirmSubmit(false)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700"
-              >
-                Continue Test
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmSubmit}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-600/20"
-              >
-                Yes, Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </main>
   );
 };
