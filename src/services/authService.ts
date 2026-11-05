@@ -40,6 +40,19 @@ export const authService = {
   },
 
   /**
+   * Register a principal using a real Supabase Auth identity.
+   */
+  async signUpWithPassword(email: string, password: string, fullName: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim().toLowerCase(),
+      password,
+      options: { data: { full_name: fullName.trim() } },
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  /**
    * Standard Email/Password login
    */
   async signInWithPassword(email: string, password: string) {
