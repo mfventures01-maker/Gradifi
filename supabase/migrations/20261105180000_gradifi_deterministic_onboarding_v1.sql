@@ -1177,10 +1177,10 @@ $function$;
 
 revoke all on function public.gradifi_school_admin_can_access_parent(uuid) from public,anon;
 grant execute on function public.gradifi_school_admin_can_access_parent(uuid) to authenticated;
+drop policy if exists parents_select_scoped on public.parents;
 revoke all on function public.gradifi_school_id_for_student(uuid) from public,anon,authenticated;
 drop function public.gradifi_school_id_for_student(uuid);
 
-drop policy if exists parents_select_scoped on public.parents;
 create policy parents_select_scoped on public.parents
 for select to authenticated
 using (
