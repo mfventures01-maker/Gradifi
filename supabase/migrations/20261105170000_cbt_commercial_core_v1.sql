@@ -146,24 +146,35 @@ as $function$
 declare
   v_classes jsonb;
   v_subjects jsonb;
+  v_school_id uuid := p_school_id;
 begin
   if auth.uid() is null then raise exception 'Authentication required'; end if;
+  if v_school_id is null then
+    select m.school_id into v_school_id
+    from public.gradifi_school_memberships m
+    join public.schools s on s.id=m.school_id
+    where m.user_id=auth.uid() and m.status='active'
+      and m.member_role in ('principal','school_admin','teacher','exam_officer')
+      and s.provisioning_status='active'
+    order by m.created_at asc,m.school_id asc limit 1;
+  end if;
+  if v_school_id is null then raise exception 'No active school membership is available'; end if;
   if not exists (
     select 1 from public.gradifi_school_memberships m
     join public.schools s on s.id=m.school_id
-    where m.user_id=auth.uid() and m.school_id=p_school_id
+    where m.user_id=auth.uid() and m.school_id=v_school_id
       and m.status='active'
       and m.member_role in ('principal','school_admin','teacher','exam_officer')
       and s.provisioning_status='active'
   ) then raise exception 'ACCESS_DENIED: ACTIVE_SCHOOL_ROLE_REQUIRED'; end if;
 
   select coalesce(jsonb_agg(jsonb_build_object('id',c.id,'name',c.name) order by c.name),'[]'::jsonb)
-  into v_classes from public.classes c where c.school_id=p_school_id;
+  into v_classes from public.classes c where c.school_id=v_school_id;
 
   select coalesce(jsonb_agg(jsonb_build_object('id',sc.id,'name',sc.name) order by sc.name),'[]'::jsonb)
   into v_subjects from public.subject_catalog sc;
 
-  return jsonb_build_object('classes',v_classes,'subjects',v_subjects);
+  return jsonb_build_object('school_id',v_school_id,'classes',v_classes,'subjects',v_subjects);
 end;
 $function$;
 
