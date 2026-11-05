@@ -394,6 +394,47 @@ begin
 end;
 $function$;
 
+create or replace function public.get_cbt_candidate_result(p_exam_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'pg_catalog', 'public', 'auth'
+as $function$
+declare
+  v_student_id uuid;
+  v_result jsonb;
+begin
+  if auth.uid() is null then raise exception 'Authentication required'; end if;
+  select cp.student_id into v_student_id
+  from public.cbt_public_candidate_profiles cp where cp.user_id=auth.uid();
+
+  if v_student_id is null then
+    select s.id into v_student_id from public.students s
+    where s.user_id=auth.uid()
+    order by s.created_at nulls last,s.id limit 1;
+  end if;
+  if v_student_id is null then raise exception 'Candidate identity not found'; end if;
+
+  select jsonb_build_object(
+    'exam',jsonb_build_object('id',e.id,'title',e.title,'subjectName',sc.name,
+      'className',c.name,'totalMarks',e.total_marks,'passMark',e.pass_mark),
+    'result',jsonb_build_object('id',r.id,'score',r.score,'maxScore',r.total_marks,
+      'percentage',r.percentage,'grade',r.grade,'status',
+      case when r.score>=coalesce(e.pass_mark,0) then 'Passed' else 'Failed' end,
+      'submittedAt',a.submitted_at)
+  ) into v_result
+  from public.cbt_results_summary r
+  join public.cbt_exams e on e.id=r.exam_id
+  join public.subject_catalog sc on sc.id=e.subject_id
+  join public.classes c on c.id=e.class_id
+  left join public.cbt_attempts a on a.id=r.attempt_id
+  where r.exam_id=p_exam_id and r.student_id=v_student_id;
+
+  if v_result is null then raise exception 'CBT_RESULT_NOT_FOUND_FOR_CANDIDATE'; end if;
+  return v_result;
+end;
+$function$;
+
 create or replace function public.cbt_public_register_candidate(
   p_first_name text default null,
   p_last_name text default null
@@ -723,6 +764,9 @@ grant execute on function public.update_cbt_question(uuid,text,integer,integer,j
 
 revoke all on function public.delete_cbt_question(uuid) from public, anon;
 grant execute on function public.delete_cbt_question(uuid) to authenticated;
+
+revoke all on function public.get_cbt_candidate_result(uuid) from public, anon;
+grant execute on function public.get_cbt_candidate_result(uuid) to authenticated;
 
 revoke all on function public.get_cbt_attempt_state(uuid) from public, anon;
 grant execute on function public.get_cbt_attempt_state(uuid) to authenticated;
