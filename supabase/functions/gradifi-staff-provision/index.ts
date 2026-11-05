@@ -65,7 +65,7 @@ serve(async (req: Request) => {
     if (!["teacher", "vice_principal", "bursar"].includes(role)) {
       return json(400, { success: false, error: "Unsupported staff role." }, allowedOrigin);
     }
-    if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (name.length < 2 || phone.length < 7 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json(400, { success: false, error: "A valid staff name, email and phone number are required." }, allowedOrigin);
     }
 
