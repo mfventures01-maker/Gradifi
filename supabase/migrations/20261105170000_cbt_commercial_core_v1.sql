@@ -134,6 +134,36 @@ as $function$
     );
 $function$;
 
+create or replace function public.get_cbt_authoring_catalog(p_school_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'pg_catalog', 'public', 'auth'
+as $function$
+declare
+  v_classes jsonb;
+  v_subjects jsonb;
+begin
+  if auth.uid() is null then raise exception 'Authentication required'; end if;
+  if not exists (
+    select 1 from public.gradifi_school_memberships m
+    join public.schools s on s.id=m.school_id
+    where m.user_id=auth.uid() and m.school_id=p_school_id
+      and m.status='active'
+      and m.member_role in ('principal','school_admin','teacher','exam_officer')
+      and s.provisioning_status='active'
+  ) then raise exception 'ACCESS_DENIED: ACTIVE_SCHOOL_ROLE_REQUIRED'; end if;
+
+  select coalesce(jsonb_agg(jsonb_build_object('id',c.id,'name',c.name) order by c.name),'[]'::jsonb)
+  into v_classes from public.classes c where c.school_id=p_school_id;
+
+  select coalesce(jsonb_agg(jsonb_build_object('id',sc.id,'name',sc.name) order by sc.name),'[]'::jsonb)
+  into v_subjects from public.subject_catalog sc;
+
+  return jsonb_build_object('classes',v_classes,'subjects',v_subjects);
+end;
+$function$;
+
 create or replace function public.create_cbt_exam_v3(
   p_school_id uuid,
   p_class_id uuid,
@@ -619,6 +649,9 @@ begin
   return jsonb_build_object('exam',v_exam,'results',v_results,'summary',v_summary);
 end;
 $function$;
+
+revoke all on function public.get_cbt_authoring_catalog(uuid) from public, anon;
+grant execute on function public.get_cbt_authoring_catalog(uuid) to authenticated;
 
 revoke all on function public.create_cbt_exam_v3(uuid,uuid,uuid,uuid,text,text,integer,integer,timestamptz) from public, anon;
 grant execute on function public.create_cbt_exam_v3(uuid,uuid,uuid,uuid,text,text,integer,integer,timestamptz) to authenticated;
