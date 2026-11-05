@@ -57,18 +57,23 @@ export const CBTExamRunner: React.FC = () => {
         let attemptId = '';
         let sessionId = '';
         let deadlineAt = '';
+        let startTime = new Date().toISOString();
+        let attemptNumber = active.attempt_number || 1;
         let state = '';
 
         if (active.active && active.attempt_id && active.session_id) {
           attemptId = active.attempt_id;
           sessionId = active.session_id;
           deadlineAt = active.deadline_at || '';
+          startTime = active.start_time || startTime;
           state = active.session_state || '';
         } else {
           const created = await cbtService.createAttempt(examId);
           attemptId = created.attempt_id;
           sessionId = created.session_id;
           deadlineAt = created.deadline_at;
+          startTime = created.start_time;
+          attemptNumber = created.attempt_number;
           state = 'INITIALIZING';
           await cbtService.transitionSession(sessionId, 'AUTHENTICATED');
           state = 'AUTHENTICATED';
@@ -114,9 +119,9 @@ export const CBTExamRunner: React.FC = () => {
         setAttempt({
           success: true,
           attempt_id: attemptId,
-          attempt_number: active.attempt_number || 1,
+          attempt_number: attemptNumber,
           session_id: sessionId,
-          start_time: active.start_time || new Date().toISOString(),
+          start_time: startTime,
           deadline_at: deadlineAt,
           status: active.status || 'in_progress',
           snapshot_questions: paper.length,
