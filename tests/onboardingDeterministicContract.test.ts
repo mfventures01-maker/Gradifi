@@ -25,7 +25,9 @@ describe('Gradifi deterministic onboarding contract', () => {
     expect(migration).toContain('insert into public.classes');
     expect(migration).toContain('insert into public.subject_catalog');
     expect(migration).toContain('insert into public.class_subjects');
-    expect(migration).toContain('returning id into v_class_id');
+    expect(migration).toContain('add column if not exists state text');
+    expect(migration).toContain('add column if not exists lga text');
+    expect(migration).toContain('select c.id into v_class_id');
   });
 
   it('exposes only authenticated tenant-scoped onboarding RPCs', () => {
