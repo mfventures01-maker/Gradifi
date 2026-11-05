@@ -143,6 +143,36 @@ export const cbtService = {
     return result.questions;
   },
 
+  async getCandidateExam(examId: string): Promise<{
+    id: string; title: string; description: string | null; duration_minutes: number;
+    total_marks: number; pass_mark: number | null; start_time: string | null; end_time: string | null; status: string | null;
+  }> {
+    const { data, error } = await supabase.from('cbt_exams').select(
+      'id,title,description,duration_minutes,total_marks,pass_mark,start_time,end_time,status'
+    ).eq('id', examId).single();
+    return unwrap(data, error);
+  },
+
+  async getActiveAttempt(examId: string): Promise<{
+    active: boolean; attempt_id?: string; attempt_number?: number; session_id?: string;
+    start_time?: string; deadline_at?: string; status?: string; session_state?: string; current_question?: number;
+  }> {
+    const { data, error } = await supabase.rpc('get_cbt_active_attempt' as any, {
+      p_exam_id: examId,
+    } as any);
+    return unwrap(data, error);
+  },
+
+  async saveSessionSnapshot(sessionId: string, currentQuestion: number, remainingTime: number, state: string): Promise<void> {
+    const { error } = await (supabase as any).from('cbt_session_snapshots').insert({
+      session_id: sessionId,
+      current_question: currentQuestion,
+      remaining_time: Math.max(0, Math.floor(remainingTime)),
+      state,
+    });
+    if (error) throw error;
+  },
+
   async createAttempt(examId: string): Promise<CbtAttemptStart> {
     const { data, error } = await supabase.rpc('create_cbt_attempt' as any, { p_exam_id: examId } as any);
     return unwrap<CbtAttemptStart>(data, error);
