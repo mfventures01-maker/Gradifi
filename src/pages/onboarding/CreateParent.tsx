@@ -42,6 +42,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
         const rows=await onboardingService.getSchoolStudents(schoolId);
         if(mounted){
           setStudents(rows);
+          if(rows.length===0)setError('No persisted students are available. Enroll a student before linking a parent.');
           if(preSelectedStudentId)setSelectedStudentId(preSelectedStudentId);
           else if(rows.length>0)setSelectedStudentId(rows[0].id);
         }
@@ -71,7 +72,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
   if(success)return <section className="mx-auto max-w-xl rounded-2xl border bg-white p-6">
     <CheckCircle2 className="h-10 w-10 text-emerald-600"/>
     <h1 className="mt-3 text-2xl font-bold">{success.is_existing?'Parent linked':'Parent account created'}</h1>
-    <p className="mt-1 text-sm text-slate-600">The server confirmed the parent identity and student relationship. The invitation was sent to {success.email}.</p>
+    <p className="mt-1 text-sm text-slate-600">The server confirmed the parent identity and student relationship. {success.is_existing?'The existing parent account has been linked and its PIN reset.':'A new account invitation was sent to '+success.email+'.'}</p>
     <div className="mt-5 space-y-3 rounded-xl bg-slate-50 p-4 text-sm">
       <p><span className="text-slate-500">Parent:</span> <strong>{success.parent_name}</strong></p>
       <p><span className="text-slate-500">Phone:</span> {success.phone}</p>
