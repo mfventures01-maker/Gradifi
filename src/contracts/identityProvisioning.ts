@@ -122,7 +122,8 @@ export function isProvisionIdentityResponse(
     && typeof credential.profile_id === 'string'
     && typeof credential.auth_user_id === 'string'
     && typeof credential.login_identifier === 'string'
-    && /^\d{4,6}$/.test(credential.temporary_pin || '')
+    && typeof credential.created_at === 'string'
+    && /^(?:\d{4}|\d{6})$/.test(credential.temporary_pin || '')
     && credential.requires_pin_change === true;
 }
 
