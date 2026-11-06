@@ -232,7 +232,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="text-slate-500">SSoT Verified Status:</span>
               <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Certified Active
+                <CheckCircle2 className="w-3.5 h-3.5" /> Provisioned
               </span>
             </div>
           </div>
@@ -284,7 +284,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             {/* Field 2: Email */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Official Email Address <span className="text-rose-500">*</span>
+                Official Email Address (Optional)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
