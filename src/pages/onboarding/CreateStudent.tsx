@@ -174,7 +174,7 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
           </div>
 
           <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-full mb-2">
-            Student Matriculation Verified
+            Student Identity Provisioned
           </span>
 
           <h2 className="text-2xl font-bold text-slate-900">
