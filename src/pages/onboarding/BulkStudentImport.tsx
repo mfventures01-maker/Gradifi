@@ -15,6 +15,50 @@ import {
   X
 } from 'lucide-react';
 
+function parseCsvRows(input: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = '';
+  let quoted = false;
+  for (let i = 0; i < input.length; i += 1) {
+    const char = input[i];
+    if (char === '"') {
+      if (quoted && input[i + 1] === '"') {
+        field += '"';
+        i += 1;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (char === ',' && !quoted) {
+      row.push(field.trim());
+      field = '';
+    } else if ((char === '\n' || char === '\r') && !quoted) {
+      if (char === '\r' && input[i + 1] === '\n') i += 1;
+      row.push(field.trim());
+      if (row.some((value) => value.length > 0)) rows.push(row);
+      row = [];
+      field = '';
+    } else {
+      field += char;
+    }
+  }
+  if (quoted) throw new Error('CSV contains an unterminated quoted field.');
+  row.push(field.trim());
+  if (row.some((value) => value.length > 0)) rows.push(row);
+  return rows;
+}
+
+function rowsToObjects(rows: string[][]): Array<Record<string, string>> {
+  if (rows.length < 2) throw new Error('CSV must contain a header and at least one data row.');
+  const headers = rows[0].map((header) => header.trim().toLowerCase());
+  if (new Set(headers).size !== headers.length) throw new Error('CSV contains duplicate column headers.');
+  return rows.slice(1).map((values) => {
+    const row: Record<string, string> = {};
+    headers.forEach((header, index) => { row[header] = values[index] || ''; });
+    return row;
+  });
+}
+
 interface BulkStudentImportProps {
   schoolId?: string;
   institutionId?: string;
@@ -86,15 +130,13 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
     reader.onload = (event) => {
       try {
         const text = event.target?.result as string;
-        const lines = text.split('\n').filter(line => line.trim());
-        if (lines.length < 2) {
-          setError('File is empty or has no data rows');
+        const parsedRows = parseCsvRows(text);
+        if (parsedRows.length - 1 > 500) {
+          setError(`File has ${parsedRows.length - 1} rows. Maximum allowed is 500 students per import.`);
           return;
         }
-
-        // Parse headers
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-        const requiredHeaders = ['first_name', 'last_name', 'class_name'];
+        const headers = parsedRows[0].map((header) => header.trim().toLowerCase());
+        const requiredHeaders = ['first_name', 'last_name', 'gender', 'class_name'];
         const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
         
         if (missingHeaders.length > 0) {
@@ -103,14 +145,7 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
         }
 
         // Parse data rows (limit to 5 for preview)
-        const dataRows = lines.slice(1, 6).map(line => {
-          const values = line.split(',').map(v => v.trim());
-          const row: any = {};
-          headers.forEach((h, i) => {
-            row[h] = values[i] || '';
-          });
-          return row;
-        });
+        const dataRows = rowsToObjects(parsedRows).slice(0, 5);
 
         setPreviewData(dataRows);
 
@@ -144,23 +179,16 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
         reader.readAsText(file);
       });
 
-      const lines = fileContent.split('\n').filter(line => line.trim());
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-      
-      // Parse all data rows
-      const students = lines.slice(1).map(line => {
-        const values = line.split(',').map(v => v.trim());
-        const row: any = {};
-        headers.forEach((h, i) => {
-          row[h] = values[i] || '';
-        });
-        return row;
-      }).filter(s => s.first_name && s.last_name && s.class_name);
-
-      if (students.length === 0) {
-        setError('No valid student data found');
-        setLoading(false);
-        return;
+      const parsedRows = parseCsvRows(fileContent);
+      const students = rowsToObjects(parsedRows);
+      if (students.length > 500) throw new Error('Maximum 500 students per import.');
+      const invalidRow = students.findIndex((student) =>
+        !student.first_name?.trim() || !student.last_name?.trim()
+        || !student.class_name?.trim()
+        || !['male', 'female'].includes(String(student.gender || '').trim().toLowerCase())
+      );
+      if (invalidRow >= 0) {
+        throw new Error(`Row ${invalidRow + 2}: first name, last name, valid gender and class name are required. No rows were submitted.`);
       }
 
       if (!schoolId) throw new Error('A verified school ID is required before importing students.');
