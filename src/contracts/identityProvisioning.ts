@@ -24,6 +24,7 @@ export interface ProvisionStudentDetails {
 }
 
 export interface ProvisionIdentityRequest {
+  operation: 'create';
   request_id: string;
   actor_type: SchoolActorType;
   school_id: string;
@@ -35,6 +36,7 @@ export interface ProvisionIdentityRequest {
 }
 
 export interface BulkProvisionStudentsRequest {
+  operation: 'bulk_students';
   request_id: string;
   school_id: string;
   students: Array<{
