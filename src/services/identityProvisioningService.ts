@@ -58,7 +58,8 @@ export const identityProvisioningService = {
       if (row.success) {
         if (!row.credential || !/^\d{4}$/.test(row.credential.temporary_pin)
           || !row.credential.actor_id || !row.credential.auth_user_id
-          || !row.credential.profile_id || !row.credential.login_identifier) {
+          || !row.credential.profile_id || !row.credential.login_identifier
+          || !row.credential.created_at) {
           throw new Error('Bulk provisioning gateway returned an incomplete successful credential.');
         }
         successfulRows += 1;
