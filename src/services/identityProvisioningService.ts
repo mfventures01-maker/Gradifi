@@ -34,7 +34,7 @@ export const identityProvisioningService = {
     input: BulkProvisionStudentsRequest,
   ): Promise<BulkProvisionStudentsResponse> {
     assertConfigured();
-    const { data, error } = await supabase.functions.invoke('provision-identities-bulk', {
+    const { data, error } = await supabase.functions.invoke('provision-identity', {
       body: input,
     });
     if (error) throw new Error(error.message || 'Bulk student provisioning failed.');
