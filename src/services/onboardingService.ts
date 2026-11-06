@@ -257,7 +257,7 @@ export const onboardingService = {
       student_id: credential.actor_id,
       student_number: credential.login_identifier,
       class_id: input.class_id,
-      enrolled_at: new Date().toISOString(),
+      enrolled_at: credential.created_at,
       success: true,
       login_identifier: credential.login_identifier,
       temporary_pin: credential.temporary_pin,
