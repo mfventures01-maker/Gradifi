@@ -41,10 +41,36 @@ export const identityProvisioningService = {
     if (!data || typeof data !== 'object'
       || !Array.isArray(data.results)
       || data.total_submitted !== input.students.length
+      || data.results.length !== input.students.length
       || data.success_count + data.failed_count !== data.total_submitted) {
       throw new Error('Bulk provisioning gateway returned an invalid or incomplete result.');
     }
-    return data as BulkProvisionStudentsResponse;
+    const result = data as BulkProvisionStudentsResponse;
+    const submittedIds = new Set(input.students.map((student) => student.row_id));
+    const returnedIds = new Set<string>();
+    let successfulRows = 0;
+    let failedRows = 0;
+    for (const row of result.results) {
+      if (!submittedIds.has(row.row_id) || returnedIds.has(row.row_id)) {
+        throw new Error('Bulk provisioning gateway returned duplicate or unknown row identifiers.');
+      }
+      returnedIds.add(row.row_id);
+      if (row.success) {
+        if (!row.credential || !/^\\d{4}$/.test(row.credential.temporary_pin)
+          || !row.credential.actor_id || !row.credential.auth_user_id
+          || !row.credential.profile_id || !row.credential.login_identifier) {
+          throw new Error('Bulk provisioning gateway returned an incomplete successful credential.');
+        }
+        successfulRows += 1;
+      } else {
+        failedRows += 1;
+      }
+    }
+    if (successfulRows !== result.success_count || failedRows !== result.failed_count
+      || returnedIds.size !== submittedIds.size) {
+      throw new Error('Bulk provisioning gateway counts do not match its row outcomes.');
+    }
+    return result;
   },
 
   async loginWithPin(input: PinLoginRequest) {
