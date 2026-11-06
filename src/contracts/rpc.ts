@@ -85,3 +85,19 @@ export interface ReconciliationReport {
   is_valid_for_launch: boolean;
   validation_errors: string[];
 }
+
+
+// Canonical identity provisioning contract. New onboarding code must use this
+// gateway contract instead of legacy create_teacher/enroll_student RPC shapes.
+export type {
+  SchoolActorType,
+  ProvisionIdentityRequest,
+  ProvisionIdentityResponse,
+  ProvisionedCredential,
+  BulkProvisionStudentsRequest,
+  BulkProvisionStudentsResponse,
+  PinLoginRequest,
+  PinLoginResponse,
+  ChangePinRequest,
+  IdentityContractError,
+} from './identityProvisioning';
