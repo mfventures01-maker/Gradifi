@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { identityProvisioningService } from '../../services/identityProvisioningService';
 import { 
   Upload, 
   Download, 
@@ -163,58 +163,66 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
         return;
       }
 
-      // Call RPC with fallback for offline/demo mode
-      let resultData: any = null;
-      try {
-        const { data, error } = await supabase.rpc('bulk_enroll_students' as any, {
-          p_students: students,
-          p_school_id: schoolId || null,
-          p_institution_id: institutionId || null
-        });
-
-        if (error || !data) {
-          throw error || new Error('No data returned from RPC');
+      if (!schoolId) throw new Error('A verified school ID is required before importing students.');
+      const normalizedStudents = students.map((student: any, index: number) => {
+        const gender = String(student.gender || '').trim().toLowerCase();
+        if (gender !== 'male' && gender !== 'female') {
+          throw new Error(`Row ${index + 2}: gender must be Male or Female.`);
         }
-        resultData = data;
-      } catch (rpcErr: any) {
-        console.warn('RPC bulk_enroll_students fallback execution:', rpcErr?.message || rpcErr);
-        const results: ImportResult[] = students.map((s, idx) => {
-          if (s.class_name && s.class_name.toLowerCase().includes('invalid')) {
-            return {
-              status: 'failed',
-              first_name: s.first_name,
-              last_name: s.last_name,
-              class: s.class_name,
-              error: `Class "${s.class_name}" not found`
-            };
-          }
-          return {
-            status: 'success',
-            student_id: `std_bulk_${Date.now()}_${idx}`,
-            student_number: `GRD/2026/${1000 + idx}`,
-            pin: String(1000 + Math.floor(Math.random() * 9000)),
-            first_name: s.first_name,
-            last_name: s.last_name,
-            class: s.class_name
-          };
-        });
-
-        const successCount = results.filter(r => r.status === 'success').length;
-        const failedCount = results.filter(r => r.status === 'failed').length;
-
-        resultData = {
-          total_submitted: students.length,
-          success_count: successCount,
-          failed_count: failedCount,
-          results: results
+        return {
+          row_id: `row-${index + 1}`,
+          first_name: String(student.first_name).trim(),
+          last_name: String(student.last_name).trim(),
+          gender: gender as 'male' | 'female',
+          date_of_birth: student.date_of_birth ? String(student.date_of_birth).trim() : null,
+          class_name: String(student.class_name).trim(),
         };
-      }
+      });
 
-      setSummary({
+      const resultData = await identityProvisioningService.bulkProvisionStudents({
+        operation: 'bulk_students',
+        request_id: crypto.randomUUID(),
+        school_id: schoolId,
+        students: normalizedStudents,
+      });
+
+      const results: ImportResult[] = resultData.results.map((row) => {
+        const source = normalizedStudents.find((student) => student.row_id === row.row_id);
+        if (!source) {
+          return { status: 'failed', error: 'Gateway returned an unknown row identifier.' };
+        }
+        if (!row.success || !row.credential) {
+          return {
+            status: 'failed',
+            first_name: source.first_name,
+            last_name: source.last_name,
+            class: source.class_name,
+            error: row.error_message || row.error_code || 'Provisioning failed.',
+          };
+        }
+        return {
+          status: 'success',
+          student_id: row.credential.actor_id,
+          student_number: row.credential.login_identifier,
+          pin: row.credential.temporary_pin,
+          first_name: source.first_name,
+          last_name: source.last_name,
+          class: source.class_name,
+        };
+      });
+
+      const summaryData: ImportSummary = {
         total_submitted: resultData.total_submitted,
         success_count: resultData.success_count,
         failed_count: resultData.failed_count,
-        results: resultData.results || []
+        results,
+      };
+
+      setSummary({
+        total_submitted: summaryData.total_submitted,
+        success_count: summaryData.success_count,
+        failed_count: summaryData.failed_count,
+        results: summaryData.results
       });
 
       if (onSuccess && resultData.success_count > 0) onSuccess();
