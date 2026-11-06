@@ -64,5 +64,4 @@ export const studentService = {
       enrolled_at: now,
     } as Student;
   },
-  },
 };
