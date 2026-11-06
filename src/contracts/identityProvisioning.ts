@@ -57,6 +57,7 @@ export interface ProvisionedCredential {
   login_identifier: string;
   temporary_pin: string;
   requires_pin_change: true;
+  created_at: string;
 }
 
 export interface ProvisionIdentityResponse {
