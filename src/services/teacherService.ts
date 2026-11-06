@@ -6,6 +6,7 @@
 import { supabase } from '../lib/supabase';
 import { Teacher } from '../contracts/schema';
 import { CreateTeacherParams } from '../contracts/rpc';
+import { identityProvisioningService } from './identityProvisioningService';
 
 export const teacherService = {
   /**
@@ -26,64 +27,28 @@ export const teacherService = {
    * Create teacher profile and assignments via verified RPC
    */
   async createTeacher(params: CreateTeacherParams): Promise<Teacher> {
-    const { data, error } = await supabase.rpc('create_teacher', {
-      institution_id: params.institution_id,
+    if (!params.school_id) throw new Error('A verified school ID is required.');
+    const result = await identityProvisioningService.provision({
+      operation: 'create',
+      request_id: crypto.randomUUID(),
+      actor_type: 'teacher',
       school_id: params.school_id,
-      name: params.name,
-      email: params.email,
-      phone: params.phone,
-      class_subject_ids: params.class_subject_ids,
+      full_name: params.name.trim(),
+      email: params.email || null,
+      phone: params.phone || null,
+      teacher: { class_subject_ids: params.class_subject_ids || [] },
     });
-
-    if (error || !data) {
-      // Direct table insert fallback if authorized
-      const { data: newTeacher, error: insertError } = await supabase
-        .from('teachers')
-        .insert({
-          institution_id: params.institution_id,
-          school_id: params.school_id,
-          name: params.name,
-          email: params.email,
-          phone: params.phone || null,
-        } as any)
-        .select()
-        .single();
-
-      if (insertError || !newTeacher) throw (insertError || new Error('Failed to create teacher'));
-      const typedTeacher = newTeacher as Teacher;
-
-      // Optional subject assignments
-      if (params.class_subject_ids && params.class_subject_ids.length > 0) {
-        const assignments = params.class_subject_ids.map(csId => ({
-          teacher_id: typedTeacher.id,
-          class_subject_id: csId,
-          school_id: params.school_id,
-        }));
-        await supabase.from('teacher_subject_assignments').insert(assignments as any);
-      }
-
-      return typedTeacher;
-    }
-
-    const res = data as {
-      teacher_id: string;
-      school_id: string;
-      institution_id: string;
-      name: string;
-      email: string;
-      phone: string;
-    };
-
+    const credential = result.credential;
     return {
-      id: res.teacher_id,
-      profile_id: null,
-      school_id: res.school_id,
-      institution_id: res.institution_id,
-      name: res.name,
-      email: res.email,
-      phone: res.phone || null,
-      created_at: new Date().toISOString(),
-    };
+      id: credential.actor_id,
+      user_id: credential.auth_user_id,
+      profile_id: credential.profile_id,
+      school_id: params.school_id,
+      institution_id: params.institution_id,
+      name: params.name,
+      email: params.email || null,
+      phone: params.phone || null,
+    } as Teacher;
   },
 
   async getDashboardStats(teacherId?: string) {
