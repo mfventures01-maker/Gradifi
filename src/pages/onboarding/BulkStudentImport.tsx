@@ -281,6 +281,22 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
           </div>
         </div>
 
+        {summary.results.some((r) => r.status === 'success') && (
+          <div className="mb-4 max-h-64 overflow-y-auto">
+            <p className="text-xs font-medium text-emerald-700 mb-2">Provisioned credentials (display once and distribute securely):</p>
+            <div className="space-y-2">
+              {summary.results.filter((r) => r.status === 'success').map((result, index) => (
+                <div key={result.student_id || index} className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs">
+                  <p className="font-semibold text-slate-800">{result.first_name} {result.last_name} · {result.class}</p>
+                  <p>Student number: <span className="font-mono">{result.student_number}</span></p>
+                  <p>Temporary PIN: <span className="font-mono font-bold">{result.pin}</span></p>
+                  <p className="text-amber-700">Must change PIN at first login.</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {summary.results.some((r: any) => r.status === 'failed') && (
           <div className="mb-4 max-h-48 overflow-y-auto">
             <p className="text-xs font-medium text-rose-700 mb-2">Failed Rows:</p>
