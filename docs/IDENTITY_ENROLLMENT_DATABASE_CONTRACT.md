@@ -50,7 +50,7 @@ Additional catalog inspection confirmed:
 - `identity_actors.actor_type` already permits `vice_principal`, `bursar`, `teacher` and `student`.
 - `class_subjects` has FKs to `classes`, `schools` and `subject_catalog`.
 - `teachers.user_id` is NOT NULL. `students.user_id` is nullable in the present schema.
-- The inspected schema does not expose a direct FK from `teachers.user_id`, `students.user_id`, `profiles.user_id`, `identity_actors.auth_user_id`, or `gradifi_school_memberships.user_id` to `auth.users.id`. The gateway must still verify Auth IDs through Supabase Auth Admin and use the intended FK/trigger model after migration review.
+- The catalog inventory reports user-link constraints for `profiles.user_id`, `identity_actors.auth_user_id`, and `gradifi_school_memberships.user_id`, but the referenced schemas/targets were not conclusively resolved in the returned information-schema evidence. No equivalent user FK was reported for `teachers.user_id` or `students.user_id`. Resolve the exact FK targets from `pg_constraint` before drafting the migration. The gateway must still verify Auth IDs through Supabase Auth Admin.
 
 ## 3. Canonical identity invariant
 
