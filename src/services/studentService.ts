@@ -6,6 +6,7 @@
 import { supabase } from '../lib/supabase';
 import { Student } from '../contracts/schema';
 import { EnrollStudentParams } from '../contracts/rpc';
+import { identityProvisioningService } from './identityProvisioningService';
 
 export const studentService = {
   /**
@@ -30,64 +31,38 @@ export const studentService = {
    * Enroll a new student with backend authoritative student number generation
    */
   async enrollStudent(params: EnrollStudentParams): Promise<Student> {
-    const { data, error } = await supabase.rpc('enroll_student', {
-      institution_id: params.institution_id,
+    if (!params.school_id) throw new Error('A verified school ID is required.');
+    if (!params.class_id) throw new Error('A real class ID is required.');
+    const result = await identityProvisioningService.provision({
+      operation: 'create',
+      request_id: crypto.randomUUID(),
+      actor_type: 'student',
       school_id: params.school_id,
+      full_name: `${params.first_name.trim()} ${params.last_name.trim()}`,
+      student: {
+        class_id: params.class_id,
+        first_name: params.first_name.trim(),
+        last_name: params.last_name.trim(),
+        gender: params.gender,
+        date_of_birth: params.date_of_birth || null,
+      },
+    });
+    const credential = result.credential;
+    const now = new Date().toISOString();
+    return {
+      id: credential.actor_id,
+      user_id: credential.auth_user_id,
+      school_id: params.school_id,
+      institution_id: params.institution_id,
       class_id: params.class_id,
+      student_number: credential.login_identifier,
       first_name: params.first_name,
       last_name: params.last_name,
       gender: params.gender,
-      date_of_birth: params.date_of_birth,
-    });
-
-    if (error || !data) {
-      // Direct table insert fallback with standard ID structure
-      const countRes = await supabase
-        .from('students')
-        .select('*', { count: 'exact', head: true })
-        .eq('school_id', params.school_id);
-      
-      const nextNum = (countRes.count || 0) + 101;
-      const studentNumber = `GRD/2026/${String(nextNum).padStart(3, '0')}`;
-
-      const { data: newStudent, error: insertError } = await supabase
-        .from('students')
-        .insert({
-          institution_id: params.institution_id,
-          school_id: params.school_id,
-          class_id: params.class_id,
-          student_number: studentNumber,
-          first_name: params.first_name,
-          last_name: params.last_name,
-          gender: (params.gender as 'male' | 'female') || 'male',
-          date_of_birth: params.date_of_birth || null,
-        } as any)
-        .select()
-        .single();
-
-      if (insertError || !newStudent) throw (insertError || new Error('Failed to enroll student'));
-      return newStudent as Student;
-    }
-
-    const res = data as {
-      student_id: string;
-      student_number: string;
-      class_id: string;
-      enrolled_at: string;
-    };
-
-    return {
-      id: res.student_id,
-      school_id: params.school_id,
-      institution_id: params.institution_id,
-      class_id: res.class_id,
-      student_number: res.student_number,
-      first_name: params.first_name,
-      last_name: params.last_name,
-      gender: (params.gender as 'male' | 'female') || 'male',
       date_of_birth: params.date_of_birth || null,
-      enrolled_at: res.enrolled_at,
-      created_at: res.enrolled_at,
-    };
+      created_at: now,
+      enrolled_at: now,
+    } as Student;
+  },
   },
 };
