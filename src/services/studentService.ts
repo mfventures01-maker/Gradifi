@@ -48,7 +48,7 @@ export const studentService = {
       },
     });
     const credential = result.credential;
-    const now = new Date().toISOString();
+    const createdAt = credential.created_at;
     return {
       id: credential.actor_id,
       user_id: credential.auth_user_id,
@@ -60,8 +60,8 @@ export const studentService = {
       last_name: params.last_name,
       gender: params.gender,
       date_of_birth: params.date_of_birth || null,
-      created_at: now,
-      enrolled_at: now,
+      created_at: createdAt,
+      enrolled_at: createdAt,
     } as Student;
   },
 };
