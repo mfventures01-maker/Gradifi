@@ -149,11 +149,6 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
 
         setPreviewData(dataRows);
 
-        // Check total rows
-        const totalRows = lines.length - 1;
-        if (totalRows > 500) {
-          setError(`File has ${totalRows} rows. Maximum allowed is 500 students per import.`);
-        }
       } catch (err) {
         setError('Failed to parse file. Please ensure it is a valid CSV file.');
       }
