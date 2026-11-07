@@ -119,7 +119,7 @@ begin
       raise exception 'CROSS_SCHOOL_AUTHORITY_DENIED';
     end if;
   elsif p_expected_authority_role = 'dean' then
-    v_expected_actor_roles := array['hod','adviser','lecturer'];
+    v_expected_actor_roles := array['vice_principal','bursar','teacher','student','parent','hod','adviser','lecturer'];
     -- Higher-education actors remain institution-bound; Lecturer may also carry a campus school_id.
   else
     raise exception 'UNSUPPORTED_AUTHORITY_ROLE';
