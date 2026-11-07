@@ -4,6 +4,7 @@ begin;
 
 create extension if not exists pgcrypto;
 create sequence if not exists public.actor_login_id_seq;
+create sequence if not exists public.student_number_seq;
 
 alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles add constraint profiles_role_check
@@ -119,7 +120,7 @@ begin
       nullif(trim(p_email), ''), nullif(trim(p_phone), ''))
     returning id into v_actor_record_id;
   elsif p_actor_type = 'student' then
-    v_student_number := v_login_id;
+    v_student_number := 'GRD/' || to_char(now(), 'YYYY') || '/' || lpad(nextval('public.student_number_seq')::text, 6, '0');
     insert into public.students(
       user_id, institution_id, school_id, class_id, student_number,
       first_name, last_name, gender, date_of_birth, email, phone
