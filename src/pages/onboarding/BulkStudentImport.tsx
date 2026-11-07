@@ -164,6 +164,7 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
         setLoading(false);
         return;
       }
+      if (students.length > 500) throw new Error('Maximum 500 students per import');
 
       if (!schoolId || !institutionId) throw new Error('A real school and institution must be selected before importing students.');
       const { data: classes, error: classError } = await supabase
@@ -272,6 +273,27 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
             </p>
           </div>
         </div>
+
+        {summary.results.some((r: any) => r.status === 'success') && (
+          <div className="mb-4 max-h-72 overflow-y-auto rounded-xl border border-emerald-200">
+            <p className="sticky top-0 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">Issued student credentials</p>
+            <div className="divide-y divide-slate-100">
+              {summary.results.filter((r: any) => r.status === 'success').map((result: ImportResult, index: number) => (
+                <div key={result.student_id || index} className="grid grid-cols-2 gap-2 px-3 py-2 text-xs">
+                  <div>
+                    <p className="font-medium text-slate-800">{result.first_name} {result.last_name}</p>
+                    <p className="font-mono text-slate-500">{result.login_id}</p>
+                    <p className="text-slate-400">Student #: {result.student_number}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-slate-400">Temporary PIN</p>
+                    <p className="font-mono font-bold text-emerald-700">{result.pin}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {summary.results.some((r: any) => r.status === 'failed') && (
           <div className="mb-4 max-h-48 overflow-y-auto">
@@ -452,7 +474,8 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
               <li>Maximum 500 students per import</li>
               <li>Required columns: first_name, last_name, class_name</li>
               <li>Class names must match existing classes (e.g., "JSS 1")</li>
-              <li>Each student receives a unique 4-digit PIN for login</li>
+              <li>Each student receives a system-generated login ID and a temporary 4-digit PIN</li>
+              <li>Save or securely distribute the issued credentials before leaving the import summary</li>
             </ul>
           </div>
         </div>
