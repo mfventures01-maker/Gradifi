@@ -11,7 +11,7 @@ alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles add constraint profiles_role_check
   check (role = any (array[
     'principal_admin','vice_principal','bursar','teacher','student','parent',
-    'examiner','individual','admin'
+    'examiner','individual','admin','dean','hod','adviser','lecturer'
   ]));
 
 -- Retire every historical onboarding overload. Frontend callers must use actor-onboarding.
@@ -47,7 +47,14 @@ create or replace function public.complete_actor_onboarding(
   p_gender text default null,
   p_date_of_birth date default null,
   p_relationship text default 'Parent',
-  p_is_primary boolean default true
+  p_is_primary boolean default true,
+  p_faculty_id uuid default null,
+  p_department_id uuid default null,
+  p_title text default null,
+  p_rank text default null,
+  p_specialization text default null,
+  p_is_graduate_student_supervisor boolean default false,
+  p_max_students integer default null
 )
 returns jsonb
 language plpgsql
@@ -65,7 +72,7 @@ declare
   v_effective_school_id uuid := p_school_id;
 begin
   if p_auth_user_id is null then raise exception 'AUTH_USER_REQUIRED'; end if;
-  if p_actor_type not in ('vice_principal','bursar','teacher','student','parent') then
+  if p_actor_type not in ('vice_principal','bursar','teacher','student','parent','dean','hod','adviser','lecturer') then
     raise exception 'UNSUPPORTED_ACTOR_TYPE';
   end if;
   if nullif(trim(p_full_name), '') is null then raise exception 'FULL_NAME_REQUIRED'; end if;
@@ -79,7 +86,7 @@ begin
     select 1 from public.schools s where s.id = p_school_id and s.institution_id = p_institution_id
   ) then raise exception 'SCHOOL_INSTITUTION_MISMATCH'; end if;
 
-  if p_actor_type <> 'parent' and p_school_id is null then raise exception 'SCHOOL_REQUIRED'; end if;
+  if p_actor_type in ('vice_principal','bursar','teacher','student','lecturer') and p_school_id is null then raise exception 'SCHOOL_REQUIRED'; end if;
 
   v_prefix := case p_actor_type
     when 'vice_principal' then 'VP'
@@ -87,6 +94,10 @@ begin
     when 'teacher' then 'TCH'
     when 'student' then 'STU'
     when 'parent' then 'PAR'
+    when 'dean' then 'DEAN'
+    when 'hod' then 'HOD'
+    when 'adviser' then 'ADV'
+    when 'lecturer' then 'LEC'
   end;
   v_login_id := v_prefix || '-' || lpad(nextval('public.actor_login_id_seq')::text, 8, '0');
 
@@ -154,6 +165,55 @@ begin
       nullif(btrim(substr(trim(p_full_name), length(split_part(trim(p_full_name), ' ', 1)) + 2)), ''),
       p_gender, p_date_of_birth, nullif(trim(p_email), ''), nullif(trim(p_phone), '')
     ) returning id into v_actor_record_id;
+  elsif p_actor_type in ('dean','hod','adviser') then
+    if p_actor_type = 'dean' then
+      if p_faculty_id is null or not exists (
+        select 1 from public.nuc_faculties nf where nf.id = p_faculty_id and nf.institution_id = p_institution_id
+      ) then raise exception 'NUC_FACULTY_NOT_IN_INSTITUTION'; end if;
+    elsif p_actor_type = 'hod' then
+      if p_department_id is null or not exists (
+        select 1 from public.nuc_departments nd where nd.id = p_department_id and nd.institution_id = p_institution_id
+      ) then raise exception 'NUC_DEPARTMENT_NOT_IN_INSTITUTION'; end if;
+    elsif p_department_id is not null and not exists (
+      select 1 from public.departments d where d.id = p_department_id and d.institution_id = p_institution_id
+    ) then raise exception 'DEPARTMENT_NOT_IN_INSTITUTION'; end if;
+
+    insert into public.faculty(institution_id, department_id, full_name, email, role)
+    values (p_institution_id, case when p_actor_type = 'adviser' then p_department_id else null end,
+      trim(p_full_name), coalesce(nullif(trim(p_email), ''), v_login_id || '@accounts.sefaes.invalid'), p_actor_type)
+    returning id into v_actor_record_id;
+
+    if p_actor_type = 'dean' then
+      update public.nuc_faculties
+      set dean_id = v_actor_record_id, dean_name = trim(p_full_name),
+          dean_email = nullif(trim(p_email), ''), updated_at = now()
+      where id = p_faculty_id and institution_id = p_institution_id;
+    elsif p_actor_type = 'hod' then
+      update public.nuc_departments
+      set hod_id = v_actor_record_id, hod_name = trim(p_full_name),
+          hod_email = nullif(trim(p_email), ''), updated_at = now()
+      where id = p_department_id and institution_id = p_institution_id;
+    end if;
+  elsif p_actor_type = 'lecturer' then
+    if p_department_id is not null and not exists (
+      select 1 from public.nuc_departments d where d.id = p_department_id and d.institution_id = p_institution_id
+    ) then raise exception 'NUC_DEPARTMENT_NOT_IN_INSTITUTION'; end if;
+    if p_faculty_id is not null and not exists (
+      select 1 from public.nuc_faculties f where f.id = p_faculty_id and f.institution_id = p_institution_id
+    ) then raise exception 'NUC_FACULTY_NOT_IN_INSTITUTION'; end if;
+    if nullif(trim(p_email), '') is null then raise exception 'LECTURER_EMAIL_REQUIRED'; end if;
+    insert into public.lecturers(
+      school_id, user_id, title, first_name, last_name, email, phone,
+      department_id, faculty_id, rank, specialization,
+      is_graduate_student_supervisor, max_students
+    ) values (
+      p_school_id, p_auth_user_id, nullif(trim(p_title), ''),
+      split_part(trim(p_full_name), ' ', 1),
+      nullif(btrim(substr(trim(p_full_name), length(split_part(trim(p_full_name), ' ', 1)) + 2)), ''),
+      trim(p_email), nullif(trim(p_phone), ''), p_department_id, p_faculty_id,
+      nullif(trim(p_rank), ''), nullif(trim(p_specialization), ''),
+      coalesce(p_is_graduate_student_supervisor, false), p_max_students
+    ) returning id into v_actor_record_id;
   elsif p_actor_type = 'parent' then
     insert into public.parents(institution_id, profile_id, child_student_id)
     values (p_institution_id, v_profile_id, p_student_id)
@@ -184,8 +244,8 @@ begin
 end;
 $$;
 
-revoke all on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean) from public, anon, authenticated;
-grant execute on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean) to service_role;
+revoke all on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer) from public, anon, authenticated;
+grant execute on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer) to service_role;
 
 create or replace function public.auth_pin_login(p_identifier text, p_pin text)
 returns jsonb
