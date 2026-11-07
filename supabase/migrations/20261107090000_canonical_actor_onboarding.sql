@@ -43,6 +43,7 @@ create or replace function public.complete_actor_onboarding(
   p_phone text default null,
   p_student_id uuid default null,
   p_class_id uuid default null,
+  p_class_subject_ids uuid[] default null,
   p_gender text default null,
   p_date_of_birth date default null,
   p_relationship text default 'Parent',
@@ -61,6 +62,7 @@ declare
   v_student_number text;
   v_first_name text;
   v_last_name text;
+  v_effective_school_id uuid := p_school_id;
 begin
   if p_auth_user_id is null then raise exception 'AUTH_USER_REQUIRED'; end if;
   if p_actor_type not in ('vice_principal','bursar','teacher','student','parent') then
@@ -88,6 +90,19 @@ begin
   end;
   v_login_id := v_prefix || '-' || lpad(nextval('public.actor_login_id_seq')::text, 8, '0');
 
+  if p_actor_type = 'teacher' and coalesce(cardinality(p_class_subject_ids), 0) > 0 then
+    if exists (
+      select 1
+      from unnest(p_class_subject_ids) requested(class_subject_id)
+      where not exists (
+        select 1 from public.class_subjects cs
+        where cs.id = requested.class_subject_id
+          and cs.school_id = p_school_id
+          and cs.institution_id = p_institution_id
+      )
+    ) then raise exception 'CLASS_SUBJECT_NOT_IN_SCHOOL'; end if;
+  end if;
+
   if p_actor_type = 'student' then
     if length(trim(p_full_name)) <= length(split_part(trim(p_full_name), ' ', 1)) then raise exception 'STUDENT_LAST_NAME_REQUIRED'; end if;
     if p_class_id is null or not exists (
@@ -96,11 +111,12 @@ begin
   end if;
 
   if p_actor_type = 'parent' then
-    if p_student_id is null or not exists (
-      select 1 from public.students s where s.id = p_student_id
-        and s.institution_id = p_institution_id
-        and (p_school_id is null or s.school_id = p_school_id)
-    ) then raise exception 'LINKED_STUDENT_NOT_FOUND'; end if;
+    select s.school_id into v_effective_school_id
+    from public.students s
+    where s.id = p_student_id
+      and s.institution_id = p_institution_id
+      and (p_school_id is null or s.school_id = p_school_id);
+    if p_student_id is null or not found then raise exception 'LINKED_STUDENT_NOT_FOUND'; end if;
   end if;
 
   insert into public.profiles (
@@ -108,7 +124,7 @@ begin
     authentication_method, pin, pin_hash, pin_type, pin_requires_change,
     pin_changed_at, failed_attempts, locked_until
   ) values (
-    p_auth_user_id, p_institution_id, p_school_id, trim(p_full_name), p_actor_type,
+    p_auth_user_id, p_institution_id, v_effective_school_id, trim(p_full_name), p_actor_type,
     nullif(trim(p_email), ''), nullif(trim(p_phone), ''),
     'pin', null, crypt(p_pin, gen_salt('bf')), 
     case when p_actor_type in ('student','parent') then '4-digit' else '6-digit' end,
@@ -120,6 +136,13 @@ begin
     values (p_auth_user_id, p_institution_id, p_school_id, trim(p_full_name),
       nullif(trim(p_email), ''), nullif(trim(p_phone), ''))
     returning id into v_actor_record_id;
+    if coalesce(cardinality(p_class_subject_ids), 0) > 0 then
+      insert into public.teacher_subject_assignments(school_id, teacher_id, class_subject_id)
+      select p_school_id, v_actor_record_id, requested.class_subject_id
+      from (
+        select distinct unnest(p_class_subject_ids) as class_subject_id
+      ) requested;
+    end if;
   elsif p_actor_type = 'student' then
     v_student_number := 'GRD/' || to_char(now(), 'YYYY') || '/' || lpad(nextval('public.student_number_seq')::text, 6, '0');
     insert into public.students(
@@ -128,7 +151,7 @@ begin
     ) values (
       p_auth_user_id, p_institution_id, p_school_id, p_class_id, v_student_number,
       split_part(trim(p_full_name), ' ', 1),
-      nullif(trim(substr(trim(p_full_name), length(split_part(trim(p_full_name), ' ', 1)) + 2)), ''),
+      nullif(btrim(substr(trim(p_full_name), length(split_part(trim(p_full_name), ' ', 1)) + 2)), ''),
       p_gender, p_date_of_birth, nullif(trim(p_email), ''), nullif(trim(p_phone), '')
     ) returning id into v_actor_record_id;
   elsif p_actor_type = 'parent' then
@@ -143,7 +166,7 @@ begin
     auth_user_id, institution_id, school_id, actor_type, actor_record_id,
     login_identifier, auth_method, status, pin_hash, pin_changed_at, failed_attempts
   ) values (
-    p_auth_user_id, p_institution_id, p_school_id, p_actor_type, v_actor_record_id,
+    p_auth_user_id, p_institution_id, v_effective_school_id, p_actor_type, v_actor_record_id,
     v_login_id, 'pin', 'active', crypt(p_pin, gen_salt('bf')), null, 0
   );
 
@@ -152,13 +175,16 @@ begin
     'profile_id', v_profile_id, 'actor_type', p_actor_type,
     'institution_id', p_institution_id, 'school_id', p_school_id,
     'actor_record_id', v_actor_record_id,
+    'full_name', trim(p_full_name),
+    'email', nullif(trim(p_email), ''),
+    'phone', nullif(trim(p_phone), ''),
     'student_number', v_student_number,
     'pin_requires_change', true
   );
 end;
 $$;
 
-revoke all on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,text,date,text,boolean) from public, anon, authenticated;
+revoke all on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean) from public, anon, authenticated;
 grant execute on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,text,date,text,boolean) to service_role;
 
 create or replace function public.auth_pin_login(p_identifier text, p_pin text)
