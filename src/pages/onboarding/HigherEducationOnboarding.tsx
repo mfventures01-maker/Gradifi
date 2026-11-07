@@ -139,7 +139,7 @@ export const HigherEducationOnboarding: React.FC = () => {
 
   return <main className="mx-auto max-w-2xl p-6"><section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
     <h1 className="text-2xl font-bold text-slate-900">Higher Institution Staff Onboarding</h1>
-    <p className="mt-1 text-sm text-slate-600">Create the Dean as the institution Auth authority. Provision HOD, Course Adviser and Lecturer beneath the Dean using generated IDs and temporary PINs.</p>
+    <p className="mt-1 text-sm text-slate-600">Create the Dean as the institution Auth authority. The Dean provisions institution staff, students and parents using generated IDs and temporary PINs.</p>
     {error && <p role="alert" className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
     <form onSubmit={submit} className="mt-6 space-y-4">
       <label className="block text-sm font-medium">Academic role
@@ -169,9 +169,6 @@ export const HigherEducationOnboarding: React.FC = () => {
         <select value={departmentId} onChange={e=>setDepartmentId(e.target.value)} className="mt-1 w-full rounded-lg border p-2"><option value="">Select department</option>{departments.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
       </label>}
       {role==="lecturer" && <>
-        <label className="block text-sm font-medium">Campus / School
-          <select value={schoolId} onChange={e=>setSchoolId(e.target.value)} required className="mt-1 w-full rounded-lg border p-2"><option value="">Select campus</option>{schools.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
-        </label>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-medium">Academic title<input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Dr., Prof., Mr." className="mt-1 w-full rounded-lg border p-2"/></label>
           <label className="block text-sm font-medium">Academic rank<input value={rank} onChange={e=>setRank(e.target.value)} placeholder="Senior Lecturer" className="mt-1 w-full rounded-lg border p-2"/></label>
