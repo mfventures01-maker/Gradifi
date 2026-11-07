@@ -46,7 +46,6 @@ export const CreateVP: React.FC<CreateVPProps> = ({
 
     try {
       if (!name.trim()) throw new Error('Full name is required');
-      if (!phone.trim()) throw new Error('Phone number is required');
 
       const resData = await actorOnboardingService.create({
         actor_type: 'vice_principal',
@@ -179,13 +178,12 @@ export const CreateVP: React.FC<CreateVPProps> = ({
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Dr. Adebayo Ogun"
             className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-            required
           />
         </div>
 
         <div>
           <label className="block text-xs font-medium text-slate-700 mb-1">
-            Phone Number <span className="text-rose-500">*</span>
+            Phone Number <span className="text-slate-400">(optional)</span>
           </label>
           <input
             type="tel"
