@@ -26,7 +26,7 @@ export interface CreateActorInput {
   max_students?: number | null;
 }
 
-export interface CreateActorResult {
+export interface CreateDeanInput {\n  institution_id: string;\n  faculty_id: string;\n  full_name: string;\n  email: string;\n  password: string;\n  phone?: string | null;\n}\n\nexport interface CreateDeanResult {\n  success: true;\n  user_id: string;\n  profile_id: string;\n  actor_type: "dean";\n  institution_id: string;\n  email: string;\n  full_name: string;\n  authentication_method: "email";\n}\n\nexport interface CreateActorResult {
   success: true;
   login_id: string;
   user_id: string;
