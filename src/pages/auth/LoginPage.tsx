@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, KeyRound, ArrowRight, Shield, AlertCircle } from 'lucide-react';
+import { Mail, Lock, KeyRound, ArrowRight, Shield, AlertCircle, User } from 'lucide-react';
 import { authService } from '../../services/authService';
 
 export const LoginPage: React.FC = () => {
@@ -184,7 +184,7 @@ export const LoginPage: React.FC = () => {
                 System-Generated Login ID
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   value={loginId}
