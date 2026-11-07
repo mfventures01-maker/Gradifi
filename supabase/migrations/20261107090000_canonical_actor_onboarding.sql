@@ -409,7 +409,7 @@ drop policy if exists identity_actors_select_own on public.identity_actors;
 create policy identity_actors_select_own
   on public.identity_actors for select to authenticated
   using (auth_user_id = (select auth.uid()));
-revoke all on public.identity_actors from anon;
+revoke all on public.identity_actors from public, anon;
 grant select on public.identity_actors to authenticated;
 
 -- Keep profile visibility and mutation scoped to the signed-in account.
@@ -560,5 +560,172 @@ end;
 $;
 revoke all on function public.get_parent_dashboard_stats(uuid) from public, anon;
 grant execute on function public.get_parent_dashboard_stats(uuid) to authenticated;
+
+-- School-level data RPCs are restricted to the principal for that school or
+-- the Dean for the owning institution. They are not public discovery APIs.
+create or replace function public.get_school_students(
+  p_school_id uuid,
+  p_search text default null,
+  p_limit integer default 100,
+  p_offset integer default 0
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $
+declare
+  v_result jsonb;
+begin
+  if auth.uid() is null or not exists (
+    select 1
+    from public.profiles p
+    join public.schools s on s.id = p_school_id
+    where p.user_id = auth.uid()
+      and (
+        (p.role = 'principal_admin' and p.school_id = p_school_id)
+        or (p.role = 'dean' and p.institution_id = s.institution_id)
+      )
+  ) then raise exception 'SCHOOL_SCOPE_DENIED'; end if;
+
+  select jsonb_build_object(
+    'total', count(*) over(),
+    'students', coalesce(jsonb_agg(
+      jsonb_build_object(
+        'id', s.id,
+        'first_name', s.first_name,
+        'last_name', s.last_name,
+        'student_number', s.student_number,
+        'class_name', c.name,
+        'class_id', s.class_id,
+        'gender', s.gender,
+        'email', s.email,
+        'phone', s.phone,
+        'cgpa', s.cgpa,
+        'enrollment_status', s.enrollment_status
+      ) order by s.last_name
+    ), '[]'::jsonb)
+  ) into v_result
+  from public.students s
+  left join public.classes c on c.id = s.class_id
+  where s.school_id = p_school_id
+    and (
+      p_search is null
+      or s.first_name ilike '%' || p_search || '%'
+      or s.last_name ilike '%' || p_search || '%'
+      or s.student_number ilike '%' || p_search || '%'
+    )
+  limit p_limit offset p_offset;
+
+  return v_result;
+end;
+$;
+revoke all on function public.get_school_students(uuid,text,integer,integer) from public, anon;
+grant execute on function public.get_school_students(uuid,text,integer,integer) to authenticated;
+
+create or replace function public.get_school_teachers(
+  p_school_id uuid,
+  p_search text default null,
+  p_limit integer default 100,
+  p_offset integer default 0
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $
+declare
+  v_result jsonb;
+begin
+  if auth.uid() is null or not exists (
+    select 1
+    from public.profiles p
+    join public.schools s on s.id = p_school_id
+    where p.user_id = auth.uid()
+      and (
+        (p.role = 'principal_admin' and p.school_id = p_school_id)
+        or (p.role = 'dean' and p.institution_id = s.institution_id)
+      )
+  ) then raise exception 'SCHOOL_SCOPE_DENIED'; end if;
+
+  select jsonb_build_object(
+    'total', count(*) over(),
+    'teachers', coalesce(jsonb_agg(
+      jsonb_build_object(
+        'id', t.id,
+        'name', t.name,
+        'email', t.email,
+        'phone', t.phone,
+        'class_count', (select count(*) from public.teacher_classes tc where tc.teacher_id = t.id),
+        'student_count', (
+          select count(distinct s.id)
+          from public.students s
+          join public.teacher_classes tc on tc.class_id = s.class_id
+          where tc.teacher_id = t.id
+        )
+      ) order by t.name
+    ), '[]'::jsonb)
+  ) into v_result
+  from public.teachers t
+  where t.school_id = p_school_id
+    and (
+      p_search is null
+      or t.name ilike '%' || p_search || '%'
+      or t.email ilike '%' || p_search || '%'
+    )
+  limit p_limit offset p_offset;
+
+  return v_result;
+end;
+$;
+revoke all on function public.get_school_teachers(uuid,text,integer,integer) from public, anon;
+grant execute on function public.get_school_teachers(uuid,text,integer,integer) to authenticated;
+
+create or replace function public.get_principal_dashboard_stats(p_school_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $
+declare
+  v_result jsonb;
+  v_school_name text;
+  v_total_students bigint;
+  v_total_teachers bigint;
+  v_total_classes bigint;
+begin
+  if auth.uid() is null or not exists (
+    select 1 from public.profiles p
+    where p.user_id = auth.uid()
+      and p.role = 'principal_admin'
+      and p.school_id = p_school_id
+  ) then raise exception 'PRINCIPAL_SCHOOL_SCOPE_DENIED'; end if;
+
+  select school_name into v_school_name from public.schools where id = p_school_id;
+  select count(*) into v_total_students from public.students where school_id = p_school_id;
+  select count(*) into v_total_teachers from public.teachers where school_id = p_school_id;
+  select count(*) into v_total_classes from public.classes where school_id = p_school_id;
+
+  select jsonb_build_object(
+    'school_name', v_school_name,
+    'total_students', v_total_students,
+    'total_teachers', v_total_teachers,
+    'total_classes', v_total_classes
+  ) into v_result;
+  return v_result;
+end;
+$;
+revoke all on function public.get_principal_dashboard_stats(uuid) from public, anon;
+grant execute on function public.get_principal_dashboard_stats(uuid) to authenticated;
+
+-- These two legacy dashboard RPCs return hard-coded demonstration content.
+-- Keep the functions for reference, but do not serve fabricated records as live data.
+revoke all on function public.get_student_dashboard_stats(uuid) from public, anon, authenticated;
+revoke all on function public.get_teacher_dashboard_stats(uuid,uuid) from public, anon, authenticated;
+
+-- A profile owner can update presentation fields only. PIN hashes and authority
+-- fields are changed through their dedicated trusted functions.
+revoke update on table public.profiles from public, anon, authenticated;
+grant update(full_name, phone) on table public.profiles to authenticated;
 
 commit;
