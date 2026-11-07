@@ -19,52 +19,74 @@ export const OnboardingWizard: React.FC = () => {
   const [institutionId, setInstitutionId] = useState<string>('');
 
   useEffect(() => {
+    const pending = localStorage.getItem('sefaes.pending-root-onboarding');
+    if (pending) {
+      onboardingService.completePendingRootRegistration()
+        .then(() => navigate('/portal/principal', { replace: true }))
+        .catch((error) => {
+          if (error instanceof Error && error.message !== 'VERIFIED_ROOT_SESSION_REQUIRED') {
+            setErrorMessage(error.message);
+          }
+        });
+    }
+
     authService.resolveCurrentIdentity().then((identity) => {
       if (identity.schoolId) setSchoolId(identity.schoolId);
       if (identity.institutionId) setInstitutionId(identity.institutionId);
-    });
-  }, []);
+    }).catch(() => undefined);
+  }, [navigate]);
 
   // Check for VP view
   if (view === 'create-vp') {
-    return <CreateVP schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+    if (!schoolId || !institutionId) return <div className="p-8">A verified Principal session is required. <button onClick={() => navigate('/login')}>Sign in</button></div>;
+    return <CreateVP schoolId={schoolId} institutionId={institutionId} />;
   }
 
   // Check for Bursar view
   if (view === 'create-bursar') {
-    return <CreateBursar schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+    if (!schoolId || !institutionId) return <div className="p-8">A verified Principal session is required. <button onClick={() => navigate('/login')}>Sign in</button></div>;
+    return <CreateBursar schoolId={schoolId} institutionId={institutionId} />;
   }
 
   // Check for Teacher view
   if (view === 'create-teacher') {
-    return <CreateTeacher schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+    if (!schoolId || !institutionId) return <div className="p-8">A verified Principal session is required. <button onClick={() => navigate('/login')}>Sign in</button></div>;
+    return <CreateTeacher schoolId={schoolId} institutionId={institutionId} />;
   }
 
   // Check for Student view
   if (view === 'create-student') {
-    return <CreateStudent schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+    if (!schoolId || !institutionId) return <div className="p-8">A verified Principal session is required. <button onClick={() => navigate('/login')}>Sign in</button></div>;
+    return <CreateStudent schoolId={schoolId} institutionId={institutionId} />;
   }
 
   // Check for Bulk Import view
   if (view === 'bulk-import') {
-    return <BulkStudentImport schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+    if (!schoolId || !institutionId) return <div className="p-8">A verified Principal session is required. <button onClick={() => navigate('/login')}>Sign in</button></div>;
+    return <BulkStudentImport schoolId={schoolId} institutionId={institutionId} />;
   }
 
   // Check for Parent view
   if (view === 'create-parent') {
-    return <CreateParent schoolId={schoolId || 'sch_demo_01'} institutionId={institutionId || 'inst_demo_01'} />;
+    if (!schoolId || !institutionId) return <div className="p-8">A verified Principal session is required. <button onClick={() => navigate('/login')}>Sign in</button></div>;
+    return <CreateParent schoolId={schoolId} institutionId={institutionId} />;
   }
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     institution_name: '',
+    institution_type: 'secondary' as const,
+    registration_number: '',
     address: '',
     state: 'Lagos',
     lga: 'Ikeja',
     principal_name: '',
     principal_phone: '',
     principal_email: '',
+    principal_password: '',
     class_name: 'JSS 1',
     subject: 'Mathematics'
   });
@@ -77,25 +99,30 @@ export const OnboardingWizard: React.FC = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await onboardingService.createInstitutionAccount({
-        _institution_name: formData.institution_name,
-        _institution_type: 'secondary',
-        _registration_number: 'REG-001',
-        _school_type: 'private',
-        _country: 'Nigeria',
-        _address: formData.address,
-        _state: formData.state,
-        _lga: formData.lga,
-        _phone: formData.principal_phone,
-        _email: formData.principal_email,
-        _website: '',
-        _principal_name: formData.principal_name,
-        _principal_phone: formData.principal_phone,
-        _principal_email: formData.principal_email
+      setErrorMessage('');
+      const result = await onboardingService.createInstitutionAccount({
+        institution_name: formData.institution_name,
+        institution_type: formData.institution_type,
+        registration_number: formData.registration_number,
+        country: 'Nigeria',
+        address: formData.address,
+        state: formData.state,
+        lga: formData.lga,
+        phone: formData.principal_phone,
+        website: '',
+        principal_name: formData.principal_name,
+        principal_phone: formData.principal_phone,
+        principal_email: formData.principal_email,
+        principal_password: formData.principal_password,
       });
-      navigate('/portal/principal');
+      if (result.requires_email_confirmation) {
+        setStatusMessage('Check the Principal email inbox and verify the account. Return to this page after verification to finish institution creation.');
+      } else {
+        navigate('/portal/principal');
+      }
     } catch (err) {
       console.error(err);
+      setErrorMessage(err instanceof Error ? err.message : 'Institution registration failed.');
     } finally {
       setLoading(false);
     }
@@ -121,6 +148,8 @@ export const OnboardingWizard: React.FC = () => {
           <span className={step >= 4 ? "text-blue-600 font-bold" : ""}>Review</span>
         </div>
         {renderStep()}
+        {statusMessage && <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{statusMessage}</p>}
+        {errorMessage && <p role="alert" className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{errorMessage}</p>}
         <button 
           onClick={handleNext} 
           disabled={loading}
@@ -138,6 +167,13 @@ const Step1 = ({ data, setData }: any) => (
   <div>
     <h2 className="text-2xl font-bold mb-4">School Basics</h2>
     <input placeholder="Institution Name" value={data.institution_name} onChange={e => setData({...data, institution_name: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
+    <select value={data.institution_type} onChange={e => setData({...data, institution_type: e.target.value})} className="w-full p-3 border rounded-xl mb-3">
+      <option value="secondary">Secondary School</option>
+      <option value="primary">Primary School</option>
+      <option value="k12">K-12 School</option>
+      <option value="group_of_schools">Group of Schools</option>
+    </select>
+    <input placeholder="Registration Number" value={data.registration_number} onChange={e => setData({...data, registration_number: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
     <input placeholder="Address" value={data.address} onChange={e => setData({...data, address: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
     <input placeholder="State" value={data.state} onChange={e => setData({...data, state: e.target.value})} className="w-full p-3 border rounded-xl" />
   </div>
@@ -148,7 +184,8 @@ const Step2 = ({ data, setData }: any) => (
     <h2 className="text-2xl font-bold mb-4">Admin Account</h2>
     <input placeholder="Principal Name" value={data.principal_name} onChange={e => setData({...data, principal_name: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
     <input placeholder="Principal Phone" value={data.principal_phone} onChange={e => setData({...data, principal_phone: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
-    <input placeholder="Principal Email" value={data.principal_email} onChange={e => setData({...data, principal_email: e.target.value})} className="w-full p-3 border rounded-xl" />
+    <input type="email" placeholder="Principal Email" value={data.principal_email} onChange={e => setData({...data, principal_email: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
+    <input type="password" minLength={10} placeholder="Create Principal Password (10+ characters)" value={data.principal_password} onChange={e => setData({...data, principal_password: e.target.value})} className="w-full p-3 border rounded-xl" />
   </div>
 );
 
