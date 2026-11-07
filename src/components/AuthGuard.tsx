@@ -4,7 +4,7 @@ import { authService, AuthSessionState } from '../services/authService';
 
 interface AuthGuardProps {
   children?: React.ReactNode;
-  allowedRoles?: Array<'admin' | 'principal' | 'teacher' | 'student' | 'parent' | 'bursar' | 'vp'>;
+  allowedRoles?: Array<'admin' | 'principal' | 'principal_admin' | 'teacher' | 'student' | 'parent' | 'bursar' | 'vp' | 'vice_principal'>;
   fallback?: React.ReactNode;
   onSessionResolved?: (session: AuthSessionState) => void;
 }
@@ -44,12 +44,11 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       // Check if session exists via getSession or identity
       const session = await authService.getSession();
       // Allow development/demo bypass if session or identity is verified or demo mode
-      const authed = !!session || identity.isAuthenticated || process.env.NODE_ENV === 'development';
+      const authed = !!session && identity.isAuthenticated;
       setIsAuthenticated(authed);
     } catch (error) {
       console.warn('Auth verify error:', error);
-      // Fallback check: in development or demo environment, default to true if bypassed
-      setIsAuthenticated(true);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
@@ -66,7 +65,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     );
   }
 
-  const isRoleAuthorized = !allowedRoles || (sessionState?.role && allowedRoles.includes(sessionState.role));
+  const roleAliases: Record<string, string> = { principal: 'principal_admin', vp: 'vice_principal' };
+  const resolvedRole = sessionState?.role ? (roleAliases[sessionState.role] || sessionState.role) : null;
+  const isRoleAuthorized = !allowedRoles || (!!resolvedRole && allowedRoles.some(role => (roleAliases[role] || role) === resolvedRole));
 
   if (!isAuthenticated || !isRoleAuthorized) {
     if (fallback) return <>{fallback}</>;
