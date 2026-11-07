@@ -12,7 +12,7 @@ export const HigherEducationOnboarding: React.FC = () => {
   const [schools, setSchools] = useState<Option[]>([]);
   const [faculties, setFaculties] = useState<Option[]>([]);
   const [departments, setDepartments] = useState<Option[]>([]);
-  const [role, setRole] = useState<AcademicRole>("lecturer");
+  const [role, setRole] = useState<AcademicRole>("lecturer");\n  const [callerRole, setCallerRole] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");\n  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
@@ -34,7 +34,7 @@ export const HigherEducationOnboarding: React.FC = () => {
         const identity = await authService.resolveCurrentIdentity();
         if (!identity.isAuthenticated || !identity.institutionId) throw new Error("Sign in with an institution administrator account first.");
         if (!active) return;
-        setInstitutionId(identity.institutionId);
+        setInstitutionId(identity.institutionId);\n        setCallerRole(identity.role);\n        if (identity.role === "dean") setRole("hod");
         const db = supabase as any;
         const [schoolRes, facultyRes, departmentRes] = await Promise.all([
           db.from("schools").select("id,school_name").eq("institution_id", identity.institutionId).order("school_name"),
@@ -109,7 +109,7 @@ export const HigherEducationOnboarding: React.FC = () => {
     <form onSubmit={submit} className="mt-6 space-y-4">
       <label className="block text-sm font-medium">Academic role
         <select value={role} onChange={e => setRole(e.target.value as AcademicRole)} className="mt-1 w-full rounded-lg border p-2">
-          <option value="dean">Dean · Supabase Auth</option><option value="hod">Head of Department · PIN</option><option value="adviser">Course Adviser</option><option value="lecturer">Lecturer</option>
+          {(callerRole === "admin" || callerRole === "superadmin") && <option value="dean">Dean · Supabase Auth</option>}<option value="hod">Head of Department · PIN</option><option value="adviser">Course Adviser</option><option value="lecturer">Lecturer</option>
         </select>
       </label>
       <label className="block text-sm font-medium">Full name<input required value={fullName} onChange={e=>setFullName(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>
