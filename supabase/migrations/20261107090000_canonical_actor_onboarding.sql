@@ -455,4 +455,110 @@ create policy parents_select_own on public.parents for select to authenticated
 grant select on public.teachers, public.students, public.lecturers,
   public.vice_principals, public.bursars, public.parents to authenticated;
 
+-- Parent dashboard RPCs must derive the parent from auth.uid(); never trust
+-- a caller-supplied parent identifier in SECURITY DEFINER functions.
+create or replace function public.get_parent_children(p_parent_id uuid default null)
+returns table(
+  student_id uuid,
+  student_name text,
+  class_name text,
+  student_number text,
+  relationship text,
+  is_primary boolean
+)
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $
+declare
+  v_profile_id uuid;
+  v_parent_id uuid;
+begin
+  select p.id into v_profile_id
+  from public.profiles p
+  where p.user_id = auth.uid() and p.role = 'parent';
+  if v_profile_id is null then raise exception 'PARENT_AUTH_REQUIRED'; end if;
+
+  select p.id into v_parent_id
+  from public.parents p
+  where p.profile_id = v_profile_id;
+  if v_parent_id is null then raise exception 'PARENT_RECORD_NOT_FOUND'; end if;
+
+  if p_parent_id is not null and p_parent_id not in (v_parent_id, v_profile_id) then
+    raise exception 'PARENT_SCOPE_DENIED';
+  end if;
+
+  return query
+  select s.id, s.first_name || ' ' || s.last_name, c.name,
+         s.student_number, spr.relationship_type, spr.is_primary
+  from public.student_parent_relationships spr
+  join public.students s on s.id = spr.student_id
+  join public.classes c on c.id = s.class_id
+  where spr.parent_id = v_parent_id
+  order by s.first_name;
+end;
+$;
+revoke all on function public.get_parent_children(uuid) from public, anon;
+grant execute on function public.get_parent_children(uuid) to authenticated;
+
+create or replace function public.get_parent_dashboard_stats(p_parent_id uuid default null)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $
+declare
+  v_profile_id uuid;
+  v_parent_id uuid;
+  v_parent_name text;
+  v_wards jsonb;
+begin
+  select p.id, p.full_name into v_profile_id, v_parent_name
+  from public.profiles p
+  where p.user_id = auth.uid() and p.role = 'parent';
+  if v_profile_id is null then raise exception 'PARENT_AUTH_REQUIRED'; end if;
+
+  select p.id into v_parent_id
+  from public.parents p
+  where p.profile_id = v_profile_id;
+  if v_parent_id is null then raise exception 'PARENT_RECORD_NOT_FOUND'; end if;
+
+  if p_parent_id is not null and p_parent_id not in (v_parent_id, v_profile_id) then
+    raise exception 'PARENT_SCOPE_DENIED';
+  end if;
+
+  select jsonb_agg(
+    jsonb_build_object(
+      'student_id', s.id,
+      'student_name', s.first_name || ' ' || s.last_name,
+      'student_number', s.student_number,
+      'class_name', c.name,
+      'class_rank', coalesce((
+        select cr.position from public.cbt_results_summary cr
+        where cr.student_id = s.id order by cr.created_at desc limit 1
+      ), 0),
+      'total_students_in_class', (
+        select count(*) from public.students classmates where classmates.class_id = s.class_id
+      ),
+      'attendance_rate', null,
+      'term_avg_score', coalesce((
+        select avg(cr.percentage) from public.cbt_results_summary cr where cr.student_id = s.id
+      ), 0)
+    )
+  ) into v_wards
+  from public.student_parent_relationships spr
+  join public.students s on s.id = spr.student_id
+  join public.classes c on c.id = s.class_id
+  where spr.parent_id = v_parent_id;
+
+  return jsonb_build_object(
+    'parent_name', v_parent_name,
+    'wards', coalesce(v_wards, '[]'::jsonb),
+    'total_wards', coalesce(jsonb_array_length(v_wards), 0)
+  );
+end;
+$;
+revoke all on function public.get_parent_dashboard_stats(uuid) from public, anon;
+grant execute on function public.get_parent_dashboard_stats(uuid) to authenticated;
+
 commit;
