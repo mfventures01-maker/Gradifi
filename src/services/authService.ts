@@ -157,6 +157,8 @@ export const authService = {
       success: true,
       session: sessionData.session,
       user: sessionData.user,
+      pinRequiresChange: data.pin_requires_change === true,
+      role: data.role,
     };
   },
 
