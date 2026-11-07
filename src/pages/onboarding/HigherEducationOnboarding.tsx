@@ -66,11 +66,11 @@ export const HigherEducationOnboarding: React.FC = () => {
       if (role === "dean" && !facultyId) throw new Error("Select the faculty this Dean will lead.");
       if (role === "hod" && !departmentId) throw new Error("Select the department this HOD will lead.");
       if (role === "adviser" && !departmentId) throw new Error("Select the adviser's department.");
-      if (role === "lecturer" && !email.trim()) throw new Error("Lecturer requires an official email.");
+      if (role === "lecturer" && (!email.trim() || !schoolId)) throw new Error("Lecturer requires an official email and campus.");
       if (role === "dean") {\n        if (!email.trim() || password.length < 10) throw new Error("Dean requires an institutional email and a password of at least 10 characters.");\n        const dean = await actorOnboardingService.createDean({\n          institution_id: institutionId, faculty_id: facultyId, full_name: fullName.trim(),\n          email: email.trim(), password, phone: phone.trim() || null,\n        });\n        setCreatedDean(dean);\n        return;\n      }\n      const result = await actorOnboardingService.create({
         actor_type: role,
         institution_id: institutionId,
-        school_id: null,
+        school_id: role === "lecturer" ? schoolId : null,
         full_name: fullName.trim(),
         email: email.trim() || null,
         phone: phone.trim() || null,
