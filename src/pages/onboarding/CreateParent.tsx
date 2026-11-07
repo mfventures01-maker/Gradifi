@@ -32,12 +32,6 @@ interface Student {
   class_name: string;
 }
 
-const DEFAULT_STUDENTS: Student[] = [
-  { id: 'std_demo_01', first_name: 'Chidi', last_name: 'Okeke', student_number: 'GRD/2026/1001', class_name: 'JSS 1' },
-  { id: 'std_demo_02', first_name: 'Zainab', last_name: 'Bello', student_number: 'GRD/2026/1002', class_name: 'JSS 1' },
-  { id: 'std_demo_03', first_name: 'Adebayo', last_name: 'Ogun', student_number: 'GRD/2026/1003', class_name: 'SS 1' },
-];
-
 export const CreateParent: React.FC<CreateParentProps> = ({
   schoolId = '',
   institutionId = '',
@@ -45,7 +39,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
   onSuccess
 }) => {
   const navigate = useNavigate();
-  const [students, setStudents] = useState<Student[]>(DEFAULT_STUDENTS);
+  const [students, setStudents] = useState<Student[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState(preSelectedStudentId);
   const [parentName, setParentName] = useState('');
   const [parentPhone, setParentPhone] = useState('');
@@ -115,7 +109,6 @@ export const CreateParent: React.FC<CreateParentProps> = ({
     try {
       if (!selectedStudentId) throw new Error('Please select a student');
       if (!parentName.trim()) throw new Error('Parent name is required');
-      if (!parentPhone.trim()) throw new Error('Phone number is required');
 
       const rpcData = await actorOnboardingService.create({
         actor_type: 'parent',
@@ -318,13 +311,12 @@ export const CreateParent: React.FC<CreateParentProps> = ({
             onChange={(e) => setParentName(e.target.value)}
             placeholder="e.g. Mrs. Funke Adebayo"
             className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
-            required
           />
         </div>
 
         <div>
           <label className="block text-xs font-medium text-slate-700 mb-1">
-            Phone Number <span className="text-rose-500">*</span>
+            Phone Number <span className="text-slate-400">(optional)</span>
           </label>
           <input
             type="tel"
