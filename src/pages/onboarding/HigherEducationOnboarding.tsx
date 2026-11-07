@@ -37,7 +37,6 @@ export const HigherEducationOnboarding: React.FC = () => {
         if (!identity.isAuthenticated || !identity.institutionId) throw new Error("Sign in with an institution administrator account first.");
         if (!active) return;
         setInstitutionId(identity.institutionId);
-        setCallerRole(identity.role);
         if (identity.role !== "dean") throw new Error("Only the institution's Dean can provision higher-education subaccounts.");
         setRole("hod");
         const db = supabase as any;
@@ -76,8 +75,9 @@ export const HigherEducationOnboarding: React.FC = () => {
       if (!fullName.trim()) throw new Error("Full name is required.");
       if (role === "hod" && !departmentId) throw new Error("Select the department this HOD will lead.");
       if (role === "adviser" && !departmentId) throw new Error("Select the adviser's department.");
-      if (["vice_principal", "bursar", "teacher", "student", "lecturer"].includes(role) && !schoolId) throw new Error("Select the school or campus for this actor.");
+      if (["student", "lecturer"].includes(role) && !schoolId) throw new Error("Select the school or campus for this actor.");
       if (role === "lecturer" && !email.trim()) throw new Error("Lecturer requires an official email.");
+      if (role === "student" && (!schoolId || !classId)) throw new Error("Select a campus and class before creating a student account.");
       const result = await actorOnboardingService.create({
         actor_type: role,
         institution_id: institutionId,
@@ -109,7 +109,7 @@ export const HigherEducationOnboarding: React.FC = () => {
       <div><dt className="text-slate-500">Role</dt><dd className="font-semibold">{created.actor_type}</dd></div>
       <div><dt className="text-slate-500">Name</dt><dd className="font-semibold">{created.full_name}</dd></div>
       <div><dt className="text-slate-500">Generated Login ID</dt><dd className="font-mono font-bold">{created.login_id}</dd></div>
-      <div><dt className="text-slate-500">Temporary {["student", "parent"].includes(created.actor_type) ? "4" : "6"}-digit PIN</dt><dd className="font-mono text-xl font-bold">{created.pin}</dd></div>
+      <div><dt className="text-slate-500">Temporary {created.actor_type === "student" ? "4" : "6"}-digit PIN</dt><dd className="font-mono text-xl font-bold">{created.pin}</dd></div>
     </dl>
     <button className="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-white" onClick={() => { setCreated(null); setFullName(""); setEmail(""); setPhone(""); }}>Create another account</button>
   </section></main>;
