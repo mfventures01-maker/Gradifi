@@ -52,7 +52,7 @@ function App() {
         
         {/* Phase 2: Onboarding (No Auth Required) */}
         <Route path="/onboarding" element={<OnboardingWizard />} />
-        <Route path="/onboarding/higher-education" element={<AuthGuard><HigherEducationOnboarding /></AuthGuard>} />
+        <Route path="/onboarding/higher-education" element={<AuthGuard allowedRoles={['dean']}><HigherEducationOnboarding /></AuthGuard>} />
         
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
@@ -68,7 +68,7 @@ function App() {
           <Route path="higher-education" element={<HigherEducationDashboard />} />
         </Route>
 
-        <Route path="/dashboard" element={<AuthGuard><PrincipalDashboard /></AuthGuard>} />
+        <Route path="/dashboard" element={<AuthGuard allowedRoles={['principal_admin', 'admin']}><PrincipalDashboard /></AuthGuard>} />
         
         {/* Phase 4: AI Grading & CBT (Auth Required) */}
         <Route path="/grading" element={<AuthGuard />}>
