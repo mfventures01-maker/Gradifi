@@ -11,6 +11,8 @@ export interface CreateActorInput {
   phone?: string | null;
   student_id?: string | null;
   class_id?: string | null;
+  class_subject_id?: string | null;
+  class_subject_ids?: string[];
   gender?: string | null;
   date_of_birth?: string | null;
   relationship?: string;
@@ -27,6 +29,9 @@ export interface CreateActorResult {
   school_id: string | null;
   pin: string;
   pin_requires_change: true;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
   actor_record_id?: string | null;
   student_number?: string | null;
 }
