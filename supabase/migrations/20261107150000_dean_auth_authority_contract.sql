@@ -40,6 +40,14 @@ begin
     select 1 from public.institutions i where i.id = p_institution_id
   ) then raise exception 'INSTITUTION_NOT_FOUND'; end if;
   if not exists (
+    select 1 from auth.users u where u.id = p_auth_user_id
+      and lower(u.email) = lower(trim(p_email))
+  ) then raise exception 'DEAN_AUTH_EMAIL_MISMATCH'; end if;
+  if exists (
+    select 1 from public.nuc_faculties f
+    where f.id = p_faculty_id and f.institution_id = p_institution_id and f.dean_id is not null
+  ) then raise exception 'FACULTY_ALREADY_HAS_DEAN'; end if;
+  if not exists (
     select 1 from public.nuc_faculties f
     where f.id = p_faculty_id and f.institution_id = p_institution_id
   ) then raise exception 'NUC_FACULTY_NOT_IN_INSTITUTION'; end if;
@@ -127,6 +135,12 @@ begin
 
   if not (v_actor.role = any(v_expected_actor_roles)) then
     raise exception 'ACTOR_ROLE_NOT_ALLOWED_FOR_AUTHORITY';
+  end if;
+  if v_actor.authentication_method <> 'pin' then
+    raise exception 'SUBORDINATE_ACTOR_MUST_USE_PIN_AUTH';
+  end if;
+  if v_actor.authority_user_id is not null and v_actor.authority_user_id <> p_authority_user_id then
+    raise exception 'ACTOR_ALREADY_BOUND_TO_DIFFERENT_AUTHORITY';
   end if;
 
   update public.profiles set authority_user_id = p_authority_user_id
