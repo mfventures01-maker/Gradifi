@@ -14,6 +14,13 @@ alter table public.profiles add constraint profiles_role_check
     'examiner','individual','admin','dean','hod','adviser','lecturer'
   ]));
 
+alter table public.identity_actors drop constraint if exists identity_actors_actor_type_check;
+alter table public.identity_actors add constraint identity_actors_actor_type_check
+  check (actor_type = any (array[
+    'superadmin','principal_admin','vice_principal','bursar','teacher','student','parent',
+    'dean','hod','adviser','lecturer'
+  ]));
+
 -- Retire every historical onboarding overload. Frontend callers must use actor-onboarding.
 do $$
 declare f record;
