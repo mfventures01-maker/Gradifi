@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { identityProvisioningService } from '../../services/identityProvisioningService';
 import { 
   Wallet, 
   Mail, 
@@ -32,6 +32,7 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{
     profile_id: string;
+    login_identifier: string;
     pin: string;
     full_name: string;
     phone: string;
@@ -45,41 +46,23 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
 
     try {
       if (!name.trim()) throw new Error('Full name is required');
-      if (!phone.trim()) throw new Error('Phone number is required');
 
-      let resData: any = null;
-      let rpcError: any = null;
-
-      try {
-        const { data, error } = await supabase.rpc('create_bursar', {
-          p_school_id: schoolId || null,
-          p_institution_id: institutionId || null,
-          p_name: name.trim(),
-          p_phone: phone.trim(),
-          p_email: email.trim() || null
-        });
-        resData = data;
-        rpcError = error;
-      } catch (err) {
-        rpcError = err;
-      }
-
-      if (rpcError || !resData || !resData.success) {
-        console.warn('create_bursar RPC fallback activated:', rpcError);
-        resData = {
-          success: true,
-          profile_id: `bursar_${Date.now()}`,
-          pin: Math.floor(100000 + Math.random() * 900000).toString(),
-          full_name: name.trim(),
-          phone: phone.trim()
-        };
-      }
+      const resData = await identityProvisioningService.provision({
+        operation: 'create',
+        request_id: crypto.randomUUID(),
+        actor_type: 'bursar',
+        school_id: schoolId,
+        full_name: name.trim(),
+        phone: phone.trim() || null,
+        email: email.trim() || null
+      });
 
       setSuccess({
-        profile_id: resData.profile_id,
-        pin: resData.pin,
-        full_name: resData.full_name,
-        phone: resData.phone
+        profile_id: resData.credential.profile_id,
+        login_identifier: resData.credential.login_identifier,
+        pin: resData.credential.temporary_pin,
+        full_name: name.trim(),
+        phone: phone.trim()
       });
 
       if (onSuccess) onSuccess();
@@ -116,8 +99,8 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
             <span className="font-semibold text-slate-700">{success.full_name}</span>
           </div>
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-            <span className="text-xs font-medium text-slate-500">Phone</span>
-            <span className="font-semibold text-slate-700">{success.phone}</span>
+            <span className="text-xs font-medium text-slate-500">Staff ID</span>
+            <span className="font-mono font-semibold text-slate-700">{success.login_identifier}</span>
           </div>
           <div className="flex items-center justify-between pt-2">
             <span className="text-xs font-medium text-slate-500">Temporary PIN</span>
@@ -198,7 +181,7 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
 
         <div>
           <label className="block text-xs font-medium text-slate-700 mb-1">
-            Phone Number <span className="text-rose-500">*</span>
+            Phone Number <span className="text-slate-400">(optional)</span>
           </label>
           <input
             type="tel"
@@ -206,9 +189,8 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
             onChange={(e) => setPhone(e.target.value)}
             placeholder="e.g. 08012345678"
             className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-            required
           />
-          <p className="text-[10px] text-slate-400 mt-1">This will be used for PIN login.</p>
+          <p className="text-[10px] text-slate-400 mt-1">Sign in with the generated Staff ID and six-digit PIN.</p>
         </div>
 
         <div>

@@ -27,8 +27,8 @@ interface CreateTeacherProps {
 }
 
 export const CreateTeacher: React.FC<CreateTeacherProps> = ({
-  schoolId = 'sch_demo_01',
-  institutionId = 'inst_demo_01',
+  schoolId,
+  institutionId,
   onSuccess,
   onNavigateToStudents,
 }) => {
@@ -40,6 +40,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
   // Dropdown options
   const [classes, setClasses] = useState<ClassEntity[]>([]);
   const [subjects, setSubjects] = useState<SubjectCatalogItem[]>([]);
+  const [classSubjects, setClassSubjects] = useState<Awaited<ReturnType<typeof subjectService.getClassSubjects>>>([]);
   const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,32 +49,35 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
   const [copiedId, setCopiedId] = useState<boolean>(false);
 
   useEffect(() => {
+    let active = true;
     async function loadAcademicStructure() {
-      try {
-        setLoadingOptions(true);
-        const [clsData, subData] = await Promise.all([
-          classService.getClasses(schoolId).catch(() => []),
-          subjectService.getSubjectCatalog().catch(() => []),
-        ]);
-
-        setClasses(clsData.length > 0 ? clsData : [
-          { id: 'cls_jss1', school_id: schoolId, name: 'JSS 1', arm: 'Gold', created_at: '' },
-          { id: 'cls_jss2', school_id: schoolId, name: 'JSS 2', arm: 'Gold', created_at: '' },
-          { id: 'cls_jss3', school_id: schoolId, name: 'JSS 3', arm: 'Gold', created_at: '' },
-          { id: 'cls_ss1', school_id: schoolId, name: 'SS 1', arm: 'Science', created_at: '' },
-          { id: 'cls_ss2', school_id: schoolId, name: 'SS 2', arm: 'Science', created_at: '' },
-          { id: 'cls_ss3', school_id: schoolId, name: 'SS 3', arm: 'Science', created_at: '' },
-        ]);
-
-        setSubjects(subData);
-      } catch (err) {
-        console.warn('Academic structure load warning:', err);
-      } finally {
+      setLoadingOptions(true);
+      setClasses([]);
+      setSubjects([]);
+      setClassSubjects([]);
+      if (!schoolId) {
+        setError('No verified school is selected. Teacher creation is disabled.');
         setLoadingOptions(false);
+        return;
+      }
+      try {
+        const [clsData, subData, matrixData] = await Promise.all([
+          classService.getClasses(schoolId),
+          subjectService.getSubjectCatalog(),
+          subjectService.getClassSubjects(schoolId),
+        ]);
+        if (!active) return;
+        setClasses(clsData);
+        setSubjects(subData);
+        setClassSubjects(matrixData);
+      } catch (err) {
+        if (active) setError(err instanceof Error ? err.message : 'Unable to load the school academic structure.');
+      } finally {
+        if (active) setLoadingOptions(false);
       }
     }
-
     loadAcademicStructure();
+    return () => { active = false; };
   }, [schoolId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,16 +87,16 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
 
     try {
       if (!name.trim()) throw new Error('Teacher full name is required');
-      if (!email.trim()) throw new Error('Teacher email address is required');
-      if (!phone.trim()) throw new Error('Teacher phone number is required');
+      if (!schoolId) throw new Error('A verified school ID is required.');
+      if (classSubjectId && !classSubjects.some((item) => item.id === classSubjectId)) throw new Error('Selected class-subject assignment is not in this school\'s academic matrix.');
 
       const response = await onboardingService.createTeacher({
         name,
-        email,
-        phone,
+        email: email || undefined,
+        phone: phone || undefined,
         school_id: schoolId,
         institution_id: institutionId,
-        class_subject_id: classSubjectId || undefined,
+        class_subject_ids: classSubjectId ? [classSubjectId] : [],
       });
 
       setCreatedTeacher(response);
@@ -181,14 +185,14 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             Teacher Flashcard Receipt
           </h2>
           <p className="text-slate-600 text-sm mt-1 max-w-md mx-auto">
-            Teacher has been registered authoritatively in the Supabase PostgreSQL database.
+            Teacher identity was returned by the provisioning gateway.
           </p>
 
           {/* Flashcard Box */}
           <div className="mt-6 max-w-md mx-auto p-6 bg-white rounded-2xl border border-blue-200 shadow-md text-left space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Teacher ID</p>
+                <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Teacher Record ID</p>
                 <p className="font-mono text-sm font-bold text-blue-700">{createdTeacher.teacher_id}</p>
               </div>
               <button
@@ -220,10 +224,15 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div><p className="text-slate-400">Login ID</p><p className="font-mono font-semibold">{createdTeacher.login_identifier}</p></div>
+              <div><p className="text-slate-400">Temporary PIN</p><p className="font-mono font-semibold">{createdTeacher.temporary_pin}</p></div>
+            </div>
+            <p className="text-[11px] text-amber-700">The teacher must change this temporary PIN at first login.</p>
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="text-slate-500">SSoT Verified Status:</span>
               <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Certified Active
+                <CheckCircle2 className="w-3.5 h-3.5" /> Provisioned
               </span>
             </div>
           </div>
@@ -275,7 +284,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             {/* Field 2: Email */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Official Email Address <span className="text-rose-500">*</span>
+                Official Email Address (Optional)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -284,7 +293,6 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
                 <input
                   id="input-teacher-email"
                   type="email"
-                  required
                   placeholder="ngozi.okonkwo@school.edu.ng"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -296,7 +304,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             {/* Field 3: Phone */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Phone Number <span className="text-rose-500">*</span>
+                Phone Number (Optional)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -305,7 +313,6 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
                 <input
                   id="input-teacher-phone"
                   type="tel"
-                  required
                   placeholder="+234 803 456 7890"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -330,13 +337,16 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
                 >
                   <option value="">-- General Faculty / Unassigned --</option>
-                  {classes.flatMap((cls) =>
-                    subjects.slice(0, 8).map((sub) => (
-                      <option key={`${cls.id}_${sub.id}`} value={`${cls.id}_${sub.id}`}>
-                        {cls.name} ({cls.arm || 'Gold'}) — {sub.name} ({sub.code})
+                  {classSubjects.map((assignment) => {
+                    const cls = classes.find((item) => item.id === assignment.class_id);
+                    const subject = subjects.find((item) => item.id === assignment.subject_id);
+                    if (!cls || !subject) return null;
+                    return (
+                      <option key={assignment.id} value={assignment.id}>
+                        {cls.name} ({cls.arm || 'Unspecified'}) — {subject.name} ({subject.code})
                       </option>
-                    ))
-                  )}
+                    );
+                  })}
                 </select>
               </div>
               <p className="text-xs text-slate-400 mt-1">
@@ -350,13 +360,13 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             <button
               id="btn-submit-teacher"
               type="submit"
-              disabled={loading}
+              disabled={loading || loadingOptions || !schoolId}
               className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 disabled:opacity-50 transition-all cursor-pointer"
             >
               {loading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Invoking create_teacher RPC...</span>
+                  <span>Provisioning teacher identity...</span>
                 </>
               ) : (
                 <>

@@ -16,25 +16,8 @@ export const subjectService = {
       .select('*')
       .order('name', { ascending: true });
 
-    if (error || !data || data.length === 0) {
-      // Fallback default catalog if table is empty
-      return [
-        { id: 'sub_1', code: 'MTH', name: 'Mathematics', category: 'core', is_practical: false, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_2', code: 'ENG', name: 'English Language', category: 'core', is_practical: false, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_3', code: 'BIO', name: 'Biology', category: 'science', is_practical: true, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_4', code: 'CHM', name: 'Chemistry', category: 'science', is_practical: true, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_5', code: 'PHY', name: 'Physics', category: 'science', is_practical: true, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_6', code: 'ECO', name: 'Economics', category: 'commercial', is_practical: false, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_7', code: 'GOV', name: 'Government', category: 'arts', is_practical: false, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_8', code: 'LIT', name: 'Literature-in-English', category: 'arts', is_practical: false, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_9', code: 'ACC', name: 'Financial Accounting', category: 'commercial', is_practical: false, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_10', code: 'AGR', name: 'Agricultural Science', category: 'science', is_practical: true, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_11', code: 'CIV', name: 'Civic Education', category: 'core', is_practical: false, curriculum: 'WAEC', created_at: new Date().toISOString() },
-        { id: 'sub_12', code: 'CSC', name: 'Computer Studies / ICT', category: 'science', is_practical: true, curriculum: 'WAEC', created_at: new Date().toISOString() },
-      ];
-    }
-
-    return data as SubjectCatalogItem[];
+    if (error) throw error;
+    return (data as SubjectCatalogItem[]) || [];
   },
 
   /**

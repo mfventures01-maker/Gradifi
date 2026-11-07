@@ -25,28 +25,19 @@ interface CreateStudentProps {
   onNavigateToDashboard?: () => void;
 }
 
-const DEFAULT_CLASSES: ClassEntity[] = [
-  { id: 'cls_jss1', school_id: 'sch_demo_01', name: 'JSS 1', arm: 'Gold', created_at: '' },
-  { id: 'cls_jss2', school_id: 'sch_demo_01', name: 'JSS 2', arm: 'Gold', created_at: '' },
-  { id: 'cls_jss3', school_id: 'sch_demo_01', name: 'JSS 3', arm: 'Gold', created_at: '' },
-  { id: 'cls_ss1', school_id: 'sch_demo_01', name: 'SS 1', arm: 'Science', created_at: '' },
-  { id: 'cls_ss2', school_id: 'sch_demo_01', name: 'SS 2', arm: 'Science', created_at: '' },
-  { id: 'cls_ss3', school_id: 'sch_demo_01', name: 'SS 3', arm: 'Science', created_at: '' },
-];
-
 export const CreateStudent: React.FC<CreateStudentProps> = ({
-  schoolId = 'sch_demo_01',
-  institutionId = 'inst_demo_01',
+  schoolId,
+  institutionId,
   onSuccess,
   onNavigateToDashboard,
 }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [classId, setClassId] = useState('cls_jss1');
+  const [classId, setClassId] = useState('');
   const [gender, setGender] = useState<'male' | 'female'>('male');
-  const [dateOfBirth, setDateOfBirth] = useState('2012-05-15');
+  const [dateOfBirth, setDateOfBirth] = useState('');
 
-  const [classes, setClasses] = useState<ClassEntity[]>(DEFAULT_CLASSES);
+  const [classes, setClasses] = useState<ClassEntity[]>([]);
   const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -55,43 +46,30 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
   const [copiedId, setCopiedId] = useState<boolean>(false);
 
   useEffect(() => {
+    let active = true;
     async function loadSchoolClasses() {
-      try {
-        setLoadingClasses(true);
-        const data = await classService.getClasses(schoolId);
-        if (data.length > 0) {
-          setClasses(data);
-          setClassId(data[0].id);
-        } else {
-          const defaultClasses: ClassEntity[] = [
-            { id: 'cls_jss1', school_id: schoolId, name: 'JSS 1', arm: 'Gold', created_at: '' },
-            { id: 'cls_jss2', school_id: schoolId, name: 'JSS 2', arm: 'Gold', created_at: '' },
-            { id: 'cls_jss3', school_id: schoolId, name: 'JSS 3', arm: 'Gold', created_at: '' },
-            { id: 'cls_ss1', school_id: schoolId, name: 'SS 1', arm: 'Science', created_at: '' },
-            { id: 'cls_ss2', school_id: schoolId, name: 'SS 2', arm: 'Science', created_at: '' },
-            { id: 'cls_ss3', school_id: schoolId, name: 'SS 3', arm: 'Science', created_at: '' },
-          ];
-          setClasses(defaultClasses);
-          setClassId(defaultClasses[0].id);
-        }
-      } catch (err) {
-        console.warn('Class list fetch fallback:', err);
-        const defaultClasses: ClassEntity[] = [
-          { id: 'cls_jss1', school_id: schoolId || 'sch_demo_01', name: 'JSS 1', arm: 'Gold', created_at: '' },
-          { id: 'cls_jss2', school_id: schoolId || 'sch_demo_01', name: 'JSS 2', arm: 'Gold', created_at: '' },
-          { id: 'cls_jss3', school_id: schoolId || 'sch_demo_01', name: 'JSS 3', arm: 'Gold', created_at: '' },
-          { id: 'cls_ss1', school_id: schoolId || 'sch_demo_01', name: 'SS 1', arm: 'Science', created_at: '' },
-          { id: 'cls_ss2', school_id: schoolId || 'sch_demo_01', name: 'SS 2', arm: 'Science', created_at: '' },
-          { id: 'cls_ss3', school_id: schoolId || 'sch_demo_01', name: 'SS 3', arm: 'Science', created_at: '' },
-        ];
-        setClasses(defaultClasses);
-        setClassId(defaultClasses[0].id);
-      } finally {
+      setLoadingClasses(true);
+      setClasses([]);
+      setClassId('');
+      if (!schoolId) {
+        setError('No verified school is selected. Enrollment is disabled.');
         setLoadingClasses(false);
+        return;
+      }
+      try {
+        const data = await classService.getClasses(schoolId);
+        if (!active) return;
+        setClasses(data);
+        if (data.length > 0) setClassId(data[0].id);
+        else setError('No classes are configured for this school. Create real school classes before enrolling students.');
+      } catch (err) {
+        if (active) setError(err instanceof Error ? err.message : 'Unable to load this school\'s classes.');
+      } finally {
+        if (active) setLoadingClasses(false);
       }
     }
-
     loadSchoolClasses();
+    return () => { active = false; };
   }, [schoolId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,7 +80,8 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
     try {
       if (!firstName.trim()) throw new Error('Student first name is required');
       if (!lastName.trim()) throw new Error('Student last name is required');
-      if (!classId) throw new Error('Please select an active class level');
+      if (!schoolId) throw new Error('A verified school ID is required.');
+      if (!classId || !classes.some((item) => item.id === classId)) throw new Error('Please select a real class belonging to this school.');
 
       const response = await onboardingService.enrollStudent({
         first_name: firstName,
@@ -195,14 +174,14 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
           </div>
 
           <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-full mb-2">
-            Student Matriculation Verified
+            Student Identity Provisioned
           </span>
 
           <h2 className="text-2xl font-bold text-slate-900">
             Student Enrollment Flashcard
           </h2>
           <p className="text-slate-600 text-sm mt-1 max-w-md mx-auto">
-            Matriculation record sealed in Supabase PostgreSQL students registry.
+            Student identity provisioned by the school identity gateway.
           </p>
 
           {/* Flashcard Box */}
@@ -241,6 +220,11 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div><p className="text-slate-400">Login ID</p><p className="font-mono font-semibold">{enrolledStudent.login_identifier}</p></div>
+              <div><p className="text-slate-400">Temporary PIN</p><p className="font-mono font-semibold">{enrolledStudent.temporary_pin}</p></div>
+            </div>
+            <p className="text-[11px] text-amber-700">Show this temporary PIN once. The student must change it at first login.</p>
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="text-slate-500">Student Record ID:</span>
               <span className="font-mono text-slate-600 truncate max-w-[180px]">{enrolledStudent.student_id}</span>
@@ -393,7 +377,7 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
             <button
               id="btn-submit-student"
               type="submit"
-              disabled={loading}
+              disabled={loading || loadingClasses || !schoolId || classes.length === 0}
               className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 disabled:opacity-50 transition-all cursor-pointer"
             >
               {loading ? (
