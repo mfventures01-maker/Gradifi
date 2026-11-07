@@ -24,6 +24,11 @@ export const HigherInstitutionRegistration: React.FC = () => {
   useEffect(() => {
     const pending = localStorage.getItem("sefaes.pending-root-onboarding");
     if (pending) {
+      const pendingAction = JSON.parse(pending).action;
+      if (pendingAction !== "bootstrap_higher_institution") {
+        navigate("/onboarding", { replace: true });
+        return;
+      }
       onboardingService.completePendingRootRegistration()
         .then(() => navigate("/portal/higher-education", { replace: true }))
         .catch((err) => {
@@ -34,7 +39,7 @@ export const HigherInstitutionRegistration: React.FC = () => {
     }
   }, [navigate]);
 
-  const set = (key: keyof typeof form, value: string) =>
+  const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
     setForm((current) => ({ ...current, [key]: value }));
 
   const submit = async (event: React.FormEvent) => {
@@ -68,7 +73,7 @@ export const HigherInstitutionRegistration: React.FC = () => {
         <section className="space-y-3">
           <h2 className="font-semibold text-slate-800">Institution details</h2>
           <input required value={form.institution_name} onChange={e => set("institution_name", e.target.value)} placeholder="Institution name" className="w-full rounded-lg border p-3" />
-          <select value={form.institution_type} onChange={e => set("institution_type", e.target.value)} className="w-full rounded-lg border p-3">
+          <select value={form.institution_type} onChange={e => set("institution_type", e.target.value as typeof form.institution_type)} className="w-full rounded-lg border p-3">
             <option value="university">University</option>
             <option value="polytechnic">Polytechnic</option>
             <option value="college_of_education">College of Education</option>
