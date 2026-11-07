@@ -149,6 +149,7 @@ begin
     'success', true, 'login_id', v_login_id, 'user_id', p_auth_user_id,
     'profile_id', v_profile_id, 'actor_type', p_actor_type,
     'institution_id', p_institution_id, 'school_id', p_school_id,
+    'actor_record_id', v_actor_record_id,
     'pin_requires_change', true
   );
 end;
