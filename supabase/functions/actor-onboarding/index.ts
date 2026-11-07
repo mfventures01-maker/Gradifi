@@ -32,7 +32,8 @@ serve(async (req) => {
       const { data: verified, error } = await admin.rpc("auth_pin_login", { p_identifier: identifier, p_pin: pin });
       if (error || !verified?.success) return json({ error: "INVALID_CREDENTIALS" }, 401);
 
-      const { data: profile } = await admin.from("profiles").select("user_id").eq("user_id", verified.user_id).single();
+      const { data: profile, error: profileError } = await admin.from("profiles").select("user_id,pin_requires_change,role").eq("user_id", verified.user_id).single();
+      if (profileError || !profile) return json({ error: "PROFILE_NOT_FOUND" }, 409);
       const { data: authUser, error: userError } = await admin.auth.admin.getUserById(profile.user_id);
       if (userError || !authUser.user?.email) return json({ error: "IDENTITY_NOT_READY" }, 409);
 
@@ -42,7 +43,7 @@ serve(async (req) => {
       });
       if (linkError || !linkData?.properties?.hashed_token) return json({ error: "SESSION_EXCHANGE_FAILED" }, 500);
 
-      return json({ success: true, token_hash: linkData.properties.hashed_token, type: "magiclink" });
+      return json({ success: true, token_hash: linkData.properties.hashed_token, type: "magiclink", pin_requires_change: profile.pin_requires_change === true, role: profile.role });
     }
 
     if (!authHeader) return json({ error: "AUTH_REQUIRED" }, 401);
