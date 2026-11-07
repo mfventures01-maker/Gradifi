@@ -9,7 +9,9 @@ import { ReconcileAndLaunchParams, ReconciliationReport } from '../contracts/rpc
 
 export interface CreateInstitutionFormInput {
   institution_name: string;
-  institution_type: 'secondary' | 'primary' | 'k12' | 'tertiary' | 'group_of_schools';
+  institution_type: 'secondary' | 'primary' | 'k12' | 'group_of_schools';
+  registration_number: string;
+  principal_password: string;
   registration_number: string;
   address: string;
   state: string;
@@ -32,6 +34,23 @@ export interface CreateInstitutionAccountResponse {
   country: string;
   created_at?: string;
   success: boolean;
+  requires_email_confirmation?: boolean;
+  url_slug?: string;
+  institution_path?: string;
+}
+
+export interface HigherInstitutionFormInput {
+  institution_name: string;
+  institution_type: 'university' | 'polytechnic' | 'college_of_education';
+  registration_number: string;
+  country?: string;
+  address: string;
+  phone: string;
+  website?: string;
+  dean_name: string;
+  dean_email: string;
+  dean_phone: string;
+  dean_password: string;
 }
 
 export interface InitializeClassesResponse {
@@ -85,52 +104,117 @@ export interface EnrollStudentResponse {
 
 export const onboardingService = {
   /**
-   * 1. The Atomic Onboarding RPC: create_institution_account
-   * Accepts the 14 verified fields, creates the institution and default root campus.
+   * Root registration always starts with a real Supabase Auth identity.
+   * The verified user then asks the Edge Function to atomically create the
+   * institution, campus, root profile and canonical actor.
    */
   async createInstitutionAccount(input: CreateInstitutionFormInput): Promise<CreateInstitutionAccountResponse> {
-    try {
-      const { data, error } = await supabase.rpc('create_institution_account', {
-        _institution_name: input.institution_name,
-        _institution_type: input.institution_type,
-        _registration_number: input.registration_number,
-        _school_type: input.institution_type,
-        _country: input.country || 'Nigeria',
-        _address: input.address,
-        _state: input.state,
-        _lga: input.lga,
-        _phone: input.phone,
-        _email: input.email,
-        _website: input.website || '',
-        _principal_name: input.principal_name,
-        _principal_phone: input.principal_phone,
-        _principal_email: input.principal_email,
-      });
+    return this.registerRootInstitution('bootstrap_school_institution', {
+      institution_name: input.institution_name,
+      institution_type: input.institution_type,
+      registration_number: input.registration_number,
+      country: input.country || 'Nigeria',
+      address: input.address,
+      state: input.state,
+      lga: input.lga,
+      phone: input.phone,
+      website: input.website || '',
+      principal_name: input.principal_name,
+      principal_email: input.principal_email,
+      principal_phone: input.principal_phone,
+    }, input.principal_email, input.principal_password, input.principal_name);
+  },
 
-      if (error) {
-        throw new Error(`INSTITUTION_REGISTRATION_FAILED: ${error.message}`);
-      }
-      if (
-        !data?.success ||
-        typeof data.institution_id !== 'string' ||
-        typeof data.school_id !== 'string'
-      ) {
-        throw new Error('INSTITUTION_REGISTRATION_INVALID_DATABASE_RECEIPT');
-      }
+  async createHigherInstitutionAccount(input: HigherInstitutionFormInput): Promise<CreateInstitutionAccountResponse> {
+    return this.registerRootInstitution('bootstrap_higher_institution', {
+      institution_name: input.institution_name,
+      institution_type: input.institution_type,
+      registration_number: input.registration_number,
+      country: input.country || 'Nigeria',
+      address: input.address,
+      phone: input.phone,
+      website: input.website || '',
+      dean_name: input.dean_name,
+      dean_email: input.dean_email,
+      dean_phone: input.dean_phone,
+    }, input.dean_email, input.dean_password, input.dean_name);
+  },
 
-      return {
-        institution_id: data.institution_id,
-        school_id: data.school_id,
-        name: input.institution_name,
-        type: input.institution_type,
-        country: input.country || 'Nigeria',
-        created_at: typeof data.created_at === 'string' ? data.created_at : undefined,
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.createInstitutionAccount failed:', err);
-      throw new Error(err.message || 'Institution creation failed. No fallback identity was generated.');
+  async registerRootInstitution(
+    action: 'bootstrap_school_institution' | 'bootstrap_higher_institution',
+    payload: Record<string, string>,
+    email: string,
+    password: string,
+    fullName: string,
+  ): Promise<CreateInstitutionAccountResponse> {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || password.length < 10 || !fullName.trim()) {
+      throw new Error('ROOT_EMAIL_NAME_AND_PASSWORD_REQUIRED');
     }
+
+    const pending = { action, payload, email: normalizedEmail };
+    localStorage.setItem('sefaes.pending-root-onboarding', JSON.stringify(pending));
+
+    const { data: signup, error: signupError } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/onboarding`,
+        data: { full_name: fullName.trim(), requested_root_action: action },
+      },
+    });
+    if (signupError) {
+      localStorage.removeItem('sefaes.pending-root-onboarding');
+      throw new Error(`ROOT_AUTH_SIGNUP_FAILED: ${signupError.message}`);
+    }
+
+    if (!signup.session) {
+      return {
+        institution_id: '',
+        school_id: '',
+        name: String(payload.institution_name || ''),
+        type: String(payload.institution_type || ''),
+        country: String(payload.country || 'Nigeria'),
+        success: true,
+        requires_email_confirmation: true,
+      };
+    }
+
+    return this.completePendingRootRegistration();
+  },
+
+  async completePendingRootRegistration(): Promise<CreateInstitutionAccountResponse> {
+    const raw = localStorage.getItem('sefaes.pending-root-onboarding');
+    if (!raw) throw new Error('NO_PENDING_ROOT_REGISTRATION');
+    const pending = JSON.parse(raw) as {
+      action: 'bootstrap_school_institution' | 'bootstrap_higher_institution';
+      payload: Record<string, string>;
+      email: string;
+    };
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !sessionData.session?.user) throw new Error('VERIFIED_ROOT_SESSION_REQUIRED');
+    if (sessionData.session.user.email?.toLowerCase() !== pending.email) {
+      throw new Error('ROOT_SESSION_EMAIL_MISMATCH');
+    }
+
+    const { data, error } = await supabase.functions.invoke('actor-onboarding', {
+      body: { action: pending.action, ...pending.payload },
+    });
+    if (error || !data?.success || !data.institution_id || !data.school_id || !data.url_slug) {
+      throw new Error(`ROOT_INSTITUTION_BOOTSTRAP_FAILED: ${error?.message || data?.error || 'INVALID_DATABASE_RECEIPT'}`);
+    }
+
+    localStorage.removeItem('sefaes.pending-root-onboarding');
+    return {
+      institution_id: data.institution_id,
+      school_id: data.school_id,
+      name: data.institution_name,
+      type: String(pending.payload.institution_type || ''),
+      country: String(pending.payload.country || 'Nigeria'),
+      success: true,
+      url_slug: data.url_slug,
+      institution_path: data.institution_path,
+    };
   },
 
   /**
@@ -144,32 +228,13 @@ export const onboardingService = {
         school_id: schoolId,
       });
 
-      if (error) {
-        console.warn('RPC initialize_secondary_classes returned error, attempting fallback insert:', error.message);
-        
-        // Fallback: direct class check/insert for resilience
-        const initialClassNames = ['JSS 1', 'JSS 2', 'JSS 3', 'SS 1', 'SS 2', 'SS 3'];
-        const classInserts = initialClassNames.map(name => ({
-          school_id: schoolId,
-          name,
-          arm: 'Gold',
-        }));
-
-        const { data: insertedClasses } = await supabase
-          .from('classes')
-          .insert(classInserts as any)
-          .select('id, name');
-
-        return {
-          classes_created: insertedClasses?.length || 6,
-          classes: insertedClasses || initialClassNames.map((name, i) => ({ id: `cls_${i + 1}`, name })),
-          success: true,
-        };
+      if (error) throw new Error(`SECONDARY_CLASS_INITIALIZATION_FAILED: ${error.message}`);
+      if (!data || !Array.isArray(data.classes) || typeof data.classes_created !== 'number') {
+        throw new Error('SECONDARY_CLASS_INITIALIZATION_INVALID_RECEIPT');
       }
-
       return {
-        classes_created: data?.classes_created || 6,
-        classes: data?.classes || [],
+        classes_created: data.classes_created,
+        classes: data.classes,
         success: true,
       };
     } catch (err: any) {
@@ -289,47 +354,7 @@ export const onboardingService = {
       });
 
       if (error || !data) {
-        // Deterministic validation query fallback
-        const [schoolRes, classesRes, subjectsRes, teachersRes, studentsRes] = await Promise.all([
-          supabase.from('schools').select('*').eq('id', params.school_id).maybeSingle(),
-          supabase.from('classes').select('*').eq('school_id', params.school_id),
-          supabase.from('class_subjects').select('*').eq('school_id', params.school_id),
-          supabase.from('teachers').select('*').eq('school_id', params.school_id),
-          supabase.from('students').select('*').eq('school_id', params.school_id),
-        ]);
-
-        const schoolData = schoolRes.data as any;
-        const errors: string[] = [];
-        if (!schoolData) errors.push('Authoritative school campus record missing');
-        if ((classesRes.data?.length || 0) === 0) errors.push('At least one class level must be defined');
-
-        const isValid = errors.length === 0;
-
-        if (isValid) {
-          await supabase
-            .from('institution_onboarding')
-            .upsert({
-              institution_id: params.institution_id,
-              current_step: 14,
-              is_completed: true,
-              completed_at: new Date().toISOString(),
-            } as any);
-        }
-
-        return {
-          institution_id: params.institution_id,
-          institution_name: schoolData?.school_name || 'Gradifi Institution',
-          school_id: params.school_id,
-          school_name: schoolData?.school_name || 'Main Campus',
-          classes_count: classesRes.data?.length || 0,
-          subjects_count: subjectsRes.data?.length || 0,
-          teachers_count: teachersRes.data?.length || 0,
-          students_count: studentsRes.data?.length || 0,
-          cbt_ready: true,
-          ai_grading_ready: true,
-          is_valid_for_launch: isValid,
-          validation_errors: errors,
-        };
+        throw new Error(`RECONCILIATION_RPC_FAILED: ${error?.message || 'EMPTY_DATABASE_RECEIPT'}`);
       }
 
       return data as ReconciliationReport;
