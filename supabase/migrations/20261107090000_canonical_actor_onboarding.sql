@@ -30,7 +30,7 @@ alter table public.identity_actors add constraint identity_actors_actor_type_che
   ]));
 
 -- Retire every historical onboarding overload. Frontend callers must use actor-onboarding.
-do $$
+do $drop_legacy_functions$
 declare f record;
 begin
   for f in
@@ -47,7 +47,7 @@ begin
   loop
     execute format('drop function %s', f.signature);
   end loop;
-end $$;
+end $drop_legacy_functions$;
 
 create or replace function public.complete_actor_onboarding(
   p_auth_user_id uuid,
@@ -79,7 +79,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = pg_catalog, public, extensions
-as $$
+as $complete_actor_body$
 declare
   v_prefix text;
   v_login_id text;
@@ -327,7 +327,7 @@ begin
     'pin_requires_change', true
   );
 end;
-$$;
+$complete_actor_body$;
 
 revoke all on function public.complete_actor_onboarding(uuid,uuid,text,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer) from public, anon, authenticated;
 grant execute on function public.complete_actor_onboarding(uuid,uuid,text,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer) to service_role;
@@ -337,7 +337,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = pg_catalog, public, extensions
-as $$
+as $auth_pin_login_body$
 declare v_actor public.identity_actors%rowtype;
 begin
   if coalesce(length(p_pin),0) not in (4,6) or nullif(trim(p_identifier),'') is null then
@@ -372,7 +372,7 @@ begin
     'role',v_actor.actor_type,'login_id',v_actor.login_identifier
   );
 end;
-$$;
+$auth_pin_login_body$;
 revoke all on function public.auth_pin_login(text,text) from public, anon, authenticated;
 grant execute on function public.auth_pin_login(text,text) to service_role;
 
@@ -381,7 +381,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = pg_catalog, public, extensions
-as $pin$
+as $set_pin_body$
 declare
   v_user_id uuid := auth.uid();
   v_role text;
@@ -404,7 +404,7 @@ begin
   where auth_user_id = v_user_id;
   return jsonb_build_object('success', true, 'pin_requires_change', false);
 end;
-$pin$;
+$set_pin_body$;
 revoke all on function public.set_pin(text) from public, anon;
 grant execute on function public.set_pin(text) to authenticated;
 
