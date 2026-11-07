@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 import { authService } from "../../services/authService";
 import { actorOnboardingService, ActorType, CreateActorResult, CreateDeanResult } from "../../services/actorOnboardingService";
 
-type AcademicRole = "dean" | Extract<ActorType, "hod" | "adviser" | "lecturer">;
+type AcademicRole = "dean" | ActorType;
 type Option = { id: string; name: string };
 
 export const HigherEducationOnboarding: React.FC = () => {
@@ -12,6 +12,10 @@ export const HigherEducationOnboarding: React.FC = () => {
   const [schools, setSchools] = useState<Option[]>([]);
   const [faculties, setFaculties] = useState<Option[]>([]);
   const [departments, setDepartments] = useState<Option[]>([]);
+  const [classes, setClasses] = useState<Option[]>([]);
+  const [students, setStudents] = useState<Array<{id:string; name:string}>>([]);
+  const [classId, setClassId] = useState("");
+  const [studentId, setStudentId] = useState("");
   const [role, setRole] = useState<AcademicRole>("lecturer");
   const [callerRole, setCallerRole] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
@@ -71,7 +75,10 @@ export const HigherEducationOnboarding: React.FC = () => {
       if (role === "dean" && !facultyId) throw new Error("Select the faculty this Dean will lead.");
       if (role === "hod" && !departmentId) throw new Error("Select the department this HOD will lead.");
       if (role === "adviser" && !departmentId) throw new Error("Select the adviser's department.");
-      if (role === "lecturer" && (!email.trim() || !schoolId)) throw new Error("Lecturer requires an official email and campus.");
+      if (["vice_principal", "bursar", "teacher", "student", "lecturer"].includes(role) && !schoolId) throw new Error("Select the school or campus for this actor.");
+      if (role === "lecturer" && !email.trim()) throw new Error("Lecturer requires an official email.");
+      if (role === "student" && !classId) throw new Error("Select the student class.");
+      if (role === "parent" && (!schoolId || !studentId)) throw new Error("Select the child school and student.");
       if (role === "dean") {
         if (!email.trim() || password.length < 10) throw new Error("Dean requires an institutional email and a password of at least 10 characters.");
         const dean = await actorOnboardingService.createDean({
@@ -84,7 +91,9 @@ export const HigherEducationOnboarding: React.FC = () => {
       const result = await actorOnboardingService.create({
         actor_type: role,
         institution_id: institutionId,
-        school_id: role === "lecturer" ? schoolId : null,
+        school_id: ["vice_principal", "bursar", "teacher", "student", "lecturer"].includes(role) ? schoolId : null,
+        class_id: role === "student" ? classId : null,
+        student_id: role === "parent" ? studentId : null,
         full_name: fullName.trim(),
         email: email.trim() || null,
         phone: phone.trim() || null,
@@ -123,7 +132,7 @@ export const HigherEducationOnboarding: React.FC = () => {
       <div><dt className="text-slate-500">Role</dt><dd className="font-semibold">{created.actor_type}</dd></div>
       <div><dt className="text-slate-500">Name</dt><dd className="font-semibold">{created.full_name}</dd></div>
       <div><dt className="text-slate-500">Generated Login ID</dt><dd className="font-mono font-bold">{created.login_id}</dd></div>
-      <div><dt className="text-slate-500">Temporary 6-digit PIN</dt><dd className="font-mono text-xl font-bold">{created.pin}</dd></div>
+      <div><dt className="text-slate-500">Temporary {["student", "parent"].includes(created.actor_type) ? "4" : "6"}-digit PIN</dt><dd className="font-mono text-xl font-bold">{created.pin}</dd></div>
     </dl>
     <button className="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-white" onClick={() => { setCreated(null); setFullName(""); setEmail(""); setPhone(""); }}>Create another account</button>
   </section></main>;
@@ -135,7 +144,7 @@ export const HigherEducationOnboarding: React.FC = () => {
     <form onSubmit={submit} className="mt-6 space-y-4">
       <label className="block text-sm font-medium">Academic role
         <select value={role} onChange={e => setRole(e.target.value as AcademicRole)} className="mt-1 w-full rounded-lg border p-2">
-          {(callerRole === "admin" || callerRole === "superadmin") && <option value="dean">Dean · Supabase Auth</option>}<option value="hod">Head of Department · PIN</option><option value="adviser">Course Adviser</option><option value="lecturer">Lecturer</option>
+          {(callerRole === "admin" || callerRole === "superadmin") && <option value="dean">Dean · Supabase Auth</option>}{callerRole === "dean" && <><option value="vice_principal">Vice Principal · PIN</option><option value="bursar">Bursar · PIN</option><option value="teacher">Teacher · PIN</option><option value="student">Student · PIN</option><option value="parent">Parent · PIN</option></>}<option value="hod">Head of Department · PIN</option><option value="adviser">Course Adviser · PIN</option><option value="lecturer">Lecturer · PIN</option>
         </select>
       </label>
       <label className="block text-sm font-medium">Full name<input required value={fullName} onChange={e=>setFullName(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>
@@ -146,6 +155,15 @@ export const HigherEducationOnboarding: React.FC = () => {
       {role === "dean" && <label className="block text-sm font-medium">Dean password (minimum 10 characters)<input type="password" minLength={10} autoComplete="new-password" required value={password} onChange={e=>setPassword(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>}
       {(role==="dean" || role==="lecturer") && <label className="block text-sm font-medium">Faculty
         <select value={facultyId} onChange={e=>setFacultyId(e.target.value)} className="mt-1 w-full rounded-lg border p-2"><option value="">Select faculty</option>{faculties.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
+      </label>}
+      {["vice_principal", "bursar", "teacher", "student", "parent", "lecturer"].includes(role) && <label className="block text-sm font-medium">School / Campus
+        <select value={schoolId} onChange={e=>{setSchoolId(e.target.value);setClassId("");setStudentId("");}} required className="mt-1 w-full rounded-lg border p-2"><option value="">Select school or campus</option>{schools.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
+      </label>}
+      {role === "student" && <label className="block text-sm font-medium">Class
+        <select value={classId} onChange={e=>setClassId(e.target.value)} required className="mt-1 w-full rounded-lg border p-2"><option value="">Select class</option>{classes.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
+      </label>}
+      {role === "parent" && <label className="block text-sm font-medium">Child / Student
+        <select value={studentId} onChange={e=>setStudentId(e.target.value)} required className="mt-1 w-full rounded-lg border p-2"><option value="">Select student</option>{students.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
       </label>}
       {(role==="hod" || role==="adviser" || role==="lecturer") && <label className="block text-sm font-medium">Department
         <select value={departmentId} onChange={e=>setDepartmentId(e.target.value)} className="mt-1 w-full rounded-lg border p-2"><option value="">Select department</option>{departments.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
