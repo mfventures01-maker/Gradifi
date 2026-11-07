@@ -62,7 +62,7 @@ serve(async (req) => {
     }
 
     const actorType = String(body.actor_type || "");
-    const allowed = ["vice_principal", "bursar", "teacher", "student", "parent"];
+    const allowed = ["vice_principal", "bursar", "teacher", "student", "parent", "dean", "hod", "adviser", "lecturer"];
     if (!allowed.includes(actorType)) return json({ error: "INVALID_ACTOR_TYPE" }, 400);
 
     const institutionId = String(body.institution_id || actorRows.institution_id);
@@ -104,6 +104,13 @@ serve(async (req) => {
       p_date_of_birth: body.date_of_birth || null,
       p_relationship: body.relationship || "Parent",
       p_is_primary: body.is_primary !== false,
+      p_faculty_id: body.faculty_id || null,
+      p_department_id: body.department_id || null,
+      p_title: body.title || null,
+      p_rank: body.rank || null,
+      p_specialization: body.specialization || null,
+      p_is_graduate_student_supervisor: body.is_graduate_student_supervisor === true,
+      p_max_students: Number.isInteger(body.max_students) ? body.max_students : null,
     });
 
     if (provisionError || !result?.success) {
