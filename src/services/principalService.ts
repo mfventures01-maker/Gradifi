@@ -67,8 +67,29 @@ export const principalService = {
     };
   },
 
-  generatePin(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+  /**
+   * Canonical staff provisioning. No client-generated PINs, Auth sign-up fallbacks,
+   * direct profile inserts, or fabricated user IDs are permitted.
+   */
+  async createTeacherWithPin(data: {
+    name: string;
+    email: string;
+    phone: string;
+    school_id: string;
+    role: 'teacher' | 'vice_principal' | 'bursar';
+  }) {
+    const { actorOnboardingService } = await import('./actorOnboardingService');
+    const identity = await (await import('./authService')).authService.resolveCurrentIdentity();
+    if (!identity.institutionId) throw new Error('Authenticated institution context is required');
+    const result = await actorOnboardingService.create({
+      actor_type: data.role,
+      institution_id: identity.institutionId,
+      school_id: data.school_id,
+      full_name: data.name,
+      email: data.email || null,
+      phone: data.phone || null,
+    });
+    return { success: true, pin: result.pin, login_id: result.login_id, user_id: result.user_id };
   },
 
   /**
