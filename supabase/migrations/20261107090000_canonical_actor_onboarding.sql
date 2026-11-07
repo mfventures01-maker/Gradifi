@@ -151,6 +151,7 @@ begin
     'profile_id', v_profile_id, 'actor_type', p_actor_type,
     'institution_id', p_institution_id, 'school_id', p_school_id,
     'actor_record_id', v_actor_record_id,
+    'student_number', v_student_number,
     'pin_requires_change', true
   );
 end;
