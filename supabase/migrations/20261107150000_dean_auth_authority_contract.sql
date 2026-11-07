@@ -25,7 +25,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = pg_catalog, public
-as $$
+as $complete_dean_body$
 declare
   v_profile_id uuid;
   v_faculty_record_id uuid;
@@ -82,7 +82,7 @@ begin
     'authentication_method', 'email'
   );
 end;
-$$;
+$complete_dean_body$;
 
 revoke all on function public.complete_dean_onboarding(uuid,uuid,uuid,text,text,text)
   from public, anon, authenticated;
