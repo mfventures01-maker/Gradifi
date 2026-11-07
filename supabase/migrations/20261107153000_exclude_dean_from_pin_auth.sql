@@ -15,7 +15,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = pg_catalog, public, extensions
-as $pin$
+as $set_pin_final_body$
 declare
   v_user_id uuid := auth.uid();
   v_role text;
@@ -41,7 +41,7 @@ begin
   where auth_user_id = v_user_id;
   return jsonb_build_object('success', true, 'pin_requires_change', false);
 end;
-$pin$;
+$set_pin_final_body$;
 
 revoke all on function public.set_pin(text) from public, anon;
 grant execute on function public.set_pin(text) to authenticated;
