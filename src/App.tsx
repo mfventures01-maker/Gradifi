@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HomePage } from './pages/home/HomePage';
 import { OnboardingWizard } from './pages/onboarding/OnboardingWizard';
 import { HigherEducationOnboarding } from './pages/onboarding/HigherEducationOnboarding';
+import { HigherEducationDashboard } from './pages/higher-education/HigherEducationDashboard';
 import { LoginPage } from './pages/auth/LoginPage';
 import { AuthGuard } from './components/AuthGuard';
 
@@ -64,6 +65,7 @@ function App() {
           <Route path="parent" element={<ParentDashboard />} />
           <Route path="bursar" element={<BursarDashboard />} />
           <Route path="vp" element={<VPDashboard />} />
+          <Route path="higher-education" element={<HigherEducationDashboard />} />
         </Route>
 
         <Route path="/dashboard" element={<AuthGuard><PrincipalDashboard /></AuthGuard>} />
