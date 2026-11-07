@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { onboardingService } from '../../services/onboardingService';
 import { authService } from '../../services/authService';
-import { ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { CreateVP } from './CreateVP';
 import { CreateBursar } from './CreateBursar';
 import { CreateTeacher } from './CreateTeacher';
@@ -33,9 +33,7 @@ export const OnboardingWizard: React.FC = () => {
     principal_name: '',
     principal_phone: '',
     principal_email: '',
-    principal_password: '',
-    class_name: 'JSS 1',
-    subject: 'Mathematics'
+    principal_password: ''
   });
 
   useEffect(() => {
@@ -111,7 +109,7 @@ export const OnboardingWizard: React.FC = () => {
 
 
   const handleNext = () => {
-    if (step < 4) setStep(step + 1);
+    if (step < 3) setStep(step + 1);
     else handleSubmit();
   };
 
@@ -151,8 +149,7 @@ export const OnboardingWizard: React.FC = () => {
     switch(step) {
       case 1: return <Step1 data={formData} setData={setFormData} />;
       case 2: return <Step2 data={formData} setData={setFormData} />;
-      case 3: return <Step3 data={formData} setData={setFormData} />;
-      case 4: return <Step4 data={formData} />;
+      case 3: return <Step4 data={formData} />;
       default: return null;
     }
   };
@@ -163,8 +160,7 @@ export const OnboardingWizard: React.FC = () => {
         <div className="flex justify-between mb-8 text-xs text-slate-400">
           <span className={step >= 1 ? "text-blue-600 font-bold" : ""}>School Basics</span>
           <span className={step >= 2 ? "text-blue-600 font-bold" : ""}>Admin Account</span>
-          <span className={step >= 3 ? "text-blue-600 font-bold" : ""}>First Class</span>
-          <span className={step >= 4 ? "text-blue-600 font-bold" : ""}>Review</span>
+          <span className={step >= 3 ? "text-blue-600 font-bold" : ""}>Review & Create</span>
         </div>
         {renderStep()}
         {statusMessage && <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{statusMessage}</p>}
@@ -174,7 +170,7 @@ export const OnboardingWizard: React.FC = () => {
           disabled={loading}
           className="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 flex justify-center items-center gap-2"
         >
-          {loading ? <Loader2 className="animate-spin" /> : step === 4 ? 'Launch Institution' : 'Continue'}
+          {loading ? <Loader2 className="animate-spin" /> : step === 3 ? 'Create Institution Account' : 'Continue'}
           {!loading && <ArrowRight className="w-4 h-4" />}
         </button>
       </div>
@@ -208,14 +204,6 @@ const Step2 = ({ data, setData }: any) => (
   </div>
 );
 
-const Step3 = ({ data, setData }: any) => (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">First Class</h2>
-    <input placeholder="Class Name (e.g. JSS 1)" value={data.class_name} onChange={e => setData({...data, class_name: e.target.value})} className="w-full p-3 border rounded-xl mb-3" />
-    <input placeholder="Subject (e.g. Mathematics)" value={data.subject} onChange={e => setData({...data, subject: e.target.value})} className="w-full p-3 border rounded-xl" />
-  </div>
-);
-
 const Step4 = ({ data }: any) => (
   <div>
     <h2 className="text-2xl font-bold mb-4">Review & Launch</h2>
@@ -223,8 +211,8 @@ const Step4 = ({ data }: any) => (
       <p><strong>School:</strong> {data.institution_name}</p>
       <p><strong>Principal:</strong> {data.principal_name}</p>
       <p><strong>Phone:</strong> {data.principal_phone}</p>
-      <p><strong>First Class:</strong> {data.class_name}</p>
+      <p><strong>Institution type:</strong> {data.institution_type}</p>
     </div>
-    <p className="text-xs text-slate-500 mt-4">Click "Launch Institution" to finalize your school setup.</p>
+    <p className="text-xs text-slate-500 mt-4">Click "Create Institution Account" to create the Principal Auth identity and institution workspace. Class and subject setup follows after sign-in.</p>
   </div>
 );
