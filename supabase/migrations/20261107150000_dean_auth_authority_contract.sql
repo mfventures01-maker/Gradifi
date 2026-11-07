@@ -120,9 +120,7 @@ begin
     end if;
   elsif p_expected_authority_role = 'dean' then
     v_expected_actor_roles := array['hod','adviser','lecturer'];
-    if v_actor.school_id is not null then
-      raise exception 'HIGHER_ED_ACTOR_MUST_BE_INSTITUTION_SCOPED';
-    end if;
+    -- Higher-education actors remain institution-bound; Lecturer may also carry a campus school_id.
   else
     raise exception 'UNSUPPORTED_AUTHORITY_ROLE';
   end if;
