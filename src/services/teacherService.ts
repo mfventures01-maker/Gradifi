@@ -34,6 +34,7 @@ export const teacherService = {
       full_name: params.name,
       email: params.email,
       phone: params.phone,
+      class_subject_ids: params.class_subject_ids || [],
     });
     const { data, error } = await supabase.from('teachers').select('*').eq('user_id', result.user_id).single();
     if (error || !data) throw (error || new Error('Provisioned teacher row was not readable'));
