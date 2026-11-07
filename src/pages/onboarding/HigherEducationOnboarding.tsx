@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 import { authService } from "../../services/authService";
 import { actorOnboardingService, ActorType, CreateActorResult, CreateDeanResult } from "../../services/actorOnboardingService";
 
-type AcademicRole = Extract<ActorType, "dean" | "hod" | "adviser" | "lecturer">;
+type AcademicRole = "dean" | Extract<ActorType, "hod" | "adviser" | "lecturer">;
 type Option = { id: string; name: string };
 
 export const HigherEducationOnboarding: React.FC = () => {
