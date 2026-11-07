@@ -98,7 +98,7 @@ begin
         select 1 from public.class_subjects cs
         where cs.id = requested.class_subject_id
           and cs.school_id = p_school_id
-          and cs.institution_id = p_institution_id
+          and (cs.institution_id is null or cs.institution_id = p_institution_id)
       )
     ) then raise exception 'CLASS_SUBJECT_NOT_IN_SCHOOL'; end if;
   end if;
@@ -173,7 +173,7 @@ begin
   return jsonb_build_object(
     'success', true, 'login_id', v_login_id, 'user_id', p_auth_user_id,
     'profile_id', v_profile_id, 'actor_type', p_actor_type,
-    'institution_id', p_institution_id, 'school_id', p_school_id,
+    'institution_id', p_institution_id, 'school_id', v_effective_school_id,
     'actor_record_id', v_actor_record_id,
     'full_name', trim(p_full_name),
     'email', nullif(trim(p_email), ''),
@@ -185,7 +185,7 @@ end;
 $$;
 
 revoke all on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean) from public, anon, authenticated;
-grant execute on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,text,date,text,boolean) to service_role;
+grant execute on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean) to service_role;
 
 create or replace function public.auth_pin_login(p_identifier text, p_pin text)
 returns jsonb
