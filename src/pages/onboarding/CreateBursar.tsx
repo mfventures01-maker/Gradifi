@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { actorOnboardingService } from '../../services/actorOnboardingService';
 import { 
   Wallet, 
   Mail, 
@@ -32,6 +32,7 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{
     profile_id: string;
+    login_id: string;
     pin: string;
     full_name: string;
     phone: string;
@@ -47,36 +48,18 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
       if (!name.trim()) throw new Error('Full name is required');
       if (!phone.trim()) throw new Error('Phone number is required');
 
-      let resData: any = null;
-      let rpcError: any = null;
-
-      try {
-        const { data, error } = await supabase.rpc('create_bursar', {
-          p_school_id: schoolId || null,
-          p_institution_id: institutionId || null,
-          p_name: name.trim(),
-          p_phone: phone.trim(),
-          p_email: email.trim() || null
-        });
-        resData = data;
-        rpcError = error;
-      } catch (err) {
-        rpcError = err;
-      }
-
-      if (rpcError || !resData || !resData.success) {
-        console.warn('create_bursar RPC fallback activated:', rpcError);
-        resData = {
-          success: true,
-          profile_id: `bursar_${Date.now()}`,
-          pin: Math.floor(100000 + Math.random() * 900000).toString(),
-          full_name: name.trim(),
-          phone: phone.trim()
-        };
-      }
+      const resData = await actorOnboardingService.create({
+        actor_type: 'bursar',
+        institution_id: institutionId,
+        school_id: schoolId,
+        full_name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim() || null,
+      });
 
       setSuccess({
         profile_id: resData.profile_id,
+        login_id: resData.login_id,
         pin: resData.pin,
         full_name: resData.full_name,
         phone: resData.phone
