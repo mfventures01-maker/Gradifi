@@ -87,6 +87,7 @@ begin
   v_login_id := v_prefix || '-' || lpad(nextval('public.actor_login_id_seq')::text, 8, '0');
 
   if p_actor_type = 'student' then
+    if length(trim(p_full_name)) <= length(split_part(trim(p_full_name), ' ', 1)) then raise exception 'STUDENT_LAST_NAME_REQUIRED'; end if;
     if p_class_id is null or not exists (
       select 1 from public.classes c where c.id = p_class_id and c.school_id = p_school_id
     ) then raise exception 'CLASS_NOT_IN_SCHOOL'; end if;
@@ -199,5 +200,34 @@ end;
 $$;
 revoke all on function public.auth_pin_login(text,text) from public, anon, authenticated;
 grant execute on function public.auth_pin_login(text,text) to service_role;
+
+create or replace function public.set_pin(p_new_pin text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, extensions
+as $
+declare v_user_id uuid := auth.uid(); v_role text;
+begin
+  if v_user_id is null then raise exception 'AUTH_REQUIRED'; end if;
+  select role into v_role from public.profiles where user_id = v_user_id;
+  if v_role is null then raise exception 'PROFILE_NOT_FOUND'; end if;
+  if p_new_pin !~ '^[0-9]+ or length(p_new_pin) <> case when v_role in ('student','parent') then 4 else 6 end then
+    raise exception 'INVALID_PIN_LENGTH';
+  end if;
+  update public.profiles
+  set pin = null, pin_hash = crypt(p_new_pin, gen_salt('bf')),
+      pin_changed_at = now(), pin_requires_change = false,
+      failed_attempts = 0, locked_until = null
+  where user_id = v_user_id;
+  update public.identity_actors
+  set pin_hash = crypt(p_new_pin, gen_salt('bf')), pin_changed_at = now(),
+      failed_attempts = 0, locked_until = null, updated_at = now()
+  where auth_user_id = v_user_id;
+  return jsonb_build_object('success', true, 'pin_requires_change', false);
+end;
+$;
+revoke all on function public.set_pin(text) from public, anon;
+grant execute on function public.set_pin(text) to authenticated;
 
 commit;
