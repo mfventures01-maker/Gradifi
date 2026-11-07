@@ -27,8 +27,8 @@ interface CreateTeacherProps {
 }
 
 export const CreateTeacher: React.FC<CreateTeacherProps> = ({
-  schoolId = 'sch_demo_01',
-  institutionId = 'inst_demo_01',
+  schoolId = '',
+  institutionId = '',
   onSuccess,
   onNavigateToStudents,
 }) => {
@@ -56,14 +56,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
           subjectService.getSubjectCatalog().catch(() => []),
         ]);
 
-        setClasses(clsData.length > 0 ? clsData : [
-          { id: 'cls_jss1', school_id: schoolId, name: 'JSS 1', arm: 'Gold', created_at: '' },
-          { id: 'cls_jss2', school_id: schoolId, name: 'JSS 2', arm: 'Gold', created_at: '' },
-          { id: 'cls_jss3', school_id: schoolId, name: 'JSS 3', arm: 'Gold', created_at: '' },
-          { id: 'cls_ss1', school_id: schoolId, name: 'SS 1', arm: 'Science', created_at: '' },
-          { id: 'cls_ss2', school_id: schoolId, name: 'SS 2', arm: 'Science', created_at: '' },
-          { id: 'cls_ss3', school_id: schoolId, name: 'SS 3', arm: 'Science', created_at: '' },
-        ]);
+        setClasses(clsData);
 
         setSubjects(subData);
       } catch (err) {
@@ -147,7 +140,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             Teacher & Staff Registration
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            Register academic faculty members and map them to class subject assignments using the certified Supabase RPC.
+            Register academic faculty members and map them to class subject assignments using the canonical identity provisioning service.
           </p>
         </div>
         <div className="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
@@ -189,11 +182,11 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Teacher ID</p>
-                <p className="font-mono text-sm font-bold text-blue-700">{createdTeacher.teacher_id}</p>
+                <p className="font-mono text-sm font-bold text-blue-700">{createdTeacher.login_id || createdTeacher.teacher_id}</p>
               </div>
               <button
                 type="button"
-                onClick={() => handleCopyId(createdTeacher.teacher_id)}
+                onClick={() => handleCopyId(createdTeacher.login_id || createdTeacher.teacher_id)}
                 className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                 title="Copy Teacher ID"
               >
@@ -205,6 +198,10 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
               <div>
                 <p className="text-slate-400">Full Name</p>
                 <p className="font-semibold text-slate-800">{createdTeacher.name}</p>
+              </div>
+              <div>
+                <p className="text-slate-400">Temporary PIN</p>
+                <p className="font-mono font-bold text-blue-700">{createdTeacher.pin}</p>
               </div>
               <div>
                 <p className="text-slate-400">Email</p>
