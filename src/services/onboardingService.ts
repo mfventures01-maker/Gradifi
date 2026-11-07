@@ -30,7 +30,7 @@ export interface CreateInstitutionAccountResponse {
   name: string;
   type: string;
   country: string;
-  created_at: string;
+  created_at?: string;
   success: boolean;
 }
 
@@ -91,65 +91,45 @@ export const onboardingService = {
   async createInstitutionAccount(input: CreateInstitutionFormInput): Promise<CreateInstitutionAccountResponse> {
     try {
       const { data, error } = await supabase.rpc('create_institution_account', {
-        name: input.institution_name,
-        type: input.institution_type,
-        country: input.country || 'Nigeria',
-        institution_name: input.institution_name,
-        institution_type: input.institution_type,
-        registration_number: input.registration_number,
-        address: input.address,
-        state: input.state,
-        lga: input.lga,
-        phone: input.phone,
-        email: input.email,
-        website: input.website || '',
-        principal_name: input.principal_name,
-        principal_phone: input.principal_phone,
-        principal_email: input.principal_email,
-        p_name: input.institution_name,
-        p_type: input.institution_type,
-        p_country: input.country || 'Nigeria',
+        _institution_name: input.institution_name,
+        _institution_type: input.institution_type,
+        _registration_number: input.registration_number,
+        _school_type: input.institution_type,
+        _country: input.country || 'Nigeria',
+        _address: input.address,
+        _state: input.state,
+        _lga: input.lga,
+        _phone: input.phone,
+        _email: input.email,
+        _website: input.website || '',
+        _principal_name: input.principal_name,
+        _principal_phone: input.principal_phone,
+        _principal_email: input.principal_email,
       });
 
-      let instData = data;
-      if (error || !instData) {
-        console.warn('RPC create_institution_account returned error, using fallback:', error?.message);
-        instData = {
-          institution_id: `inst_${Date.now()}`,
-          school_id: `sch_${Date.now()}`,
-          name: input.institution_name,
-          type: input.institution_type,
-          country: input.country || 'Nigeria',
-          created_at: new Date().toISOString(),
-        };
+      if (error) {
+        throw new Error(`INSTITUTION_REGISTRATION_FAILED: ${error.message}`);
       }
-
-      const institutionId = instData.institution_id || `inst_${Date.now()}`;
-      const schoolId = instData.school_id || `sch_${Date.now()}`;
-
-      // Update onboarding record if available
-      try {
-        await supabase.from('institution_onboarding').upsert({
-          institution_id: institutionId,
-          current_step: 2,
-          is_completed: false,
-        } as any);
-      } catch (onboardingErr) {
-        console.warn('Non-blocking onboarding state update notice:', onboardingErr);
+      if (
+        !data?.success ||
+        typeof data.institution_id !== 'string' ||
+        typeof data.school_id !== 'string'
+      ) {
+        throw new Error('INSTITUTION_REGISTRATION_INVALID_DATABASE_RECEIPT');
       }
 
       return {
-        institution_id: institutionId,
-        school_id: schoolId,
-        name: data.name || input.institution_name,
-        type: data.type || input.institution_type,
-        country: data.country || input.country || 'Nigeria',
-        created_at: data.created_at || new Date().toISOString(),
+        institution_id: data.institution_id,
+        school_id: data.school_id,
+        name: input.institution_name,
+        type: input.institution_type,
+        country: input.country || 'Nigeria',
+        created_at: typeof data.created_at === 'string' ? data.created_at : undefined,
         success: true,
       };
     } catch (err: any) {
-      console.error('onboardingService.createInstitutionAccount catch block:', err);
-      throw new Error(err.message || 'Institution creation failed. Please check your network connection.');
+      console.error('onboardingService.createInstitutionAccount failed:', err);
+      throw new Error(err.message || 'Institution creation failed. No fallback identity was generated.');
     }
   },
 
