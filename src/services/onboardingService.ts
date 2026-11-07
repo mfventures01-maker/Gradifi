@@ -213,7 +213,7 @@ export const onboardingService = {
       phone: input.phone,
     });
     return {
-      teacher_id: result.actor_type === "teacher" ? result.user_id : "",
+      teacher_id: result.login_id,
       login_id: result.login_id,
       pin: result.pin,
       name: input.name,
@@ -237,7 +237,7 @@ export const onboardingService = {
       date_of_birth: input.date_of_birth,
     });
     return {
-      student_id: result.user_id,
+      student_id: result.actor_record_id || result.user_id,
       student_number: result.login_id,
       login_id: result.login_id,
       pin: result.pin,
