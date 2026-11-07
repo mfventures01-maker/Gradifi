@@ -14,7 +14,7 @@ create or replace function public.set_pin(p_new_pin text)
 returns jsonb
 language plpgsql
 security definer
-set search_path = public, extensions
+set search_path = pg_catalog, public, extensions
 as $pin$
 declare
   v_user_id uuid := auth.uid();
