@@ -14,7 +14,7 @@ export interface AuthSessionState {
   actor: IdentityActor | null;
   institutionId: string | null;
   schoolId: string | null;
-  role: 'admin' | 'principal' | 'teacher' | 'student' | 'parent' | null;
+  role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | null;
 }
 
 export const authService = {
@@ -93,27 +93,17 @@ export const authService = {
       .eq('user_id', user.id)
       .maybeSingle();
 
-    // 2. Fetch Identity Actor (authoritative scoping)
-    let { data: actor, error: actorError } = await supabase
+    // 2. Fetch the authoritative identity actor by its Supabase Auth UID.
+    const { data: actor } = await supabase
       .from('identity_actors')
       .select('*')
-      .eq('auth_user_id' as any, user.id)
+      .eq('auth_user_id', user.id)
       .eq('status', 'active')
       .maybeSingle();
 
-    if (actorError) {
-      const { data: fallbackActor } = await supabase
-        .from('identity_actors')
-        .select('*')
-        .eq('user_id' as any, user.id)
-        .eq('status', 'active')
-        .maybeSingle();
-      if (fallbackActor) actor = fallbackActor;
-    }
-
     const institutionId = actor?.institution_id || profile?.institution_id || null;
     const schoolId = actor?.school_id || null;
-    const role = (actor?.role || profile?.role || null) as AuthSessionState['role'];
+    const role = (actor?.actor_type || profile?.role || null) as AuthSessionState['role'];
 
     return {
       isAuthenticated: true,
