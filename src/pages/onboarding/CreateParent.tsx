@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { actorOnboardingService } from '../../services/actorOnboardingService';
 import { 
   Users, 
   Mail, 
@@ -55,6 +56,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{
     parent_name: string;
+    login_id: string;
     phone: string;
     student_name: string;
     pin: string;
@@ -115,39 +117,27 @@ export const CreateParent: React.FC<CreateParentProps> = ({
       if (!parentName.trim()) throw new Error('Parent name is required');
       if (!parentPhone.trim()) throw new Error('Phone number is required');
 
-      let rpcData: any = null;
-      try {
-        const { data, error } = await supabase.rpc('create_parent' as any, {
-          p_student_id: selectedStudentId,
-          p_parent_name: parentName.trim(),
-          p_parent_phone: parentPhone.trim(),
-          p_parent_email: parentEmail.trim() || null,
-          p_relationship: relationship,
-          p_is_primary: isPrimary
-        });
-        if (error || !data) throw error || new Error('RPC error');
-        rpcData = data;
-      } catch (rpcErr) {
-        console.warn('RPC create_parent fallback execution:', rpcErr);
-        rpcData = {
-          success: true,
-          parent_name: parentName.trim(),
-          phone: parentPhone.trim(),
-          pin: String(1000 + Math.floor(Math.random() * 9000)),
-          is_existing: false
-        };
-      }
-
-      if (!rpcData.success) throw new Error(rpcData.error || 'Failed to create parent');
+      const rpcData = await actorOnboardingService.create({
+        actor_type: 'parent',
+        institution_id: institutionId,
+        school_id: schoolId,
+        student_id: selectedStudentId,
+        full_name: parentName.trim(),
+        phone: parentPhone.trim(),
+        email: parentEmail.trim() || null,
+        relationship,
+        is_primary: isPrimary,
+      });
 
       const student = students.find(s => s.id === selectedStudentId);
 
       setSuccess({
-        parent_name: rpcData.parent_name,
-        phone: rpcData.phone,
+        parent_name: parentName.trim(),
+        login_id: rpcData.login_id,
+        phone: parentPhone.trim(),
         student_name: student ? `${student.first_name} ${student.last_name}` : 'Student',
         pin: rpcData.pin,
-        is_existing: rpcData.is_existing || false
+        is_existing: false
       });
 
       if (onSuccess) onSuccess();
