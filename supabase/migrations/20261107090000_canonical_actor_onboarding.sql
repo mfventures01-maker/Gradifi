@@ -6,6 +6,14 @@ create extension if not exists pgcrypto;
 create sequence if not exists public.actor_login_id_seq;
 create sequence if not exists public.student_number_seq;
 alter table public.profiles add column if not exists email text;
+alter table public.profiles
+  add column if not exists authority_user_id uuid references auth.users(id) on delete restrict;
+alter table public.identity_actors
+  add column if not exists authority_user_id uuid references auth.users(id) on delete restrict;
+create index if not exists profiles_authority_user_id_idx
+  on public.profiles(authority_user_id);
+create index if not exists identity_actors_authority_user_id_idx
+  on public.identity_actors(authority_user_id);
 
 alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles add constraint profiles_role_check
@@ -32,7 +40,9 @@ begin
     where n.nspname = 'public'
       and p.proname in (
         'create_teacher','create_vp','create_bursar','enroll_student',
-        'create_parent','bulk_enroll_students','set_pin','reset_user_pin'
+        'create_parent','bulk_enroll_students','create_student_profile',
+        'create_staff_profile','authenticate_actor','sub_account_pin_login',
+        'set_pin','reset_user_pin'
       )
   loop
     execute format('drop function %s', f.signature);
@@ -41,6 +51,8 @@ end $$;
 
 create or replace function public.complete_actor_onboarding(
   p_auth_user_id uuid,
+  p_authority_user_id uuid,
+  p_expected_authority_role text,
   p_actor_type text,
   p_school_id uuid,
   p_institution_id uuid,
@@ -66,7 +78,7 @@ create or replace function public.complete_actor_onboarding(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public, extensions
+set search_path = pg_catalog, public, extensions
 as $$
 declare
   v_prefix text;
@@ -77,8 +89,40 @@ declare
   v_first_name text;
   v_last_name text;
   v_effective_school_id uuid := p_school_id;
+  v_authority public.profiles%rowtype;
+  v_expected_actor_roles text[];
 begin
-  if p_auth_user_id is null then raise exception 'AUTH_USER_REQUIRED'; end if;
+  if p_auth_user_id is null or p_authority_user_id is null then
+    raise exception 'AUTH_USER_AND_AUTHORITY_REQUIRED';
+  end if;
+  if p_auth_user_id = p_authority_user_id then raise exception 'SELF_PROVISIONING_DENIED'; end if;
+  select * into v_authority
+  from public.profiles
+  where user_id = p_authority_user_id;
+  if not found then raise exception 'AUTHORITY_PROFILE_NOT_FOUND'; end if;
+  if v_authority.role <> p_expected_authority_role then raise exception 'INVALID_AUTHORITY_ROLE'; end if;
+  if v_authority.institution_id is distinct from p_institution_id then
+    raise exception 'CROSS_INSTITUTION_AUTHORITY_DENIED';
+  end if;
+  if p_expected_authority_role = 'principal_admin' then
+    v_expected_actor_roles := array['vice_principal','bursar','teacher','student','parent'];
+    if v_authority.school_id is distinct from p_school_id then
+      raise exception 'CROSS_SCHOOL_AUTHORITY_DENIED';
+    end if;
+    if not exists (
+      select 1 from public.identity_actors ia
+      where ia.auth_user_id = p_authority_user_id
+        and ia.actor_type = 'principal_admin'
+        and ia.status = 'active'
+    ) then raise exception 'ACTIVE_PRINCIPAL_ACTOR_REQUIRED'; end if;
+  elsif p_expected_authority_role = 'dean' then
+    v_expected_actor_roles := array['vice_principal','bursar','teacher','student','parent','hod','adviser','lecturer'];
+  else
+    raise exception 'UNSUPPORTED_AUTHORITY_ROLE';
+  end if;
+  if p_actor_type is null or not (p_actor_type = any(v_expected_actor_roles)) then
+    raise exception 'ACTOR_ROLE_NOT_ALLOWED_FOR_AUTHORITY';
+  end if;
   if p_actor_type not in ('vice_principal','bursar','teacher','student','parent','hod','adviser','lecturer') then
     raise exception 'UNSUPPORTED_ACTOR_TYPE';
   end if;
@@ -161,6 +205,16 @@ begin
         select distinct unnest(p_class_subject_ids) as class_subject_id
       ) requested;
     end if;
+  elsif p_actor_type = 'vice_principal' then
+    insert into public.vice_principals(profile_id, school_id, full_name, email, phone)
+    values (v_profile_id, p_school_id, trim(p_full_name),
+      nullif(trim(p_email), ''), nullif(trim(p_phone), ''))
+    returning id into v_actor_record_id;
+  elsif p_actor_type = 'bursar' then
+    insert into public.bursars(profile_id, school_id, full_name, email, phone)
+    values (v_profile_id, p_school_id, trim(p_full_name),
+      nullif(trim(p_email), ''), nullif(trim(p_phone), ''))
+    returning id into v_actor_record_id;
   elsif p_actor_type = 'student' then
     v_student_number := 'GRD/' || to_char(now(), 'YYYY') || '/' || lpad(nextval('public.student_number_seq')::text, 6, '0');
     insert into public.students(
@@ -227,6 +281,18 @@ begin
     returning id into v_actor_record_id;
     insert into public.student_parents(student_id, parent_id, relationship, is_primary)
     values (p_student_id, v_actor_record_id, coalesce(nullif(trim(p_relationship), ''), 'Parent'), coalesce(p_is_primary, true));
+    insert into public.student_parent_relationships(
+      institution_id, school_id, student_id, parent_id, relationship_type, is_primary
+    ) values (
+      p_institution_id, v_effective_school_id, p_student_id, v_actor_record_id,
+      case lower(coalesce(nullif(trim(p_relationship), ''), 'other'))
+        when 'father' then 'father'
+        when 'mother' then 'mother'
+        when 'guardian' then 'guardian'
+        else 'other'
+      end,
+      coalesce(p_is_primary, true)
+    );
   end if;
 
   insert into public.identity_actors(
@@ -236,6 +302,13 @@ begin
     p_auth_user_id, p_institution_id, v_effective_school_id, p_actor_type, v_actor_record_id,
     v_login_id, 'pin', 'active', crypt(p_pin, gen_salt('bf')), null, 0
   );
+
+  update public.profiles
+  set authority_user_id = p_authority_user_id
+  where user_id = p_auth_user_id;
+  update public.identity_actors
+  set authority_user_id = p_authority_user_id
+  where auth_user_id = p_auth_user_id;
 
   return jsonb_build_object(
     'success', true, 'login_id', v_login_id, 'user_id', p_auth_user_id,
@@ -251,14 +324,14 @@ begin
 end;
 $$;
 
-revoke all on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer) from public, anon, authenticated;
-grant execute on function public.complete_actor_onboarding(uuid,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer) to service_role;
+revoke all on function public.complete_actor_onboarding(uuid,uuid,text,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer) from public, anon, authenticated;
+grant execute on function public.complete_actor_onboarding(uuid,uuid,text,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer) to service_role;
 
 create or replace function public.auth_pin_login(p_identifier text, p_pin text)
 returns jsonb
 language plpgsql
 security definer
-set search_path = public, extensions
+set search_path = pg_catalog, public, extensions
 as $$
 declare v_actor public.identity_actors%rowtype;
 begin
@@ -302,7 +375,7 @@ create or replace function public.set_pin(p_new_pin text)
 returns jsonb
 language plpgsql
 security definer
-set search_path = public, extensions
+set search_path = pg_catalog, public, extensions
 as $pin$
 declare
   v_user_id uuid := auth.uid();
@@ -329,5 +402,57 @@ end;
 $pin$;
 revoke all on function public.set_pin(text) from public, anon;
 grant execute on function public.set_pin(text) to authenticated;
+
+-- Authenticated users may resolve only their own canonical actor.
+alter table public.identity_actors enable row level security;
+drop policy if exists identity_actors_select_own on public.identity_actors;
+create policy identity_actors_select_own
+  on public.identity_actors for select to authenticated
+  using (auth_user_id = (select auth.uid()));
+revoke all on public.identity_actors from anon;
+grant select on public.identity_actors to authenticated;
+
+-- Keep profile visibility and mutation scoped to the signed-in account.
+drop policy if exists "Users can view their own profile" on public.profiles;
+create policy "Users can view their own profile"
+  on public.profiles for select to authenticated
+  using (user_id = (select auth.uid()));
+drop policy if exists "Users can update their own profile" on public.profiles;
+create policy "Users can update their own profile"
+  on public.profiles for update to authenticated
+  using (user_id = (select auth.uid()))
+  with check (user_id = (select auth.uid()));
+
+-- Domain identity records are visible to their own authenticated identity.
+drop policy if exists teachers_select_own on public.teachers;
+create policy teachers_select_own on public.teachers for select to authenticated
+  using (user_id = (select auth.uid()));
+drop policy if exists students_select_own on public.students;
+create policy students_select_own on public.students for select to authenticated
+  using (user_id = (select auth.uid()));
+drop policy if exists lecturers_select_own on public.lecturers;
+create policy lecturers_select_own on public.lecturers for select to authenticated
+  using (user_id = (select auth.uid()));
+drop policy if exists vice_principals_select_own on public.vice_principals;
+create policy vice_principals_select_own on public.vice_principals for select to authenticated
+  using (exists (
+    select 1 from public.profiles p
+    where p.id = vice_principals.profile_id and p.user_id = (select auth.uid())
+  ));
+drop policy if exists bursars_select_own on public.bursars;
+create policy bursars_select_own on public.bursars for select to authenticated
+  using (exists (
+    select 1 from public.profiles p
+    where p.id = bursars.profile_id and p.user_id = (select auth.uid())
+  ));
+drop policy if exists parents_select_own on public.parents;
+create policy parents_select_own on public.parents for select to authenticated
+  using (exists (
+    select 1 from public.profiles p
+    where p.id = parents.profile_id and p.user_id = (select auth.uid())
+  ));
+
+grant select on public.teachers, public.students, public.lecturers,
+  public.vice_principals, public.bursars, public.parents to authenticated;
 
 commit;
