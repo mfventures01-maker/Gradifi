@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 import { authService } from "../../services/authService";
 import { actorOnboardingService, ActorType, CreateActorResult } from "../../services/actorOnboardingService";
 
-type AcademicRole = "student" | "hod" | "adviser" | "lecturer";
+type AcademicRole = Extract<ActorType, "student" | "hod" | "adviser" | "lecturer">;
 type Option = { id: string; name: string };
 
 export const HigherEducationOnboarding: React.FC = () => {
@@ -13,11 +13,8 @@ export const HigherEducationOnboarding: React.FC = () => {
   const [faculties, setFaculties] = useState<Option[]>([]);
   const [departments, setDepartments] = useState<Option[]>([]);
   const [classes, setClasses] = useState<Option[]>([]);
-  const [students, setStudents] = useState<Array<{id:string; name:string}>>([]);
   const [classId, setClassId] = useState("");
-  const [studentId, setStudentId] = useState("");
   const [role, setRole] = useState<AcademicRole>("lecturer");
-  const [callerRole, setCallerRole] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -56,7 +53,13 @@ export const HigherEducationOnboarding: React.FC = () => {
         setSchools((schoolRes.data || []).map((x: any) => ({ id: x.id, name: x.school_name })));
         setFaculties(facultyRes.data || []);
         setDepartments(departmentRes.data || []);
-        if (schoolRes.data?.[0]) setSchoolId(schoolRes.data[0].id);
+        if (schoolRes.data?.[0]) {
+          const rootCampusId = schoolRes.data[0].id;
+          setSchoolId(rootCampusId);
+          const classRes = await db.from("classes").select("id,name").eq("school_id", rootCampusId).order("name");
+          if (classRes.error) throw classRes.error;
+          setClasses(classRes.data || []);
+        }
       } catch (e) {
         if (active) setError(e instanceof Error ? e.message : "Could not load institution structure.");
       }
@@ -75,13 +78,11 @@ export const HigherEducationOnboarding: React.FC = () => {
       if (role === "adviser" && !departmentId) throw new Error("Select the adviser's department.");
       if (["vice_principal", "bursar", "teacher", "student", "lecturer"].includes(role) && !schoolId) throw new Error("Select the school or campus for this actor.");
       if (role === "lecturer" && !email.trim()) throw new Error("Lecturer requires an official email.");
-      if (role === "student" && !classId) throw new Error("Select the student class.");
       const result = await actorOnboardingService.create({
         actor_type: role,
         institution_id: institutionId,
-        school_id: ["vice_principal", "bursar", "teacher", "student", "lecturer"].includes(role) ? schoolId : null,
+        school_id: ["student", "lecturer"].includes(role) ? schoolId : null,
         class_id: role === "student" ? classId : null,
-        student_id: role === "parent" ? studentId : null,
         full_name: fullName.trim(),
         email: email.trim() || null,
         phone: phone.trim() || null,
