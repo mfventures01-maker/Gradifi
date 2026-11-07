@@ -20,15 +20,9 @@ serve(async (req) => {
   if (!url || !anon || !serviceKey) return json({ error: "SERVER_CONFIGURATION_ERROR" }, 500);
 
   const authHeader = req.headers.get("Authorization");
-  if (!authHeader) return json({ error: "AUTH_REQUIRED" }, 401);
-
-  const caller = createClient(url, anon, { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } });
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
   try {
-    const { data: callerData, error: callerError } = await caller.auth.getUser();
-    if (callerError || !callerData.user) return json({ error: "AUTH_REQUIRED" }, 401);
-
     const body = await req.json();
     const action = body.action;
 
@@ -50,6 +44,11 @@ serve(async (req) => {
 
       return json({ success: true, token_hash: linkData.properties.hashed_token, type: "magiclink" });
     }
+
+    if (!authHeader) return json({ error: "AUTH_REQUIRED" }, 401);
+    const caller = createClient(url, anon, { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } });
+    const { data: callerData, error: callerError } = await caller.auth.getUser();
+    if (callerError || !callerData.user) return json({ error: "AUTH_REQUIRED" }, 401);
 
     const { data: actorRows, error: actorError } = await admin
       .from("identity_actors")
