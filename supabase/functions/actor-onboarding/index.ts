@@ -69,7 +69,7 @@ serve(async (req) => {
         return json({ error: "INSTITUTION_ADMIN_AUTHORITY_REQUIRED" }, 403);
       }
       const institutionId = String(body.institution_id || callerProfile.institution_id || "");
-      if (!institutionId || (callerProfile.institution_id && institutionId !== callerProfile.institution_id)) {
+      if (!institutionId || (callerProfile.role === "admin" && !callerProfile.institution_id) || (callerProfile.institution_id && institutionId !== callerProfile.institution_id)) {
         return json({ error: "CROSS_INSTITUTION_DENIED" }, 403);
       }
       const email = String(body.email || "").trim().toLowerCase();
