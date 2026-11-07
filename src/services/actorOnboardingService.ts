@@ -26,7 +26,27 @@ export interface CreateActorInput {
   max_students?: number | null;
 }
 
-export interface CreateDeanInput {\n  institution_id: string;\n  faculty_id: string;\n  full_name: string;\n  email: string;\n  password: string;\n  phone?: string | null;\n}\n\nexport interface CreateDeanResult {\n  success: true;\n  user_id: string;\n  profile_id: string;\n  actor_type: "dean";\n  institution_id: string;\n  email: string;\n  full_name: string;\n  authentication_method: "email";\n}\n\nexport interface CreateActorResult {
+export interface CreateDeanInput {
+  institution_id: string;
+  faculty_id: string;
+  full_name: string;
+  email: string;
+  password: string;
+  phone?: string | null;
+}
+
+export interface CreateDeanResult {
+  success: true;
+  user_id: string;
+  profile_id: string;
+  actor_type: "dean";
+  institution_id: string;
+  email: string;
+  full_name: string;
+  authentication_method: "email";
+}
+
+export interface CreateActorResult {
   success: true;
   login_id: string;
   user_id: string;
