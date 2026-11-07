@@ -67,7 +67,18 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
 
   const roleAliases: Record<string, string> = { principal: 'principal_admin', vp: 'vice_principal' };
   const resolvedRole = sessionState?.role ? (roleAliases[sessionState.role] || sessionState.role) : null;
-  const isRoleAuthorized = !allowedRoles || (!!resolvedRole && allowedRoles.some(role => (roleAliases[role] || role) === resolvedRole));
+  const routeRoleMap: Record<string, string[]> = {
+    '/portal/principal': ['principal_admin', 'admin'],
+    '/portal/vp': ['vice_principal'],
+    '/portal/bursar': ['bursar'],
+    '/portal/teacher': ['teacher'],
+    '/portal/student': ['student'],
+    '/portal/parent': ['parent'],
+  };
+  const routeRequiredRoles = routeRoleMap[location.pathname];
+  const allowedByProp = !allowedRoles || (!!resolvedRole && allowedRoles.some(role => (roleAliases[role] || role) === resolvedRole));
+  const allowedByRoute = !routeRequiredRoles || (!!resolvedRole && routeRequiredRoles.includes(resolvedRole));
+  const isRoleAuthorized = allowedByProp && allowedByRoute;
 
   if (!isAuthenticated || !isRoleAuthorized) {
     if (fallback) return <>{fallback}</>;
