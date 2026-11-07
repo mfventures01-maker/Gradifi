@@ -153,7 +153,7 @@ export const authService = {
   },
 
   async setPin(newPin: string) {
-    if (!/^\\d{4}$|^\\d{6}$/.test(newPin)) throw new Error("PIN must contain 4 or 6 digits");
+    if (!/^\d{4}$|^\d{6}$/.test(newPin)) throw new Error("PIN must contain 4 or 6 digits");
     const { data, error } = await supabase.rpc("set_pin", {
       p_new_pin: newPin,
     } as any);
