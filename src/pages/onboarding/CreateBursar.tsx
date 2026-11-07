@@ -98,6 +98,10 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
             <span className="text-xs font-medium text-slate-500">Name</span>
             <span className="font-semibold text-slate-700">{success.full_name}</span>
           </div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-slate-500">Generated Login ID</span>
+            <span className="font-mono font-bold text-blue-700">{success.login_id}</span>
+          </div>
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
             <span className="text-xs font-medium text-slate-500">Phone</span>
             <span className="font-semibold text-slate-700">{success.phone}</span>
