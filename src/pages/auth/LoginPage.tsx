@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Phone, KeyRound, ArrowRight, Shield, AlertCircle } from 'lucide-react';
+import { Mail, Lock, KeyRound, ArrowRight, Shield, AlertCircle } from 'lucide-react';
 import { authService } from '../../services/authService';
 
 export const LoginPage: React.FC = () => {
@@ -8,7 +8,10 @@ export const LoginPage: React.FC = () => {
   const [authMethod, setAuthMethod] = useState<'email' | 'pin'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
+  const [loginId, setLoginId] = useState('');
+  const [newPin, setNewPin] = useState('');
+  const [pendingRole, setPendingRole] = useState<string>('');
+  const [requiresPinChange, setRequiresPinChange] = useState(false);
   const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,29 +38,34 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const handlePinSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const navigateByRole = (role: string) => {
+    if (role === 'vice_principal' || role === 'vp') navigate('/portal/vp');
+    else if (role === 'bursar') navigate('/portal/bursar');
+    else if (role === 'student') navigate('/portal/student');
+    else if (role === 'parent') navigate('/portal/parent');
+    else if (role === 'teacher') navigate('/portal/teacher');
+    else navigate('/portal/principal');
+  };
 
+  const handlePinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); setLoading(true); setError(null);
     try {
-      if (pin.length !== 6) {
-        throw new Error('Please enter a 6-digit PIN.');
-      }
-      const res = await authService.signInWithPhoneAndPin(phone, pin);
-      if (res && res.role) {
-        if (res.role === 'vice_principal' || res.role === 'vp') navigate('/portal/vp');
-        else if (res.role === 'bursar') navigate('/portal/bursar');
-        else navigate('/portal/teacher');
-      } else {
-        navigate('/portal/teacher');
-      }
-    } catch (err: any) {
-      console.error('PIN login error:', err);
-      setError(err.message || 'Invalid Phone Number or 6-digit PIN');
-    } finally {
-      setLoading(false);
-    }
+      if (!/^\\d{4}$|^\\d{6}$/.test(pin)) throw new Error('Enter the 4-digit or 6-digit PIN issued during onboarding.');
+      const res = await authService.signInWithPhoneAndPin(loginId, pin);
+      const role = res.role || 'student'; setPendingRole(role);
+      if (res.pinRequiresChange) setRequiresPinChange(true); else navigateByRole(role);
+    } catch (err: any) { setError(err.message || 'Invalid Login ID or PIN'); }
+    finally { setLoading(false); }
+  };
+
+  const handleFirstPinChange = async (e: React.FormEvent) => {
+    e.preventDefault(); setLoading(true); setError(null);
+    try {
+      const expectedLength = ['student', 'parent'].includes(pendingRole) ? 4 : 6;
+      if (newPin.length !== expectedLength || !/^\\d+$/.test(newPin)) throw new Error('Choose a new ' + expectedLength + '-digit PIN.');
+      await authService.setPin(newPin); setRequiresPinChange(false); navigateByRole(pendingRole);
+    } catch (err: any) { setError(err.message || 'PIN change failed'); }
+    finally { setLoading(false); }
   };
 
   return (
@@ -90,7 +98,7 @@ export const LoginPage: React.FC = () => {
               authMethod === 'pin' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            Phone + 6-digit PIN
+            Login ID + PIN
           </button>
         </div>
 
@@ -101,7 +109,14 @@ export const LoginPage: React.FC = () => {
           </div>
         )}
 
-        {authMethod === 'email' ? (
+        {requiresPinChange ? (
+          <form onSubmit={handleFirstPinChange} className="space-y-4">
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">First login: create a private PIN before continuing.</div>
+            <label className="block text-xs font-medium text-slate-700">New {['student','parent'].includes(pendingRole) ? '4' : '6'}-digit PIN</label>
+            <input type="password" inputMode="numeric" maxLength={['student','parent'].includes(pendingRole) ? 4 : 6} value={newPin} onChange={e => setNewPin(e.target.value)} className="w-full px-4 py-3 border border-slate-300 rounded-xl font-mono tracking-widest" required />
+            <button type="submit" disabled={loading} className="w-full py-3 bg-indigo-600 text-white rounded-xl disabled:opacity-50">{loading ? 'Updating PIN...' : 'Save PIN and Continue'}</button>
+          </form>
+        ) : authMethod === 'email' ? (
           <form onSubmit={handleEmailSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">
@@ -166,15 +181,15 @@ export const LoginPage: React.FC = () => {
           <form onSubmit={handlePinSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">
-                Phone Number
+                System-Generated Login ID
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="08012345678"
+                  type="text"
+                  value={loginId}
+                  onChange={(e) => setLoginId(e.target.value.toUpperCase())}
+                  placeholder="TCH-00000001"
                   className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   required
                 />
@@ -183,7 +198,7 @@ export const LoginPage: React.FC = () => {
 
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">
-                6-Digit Security PIN (Staff/Teacher/VP/Bursar)
+                4-digit Student/Parent or 6-digit Staff PIN
               </label>
               <div className="relative">
                 <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -208,7 +223,7 @@ export const LoginPage: React.FC = () => {
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Sign In with PIN</span>
+                  <span>Sign In with Login ID</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
