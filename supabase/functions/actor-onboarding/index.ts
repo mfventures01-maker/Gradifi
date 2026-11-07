@@ -99,6 +99,7 @@ serve(async (req) => {
       p_phone: body.phone ? String(body.phone) : null,
       p_student_id: body.student_id || null,
       p_class_id: body.class_id || null,
+      p_class_subject_ids: Array.isArray(body.class_subject_ids) ? body.class_subject_ids : (body.class_subject_id ? [body.class_subject_id] : null),
       p_gender: body.gender || null,
       p_date_of_birth: body.date_of_birth || null,
       p_relationship: body.relationship || "Parent",
@@ -110,13 +111,9 @@ serve(async (req) => {
       return json({ error: provisionError?.message || "ACTOR_PROVISIONING_FAILED" }, 400);
     }
 
-    const syntheticEmail = `${result.login_id.toLowerCase()}@accounts.sefaes.invalid`;
-    const { error: emailUpdateError } = await admin.auth.admin.updateUserById(created.user.id, { email: syntheticEmail, email_confirm: true });
-    if (emailUpdateError) {
-      await admin.auth.admin.deleteUser(created.user.id);
-      return json({ error: "AUTH_IDENTITY_FINALIZATION_FAILED" }, 500);
-    }
-
+    // Keep the randomly generated internal Auth email. Login IDs are resolved through
+    // identity_actors, so changing Auth email after provisioning is unnecessary and
+    // would create a second failure point after the database transaction has committed.
     return json({ ...result, pin: initialPin });
   } catch (error) {
     return json({ error: error instanceof Error ? error.message : "INTERNAL_ERROR" }, 500);
