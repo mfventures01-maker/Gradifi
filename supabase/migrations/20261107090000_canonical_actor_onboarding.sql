@@ -116,7 +116,7 @@ begin
         and ia.status = 'active'
     ) then raise exception 'ACTIVE_PRINCIPAL_ACTOR_REQUIRED'; end if;
   elsif p_expected_authority_role = 'dean' then
-    v_expected_actor_roles := array['vice_principal','bursar','teacher','student','parent','hod','adviser','lecturer'];
+    v_expected_actor_roles := array['student','hod','adviser','lecturer'];
   else
     raise exception 'UNSUPPORTED_AUTHORITY_ROLE';
   end if;
