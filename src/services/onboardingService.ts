@@ -209,11 +209,13 @@ export const onboardingService = {
       institution_id: input.institution_id || "",
       school_id: input.school_id,
       full_name: input.name,
-      email: input.email,
-      phone: input.phone,
+      email: input.email || null,
+      phone: input.phone || null,
+      class_subject_id: input.class_subject_id || null,
     });
     return {
       teacher_id: result.login_id,
+      user_id: result.user_id,
       login_id: result.login_id,
       pin: result.pin,
       name: input.name,
