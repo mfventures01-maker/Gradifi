@@ -197,8 +197,6 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
                 <p className="font-mono text-base font-bold text-emerald-700">{enrolledStudent.student_number}</p>
                 <p className="text-xs text-slate-500 mt-2">System Login ID: <span className="font-mono font-bold">{enrolledStudent.login_id}</span></p>
                 <p className="text-xs text-slate-500">Temporary PIN: <span className="font-mono font-bold">{enrolledStudent.pin}</span></p>
-                <p className="text-xs text-slate-400 mt-1">Login ID: <span className="font-mono font-bold">{enrolledStudent.login_id}</span></p>
-                <p className="text-xs text-slate-400">Temporary PIN: <span className="font-mono font-bold">{enrolledStudent.pin}</span></p>
               </div>
               <button
                 type="button"
