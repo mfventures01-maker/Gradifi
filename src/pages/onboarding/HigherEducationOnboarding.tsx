@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { authService } from "../../services/authService";
-import { actorOnboardingService, ActorType, CreateActorResult } from "../../services/actorOnboardingService";
+import { actorOnboardingService, ActorType, CreateActorResult, CreateDeanResult } from "../../services/actorOnboardingService";
 
 type AcademicRole = Extract<ActorType, "dean" | "hod" | "adviser" | "lecturer">;
 type Option = { id: string; name: string };
@@ -14,7 +14,7 @@ export const HigherEducationOnboarding: React.FC = () => {
   const [departments, setDepartments] = useState<Option[]>([]);
   const [role, setRole] = useState<AcademicRole>("lecturer");
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");\n  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [facultyId, setFacultyId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
@@ -25,7 +25,7 @@ export const HigherEducationOnboarding: React.FC = () => {
   const [maxStudents, setMaxStudents] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [created, setCreated] = useState<CreateActorResult | null>(null);
+  const [created, setCreated] = useState<CreateActorResult | null>(null);\n  const [createdDean, setCreatedDean] = useState<CreateDeanResult | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -66,11 +66,11 @@ export const HigherEducationOnboarding: React.FC = () => {
       if (role === "dean" && !facultyId) throw new Error("Select the faculty this Dean will lead.");
       if (role === "hod" && !departmentId) throw new Error("Select the department this HOD will lead.");
       if (role === "adviser" && !departmentId) throw new Error("Select the adviser's department.");
-      if (role === "lecturer" && (!schoolId || !email.trim())) throw new Error("Lecturer requires a campus and official email.");
-      const result = await actorOnboardingService.create({
+      if (role === "lecturer" && !email.trim()) throw new Error("Lecturer requires an official email.");
+      if (role === "dean") {\n        if (!email.trim() || password.length < 10) throw new Error("Dean requires an institutional email and a password of at least 10 characters.");\n        const dean = await actorOnboardingService.createDean({\n          institution_id: institutionId, faculty_id: facultyId, full_name: fullName.trim(),\n          email: email.trim(), password, phone: phone.trim() || null,\n        });\n        setCreatedDean(dean);\n        return;\n      }\n      const result = await actorOnboardingService.create({
         actor_type: role,
         institution_id: institutionId,
-        school_id: role === "lecturer" ? schoolId : null,
+        school_id: null,
         full_name: fullName.trim(),
         email: email.trim() || null,
         phone: phone.trim() || null,
@@ -90,7 +90,7 @@ export const HigherEducationOnboarding: React.FC = () => {
     }
   };
 
-  if (created) return <main className="mx-auto max-w-xl p-6"><section className="rounded-2xl border bg-white p-6 shadow-sm">
+  if (createdDean) return <main className="mx-auto max-w-xl p-6"><section className="rounded-2xl border bg-white p-6 shadow-sm">\n    <h1 className="text-2xl font-bold text-slate-900">Dean Auth account created</h1>\n    <p className="mt-2 text-sm text-slate-600">This Dean signs in with institutional email and password through Supabase Auth. No generated login ID or PIN is issued.</p>\n    <dl className="mt-5 space-y-3 rounded-xl bg-slate-50 p-4 text-sm">\n      <div><dt className="text-slate-500">Role</dt><dd className="font-semibold">Dean</dd></div>\n      <div><dt className="text-slate-500">Name</dt><dd className="font-semibold">{createdDean.full_name}</dd></div>\n      <div><dt className="text-slate-500">Auth email</dt><dd className="font-mono font-bold">{createdDean.email}</dd></div>\n      <div><dt className="text-slate-500">Authentication</dt><dd className="font-semibold">Supabase Auth · Email + Password</dd></div>\n    </dl>\n    <button className="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-white" onClick={() => { setCreatedDean(null); setFullName(""); setEmail(""); setPassword(""); setPhone(""); }}>Create another account</button>\n  </section></main>;\n\n  if (created) return <main className="mx-auto max-w-xl p-6"><section className="rounded-2xl border bg-white p-6 shadow-sm">
     <h1 className="text-2xl font-bold text-slate-900">Academic account created</h1>
     <p className="mt-2 text-sm text-slate-600">Give these credentials to the account holder. The temporary PIN must be changed at first sign-in.</p>
     <dl className="mt-5 space-y-3 rounded-xl bg-slate-50 p-4 text-sm">
@@ -104,17 +104,17 @@ export const HigherEducationOnboarding: React.FC = () => {
 
   return <main className="mx-auto max-w-2xl p-6"><section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
     <h1 className="text-2xl font-bold text-slate-900">Higher Institution Staff Onboarding</h1>
-    <p className="mt-1 text-sm text-slate-600">Provision Dean, Head of Department, Course Adviser and Lecturer accounts with generated IDs and temporary PINs.</p>
+    <p className="mt-1 text-sm text-slate-600">Create the Dean as the institution Auth authority. Provision HOD, Course Adviser and Lecturer beneath the Dean using generated IDs and temporary PINs.</p>
     {error && <p role="alert" className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
     <form onSubmit={submit} className="mt-6 space-y-4">
       <label className="block text-sm font-medium">Academic role
         <select value={role} onChange={e => setRole(e.target.value as AcademicRole)} className="mt-1 w-full rounded-lg border p-2">
-          <option value="dean">Dean</option><option value="hod">Head of Department</option><option value="adviser">Course Adviser</option><option value="lecturer">Lecturer</option>
+          <option value="dean">Dean · Supabase Auth</option><option value="hod">Head of Department · PIN</option><option value="adviser">Course Adviser</option><option value="lecturer">Lecturer</option>
         </select>
       </label>
       <label className="block text-sm font-medium">Full name<input required value={fullName} onChange={e=>setFullName(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm font-medium">Official email<input type="email" required={role==="lecturer"} value={email} onChange={e=>setEmail(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>
+        <label className="block text-sm font-medium">{role === "dean" ? "Institutional Auth email" : "Official email"}<input type="email" required={role==="lecturer" || role==="dean"} value={email} onChange={e=>setEmail(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>
         <label className="block text-sm font-medium">Phone<input value={phone} onChange={e=>setPhone(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>
       </div>
       {(role==="dean" || role==="lecturer") && <label className="block text-sm font-medium">Faculty
@@ -135,7 +135,7 @@ export const HigherEducationOnboarding: React.FC = () => {
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={supervisor} onChange={e=>setSupervisor(e.target.checked)}/> Graduate student supervisor</label>
         {supervisor && <label className="block text-sm font-medium">Maximum supervisees<input type="number" min="1" value={maxStudents} onChange={e=>setMaxStudents(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>}
       </>}
-      <button disabled={loading || !institutionId} className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white disabled:opacity-50">{loading ? "Provisioning..." : "Create academic account"}</button>
+      <button disabled={loading || !institutionId} className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white disabled:opacity-50">{loading ? "Provisioning..." : role === "dean" ? "Create Dean Auth account" : "Create PIN-based academic account"}</button>
     </form>
   </section></main>;
 };
