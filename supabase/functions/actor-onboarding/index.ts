@@ -145,6 +145,8 @@ serve(async (req) => {
 
     const { data: result, error: provisionError } = await admin.rpc("complete_actor_onboarding", {
       p_auth_user_id: created.user.id,
+      p_authority_user_id: callerProfile.user_id,
+      p_expected_authority_role: expectedAuthorityRole,
       p_actor_type: actorType,
       p_school_id: schoolId,
       p_institution_id: institutionId,
@@ -171,16 +173,6 @@ serve(async (req) => {
     if (provisionError || !result?.success) {
       await admin.auth.admin.deleteUser(created.user.id);
       return json({ error: provisionError?.message || "ACTOR_PROVISIONING_FAILED" }, 400);
-    }
-
-    const { data: binding, error: bindingError } = await admin.rpc("bind_actor_authority", {
-      p_actor_user_id: created.user.id,
-      p_authority_user_id: callerProfile.user_id,
-      p_expected_authority_role: expectedAuthorityRole,
-    });
-    if (bindingError || !binding?.success) {
-      await admin.auth.admin.deleteUser(created.user.id);
-      return json({ error: bindingError?.message || "ACTOR_AUTHORITY_BINDING_FAILED" }, 409);
     }
 
     return json({ ...result, pin: initialPin, authority_user_id: callerProfile.user_id });
