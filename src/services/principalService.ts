@@ -92,53 +92,5 @@ export const principalService = {
     return { success: true, pin: result.pin, login_id: result.login_id, user_id: result.user_id };
   },
 
-  /**
-   * Create a new teacher/staff user with auto-generated 6-digit PIN
-   * Called from Principal Dashboard
-   */
-  async createTeacherWithPin(data: {
-    name: string;
-    email: string;
-    phone: string;
-    school_id: string;
-    role: 'teacher' | 'vice_principal' | 'bursar';
-  }) {
-    const pin = this.generatePin();
 
-    try {
-      const { data: userObj, error: signUpErr } = await supabase.auth.signUp({
-        email: data.email,
-        password: pin,
-        phone: data.phone,
-        options: {
-          data: {
-            full_name: data.name,
-            role: data.role,
-            school_id: data.school_id,
-            pin: pin,
-            pin_required: true,
-          },
-        },
-      });
-
-      if (signUpErr) console.warn('signUp fallback:', signUpErr.message);
-
-      const userId = userObj?.user?.id || `usr_${Date.now()}`;
-
-      await supabase.from('profiles').insert({
-        user_id: userId,
-        full_name: data.name,
-        phone: data.phone,
-        role: data.role,
-        school_id: data.school_id,
-        pin: pin,
-        authentication_method: 'pin',
-      } as any);
-
-      return { success: true, pin, user_id: userId };
-    } catch (err) {
-      console.warn('createTeacherWithPin fallback execution:', err);
-      return { success: true, pin, user_id: `usr_${Date.now()}` };
-    }
-  },
 };
