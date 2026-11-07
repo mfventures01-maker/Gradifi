@@ -24,10 +24,10 @@ begin
     where n.nspname = 'public'
       and p.proname in (
         'create_teacher','create_vp','create_bursar','enroll_student',
-        'create_parent','bulk_enroll_students'
+        'create_parent','bulk_enroll_students','set_pin','reset_user_pin'
       )
   loop
-    execute format('drop function %s cascade', f.signature);
+    execute format('drop function %s', f.signature);
   end loop;
 end $$;
 
