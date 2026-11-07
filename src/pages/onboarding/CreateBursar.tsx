@@ -178,7 +178,7 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Mrs. Funke Adeyemi"
             className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-          />
+           required/>
         </div>
 
         <div>
@@ -191,9 +191,8 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
             onChange={(e) => setPhone(e.target.value)}
             placeholder="e.g. 08012345678"
             className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-            required
           />
-          <p className="text-[10px] text-slate-400 mt-1">This will be used for PIN login.</p>
+          <p className="text-[10px] text-slate-400 mt-1">Optional contact number. Login uses the generated account ID.</p>
         </div>
 
         <div>
