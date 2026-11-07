@@ -63,16 +63,8 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
           setClasses(data);
           setClassId(data[0].id);
         } else {
-          const defaultClasses: ClassEntity[] = [
-            { id: 'cls_jss1', school_id: schoolId, name: 'JSS 1', arm: 'Gold', created_at: '' },
-            { id: 'cls_jss2', school_id: schoolId, name: 'JSS 2', arm: 'Gold', created_at: '' },
-            { id: 'cls_jss3', school_id: schoolId, name: 'JSS 3', arm: 'Gold', created_at: '' },
-            { id: 'cls_ss1', school_id: schoolId, name: 'SS 1', arm: 'Science', created_at: '' },
-            { id: 'cls_ss2', school_id: schoolId, name: 'SS 2', arm: 'Science', created_at: '' },
-            { id: 'cls_ss3', school_id: schoolId, name: 'SS 3', arm: 'Science', created_at: '' },
-          ];
-          setClasses(defaultClasses);
-          setClassId(defaultClasses[0].id);
+          setClasses([]);
+          setClassId('');
         }
       } catch (err) {
         setClasses([]);
