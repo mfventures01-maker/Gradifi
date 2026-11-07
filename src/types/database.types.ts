@@ -82,7 +82,7 @@ export type Database = {
           school_id: string | null;
           full_name: string;
           email: string | null;
-          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual';
+          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
           phone: string | null;
           pin: string | null;
           pin_hash: string | null;
@@ -143,7 +143,7 @@ export type Database = {
           auth_user_id: string;
           institution_id: string;
           school_id: string | null;
-          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent';
+          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer';
           actor_record_id: string | null;
           login_identifier: string;
           auth_method: 'email' | 'pin';
