@@ -80,6 +80,7 @@ export type Database = {
           user_id: string | null;
           institution_id: string | null;
           school_id: string | null;
+          authority_user_id: string | null;
           full_name: string;
           email: string | null;
           role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
@@ -100,9 +101,10 @@ export type Database = {
           user_id?: string | null;
           institution_id?: string | null;
           school_id?: string | null;
+          authority_user_id?: string | null;
           full_name: string;
           email?: string | null;
-          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual';
+          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
           phone?: string | null;
           pin?: string | null;
           pin_hash?: string | null;
@@ -120,6 +122,7 @@ export type Database = {
           user_id?: string | null;
           institution_id?: string | null;
           school_id?: string | null;
+          authority_user_id?: string | null;
           full_name?: string;
           email?: string | null;
           role?: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual';
@@ -143,7 +146,8 @@ export type Database = {
           auth_user_id: string;
           institution_id: string;
           school_id: string | null;
-          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer';
+          authority_user_id: string | null;
+          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'hod' | 'adviser' | 'lecturer';
           actor_record_id: string | null;
           login_identifier: string;
           auth_method: 'email' | 'pin';
@@ -161,7 +165,8 @@ export type Database = {
           auth_user_id: string;
           institution_id: string;
           school_id?: string | null;
-          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent';
+          authority_user_id?: string | null;
+          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'hod' | 'adviser' | 'lecturer';
           actor_record_id?: string | null;
           login_identifier: string;
           auth_method?: 'email' | 'pin';
