@@ -29,7 +29,8 @@ export const LoginPage: React.FC = () => {
       } else {
         await new Promise((resolve) => setTimeout(resolve, 800));
       }
-      const identity = await authService.resolveCurrentIdentity();\n      navigateByRole(identity.role || 'principal_admin');
+      const identity = await authService.resolveCurrentIdentity();
+      navigateByRole(identity.role || 'principal_admin');
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'Invalid email or password');
