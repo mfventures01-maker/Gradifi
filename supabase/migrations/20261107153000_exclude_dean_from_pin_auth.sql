@@ -27,7 +27,7 @@ begin
     raise exception 'PIN_AUTHENTICATION_NOT_ALLOWED_FOR_ROLE';
   end if;
   if length(p_new_pin) not in (4,6) or p_new_pin !~ '^[0-9]{4,6}$'
-     or length(p_new_pin) <> case when v_role in ('student','parent') then 4 else 6 end then
+     or length(p_new_pin) <> (case when v_role in ('student','parent') then 4 else 6 end) then
     raise exception 'INVALID_PIN_LENGTH';
   end if;
   update public.profiles
