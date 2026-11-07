@@ -128,7 +128,7 @@ begin
   end if;
   if nullif(trim(p_full_name), '') is null then raise exception 'FULL_NAME_REQUIRED'; end if;
   if p_pin is null
-     or length(p_pin) <> case when p_actor_type in ('student','parent') then 4 else 6 end
+     or length(p_pin) <> (case when p_actor_type in ('student','parent') then 4 else 6 end)
      or translate(p_pin, '0123456789', '') <> '' then
     raise exception 'INVALID_PIN_LENGTH';
   end if;
