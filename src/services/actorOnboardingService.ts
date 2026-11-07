@@ -64,6 +64,17 @@ export interface CreateActorResult {
 }
 
 export const actorOnboardingService = {
+  async createDean(input: CreateDeanInput): Promise<CreateDeanResult> {
+    const { data, error } = await supabase.functions.invoke("actor-onboarding", {
+      body: { action: "create_dean", ...input },
+    });
+    if (error) throw new Error(error.message || "Dean onboarding failed");
+    if (!data?.success || !data.user_id || data.actor_type !== "dean") {
+      throw new Error(data?.error || "Dean onboarding returned an incomplete Auth identity");
+    }
+    return data as CreateDeanResult;
+  },
+
   async create(input: CreateActorInput): Promise<CreateActorResult> {
     const { data, error } = await supabase.functions.invoke("actor-onboarding", {
       body: { action: "create", ...input },
