@@ -191,9 +191,9 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
           });
           results.push({
             status: 'success',
-            student_id: created.user_id,
+            student_id: created.actor_record_id || created.user_id,
             login_id: created.login_id,
-            student_number: created.login_id,
+            student_number: created.student_number,
             pin: created.pin,
             first_name: student.first_name,
             last_name: student.last_name,
