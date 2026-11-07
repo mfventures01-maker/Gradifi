@@ -107,26 +107,27 @@ serve(async (req) => {
       return json({ error: "INVALID_ACTOR_TYPE" }, 400);
     }
 
-    const expectedAuthorityRole = schoolRoles.includes(actorType) ? "principal_admin" : "dean";
-    if (callerProfile.role !== expectedAuthorityRole) {
-      return json({ error: "CORRECT_INSTITUTION_AUTHORITY_REQUIRED" }, 403);
-    }
+    const expectedAuthorityRole = callerProfile.role;
+    const authorityAllowsActor = (expectedAuthorityRole === "principal_admin" && schoolRoles.includes(actorType))
+      || (expectedAuthorityRole === "dean" && [...schoolRoles, ...higherEdRoles].includes(actorType));
+    if (!authorityAllowsActor) return json({ error: "CORRECT_INSTITUTION_AUTHORITY_REQUIRED" }, 403);
 
     const institutionId = String(body.institution_id || callerProfile.institution_id || "");
     if (!institutionId || institutionId !== callerProfile.institution_id) {
       return json({ error: "CROSS_INSTITUTION_DENIED" }, 403);
     }
+    const schoolRequired = ["vice_principal", "bursar", "teacher", "student", "lecturer"].includes(actorType);
     const schoolId = expectedAuthorityRole === "principal_admin"
       ? String(body.school_id || callerProfile.school_id || "")
-      : (actorType === "lecturer" ? String(body.school_id || "") : null);
+      : (schoolRequired ? String(body.school_id || "") : null);
     if (expectedAuthorityRole === "principal_admin" && (!schoolId || schoolId !== callerProfile.school_id)) {
       return json({ error: "CROSS_SCHOOL_DENIED" }, 403);
     }
-    if (actorType === "lecturer") {
-      if (!schoolId) return json({ error: "LECTURER_CAMPUS_REQUIRED" }, 400);
+    if (schoolRequired) {
+      if (!schoolId) return json({ error: "ACTOR_SCHOOL_REQUIRED" }, 400);
       const { data: campus } = await admin.from("schools").select("id")
         .eq("id", schoolId).eq("institution_id", institutionId).maybeSingle();
-      if (!campus) return json({ error: "LECTURER_CAMPUS_OUTSIDE_INSTITUTION" }, 403);
+      if (!campus) return json({ error: "ACTOR_SCHOOL_OUTSIDE_INSTITUTION" }, 403);
     }
 
     const pinLength = ["student", "parent"].includes(actorType) ? 4 : 6;
