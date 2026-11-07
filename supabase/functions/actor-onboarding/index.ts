@@ -58,46 +58,67 @@ serve(async (req) => {
     const { data: callerData, error: callerError } = await caller.auth.getUser();
     if (callerError || !callerData.user) return json({ error: "AUTH_REQUIRED" }, 401);
 
+    // Root institution creation is completed by the authenticated Principal/Dean
+    // after email verification. The browser never supplies an Auth UID.
+    if (action === "bootstrap_school_institution" || action === "bootstrap_higher_institution") {
+      const rootUser = callerData.user;
+      if (!rootUser.email || !rootUser.email_confirmed_at) {
+        return json({ error: "VERIFIED_ROOT_EMAIL_REQUIRED" }, 403);
+      }
+      const { data: existingProfile } = await admin.from("profiles")
+        .select("user_id").eq("user_id", rootUser.id).maybeSingle();
+      const { data: existingActor } = await admin.from("identity_actors")
+        .select("auth_user_id").eq("auth_user_id", rootUser.id).maybeSingle();
+      if (existingProfile || existingActor) return json({ error: "ROOT_AUTH_IDENTITY_ALREADY_PROVISIONED" }, 409);
+
+      const suppliedEmail = String(action === "bootstrap_school_institution" ? body.principal_email || "" : body.dean_email || "")
+        .trim().toLowerCase();
+      if (suppliedEmail !== rootUser.email.toLowerCase()) {
+        return json({ error: "ROOT_EMAIL_MUST_MATCH_VERIFIED_AUTH_EMAIL" }, 403);
+      }
+
+      const rpcName = action;
+      const rpcArgs = action === "bootstrap_school_institution" ? {
+        p_auth_user_id: rootUser.id,
+        p_institution_name: String(body.institution_name || ""),
+        p_institution_type: String(body.institution_type || ""),
+        p_registration_number: body.registration_number ? String(body.registration_number) : null,
+        p_country: String(body.country || "Nigeria"),
+        p_address: body.address ? String(body.address) : null,
+        p_state: body.state ? String(body.state) : null,
+        p_lga: body.lga ? String(body.lga) : null,
+        p_phone: body.phone ? String(body.phone) : null,
+        p_website: body.website ? String(body.website) : null,
+        p_principal_name: String(body.principal_name || ""),
+        p_principal_email: suppliedEmail,
+        p_principal_phone: body.principal_phone ? String(body.principal_phone) : null,
+      } : {
+        p_auth_user_id: rootUser.id,
+        p_institution_name: String(body.institution_name || ""),
+        p_institution_type: String(body.institution_type || ""),
+        p_registration_number: body.registration_number ? String(body.registration_number) : null,
+        p_country: String(body.country || "Nigeria"),
+        p_address: body.address ? String(body.address) : null,
+        p_phone: body.phone ? String(body.phone) : null,
+        p_website: body.website ? String(body.website) : null,
+        p_dean_name: String(body.dean_name || ""),
+        p_dean_email: suppliedEmail,
+        p_dean_phone: body.dean_phone ? String(body.dean_phone) : null,
+      };
+      const { data: bootstrapResult, error: bootstrapError } = await admin.rpc(rpcName, rpcArgs);
+      if (bootstrapError || !bootstrapResult?.success) {
+        return json({ error: bootstrapError?.message || "ROOT_INSTITUTION_BOOTSTRAP_FAILED" }, 409);
+      }
+      return json(bootstrapResult);
+    }
+
     const { data: callerProfile, error: callerProfileError } = await admin.from("profiles")
       .select("user_id,institution_id,school_id,role")
       .eq("user_id", callerData.user.id).single();
     if (callerProfileError || !callerProfile) return json({ error: "CALLER_PROFILE_NOT_FOUND" }, 403);
 
-    // Dean is created as an email/password Supabase Auth candidate, never as a PIN actor.
     if (action === "create_dean") {
-      if (!["admin", "superadmin"].includes(callerProfile.role)) {
-        return json({ error: "INSTITUTION_ADMIN_AUTHORITY_REQUIRED" }, 403);
-      }
-      const institutionId = String(body.institution_id || callerProfile.institution_id || "");
-      if (!institutionId || (callerProfile.role === "admin" && !callerProfile.institution_id) || (callerProfile.institution_id && institutionId !== callerProfile.institution_id)) {
-        return json({ error: "CROSS_INSTITUTION_DENIED" }, 403);
-      }
-      const email = String(body.email || "").trim().toLowerCase();
-      const password = String(body.password || "");
-      const fullName = String(body.full_name || "").trim();
-      const facultyId = String(body.faculty_id || "");
-      if (!email || !password || password.length < 10 || !fullName || !facultyId) {
-        return json({ error: "DEAN_EMAIL_PASSWORD_NAME_AND_FACULTY_REQUIRED" }, 400);
-      }
-      const { data: created, error: createError } = await admin.auth.admin.createUser({
-        email, password, email_confirm: true,
-        user_metadata: { actor_type: "dean", institution_id: institutionId },
-      });
-      if (createError || !created.user) return json({ error: createError?.message || "DEAN_AUTH_CREATE_FAILED" }, 400);
-
-      const { data: result, error: provisionError } = await admin.rpc("complete_dean_onboarding", {
-        p_auth_user_id: created.user.id,
-        p_institution_id: institutionId,
-        p_faculty_id: facultyId,
-        p_full_name: fullName,
-        p_email: email,
-        p_phone: body.phone ? String(body.phone) : null,
-      });
-      if (provisionError || !result?.success) {
-        await admin.auth.admin.deleteUser(created.user.id);
-        return json({ error: provisionError?.message || "DEAN_PROFILE_PROVISIONING_FAILED" }, 400);
-      }
-      return json({ ...result, email, full_name: fullName });
+      return json({ error: "DEAN_IS_THE_HIGHER_INSTITUTION_ROOT_ACTOR" }, 410);
     }
 
     const actorType = String(body.actor_type || "");
@@ -109,7 +130,7 @@ serve(async (req) => {
 
     const expectedAuthorityRole = callerProfile.role;
     const authorityAllowsActor = (expectedAuthorityRole === "principal_admin" && schoolRoles.includes(actorType))
-      || (expectedAuthorityRole === "dean" && [...schoolRoles, ...higherEdRoles].includes(actorType));
+      || (expectedAuthorityRole === "dean" && [...higherEdRoles, "student"].includes(actorType));
     if (!authorityAllowsActor) return json({ error: "CORRECT_INSTITUTION_AUTHORITY_REQUIRED" }, 403);
 
     const institutionId = String(body.institution_id || callerProfile.institution_id || "");
