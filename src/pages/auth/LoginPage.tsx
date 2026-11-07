@@ -50,7 +50,7 @@ export const LoginPage: React.FC = () => {
   const handlePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setLoading(true); setError(null);
     try {
-      if (!/^\\d{4}$|^\\d{6}$/.test(pin)) throw new Error('Enter the 4-digit or 6-digit PIN issued during onboarding.');
+      if (!/^\d{4}$|^\d{6}$/.test(pin)) throw new Error('Enter the 4-digit or 6-digit PIN issued during onboarding.');
       const res = await authService.signInWithPhoneAndPin(loginId, pin);
       const role = res.role || 'student'; setPendingRole(role);
       if (res.pinRequiresChange) setRequiresPinChange(true); else navigateByRole(role);
@@ -62,7 +62,7 @@ export const LoginPage: React.FC = () => {
     e.preventDefault(); setLoading(true); setError(null);
     try {
       const expectedLength = ['student', 'parent'].includes(pendingRole) ? 4 : 6;
-      if (newPin.length !== expectedLength || !/^\\d+$/.test(newPin)) throw new Error('Choose a new ' + expectedLength + '-digit PIN.');
+      if (newPin.length !== expectedLength || !/^\d+$/.test(newPin)) throw new Error('Choose a new ' + expectedLength + '-digit PIN.');
       await authService.setPin(newPin); setRequiresPinChange(false); navigateByRole(pendingRole);
     } catch (err: any) { setError(err.message || 'PIN change failed'); }
     finally { setLoading(false); }
