@@ -12,12 +12,10 @@ export interface CreateInstitutionFormInput {
   institution_type: 'secondary' | 'primary' | 'k12' | 'group_of_schools';
   registration_number: string;
   principal_password: string;
-  registration_number: string;
   address: string;
   state: string;
   lga: string;
   phone: string;
-  email: string;
   website?: string;
   principal_name: string;
   principal_phone: string;
@@ -159,7 +157,7 @@ export const onboardingService = {
       email: normalizedEmail,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/onboarding`,
+        emailRedirectTo: `${window.location.origin}${action === 'bootstrap_higher_institution' ? '/onboarding/higher-education/register' : '/onboarding'}`,
         data: { full_name: fullName.trim(), requested_root_action: action },
       },
     });
