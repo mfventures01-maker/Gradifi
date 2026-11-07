@@ -209,13 +209,16 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = public, extensions
-as $
-declare v_user_id uuid := auth.uid(); v_role text;
+as $pin$
+declare
+  v_user_id uuid := auth.uid();
+  v_role text;
 begin
   if v_user_id is null then raise exception 'AUTH_REQUIRED'; end if;
   select role into v_role from public.profiles where user_id = v_user_id;
   if v_role is null then raise exception 'PROFILE_NOT_FOUND'; end if;
-  if p_new_pin !~ '^[0-9]+ or length(p_new_pin) <> case when v_role in ('student','parent') then 4 else 6 end then
+  if length(p_new_pin) not in (4,6) or p_new_pin !~ '^[0-9]{4,6}$'
+     or length(p_new_pin) <> case when v_role in ('student','parent') then 4 else 6 end then
     raise exception 'INVALID_PIN_LENGTH';
   end if;
   update public.profiles
@@ -229,7 +232,7 @@ begin
   where auth_user_id = v_user_id;
   return jsonb_build_object('success', true, 'pin_requires_change', false);
 end;
-$;
+$pin$;
 revoke all on function public.set_pin(text) from public, anon;
 grant execute on function public.set_pin(text) to authenticated;
 
