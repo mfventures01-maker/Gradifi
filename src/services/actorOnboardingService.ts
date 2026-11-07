@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabase";
 
-export type ActorType = "vice_principal" | "bursar" | "teacher" | "student" | "parent";
+export type ActorType = "vice_principal" | "bursar" | "teacher" | "student" | "parent" | "dean" | "hod" | "adviser" | "lecturer";
 
 export interface CreateActorInput {
   actor_type: ActorType;
@@ -17,6 +17,13 @@ export interface CreateActorInput {
   date_of_birth?: string | null;
   relationship?: string;
   is_primary?: boolean;
+  faculty_id?: string | null;
+  department_id?: string | null;
+  title?: string | null;
+  rank?: string | null;
+  specialization?: string | null;
+  is_graduate_student_supervisor?: boolean;
+  max_students?: number | null;
 }
 
 export interface CreateActorResult {
