@@ -588,34 +588,44 @@ begin
       )
   ) then raise exception 'SCHOOL_SCOPE_DENIED'; end if;
 
+  with filtered as (
+    select s.id, s.first_name, s.last_name, s.student_number, s.class_id,
+           s.gender, s.email, s.phone, s.cgpa, s.enrollment_status, c.name as class_name
+    from public.students s
+    left join public.classes c on c.id = s.class_id
+    where s.school_id = p_school_id
+      and (
+        p_search is null
+        or s.first_name ilike '%' || p_search || '%'
+        or s.last_name ilike '%' || p_search || '%'
+        or s.student_number ilike '%' || p_search || '%'
+      )
+  ),
+  paged as (
+    select * from filtered
+    order by last_name, first_name, id
+    limit greatest(coalesce(p_limit, 100), 0)
+    offset greatest(coalesce(p_offset, 0), 0)
+  )
   select jsonb_build_object(
-    'total', count(*) over(),
-    'students', coalesce(jsonb_agg(
-      jsonb_build_object(
-        'id', s.id,
-        'first_name', s.first_name,
-        'last_name', s.last_name,
-        'student_number', s.student_number,
-        'class_name', c.name,
-        'class_id', s.class_id,
-        'gender', s.gender,
-        'email', s.email,
-        'phone', s.phone,
-        'cgpa', s.cgpa,
-        'enrollment_status', s.enrollment_status
-      ) order by s.last_name
+    'total', (select count(*) from filtered),
+    'students', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'id', id,
+        'first_name', first_name,
+        'last_name', last_name,
+        'student_number', student_number,
+        'class_name', class_name,
+        'class_id', class_id,
+        'gender', gender,
+        'email', email,
+        'phone', phone,
+        'cgpa', cgpa,
+        'enrollment_status', enrollment_status
+      ) order by last_name, first_name, id)
+      from paged
     ), '[]'::jsonb)
-  ) into v_result
-  from public.students s
-  left join public.classes c on c.id = s.class_id
-  where s.school_id = p_school_id
-    and (
-      p_search is null
-      or s.first_name ilike '%' || p_search || '%'
-      or s.last_name ilike '%' || p_search || '%'
-      or s.student_number ilike '%' || p_search || '%'
-    )
-  limit p_limit offset p_offset;
+  ) into v_result;
 
   return v_result;
 end;
@@ -648,10 +658,26 @@ begin
       )
   ) then raise exception 'SCHOOL_SCOPE_DENIED'; end if;
 
+  with filtered as (
+    select t.id, t.name, t.email, t.phone
+    from public.teachers t
+    where t.school_id = p_school_id
+      and (
+        p_search is null
+        or t.name ilike '%' || p_search || '%'
+        or t.email ilike '%' || p_search || '%'
+      )
+  ),
+  paged as (
+    select * from filtered
+    order by name, id
+    limit greatest(coalesce(p_limit, 100), 0)
+    offset greatest(coalesce(p_offset, 0), 0)
+  )
   select jsonb_build_object(
-    'total', count(*) over(),
-    'teachers', coalesce(jsonb_agg(
-      jsonb_build_object(
+    'total', (select count(*) from filtered),
+    'teachers', coalesce((
+      select jsonb_agg(jsonb_build_object(
         'id', t.id,
         'name', t.name,
         'email', t.email,
@@ -663,17 +689,10 @@ begin
           join public.teacher_classes tc on tc.class_id = s.class_id
           where tc.teacher_id = t.id
         )
-      ) order by t.name
+      ) order by t.name, t.id)
+      from paged t
     ), '[]'::jsonb)
-  ) into v_result
-  from public.teachers t
-  where t.school_id = p_school_id
-    and (
-      p_search is null
-      or t.name ilike '%' || p_search || '%'
-      or t.email ilike '%' || p_search || '%'
-    )
-  limit p_limit offset p_offset;
+  ) into v_result;
 
   return v_result;
 end;
