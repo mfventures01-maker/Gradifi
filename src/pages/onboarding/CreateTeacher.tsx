@@ -76,8 +76,6 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
 
     try {
       if (!name.trim()) throw new Error('Teacher full name is required');
-      if (!email.trim()) throw new Error('Teacher email address is required');
-      if (!phone.trim()) throw new Error('Teacher phone number is required');
 
       const response = await onboardingService.createTeacher({
         name,
@@ -272,7 +270,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             {/* Field 2: Email */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Official Email Address <span className="text-rose-500">*</span>
+                Official Email Address <span className="text-slate-400">(optional)</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -281,7 +279,6 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
                 <input
                   id="input-teacher-email"
                   type="email"
-                  required
                   placeholder="ngozi.okonkwo@school.edu.ng"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -293,7 +290,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
             {/* Field 3: Phone */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Phone Number <span className="text-rose-500">*</span>
+                Phone Number <span className="text-slate-400">(optional)</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -302,7 +299,6 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
                 <input
                   id="input-teacher-phone"
                   type="tel"
-                  required
                   placeholder="+234 803 456 7890"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -353,7 +349,7 @@ export const CreateTeacher: React.FC<CreateTeacherProps> = ({
               {loading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Invoking create_teacher RPC...</span>
+                  <span>Creating secure teacher identity...</span>
                 </>
               ) : (
                 <>
