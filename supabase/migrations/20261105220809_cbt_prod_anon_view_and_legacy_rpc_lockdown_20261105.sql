@@ -1,7 +1,6 @@
--- Production CBT access lockdown applied to the main Supabase project.
--- Removes anonymous access to session tables and the public exam view.
--- Keeps authenticated session/snapshot DML temporarily available until the
--- RPC-backed frontend is confirmed live and positive persistence is certified.
+-- Narrow production security pass: remove anonymous CBT access and retire obsolete RPC.
+-- Authenticated session/snapshot DML is intentionally preserved until the RPC-backed
+-- client is confirmed deployed, to avoid breaking the live examination pathway.
 
 REVOKE SELECT, INSERT, UPDATE, DELETE
   ON TABLE public.cbt_sessions

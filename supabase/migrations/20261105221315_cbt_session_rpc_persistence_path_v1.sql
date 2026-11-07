@@ -1,8 +1,6 @@
--- RPC-backed CBT session persistence path.
--- Applied to production after inspecting the existing live schema and guards.
--- Authenticated direct table DML is NOT revoked by this migration. That is a
--- separate gate after the live client is verified and positive RPC persistence
--- is demonstrated against a real published school exam.
+-- Add the RPC-backed CBT session read/persistence path without revoking
+-- authenticated table writes yet. Positive runtime validation requires a
+-- real published exam with immutable question snapshots and an active attempt.
 
 create or replace function public.get_cbt_active_attempt(p_exam_id uuid)
 returns jsonb
@@ -15,23 +13,33 @@ declare
   v_result jsonb;
 begin
   if auth.uid() is null then raise exception 'Authentication required'; end if;
+
   select id into v_student_id
   from public.students
   where user_id=auth.uid()
   order by created_at nulls last,id
   limit 1;
+
   if v_student_id is null then
     return jsonb_build_object('active',false);
   end if;
 
   select jsonb_build_object(
-    'active',true,'attempt_id',a.id,'attempt_number',a.attempt_number,
-    'session_id',s.id,'start_time',a.start_time,'deadline_at',a.deadline_at,
-    'status',a.status,'session_state',s.state,'current_question',s.current_question
+    'active',true,
+    'attempt_id',a.id,
+    'attempt_number',a.attempt_number,
+    'session_id',s.id,
+    'start_time',a.start_time,
+    'deadline_at',a.deadline_at,
+    'status',a.status,
+    'session_state',s.state,
+    'current_question',s.current_question
   ) into v_result
   from public.cbt_attempts a
   join public.cbt_sessions s on s.attempt_id=a.id
-  where a.exam_id=p_exam_id and a.student_id=v_student_id and a.status='in_progress'
+  where a.exam_id=p_exam_id
+    and a.student_id=v_student_id
+    and a.status='in_progress'
   order by a.attempt_number desc,a.created_at desc
   limit 1;
 
@@ -51,17 +59,27 @@ begin
   if auth.uid() is null then raise exception 'Authentication required'; end if;
 
   select jsonb_build_object(
-    'success',true,'attempt_id',a.id,'exam_id',a.exam_id,
-    'deadline_at',a.deadline_at,'status',a.status,
-    'session_id',s.id,'session_state',s.state,
+    'success',true,
+    'attempt_id',a.id,
+    'exam_id',a.exam_id,
+    'deadline_at',a.deadline_at,
+    'status',a.status,
+    'session_id',s.id,
+    'session_state',s.state,
     'current_question',coalesce(
-      (select snap.current_question from public.cbt_session_snapshots snap
-       where snap.session_id=s.id order by snap.created_at desc,snap.id desc limit 1),
+      (select snap.current_question
+       from public.cbt_session_snapshots snap
+       where snap.session_id=s.id
+       order by snap.created_at desc,snap.id desc
+       limit 1),
       s.current_question
     ),
     'remaining_time',coalesce(
-      (select snap.remaining_time from public.cbt_session_snapshots snap
-       where snap.session_id=s.id order by snap.created_at desc,snap.id desc limit 1),
+      (select snap.remaining_time
+       from public.cbt_session_snapshots snap
+       where snap.session_id=s.id
+       order by snap.created_at desc,snap.id desc
+       limit 1),
       s.remaining_time
     ),
     'answers',coalesce((
@@ -75,7 +93,9 @@ begin
   join public.cbt_sessions s on s.attempt_id=a.id
   where a.id=p_attempt_id and st.user_id=auth.uid();
 
-  if v_state is null then raise exception 'CBT_ATTEMPT_NOT_FOUND_OR_NOT_OWNED'; end if;
+  if v_state is null then
+    raise exception 'CBT_ATTEMPT_NOT_FOUND_OR_NOT_OWNED';
+  end if;
   return v_state;
 end;
 $function$;
@@ -105,8 +125,11 @@ begin
     raise exception 'Remaining time must be zero or greater';
   end if;
 
-  select * into v_session from public.cbt_sessions
-  where id=p_session_id for update;
+  select * into v_session
+  from public.cbt_sessions
+  where id=p_session_id
+  for update;
+
   if not found then raise exception 'CBT_SESSION_NOT_FOUND'; end if;
   if not public.cbt_is_student(v_session.student_id) then
     raise exception 'CBT_SESSION_NOT_OWNED';
@@ -115,11 +138,13 @@ begin
     raise exception 'CBT_SESSION_NOT_PERSISTABLE_IN_CURRENT_STATE';
   end if;
 
-  select * into v_attempt from public.cbt_attempts
+  select * into v_attempt
+  from public.cbt_attempts
   where id=v_session.attempt_id
     and exam_id=v_session.exam_id
     and student_id=v_session.student_id
   for update;
+
   if not found or v_attempt.status <> 'in_progress' then
     raise exception 'CBT_ATTEMPT_NOT_ACTIVE';
   end if;
@@ -130,6 +155,7 @@ begin
   select count(*) into v_question_count
   from public.gradifi_exam_question_snapshots
   where exam_id=v_session.exam_id;
+
   if v_question_count <= 0 or p_current_question >= v_question_count then
     raise exception 'CBT_CURRENT_QUESTION_OUT_OF_RANGE';
   end if;
@@ -140,15 +166,24 @@ begin
   );
 
   update public.cbt_sessions
-  set current_question=p_current_question,remaining_time=v_remaining,updated_at=now()
-  where id=v_session.id returning * into v_session;
+  set current_question=p_current_question,
+      remaining_time=v_remaining,
+      updated_at=now()
+  where id=v_session.id
+  returning * into v_session;
 
-  insert into public.cbt_session_snapshots(session_id,state,current_question,remaining_time)
-  values(v_session.id,v_session.state,v_session.current_question,v_session.remaining_time);
+  insert into public.cbt_session_snapshots(
+    session_id,state,current_question,remaining_time
+  ) values (
+    v_session.id,v_session.state,v_session.current_question,v_session.remaining_time
+  );
 
   return jsonb_build_object(
-    'success',true,'session_id',v_session.id,'state',v_session.state,
-    'current_question',v_session.current_question,'remaining_time',v_session.remaining_time
+    'success',true,
+    'session_id',v_session.id,
+    'state',v_session.state,
+    'current_question',v_session.current_question,
+    'remaining_time',v_session.remaining_time
   );
 end;
 $function$;

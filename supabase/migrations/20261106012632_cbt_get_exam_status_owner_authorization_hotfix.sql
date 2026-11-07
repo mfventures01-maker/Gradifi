@@ -1,3 +1,5 @@
+begin;
+
 create or replace function public.get_exam_status(p_attempt_id uuid)
 returns jsonb
 language plpgsql
@@ -73,3 +75,5 @@ revoke all on function public.get_exam_status(uuid)
 
 grant execute on function public.get_exam_status(uuid)
   to authenticated, service_role;
+
+commit;
