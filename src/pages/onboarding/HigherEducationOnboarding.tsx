@@ -12,9 +12,11 @@ export const HigherEducationOnboarding: React.FC = () => {
   const [schools, setSchools] = useState<Option[]>([]);
   const [faculties, setFaculties] = useState<Option[]>([]);
   const [departments, setDepartments] = useState<Option[]>([]);
-  const [role, setRole] = useState<AcademicRole>("lecturer");\n  const [callerRole, setCallerRole] = useState<string | null>(null);
+  const [role, setRole] = useState<AcademicRole>("lecturer");
+  const [callerRole, setCallerRole] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");\n  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [facultyId, setFacultyId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
@@ -25,7 +27,8 @@ export const HigherEducationOnboarding: React.FC = () => {
   const [maxStudents, setMaxStudents] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [created, setCreated] = useState<CreateActorResult | null>(null);\n  const [createdDean, setCreatedDean] = useState<CreateDeanResult | null>(null);
+  const [created, setCreated] = useState<CreateActorResult | null>(null);
+  const [createdDean, setCreatedDean] = useState<CreateDeanResult | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -34,7 +37,9 @@ export const HigherEducationOnboarding: React.FC = () => {
         const identity = await authService.resolveCurrentIdentity();
         if (!identity.isAuthenticated || !identity.institutionId) throw new Error("Sign in with an institution administrator account first.");
         if (!active) return;
-        setInstitutionId(identity.institutionId);\n        setCallerRole(identity.role);\n        if (identity.role === "dean") setRole("hod");
+        setInstitutionId(identity.institutionId);
+        setCallerRole(identity.role);
+        if (identity.role === "dean") setRole("hod");
         const db = supabase as any;
         const [schoolRes, facultyRes, departmentRes] = await Promise.all([
           db.from("schools").select("id,school_name").eq("institution_id", identity.institutionId).order("school_name"),
@@ -67,7 +72,16 @@ export const HigherEducationOnboarding: React.FC = () => {
       if (role === "hod" && !departmentId) throw new Error("Select the department this HOD will lead.");
       if (role === "adviser" && !departmentId) throw new Error("Select the adviser's department.");
       if (role === "lecturer" && (!email.trim() || !schoolId)) throw new Error("Lecturer requires an official email and campus.");
-      if (role === "dean") {\n        if (!email.trim() || password.length < 10) throw new Error("Dean requires an institutional email and a password of at least 10 characters.");\n        const dean = await actorOnboardingService.createDean({\n          institution_id: institutionId, faculty_id: facultyId, full_name: fullName.trim(),\n          email: email.trim(), password, phone: phone.trim() || null,\n        });\n        setCreatedDean(dean);\n        return;\n      }\n      const result = await actorOnboardingService.create({
+      if (role === "dean") {
+        if (!email.trim() || password.length < 10) throw new Error("Dean requires an institutional email and a password of at least 10 characters.");
+        const dean = await actorOnboardingService.createDean({
+          institution_id: institutionId, faculty_id: facultyId, full_name: fullName.trim(),
+          email: email.trim(), password, phone: phone.trim() || null,
+        });
+        setCreatedDean(dean);
+        return;
+      }
+      const result = await actorOnboardingService.create({
         actor_type: role,
         institution_id: institutionId,
         school_id: role === "lecturer" ? schoolId : null,
@@ -90,7 +104,19 @@ export const HigherEducationOnboarding: React.FC = () => {
     }
   };
 
-  if (createdDean) return <main className="mx-auto max-w-xl p-6"><section className="rounded-2xl border bg-white p-6 shadow-sm">\n    <h1 className="text-2xl font-bold text-slate-900">Dean Auth account created</h1>\n    <p className="mt-2 text-sm text-slate-600">This Dean signs in with institutional email and password through Supabase Auth. No generated login ID or PIN is issued.</p>\n    <dl className="mt-5 space-y-3 rounded-xl bg-slate-50 p-4 text-sm">\n      <div><dt className="text-slate-500">Role</dt><dd className="font-semibold">Dean</dd></div>\n      <div><dt className="text-slate-500">Name</dt><dd className="font-semibold">{createdDean.full_name}</dd></div>\n      <div><dt className="text-slate-500">Auth email</dt><dd className="font-mono font-bold">{createdDean.email}</dd></div>\n      <div><dt className="text-slate-500">Authentication</dt><dd className="font-semibold">Supabase Auth · Email + Password</dd></div>\n    </dl>\n    <button className="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-white" onClick={() => { setCreatedDean(null); setFullName(""); setEmail(""); setPassword(""); setPhone(""); }}>Create another account</button>\n  </section></main>;\n\n  if (created) return <main className="mx-auto max-w-xl p-6"><section className="rounded-2xl border bg-white p-6 shadow-sm">
+  if (createdDean) return <main className="mx-auto max-w-xl p-6"><section className="rounded-2xl border bg-white p-6 shadow-sm">
+    <h1 className="text-2xl font-bold text-slate-900">Dean Auth account created</h1>
+    <p className="mt-2 text-sm text-slate-600">This Dean signs in with institutional email and password through Supabase Auth. No generated login ID or PIN is issued.</p>
+    <dl className="mt-5 space-y-3 rounded-xl bg-slate-50 p-4 text-sm">
+      <div><dt className="text-slate-500">Role</dt><dd className="font-semibold">Dean</dd></div>
+      <div><dt className="text-slate-500">Name</dt><dd className="font-semibold">{createdDean.full_name}</dd></div>
+      <div><dt className="text-slate-500">Auth email</dt><dd className="font-mono font-bold">{createdDean.email}</dd></div>
+      <div><dt className="text-slate-500">Authentication</dt><dd className="font-semibold">Supabase Auth · Email + Password</dd></div>
+    </dl>
+    <button className="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-white" onClick={() => { setCreatedDean(null); setFullName(""); setEmail(""); setPassword(""); setPhone(""); }}>Create another account</button>
+  </section></main>;
+
+  if (created) return <main className="mx-auto max-w-xl p-6"><section className="rounded-2xl border bg-white p-6 shadow-sm">
     <h1 className="text-2xl font-bold text-slate-900">Academic account created</h1>
     <p className="mt-2 text-sm text-slate-600">Give these credentials to the account holder. The temporary PIN must be changed at first sign-in.</p>
     <dl className="mt-5 space-y-3 rounded-xl bg-slate-50 p-4 text-sm">
