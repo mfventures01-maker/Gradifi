@@ -22,15 +22,16 @@ export const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      if (authService.signInWithPassword) {
+      if (typeof authService.signInWithPassword === 'function') {
         await authService.signInWithPassword(email, password);
-      } else if (authService.signIn) {
+      } else if (typeof authService.signIn === 'function') {
         await authService.signIn(email, password);
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        throw new Error('EMAIL_AUTH_NOT_CONFIGURED');
       }
       const identity = await authService.resolveCurrentIdentity();
-      navigateByRole(identity.role || 'principal_admin');
+      if (!identity.role) throw new Error('AUTHORITY_ROLE_UNRESOLVED');
+      navigateByRole(identity.role);
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'Invalid email or password');
@@ -46,7 +47,8 @@ export const LoginPage: React.FC = () => {
     else if (role === 'parent') navigate('/portal/parent');
     else if (role === 'teacher') navigate('/portal/teacher');
     else if (['dean', 'hod', 'adviser', 'lecturer'].includes(role)) navigate('/portal/higher-education');
-    else navigate('/portal/principal');
+    else if (['principal_admin', 'principal', 'admin'].includes(role)) navigate('/portal/principal');
+    else throw new Error('NO_AUTHORIZED_DASHBOARD_FOR_ROLE');
   };
 
   const handlePinSubmit = async (e: React.FormEvent) => {
@@ -54,7 +56,8 @@ export const LoginPage: React.FC = () => {
     try {
       if (!/^\d{4}$|^\d{6}$/.test(pin)) throw new Error('Enter the 4-digit or 6-digit PIN issued during onboarding.');
       const res = await authService.signInWithPhoneAndPin(loginId, pin);
-      const role = res.role || 'student'; setPendingRole(role);
+      if (!res.role) throw new Error('ACTOR_ROLE_UNRESOLVED');
+      const role = res.role; setPendingRole(role);
       if (res.pinRequiresChange) setRequiresPinChange(true); else navigateByRole(role);
     } catch (err: any) { setError(err.message || 'Invalid Login ID or PIN'); }
     finally { setLoading(false); }
