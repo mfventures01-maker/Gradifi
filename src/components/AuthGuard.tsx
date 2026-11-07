@@ -69,14 +69,25 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   const resolvedRole = sessionState?.role ? (roleAliases[sessionState.role] || sessionState.role) : null;
   const routeRoleMap: Record<string, string[]> = {
     '/portal/principal': ['principal_admin', 'admin'],
+    '/dashboard': ['principal_admin', 'admin'],
     '/portal/vp': ['vice_principal'],
     '/portal/bursar': ['bursar'],
     '/portal/teacher': ['teacher'],
     '/portal/student': ['student'],
     '/portal/parent': ['parent'],
     '/portal/higher-education': ['dean', 'hod', 'adviser', 'lecturer'],
+    '/grading': ['teacher', 'principal_admin', 'admin', 'dean', 'hod', 'adviser', 'lecturer'],
   };
-  const routeRequiredRoles = routeRoleMap[location.pathname];
+  const routeRequiredRoles = routeRoleMap[location.pathname] ??
+    (location.pathname.startsWith('/grading/')
+      ? ['teacher', 'principal_admin', 'admin', 'dean', 'hod', 'adviser', 'lecturer']
+      : location.pathname.startsWith('/cbt/builder') || location.pathname === '/cbt/manager'
+        ? ['teacher', 'principal_admin', 'admin', 'dean', 'hod', 'adviser', 'lecturer']
+        : location.pathname.startsWith('/cbt/runner')
+          ? ['student']
+          : location.pathname.startsWith('/cbt/results')
+            ? ['student', 'teacher', 'principal_admin', 'admin', 'dean', 'hod', 'adviser', 'lecturer']
+            : undefined);
   const allowedByProp = !allowedRoles || (!!resolvedRole && allowedRoles.some(role => (roleAliases[role] || role) === resolvedRole));
   const allowedByRoute = !routeRequiredRoles || (!!resolvedRole && routeRequiredRoles.includes(resolvedRole));
   const isRoleAuthorized = allowedByProp && allowedByRoute;
