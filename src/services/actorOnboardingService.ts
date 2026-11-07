@@ -27,6 +27,8 @@ export interface CreateActorResult {
   school_id: string | null;
   pin: string;
   pin_requires_change: true;
+  actor_record_id?: string | null;
+  student_number?: string | null;
 }
 
 export const actorOnboardingService = {
