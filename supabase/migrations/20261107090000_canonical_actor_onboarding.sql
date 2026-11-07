@@ -5,6 +5,7 @@ begin;
 create extension if not exists pgcrypto;
 create sequence if not exists public.actor_login_id_seq;
 create sequence if not exists public.student_number_seq;
+alter table public.profiles add column if not exists email text;
 
 alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles add constraint profiles_role_check
@@ -103,12 +104,12 @@ begin
   end if;
 
   insert into public.profiles (
-    user_id, institution_id, school_id, full_name, role, phone,
+    user_id, institution_id, school_id, full_name, role, email, phone,
     authentication_method, pin, pin_hash, pin_type, pin_requires_change,
     pin_changed_at, failed_attempts, locked_until
   ) values (
     p_auth_user_id, p_institution_id, p_school_id, trim(p_full_name), p_actor_type,
-    nullif(trim(p_phone), ''),
+    nullif(trim(p_email), ''), nullif(trim(p_phone), ''),
     'pin', null, crypt(p_pin, gen_salt('bf')), 
     case when p_actor_type in ('student','parent') then '4-digit' else '6-digit' end,
     true, null, 0, null
