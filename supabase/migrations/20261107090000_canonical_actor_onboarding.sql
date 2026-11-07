@@ -79,7 +79,7 @@ declare
   v_effective_school_id uuid := p_school_id;
 begin
   if p_auth_user_id is null then raise exception 'AUTH_USER_REQUIRED'; end if;
-  if p_actor_type not in ('vice_principal','bursar','teacher','student','parent','dean','hod','adviser','lecturer') then
+  if p_actor_type not in ('vice_principal','bursar','teacher','student','parent','hod','adviser','lecturer') then
     raise exception 'UNSUPPORTED_ACTOR_TYPE';
   end if;
   if nullif(trim(p_full_name), '') is null then raise exception 'FULL_NAME_REQUIRED'; end if;
