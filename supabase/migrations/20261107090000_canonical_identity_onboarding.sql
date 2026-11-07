@@ -15,6 +15,11 @@ alter table public.profiles
 alter table public.profiles
   add column if not exists login_identifier text;
 
+alter table public.parents
+  add column if not exists full_name text,
+  add column if not exists email text,
+  add column if not exists phone text;
+
 create unique index if not exists profiles_login_identifier_uidx
   on public.profiles (login_identifier)
   where login_identifier is not null;
@@ -124,7 +129,7 @@ begin
   if p_actor_type='teacher' then
     insert into public.teachers(user_id,institution_id,school_id,name,email,phone,profile_id)
     values(p_auth_user_id,p_institution_id,p_school_id,trim(p_full_name),
-           nullif(trim(p_email),''),nullif(trim(p_phone),''),v_profile_id)
+           nullif(trim(p_email),''),nullif(trim(p_phone),''))
     returning id into v_record_id;
   elsif p_actor_type='student' then
     if p_class_id is null then raise exception 'class_id required for student'; end if;
