@@ -143,6 +143,7 @@ export const HigherEducationOnboarding: React.FC = () => {
         <label className="block text-sm font-medium">{role === "dean" ? "Institutional Auth email" : "Official email"}<input type="email" required={role==="lecturer" || role==="dean"} value={email} onChange={e=>setEmail(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>
         <label className="block text-sm font-medium">Phone<input value={phone} onChange={e=>setPhone(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>
       </div>
+      {role === "dean" && <label className="block text-sm font-medium">Dean password (minimum 10 characters)<input type="password" minLength={10} autoComplete="new-password" required value={password} onChange={e=>setPassword(e.target.value)} className="mt-1 w-full rounded-lg border p-2"/></label>}
       {(role==="dean" || role==="lecturer") && <label className="block text-sm font-medium">Faculty
         <select value={facultyId} onChange={e=>setFacultyId(e.target.value)} className="mt-1 w-full rounded-lg border p-2"><option value="">Select faculty</option>{faculties.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
       </label>}
