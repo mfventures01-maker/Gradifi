@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabase";
 
-export type ActorType = "vice_principal" | "bursar" | "teacher" | "student" | "parent" | "dean" | "hod" | "adviser" | "lecturer";
+export type ActorType = "vice_principal" | "bursar" | "teacher" | "student" | "parent" | "hod" | "adviser" | "lecturer";
 
 export interface CreateActorInput {
   actor_type: ActorType;
