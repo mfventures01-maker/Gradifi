@@ -17,12 +17,36 @@ export const OnboardingWizard: React.FC = () => {
 
   const [schoolId, setSchoolId] = useState<string>('');
   const [institutionId, setInstitutionId] = useState<string>('');
+  const [callerRole, setCallerRole] = useState<string | null>(null);
+  const [identityLoading, setIdentityLoading] = useState(true);
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [formData, setFormData] = useState({
+    institution_name: '',
+    institution_type: 'secondary' as const,
+    registration_number: '',
+    address: '',
+    state: 'Lagos',
+    lga: 'Ikeja',
+    principal_name: '',
+    principal_phone: '',
+    principal_email: '',
+    principal_password: '',
+    class_name: 'JSS 1',
+    subject: 'Mathematics'
+  });
 
   useEffect(() => {
     const pending = localStorage.getItem('sefaes.pending-root-onboarding');
     if (pending) {
+      const pendingAction = JSON.parse(pending).action;
+      const destination = pendingAction === 'bootstrap_higher_institution'
+        ? '/portal/higher-education'
+        : '/portal/principal';
       onboardingService.completePendingRootRegistration()
-        .then(() => navigate('/portal/principal', { replace: true }))
+        .then(() => navigate(destination, { replace: true }))
         .catch((error) => {
           if (error instanceof Error && error.message !== 'VERIFIED_ROOT_SESSION_REQUIRED') {
             setErrorMessage(error.message);
@@ -33,12 +57,24 @@ export const OnboardingWizard: React.FC = () => {
     authService.resolveCurrentIdentity().then((identity) => {
       if (identity.schoolId) setSchoolId(identity.schoolId);
       if (identity.institutionId) setInstitutionId(identity.institutionId);
-    }).catch(() => undefined);
+      setCallerRole(identity.role || null);
+    }).catch(() => setCallerRole(null)).finally(() => setIdentityLoading(false));
   }, [navigate]);
+
+  // Subaccount routes are usable only by the authenticated Principal for this institution.
+  if (view && view !== 'create-vp' && view !== 'create-bursar' && view !== 'create-teacher' &&
+      view !== 'create-student' && view !== 'bulk-import' && view !== 'create-parent') {
+    return <div className="p-8">Unknown onboarding view.</div>;
+  }
+  if (view) {
+    if (identityLoading) return <div className="p-8">Checking Principal authority…</div>;
+    if (callerRole !== 'principal_admin' || !schoolId || !institutionId) {
+      return <div className="p-8">A verified Principal session is required. <button onClick={() => navigate('/login')}>Sign in</button></div>;
+    }
+  }
 
   // Check for VP view
   if (view === 'create-vp') {
-    if (!schoolId || !institutionId) return <div className="p-8">A verified Principal session is required. <button onClick={() => navigate('/login')}>Sign in</button></div>;
     return <CreateVP schoolId={schoolId} institutionId={institutionId} />;
   }
 
@@ -72,24 +108,7 @@ export const OnboardingWizard: React.FC = () => {
     return <CreateParent schoolId={schoolId} institutionId={institutionId} />;
   }
 
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [formData, setFormData] = useState({
-    institution_name: '',
-    institution_type: 'secondary' as const,
-    registration_number: '',
-    address: '',
-    state: 'Lagos',
-    lga: 'Ikeja',
-    principal_name: '',
-    principal_phone: '',
-    principal_email: '',
-    principal_password: '',
-    class_name: 'JSS 1',
-    subject: 'Mathematics'
-  });
+
 
   const handleNext = () => {
     if (step < 4) setStep(step + 1);
