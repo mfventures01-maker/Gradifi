@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HomePage } from './pages/home/HomePage';
 import { OnboardingWizard } from './pages/onboarding/OnboardingWizard';
+import { HigherEducationOnboarding } from './pages/onboarding/HigherEducationOnboarding';
 import { LoginPage } from './pages/auth/LoginPage';
 import { AuthGuard } from './components/AuthGuard';
 
@@ -50,6 +51,7 @@ function App() {
         
         {/* Phase 2: Onboarding (No Auth Required) */}
         <Route path="/onboarding" element={<OnboardingWizard />} />
+        <Route path="/onboarding/higher-education" element={<AuthGuard><HigherEducationOnboarding /></AuthGuard>} />
         
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
