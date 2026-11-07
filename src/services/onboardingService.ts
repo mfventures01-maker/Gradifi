@@ -50,6 +50,9 @@ export interface CreateTeacherInput {
 }
 
 export interface CreateTeacherResponse {
+  login_id?: string;
+  pin?: string;
+  user_id?: string;
   teacher_id: string;
   name: string;
   email: string;
@@ -70,6 +73,9 @@ export interface EnrollStudentInput {
 }
 
 export interface EnrollStudentResponse {
+  login_id?: string;
+  pin?: string;
+  user_id?: string;
   student_id: string;
   student_number: string;
   class_id: string;
@@ -197,160 +203,48 @@ export const onboardingService = {
    * Registers a certified teacher with an optional class_subject assignment.
    */
   async createTeacher(input: CreateTeacherInput): Promise<CreateTeacherResponse> {
-    try {
-      let data: any = null;
-      let error: any = null;
-      try {
-        const res = await supabase.rpc('create_teacher', {
-          p_name: input.name,
-          p_email: input.email,
-          p_phone: input.phone,
-          p_school_id: input.school_id,
-          p_class_subject_id: input.class_subject_id || undefined,
-          institution_id: input.institution_id,
-          school_id: input.school_id,
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          class_subject_ids: input.class_subject_id ? [input.class_subject_id] : [],
-        });
-        data = res.data;
-        error = res.error;
-      } catch (rpcErr) {
-        error = rpcErr;
-      }
-
-      if (error || !data) {
-        console.warn('RPC create_teacher error or unavailable, using fallback response:', error?.message || error);
-        
-        let teacherId = `tch_${Date.now()}`;
-        try {
-          const { data: directTeacher } = await supabase
-            .from('teachers')
-            .insert({
-              school_id: input.school_id,
-              institution_id: input.institution_id || 'inst_default',
-              name: input.name,
-              email: input.email,
-              phone: input.phone,
-            } as any)
-            .select()
-            .single();
-          if (directTeacher?.id) teacherId = directTeacher.id;
-        } catch (dbErr) {
-          console.warn('Direct insert notice:', dbErr);
-        }
-
-        return {
-          teacher_id: teacherId,
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          school_id: input.school_id,
-          institution_id: input.institution_id,
-          success: true,
-        };
-      }
-
-      return {
-        teacher_id: data?.teacher_id || `tch_${Date.now()}`,
-        name: data?.name || input.name,
-        email: data?.email || input.email,
-        phone: data?.phone || input.phone,
-        school_id: data?.school_id || input.school_id,
-        institution_id: data?.institution_id || input.institution_id,
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.createTeacher error:', err);
-      return {
-        teacher_id: `tch_${Date.now()}`,
-        name: input.name,
-        email: input.email,
-        phone: input.phone,
-        school_id: input.school_id,
-        institution_id: input.institution_id,
-        success: true,
-      };
-    }
+    const { actorOnboardingService } = await import("./actorOnboardingService");
+    const result = await actorOnboardingService.create({
+      actor_type: "teacher",
+      institution_id: input.institution_id || "",
+      school_id: input.school_id,
+      full_name: input.name,
+      email: input.email,
+      phone: input.phone,
+    });
+    return {
+      teacher_id: result.actor_type === "teacher" ? result.user_id : "",
+      login_id: result.login_id,
+      pin: result.pin,
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      school_id: input.school_id,
+      institution_id: input.institution_id,
+      success: true,
+    } as CreateTeacherResponse;
   },
 
-  /**
-   * 4. Enroll Student RPC: enroll_student
-   * Registers a student and generates an authoritative student_number.
-   */
   async enrollStudent(input: EnrollStudentInput): Promise<EnrollStudentResponse> {
-    try {
-      let data: any = null;
-      let error: any = null;
-      try {
-        const res = await supabase.rpc('enroll_student', {
-          p_first_name: input.first_name,
-          p_last_name: input.last_name,
-          p_class_id: input.class_id,
-          p_school_id: input.school_id,
-          p_gender: input.gender,
-          p_date_of_birth: input.date_of_birth || undefined,
-          institution_id: input.institution_id,
-          school_id: input.school_id,
-          class_id: input.class_id,
-          first_name: input.first_name,
-          last_name: input.last_name,
-          gender: input.gender,
-          date_of_birth: input.date_of_birth,
-        });
-        data = res.data;
-        error = res.error;
-      } catch (rpcErr) {
-        error = rpcErr;
-      }
-
-      if (error || !data) {
-        console.warn('RPC enroll_student error or unavailable, using fallback response:', error?.message || error);
-        
-        const autoStudentNumber = `GRD/${new Date().getFullYear()}/${Math.floor(10000 + Math.random() * 90000)}`;
-        let studentId = `std_${Date.now()}`;
-
-        try {
-          const { data: directStudent } = await supabase
-            .from('students')
-            .insert({
-              school_id: input.school_id,
-              institution_id: input.institution_id || 'inst_default',
-              class_id: input.class_id,
-              student_number: autoStudentNumber,
-              first_name: input.first_name,
-              last_name: input.last_name,
-              gender: input.gender,
-              date_of_birth: input.date_of_birth || null,
-            } as any)
-            .select()
-            .single();
-          if (directStudent?.id) studentId = directStudent.id;
-        } catch (dbErr) {
-          console.warn('Direct student insert notice:', dbErr);
-        }
-
-        return {
-          student_id: studentId,
-          student_number: autoStudentNumber,
-          class_id: input.class_id,
-          enrolled_at: new Date().toISOString(),
-          success: true,
-        };
-      }
-
-      return {
-        student_id: data?.student_id || `std_${Date.now()}`,
-        student_number: data?.student_number || `GRD/${new Date().getFullYear()}/${Math.floor(100 + Math.random() * 900)}`,
-        class_id: data?.class_id || input.class_id,
-        enrolled_at: data?.enrolled_at || new Date().toISOString(),
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.enrollStudent error:', err);
-      throw new Error(err.message || 'Student enrollment failed. Please check your network and class assignment.');
-    }
+    const { actorOnboardingService } = await import("./actorOnboardingService");
+    const result = await actorOnboardingService.create({
+      actor_type: "student",
+      institution_id: input.institution_id || "",
+      school_id: input.school_id,
+      class_id: input.class_id,
+      full_name: `${input.first_name} ${input.last_name}`,
+      gender: input.gender,
+      date_of_birth: input.date_of_birth,
+    });
+    return {
+      student_id: result.user_id,
+      student_number: result.login_id,
+      login_id: result.login_id,
+      pin: result.pin,
+      class_id: input.class_id,
+      enrolled_at: new Date().toISOString(),
+      success: true,
+    } as EnrollStudentResponse;
   },
 
   /**
