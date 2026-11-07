@@ -118,9 +118,15 @@ serve(async (req) => {
     }
     const schoolId = expectedAuthorityRole === "principal_admin"
       ? String(body.school_id || callerProfile.school_id || "")
-      : null;
+      : (actorType === "lecturer" ? String(body.school_id || "") : null);
     if (expectedAuthorityRole === "principal_admin" && (!schoolId || schoolId !== callerProfile.school_id)) {
       return json({ error: "CROSS_SCHOOL_DENIED" }, 403);
+    }
+    if (actorType === "lecturer") {
+      if (!schoolId) return json({ error: "LECTURER_CAMPUS_REQUIRED" }, 400);
+      const { data: campus } = await admin.from("schools").select("id")
+        .eq("id", schoolId).eq("institution_id", institutionId).maybeSingle();
+      if (!campus) return json({ error: "LECTURER_CAMPUS_OUTSIDE_INSTITUTION" }, 403);
     }
 
     const pinLength = ["student", "parent"].includes(actorType) ? 4 : 6;
