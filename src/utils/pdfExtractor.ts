@@ -345,6 +345,7 @@ export async function extractDocumentText(
 
   // Method 2: OCR Fallback for scanned / image-only PDFs
   onProgress?.(40, 'Text stream unavailable. Rasterizing PDF pages for Tesseract OCR...');
+  let ocrAttempted = false;
   try {
     let rasterImages = extractJpegImagesFromPdf(arrayBuffer);
     if (rasterImages.length === 0) {
@@ -353,7 +354,6 @@ export async function extractDocumentText(
 
     let ocrText = '';
     let pageEstimate = 1;
-    let ocrAttempted = false;
 
     if (rasterImages.length > 0) {
       ocrAttempted = true;
@@ -386,6 +386,9 @@ export async function extractDocumentText(
     }
   } catch (ocrErr: any) {
     console.warn('OCR extraction fallback failed:', ocrErr);
+    if (!ocrAttempted) {
+      throw new Error('PDF_RASTERIZATION_FAILURE');
+    }
     const failureCode = ocrErr?.message === 'OCR_TIMEOUT'
       ? 'OCR_TIMEOUT'
       : ocrErr?.message === 'OCR_NO_TEXT'
