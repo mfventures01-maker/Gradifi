@@ -213,7 +213,30 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
       globalSentenceIdx++;
       const sId = `SEN-${String(globalSentenceIdx).padStart(3, '0')}`;
       const leadingWhitespace = restored.length - restored.trimStart().length;
-      const sStart = pStart + sMatch.index + leadingWhitespace;
+
+      // Protected placeholders can be shorter or longer than the abbreviations
+      // they replace. Convert sentence offsets from protectedText coordinates
+      // back to the original paragraph coordinates before publishing evidence.
+      const protectedOffsetToOriginal = (offset: number): number => {
+        let originalOffset = offset;
+        const spans = protectedSpans
+          .map(span => ({
+            index: protectedText.indexOf(span.placeholder),
+            placeholderLength: span.placeholder.length,
+            originalLength: span.text.length
+          }))
+          .filter(span => span.index >= 0)
+          .sort((a, b) => a.index - b.index);
+
+        for (const span of spans) {
+          if (offset >= span.index + span.placeholderLength) {
+            originalOffset += span.originalLength - span.placeholderLength;
+          }
+        }
+        return originalOffset;
+      };
+
+      const sStart = pStart + protectedOffsetToOriginal(sMatch.index + leadingWhitespace);
       const sEnd = sStart + sText.length;
 
       // Extract sliding window n-gram phrases (N=3, 5, 7)
