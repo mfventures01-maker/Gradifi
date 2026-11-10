@@ -150,7 +150,6 @@ export async function extractTextFromPdfStream(arrayBuffer: ArrayBuffer): Promis
     loadingTask = pdfjsLib.getDocument({
       data,
       useSystemFonts: true,
-      isEvalSupported: false
     });
     pdfDoc = await loadingTask.promise;
 
