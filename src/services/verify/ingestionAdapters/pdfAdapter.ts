@@ -101,7 +101,7 @@ export async function extractPdfAdapter(
     const errorMessage = typeof err?.message === 'string' ? err.message : 'PDF extraction failed.';
     // Only explicit OCR runtime failures count as OCR failures. The generic
     // PDF-unavailable message may mention OCR without an OCR worker running.
-    const isOcrError = errorMessage === 'OCR_TIMEOUT' || errorMessage === 'OCR_WORKER_FAILURE';
+    const isOcrError = ['OCR_TIMEOUT', 'OCR_NO_TEXT', 'OCR_WORKER_FAILURE'].includes(errorMessage);
     return {
       success: false,
       text: '',
