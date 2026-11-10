@@ -98,7 +98,10 @@ export async function extractPdfAdapter(
       warnings: []
     };
   } catch (err: any) {
-    const isOcrError = err?.message?.toLowerCase().includes('ocr') || false;
+    const errorMessage = typeof err?.message === 'string' ? err.message : 'PDF extraction failed.';
+    // Only explicit OCR runtime failures count as OCR failures. The generic
+    // PDF-unavailable message may mention OCR without an OCR worker running.
+    const isOcrError = errorMessage === 'OCR_TIMEOUT' || errorMessage === 'OCR_WORKER_FAILURE';
     return {
       success: false,
       text: '',
@@ -107,10 +110,10 @@ export async function extractPdfAdapter(
       extractionMethod: isOcrError ? 'ocr_tesseract' : 'pdf_stream_extractor',
       ocrUsed: isOcrError,
       ocrStatus: isOcrError ? 'FAILED' : 'NOT_AVAILABLE',
-      warnings: [err?.message || 'PDF extraction failed.'],
+      warnings: [errorMessage],
       error: {
         code: 'TEXT_EXTRACTION_UNAVAILABLE',
-        message: err?.message || 'Text extraction unavailable.'
+        message: errorMessage
       }
     };
   }
