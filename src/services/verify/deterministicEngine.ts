@@ -347,7 +347,7 @@ export function generateDeterministicPlagiarismReport(
     `Engine Version:       ${aggregation.engineVersion}`,
     `Normalization Ver:    ${aggregation.normalizationVersion}`,
     `Evidence Hash:        ${aggregation.evidenceHash}`,
-    `Analysis Timestamp:   ${new Date().toISOString()}`,
+    'Analysis Timestamp:   NOT RECORDED (deterministic engine output)',
     '',
     'OVERALL SUMMARY',
     '--------------------------------------------------------------------------------',
