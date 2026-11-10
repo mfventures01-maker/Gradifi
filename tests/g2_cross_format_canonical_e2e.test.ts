@@ -156,11 +156,13 @@ describe('G2 cross-format canonical authority E2E', () => {
       evaluateDocumentSimilarity(doc, sourceDoc),
     );
     const baselineFindingIds = similarityRuns[0].findings.map(f => f.findingId);
+    const baselineOffsets = similarityRuns[0].findings.map(f => [f.sourceStart, f.sourceEnd]);
 
     expect(baselineFindingIds.length).toBeGreaterThan(0);
 
     similarityRuns.forEach((result, index) => {
       expect(result.findings.map(f => f.findingId)).toEqual(baselineFindingIds);
+      expect(result.findings.map(f => [f.sourceStart, f.sourceEnd])).toEqual(baselineOffsets);
       expect(result.findings.every(f => f.provenance === 'DETERMINISTIC')).toBe(true);
 
       for (const finding of result.findings) {
