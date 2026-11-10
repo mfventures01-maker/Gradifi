@@ -106,6 +106,10 @@ describe('G2 cross-format canonical authority E2E', () => {
       { format: 'pdf', result: pdf },
     ];
 
+    expect(txt.extractionMethod).toBe('txt_text_reader');
+    expect(docx.extractionMethod).toBe('docx_xml_extractor');
+    expect(pdf.extractionMethod).toBe('pdf_stream_extractor');
+
     for (const item of ingestions) {
       expect(item.result.success).toBe(true);
       expect(item.result.canonicalReady).toBe(true);
@@ -154,7 +158,7 @@ describe('G2 cross-format canonical authority E2E', () => {
 
     expect(baselineFindingIds.length).toBeGreaterThan(0);
 
-    for (const result of similarityRuns) {
+    similarityRuns.forEach((result, index) => {
       expect(result.findings.map(f => f.findingId)).toEqual(baselineFindingIds);
       expect(result.findings.every(f => f.provenance === 'DETERMINISTIC')).toBe(true);
 
@@ -162,12 +166,10 @@ describe('G2 cross-format canonical authority E2E', () => {
         expect(typeof finding.sourceStart).toBe('number');
         expect(typeof finding.sourceEnd).toBe('number');
         expect(
-          result === similarityRuns[0]
-            ? canonicalDocs[0].rawText.slice(finding.sourceStart!, finding.sourceEnd!)
-            : canonicalDocs[similarityRuns.indexOf(result)].rawText.slice(finding.sourceStart!, finding.sourceEnd!),
+          canonicalDocs[index].rawText.slice(finding.sourceStart!, finding.sourceEnd!),
         ).toBe(finding.sourceSegment);
       }
-    }
+    });
   }, 120000);
 
   it('changes canonical identity when document content changes', async () => {
