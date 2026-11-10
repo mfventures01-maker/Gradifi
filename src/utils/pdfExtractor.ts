@@ -353,8 +353,10 @@ export async function extractDocumentText(
 
     let ocrText = '';
     let pageEstimate = 1;
+    let ocrAttempted = false;
 
     if (rasterImages.length > 0) {
+      ocrAttempted = true;
       onProgress?.(60, `Extracted ${rasterImages.length} raster image payload(s). Running Tesseract OCR...`);
       const ocrResults = await Promise.all(
         rasterImages.slice(0, 5).map(imgBytes => {
@@ -378,12 +380,22 @@ export async function extractDocumentText(
         extractionMethod: 'ocr_tesseract'
       };
     }
+
+    if (ocrAttempted) {
+      throw new Error('OCR_NO_TEXT');
+    }
   } catch (ocrErr: any) {
     console.warn('OCR extraction fallback failed:', ocrErr);
+    const failureCode = ocrErr?.message === 'OCR_TIMEOUT'
+      ? 'OCR_TIMEOUT'
+      : ocrErr?.message === 'OCR_NO_TEXT'
+        ? 'OCR_NO_TEXT'
+        : 'OCR_WORKER_FAILURE';
+    throw new Error(failureCode);
   }
 
-  // Honest failure boundary if neither stream nor OCR yielded legible text
-  throw new Error('Text extraction unavailable. PDF contains no legible text or OCR failed.');
+  // No structural text and no OCR attempt: do not mislabel this as an OCR failure.
+  throw new Error('TEXT_EXTRACTION_UNAVAILABLE');
 }
 
 
