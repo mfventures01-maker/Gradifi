@@ -5,7 +5,7 @@ import {
   analyzeDocumentEvidence,
   evaluateDocumentSimilarity,
 } from '../src/services/verify/deterministicEngine';
-import { buildCanonicalAnalysisDocument } from '../src/services/verify/documentNormalizer';
+import { buildCanonicalAnalysisDocument, normalizeText } from '../src/services/verify/documentNormalizer';
 import { ingestDocument } from '../src/services/verify/universalIngestionService';
 import type { EvidenceMatch } from '../src/services/verify/types';
 
@@ -125,7 +125,7 @@ describe('G2 cross-format canonical authority E2E', () => {
       expect(item.result.canonicalReady).toBe(true);
       expect(item.result.canonicalDocument).toBeDefined();
       expect(item.result.canonicalDocument!.normalizedText).toBe(
-        canonicalizeExpectedText(EXPECTED_CANONICAL_RAW_TEXT),
+        normalizeText(EXPECTED_CANONICAL_RAW_TEXT),
       );
     }
 
