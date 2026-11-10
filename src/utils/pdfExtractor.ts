@@ -121,83 +121,70 @@ export function validatePdfExtractedTextQuality(text: string): boolean {
 }
 
 /**
- * Extracts raw text from PDF bytes via text stream extraction.
- * In browser environments, uses PDF.js page.getTextContent() to parse FlateDecode streams.
- * Falls back to regex stream extraction for Node.js or if PDF.js extraction fails.
+ * Extracts text from a PDF with PDF.js structural parsing in both browser and
+ * Node runtimes. The byte-level regex fallback is deliberately removed:
+ * PDF bytes are not UTF-8 text, and regex matches are not trustworthy evidence.
+ *
+ * An empty result is a fail-closed signal to the caller, which may then use the
+ * existing rasterization/OCR path for image-only PDFs.
  */
 export async function extractTextFromPdfStream(arrayBuffer: ArrayBuffer): Promise<string> {
-  if (typeof window !== 'undefined') {
-    try {
-      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-          'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
-          import.meta.url
-        ).toString();
-      }
-
-      const data = new Uint8Array(arrayBuffer.slice(0));
-      const loadingTask = pdfjsLib.getDocument({ data, useSystemFonts: true });
-      const pdfDoc = await loadingTask.promise;
-      const textParts: string[] = [];
-
-      const maxPages = Math.min(pdfDoc.numPages, 25);
-      for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
-        const page = await pdfDoc.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map((item: any) => item.str || '')
-          .join(' ');
-        if (pageText.trim()) {
-          textParts.push(pageText.trim());
-        }
-      }
-
-      const combined = textParts.join('\n\n').trim();
-      const isValid = validatePdfExtractedTextQuality(combined);
-      console.log('[BROWSER_STREAM_EXTRACTOR_RESULT] combined.length:', combined.length, 'isValid:', isValid, 'preview:', JSON.stringify(combined.substring(0, 200)));
-      if (combined.length >= 50 && isValid) {
-        return combined;
-      }
-    } catch (err: any) {
-      console.warn('PDF.js text extraction failed, falling back to regex:', err);
-    }
+  if (!(arrayBuffer instanceof ArrayBuffer) || arrayBuffer.byteLength === 0) {
+    return '';
   }
+
+  let loadingTask: any = null;
+  let pdfDoc: any = null;
 
   try {
-    const decoder = new TextDecoder('utf-8');
-    const rawContent = decoder.decode(new Uint8Array(arrayBuffer));
-    
-    // Extract text in TJ / Tj operators or parenthesis blocks inside PDF streams
-    const textMatches: string[] = [];
-    
-    // Regex matching parenthesized strings in PDF streams (TJ/Tj commands or literal strings)
-    const regex = /\(([^()\r\n]{3,})\)\s*(?:Tj|TJ|\)|\])/g;
-    let match;
-    while ((match = regex.exec(rawContent)) !== null) {
-      let cleaned = match[1]
-        .replace(/\\\( /g, '(')
-        .replace(/\\\)/g, ')')
-        .replace(/\\n/g, ' ')
-        .replace(/\\r/g, '')
-        .replace(/\\t/g, ' ')
-        .trim();
-      
-      // Filter out PDF stream syntax noise
-      if (cleaned.length > 3 && !/^[0-9A-Fa-f]{8,}$/.test(cleaned) && !/^\/[A-Z]/.test(cleaned)) {
-        textMatches.push(cleaned);
-      }
+    // PDF.js uses its configured worker in browsers. In Node it selects its
+    // Node-compatible worker implementation; do not force a browser URL.
+    if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+        import.meta.url
+      ).toString();
     }
 
-    if (textMatches.length > 0) {
-      const extractedStr = textMatches.join(' ');
-      if (extractedStr.length >= 50 && validatePdfExtractedTextQuality(extractedStr)) {
-        return extractedStr;
-      }
+    const data = new Uint8Array(arrayBuffer.slice(0));
+    loadingTask = pdfjsLib.getDocument({
+      data,
+      useSystemFonts: true,
+      isEvalSupported: false
+    });
+    pdfDoc = await loadingTask.promise;
+
+    const textParts: string[] = [];
+    const maxPages = Math.min(pdfDoc.numPages, 25);
+
+    for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+      const page = await pdfDoc.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .map((item: any) => typeof item?.str === 'string' ? item.str : '')
+        .filter((part: string) => part.length > 0)
+        .join(' ')
+        .trim();
+
+      if (pageText) textParts.push(pageText);
     }
-  } catch (e) {
-    console.warn('PDF stream extraction failed, falling back to OCR:', e);
+
+    const combined = textParts.join('\n\n').trim();
+    return combined.length >= 50 && validatePdfExtractedTextQuality(combined)
+      ? combined
+      : '';
+  } catch {
+    // Do not decode PDF bytes as UTF-8 or accept regex-derived pseudo-text.
+    // The caller owns the OCR fallback and final unavailable-text verdict.
+    return '';
+  } finally {
+    try {
+      if (pdfDoc) await pdfDoc.destroy();
+      else if (loadingTask) await loadingTask.destroy();
+    } catch {
+      // Cleanup must not replace the extraction verdict.
+    }
   }
-  return '';
 }
 
 import { ocrService } from '../services/ocrService.js';
