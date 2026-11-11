@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { ingestDocument } from '../src/services/verify/universalIngestionService.js';
+import { createWorker } from 'tesseract.js';
 
 const phrase = 'GRADIFI G2 CANONICAL EVIDENCE TEST 7F3A9C';
 const width = 1800;
@@ -35,6 +36,28 @@ for (const fixture of fixtures) {
     fixture.bytes.byteOffset,
     fixture.bytes.byteOffset + fixture.bytes.byteLength
   ) as ArrayBuffer;
+
+  // Probe Tesseract directly first, so failures can be localized to image decoding,
+  // recognition, or the application adapter. This is diagnostic, not a substitute
+  // for the production-path assertions below.
+  let directProbe: any = { attempted: false };
+  let diagnosticWorker: any;
+  try {
+    diagnosticWorker = await createWorker('eng');
+    const raw: any = await diagnosticWorker.recognize(fixture.bytes);
+    directProbe = {
+      attempted: true,
+      text: raw?.data?.text || '',
+      confidence: raw?.data?.confidence ?? null,
+      wordCount: Array.isArray(raw?.data?.words) ? raw.data.words.length : null
+    };
+  } catch (error: any) {
+    directProbe = { attempted: true, error: String(error?.message || error) };
+  } finally {
+    if (diagnosticWorker) {
+      try { await diagnosticWorker.terminate(); } catch { /* diagnostic cleanup */ }
+    }
+  }
 
   // Execute the actual universal ingestion path twice, with real Tesseract.js.
   const first: any = await ingestDocument({ name: fixture.name, mimeType: fixture.mimeType, buffer });
