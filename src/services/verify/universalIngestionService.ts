@@ -75,7 +75,10 @@ export function detectFileFormat(filename: string, mimeType?: string): Supported
   const ext = filename.split('.').pop()?.toLowerCase() || '';
 
   const formatMap: Record<string, SupportedFormat> = {
-    pdf: 'pdf',\n    jpg: 'jpg',\n    jpeg: 'jpeg',\n    png: 'png',
+    pdf: 'pdf',
+    jpg: 'jpg',
+    jpeg: 'jpeg',
+    png: 'png',
     doc: 'doc',
     docx: 'docx',
     rtf: 'rtf',
@@ -100,7 +103,9 @@ export function detectFileFormat(filename: string, mimeType?: string): Supported
   }
 
   if (mimeType) {
-    if (mimeType.includes('pdf')) return 'pdf';\n    if (mimeType === 'image/jpeg') return 'jpg';\n    if (mimeType === 'image/png') return 'png';
+    if (mimeType.includes('pdf')) return 'pdf';
+    if (mimeType === 'image/jpeg') return 'jpg';
+    if (mimeType === 'image/png') return 'png';
     if (mimeType.includes('wordprocessingml')) return 'docx';
     if (mimeType.includes('msword')) return 'doc';
     if (mimeType.includes('rtf')) return 'rtf';
@@ -121,7 +126,20 @@ export function detectFileFormat(filename: string, mimeType?: string): Supported
 /**
  * Normalizes input payload into string or ArrayBuffer for parsing.
  */
-function inferMimeType(filename: string): string {\n  const ext = filename.split('.').pop()?.toLowerCase();\n  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';\n  if (ext === 'png') return 'image/png';\n  if (ext === 'pdf') return 'application/pdf';\n  if (ext === 'txt') return 'text/plain';\n  if (ext === 'html' || ext === 'htm') return 'text/html';\n  if (ext === 'csv') return 'text/csv';\n  if (ext === 'json') return 'application/json';\n  if (ext === 'xml') return 'application/xml';\n  return 'application/octet-stream';\n}\n\nexport async function getFilePayload(
+function inferMimeType(filename: string): string {
+  const ext = filename.split('.').pop()?.toLowerCase();
+  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';
+  if (ext === 'png') return 'image/png';
+  if (ext === 'pdf') return 'application/pdf';
+  if (ext === 'txt') return 'text/plain';
+  if (ext === 'html' || ext === 'htm') return 'text/html';
+  if (ext === 'csv') return 'text/csv';
+  if (ext === 'json') return 'application/json';
+  if (ext === 'xml') return 'application/xml';
+  return 'application/octet-stream';
+}
+
+export async function getFilePayload(
   fileOrInput: File | { name: string; text?: string; buffer?: ArrayBuffer; mimeType?: string }
 ): Promise<{ filename: string; mimeType: string; size: number; text?: string; buffer?: ArrayBuffer }> {
   const isFileInstance = typeof File !== 'undefined' && fileOrInput instanceof File;
@@ -210,7 +228,11 @@ export async function ingestDocument(
   }
 
   // Format Adapters Dispatch
-  let adapterResult: any;\n\n  if (format === 'jpg' || format === 'jpeg' || format === 'png') {\n    adapterResult = await extractImageAdapter(payload.filename, payload.buffer || new ArrayBuffer(0));\n  }
+  let adapterResult: any;
+
+  if (format === 'jpg' || format === 'jpeg' || format === 'png') {
+    adapterResult = await extractImageAdapter(payload.filename, payload.buffer || new ArrayBuffer(0));
+  }
 
   if (!adapterResult) switch (format) {
     case 'pdf': {
