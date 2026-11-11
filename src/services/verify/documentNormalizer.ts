@@ -332,7 +332,8 @@ export interface BuildCanonicalOptions {
   title?: string;
   filename?: string;
   fileSizeBytes?: number;
-  extractionMethod?: 'text_reader' | 'pdf_stream_extractor' | 'ocr_tesseract' | 'manual_paste' | 'demo_fixture';\n  mimeType?: string;
+  extractionMethod?: 'text_reader' | 'pdf_stream_extractor' | 'ocr_tesseract' | 'manual_paste' | 'demo_fixture';
+  mimeType?: string;
   isFixture?: boolean;
   overrideMetadata?: Partial<{
     title: string;
