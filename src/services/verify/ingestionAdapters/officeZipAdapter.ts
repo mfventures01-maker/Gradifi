@@ -74,7 +74,7 @@ export function extractTextFromXmlElements(xmlContent: string, elementTagNames: 
       const clean = match[1]
         .replace(/<[^>]+>/g, '')
         .replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (entity, code) => {
-          const named: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '\"', apos: \"'\" };
+          const named: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
           const key = String(code).toLowerCase();
           if (key in named) return named[key];
           const numeric = key.startsWith('#x') ? parseInt(key.slice(2), 16) : parseInt(key.slice(1), 10);
