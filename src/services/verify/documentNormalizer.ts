@@ -332,7 +332,7 @@ export interface BuildCanonicalOptions {
   title?: string;
   filename?: string;
   fileSizeBytes?: number;
-  extractionMethod?: 'text_reader' | 'pdf_stream_extractor' | 'ocr_tesseract' | 'manual_paste' | 'demo_fixture';
+  extractionMethod?: 'text_reader' | 'pdf_stream_extractor' | 'ocr_tesseract' | 'manual_paste' | 'demo_fixture';\n  mimeType?: string;
   isFixture?: boolean;
   overrideMetadata?: Partial<{
     title: string;
@@ -390,7 +390,7 @@ export function buildCanonicalAnalysisDocument(options: BuildCanonicalOptions): 
   const source: DocumentSourceMetadata = {
     filename: options.filename || (isFixture ? 'sample_academic_paper.pdf' : 'submitted_document.pdf'),
     fileSizeBytes: options.fileSizeBytes || rawText.length,
-    mimeType: options.filename?.endsWith('.pdf') ? 'application/pdf' : 'text/plain',
+    mimeType: options.mimeType || (options.filename?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'text/plain'),
     extractionMethod: options.extractionMethod || (isFixture ? 'demo_fixture' : 'manual_paste'),
     isFixture,
     origin,
