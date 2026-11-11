@@ -151,7 +151,7 @@ async function main() {
   console.log('CANONICAL_DOCUMENT_ID:', canonical[0].documentId);
   console.log('ENGINE_DOCUMENT_HASH:', engineRuns[0].documentHash);
   console.log('EVIDENCE_HASH:', engineRuns[0].evidenceHash);
-  console.log('FINDING_IDS:', findingSets[0]);
+  console.log('FINDING_IDS:', findingSignatures[0].map((finding: any) => finding.findingId));
   console.log('TAMPER_DETECTION: PASS');
 }
 
