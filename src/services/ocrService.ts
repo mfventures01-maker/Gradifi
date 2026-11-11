@@ -53,13 +53,31 @@ export const ocrService = {
 
       const data: any = await Promise.race([workerPromise, timeoutPromise]);
 
+      const text = typeof data.text === 'string' ? data.text : '';
+      const confidence = Number.isFinite(data.confidence) ? data.confidence : 0;
+      const tesseractWords = Array.isArray(data.words)
+        ? data.words
+            .map((word: any) => ({
+              text: typeof word?.text === 'string' ? word.text.trim() : '',
+              confidence: Number.isFinite(word?.confidence) ? word.confidence : confidence
+            }))
+            .filter((word: { text: string }) => word.text.length > 0)
+        : [];
+      // Tesseract.js may return useful text while omitting data.words for some
+      // image inputs/runtimes. Derive a transparent lexical count from that
+      // exact OCR text instead of reporting a false zero.
+      const words = tesseractWords.length > 0
+        ? tesseractWords
+        : (text.match(/[\\p{L}\\p{N}]+(?:['’.-][\\p{L}\\p{N}]+)*/gu) || [])
+            .map((word: string) => ({ text: word, confidence }));
+
       return {
-        text: data.text || '',
-        confidence: data.confidence || 0,
-        words: (data.words || []).map((w: any) => ({ text: w.text || '', confidence: w.confidence || 0 })),
-        lines: (data.lines || []).map((l: any) => l.text || ''),
-        wordCount: data.words?.length || 0,
-        charCount: data.text?.length || 0
+        text,
+        confidence,
+        words,
+        lines: (data.lines || []).map((line: any) => line.text || ''),
+        wordCount: words.length,
+        charCount: text.length
       };
     } catch (error: any) {
       console.error('❌ OCR Error:', error?.message || error);
