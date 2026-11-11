@@ -1,24 +1,28 @@
 import { createCanvas } from '@napi-rs/canvas';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { ingestDocument } from '../src/services/verify/universalIngestionService.js';
 import { createWorker } from 'tesseract.js';
 
 const phrase = 'GRADIFI G2 CANONICAL EVIDENCE TEST 7F3A9C';
-const width = 1800;
-const height = 420;
+const width = 2400;
+const height = 600;
 const canvas = createCanvas(width, height);
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, width, height);
 ctx.fillStyle = '#111111';
-ctx.font = 'bold  seventy 72px Arial';
-ctx.font = 'bold 72px Arial';
+ctx.font = 'bold 64px Arial';
+const phraseWidth = ctx.measureText(phrase).width;
+const phraseFontSize = phraseWidth > width - 160
+  ? Math.floor(64 * ((width - 160) / phraseWidth))
+  : 64;
+ctx.font = `bold ${phraseFontSize}px Arial`;
 ctx.textBaseline = 'middle';
-ctx.fillText(phrase, 70, 170);
+ctx.textAlign = 'center';
+ctx.fillText(phrase, width / 2, 210, width - 160);
 ctx.font = '36px Arial';
-ctx.fillText('Repeatable image ingestion certification fixture', 70, 280);
+ctx.fillText('Repeatable image ingestion certification fixture', width / 2, 360, width - 160);
 
 const fixtures = [
   { name: 'g2-runtime-fixture.png', mimeType: 'image/png', bytes: canvas.toBuffer('image/png') },
