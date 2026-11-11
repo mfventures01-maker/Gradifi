@@ -122,10 +122,20 @@ async function main() {
   assert.notEqual(changed.evidenceHash, engineRuns[0].evidenceHash, 'Content alteration must change evidence hash');
 
   const comparisonDoc = buildCanonicalAnalysisDocument({ rawText: comparisonText, filename: 'comparison.txt' });
-  const findingSets = canonical.map(doc => {
+  const findingResults = canonical.map((doc, index) => {
     const result: any = evaluateDocumentSimilarity(doc, comparisonDoc);
-    return (result.findings ?? []).map((finding: any) => finding.findingId).sort();
+    console.log(`FINDING_DIAGNOSTIC ${inputs[index].name}`, (result.findings ?? []).map((finding: any) => ({
+      findingId: finding.findingId,
+      sourceSegment: finding.sourceSegment,
+      similarityScore: finding.similarityScore,
+      sourceStart: finding.sourceStart,
+      sourceEnd: finding.sourceEnd
+    })));
+    return result;
   });
+  const findingSets = findingResults.map((result: any) =>
+    (result.findings ?? []).map((finding: any) => finding.findingId).sort()
+  );
   assert.ok(findingSets[0].length > 0, 'Known-positive comparison must produce at least one finding');
   for (const ids of findingSets.slice(1)) {
     assert.deepEqual(ids, findingSets[0], 'Finding IDs must remain stable across equivalent formats');
