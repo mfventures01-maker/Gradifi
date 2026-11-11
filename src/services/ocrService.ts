@@ -67,7 +67,7 @@ export const ocrService = {
       const remainingMs = timeoutMs - (Date.now() - startedAt);
       if (remainingMs <= 0) throw new Error('OCR_TIMEOUT');
 
-      const recognition = await withTimeout(
+      const recognition: any = await withTimeout<any>(
         worker.recognize(payload),
         remainingMs
       );
