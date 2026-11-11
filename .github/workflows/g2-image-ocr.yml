@@ -11,7 +11,7 @@ on:
 jobs:
   image-ocr:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,8 +22,17 @@ jobs:
           cache: ''
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Run image OCR regression tests
+      - name: Run mocked OCR regression tests
         run: npx vitest run tests/g2_image_universal_ingestion.test.ts tests/ocrService.lifecycle.test.ts
+      - name: Run real JPEG and PNG OCR through production ingestion
+        run: npx tsx tests/g2_real_image_ocr_runtime.test.ts
+      - name: Upload real OCR certification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: g2-real-image-ocr-runtime-report
+          path: g2-image-ocr-runtime-report.json
+          if-no-files-found: warn
       - name: Repository-wide typecheck (known unrelated runtime import blockers)
         run: npm run typecheck
         continue-on-error: true
