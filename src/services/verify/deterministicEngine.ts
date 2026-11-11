@@ -717,12 +717,33 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
  * Internal engine implementation exposing already-computed aggregation without changing scoring or normalization.
  * HOEOS G5-M05A Standard.
  */
+/**
+ * Produces a format-independent evidence text view.
+ *
+ * Extractors legitimately preserve different paragraph and line-break layouts.
+ * Those layout differences must not alter sentence segmentation or finding IDs
+ * once canonical normalized identity has already converged. Whitespace is
+ * therefore collapsed while punctuation and token order are preserved.
+ *
+ * All sourceStart/sourceEnd values emitted by this comparison are offsets in
+ * this canonical evidence text view, not byte offsets or offsets into the
+ * original container file.
+ */
+function toCanonicalEvidenceText(text: string): string {
+  return (text || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]*\n[ \t]*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function evaluateDocumentSimilarityInternal(
   sourceDoc: CanonicalAnalysisDocument,
   comparisonDoc: CanonicalAnalysisDocument
 ): GranularSimilarityResult {
-  const sourceText = sourceDoc.rawText || '';
-  const compText = comparisonDoc.rawText || '';
+  const sourceText = toCanonicalEvidenceText(sourceDoc.rawText || sourceDoc.normalizedText || '');
+  const compText = toCanonicalEvidenceText(comparisonDoc.rawText || comparisonDoc.normalizedText || '');
   const findings: SimilarityFinding[] = [];
   const warnings: string[] = [];
 
