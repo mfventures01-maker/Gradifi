@@ -71,6 +71,7 @@ for (const fixture of fixtures) {
     byteLength: fixture.bytes.byteLength,
     inputSha256: await sha256(fixture.bytes),
     signatureValid,
+    directProbe,
     first: summarize(first),
     second: summarize(second),
     expectedPhrase: phrase,
@@ -80,6 +81,11 @@ for (const fixture of fixtures) {
     normalizedTextRepeatable: first.canonicalDocument?.normalizedText === second.canonicalDocument?.normalizedText
   };
   report.push(item);
+  fs.writeFileSync(path.join(process.cwd(), 'g2-image-ocr-runtime-report.json'), JSON.stringify({
+    certification: 'G2_REAL_IMAGE_OCR_RUNTIME',
+    status: 'IN_PROGRESS',
+    fixtures: report
+  }, null, 2));
 
   if (!first.success || !second.success || !first.ocrUsed ||
       first.ocrStatus !== 'USED' || !first.canonicalReady ||
