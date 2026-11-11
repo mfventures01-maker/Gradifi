@@ -7,6 +7,7 @@ import { CanonicalAnalysisDocument } from './types.js';
 import { buildCanonicalAnalysisDocument } from './documentNormalizer.js';
 import { extractPdfAdapter } from './ingestionAdapters/pdfAdapter.js';
 import { extractTextAdapter } from './ingestionAdapters/textAdapter.js';
+import { extractImageAdapter } from './ingestionAdapters/imageAdapter.js';
 import { extractHtmlAdapter } from './ingestionAdapters/htmlAdapter.js';
 import { extractRtfAdapter } from './ingestionAdapters/rtfAdapter.js';
 import { extractCsvAdapter, extractJsonAdapter, extractXmlAdapter } from './ingestionAdapters/structuredAdapter.js';
@@ -71,7 +72,7 @@ export function detectFileFormat(filename: string, mimeType?: string): Supported
   const ext = filename.split('.').pop()?.toLowerCase() || '';
 
   const formatMap: Record<string, SupportedFormat> = {
-    pdf: 'pdf',
+    pdf: 'pdf',\n    jpg: 'jpg',\n    jpeg: 'jpeg',\n    png: 'png',
     doc: 'doc',
     docx: 'docx',
     rtf: 'rtf',
@@ -96,7 +97,7 @@ export function detectFileFormat(filename: string, mimeType?: string): Supported
   }
 
   if (mimeType) {
-    if (mimeType.includes('pdf')) return 'pdf';
+    if (mimeType.includes('pdf')) return 'pdf';\n    if (mimeType === 'image/jpeg') return 'jpg';\n    if (mimeType === 'image/png') return 'png';
     if (mimeType.includes('wordprocessingml')) return 'docx';
     if (mimeType.includes('msword')) return 'doc';
     if (mimeType.includes('rtf')) return 'rtf';
