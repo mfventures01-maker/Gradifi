@@ -365,7 +365,8 @@ export async function ingestDocument(
       rawText: adapterResult.text,
       filename: payload.filename,
       fileSizeBytes: payload.size,
-      extractionMethod: adapterResult.extractionMethod as any
+      extractionMethod: adapterResult.extractionMethod as any,
+      mimeType: payload.mimeType
     });
     canonicalReady = true;
   }
