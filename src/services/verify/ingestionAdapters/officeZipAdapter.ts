@@ -71,7 +71,17 @@ export function extractTextFromXmlElements(xmlContent: string, elementTagNames: 
     const regex = new RegExp(`<${tag}(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'gi');
     let match;
     while ((match = regex.exec(xmlContent)) !== null) {
-      const clean = match[1].replace(/<[^>]+>/g, '').trim();
+      const clean = match[1]
+        .replace(/<[^>]+>/g, '')
+        .replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (entity, code) => {
+          const named: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '\"', apos: \"'\" };
+          const key = String(code).toLowerCase();
+          if (key in named) return named[key];
+          const numeric = key.startsWith('#x') ? parseInt(key.slice(2), 16) : parseInt(key.slice(1), 10);
+          try { return Number.isFinite(numeric) && numeric >= 0 && numeric <= 0x10ffff ? String.fromCodePoint(numeric) : entity; }
+          catch { return entity; }
+        })
+        .trim();
       if (clean) {
         textNodes.push(clean);
       }
@@ -114,7 +124,9 @@ export async function extractDocxText(input: ArrayBuffer | Uint8Array | string):
     };
   }
 
-  const nodes = extractTextFromXmlElements(xmlContent, ['w:t', 'w:p']);
+  // Extract each paragraph exactly once. Reading both w:t and its enclosing w:p
+  // duplicated every run's text and broke cross-format canonical identity.
+  const nodes = extractTextFromXmlElements(xmlContent, ['w:p']);
   let text = nodes.join('\n').replace(/[ \t]+/g, ' ').trim();
 
   if (!text.trim()) {
