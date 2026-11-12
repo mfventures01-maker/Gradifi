@@ -806,6 +806,7 @@ export function evaluateDocumentSimilarityInternal(
       matchMethod: s.matchType === 'exact_match' ? 'EXACT_PHRASE' : (s.matchType === 'ngram_overlap' ? 'NGRAM' : 'TOKEN_OVERLAP'),
       sourceStart: s.documentLocation.startChar,
       sourceEnd: s.documentLocation.endChar,
+      offsetBasis: 'CANONICAL_EVIDENCE_TEXT_UTF16',
       provenance: 'DETERMINISTIC'
     });
   }
