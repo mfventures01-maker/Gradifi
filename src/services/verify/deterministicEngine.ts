@@ -751,7 +751,7 @@ function locateCanonicalMatchedPassage(
 ): { text: string; start: number; end: number } | undefined {
   type TokenSpan = { token: string; start: number; end: number };
   const sourceTokens: TokenSpan[] = [];
-  const tokenPattern = /[\\p{L}\\p{N}_]+/gu;
+  const tokenPattern = /[\p{L}\p{N}_]+/gu;
   let match: RegExpExecArray | null;
   while ((match = tokenPattern.exec(canonicalSourceText)) !== null) {
     const normalized = normalizeText(match[0]);
