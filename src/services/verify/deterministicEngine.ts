@@ -944,6 +944,35 @@ function isRejectableFinding(
   const tokenCount = seg.trim().split(/\s+/).filter(Boolean).length;
   return tokenCount < 4;
 }
+/**
+ * Align a provider snippet to the submitted document's canonical evidence text.
+ * Token spans retain UTF-16 positions so returned coordinates are safe for slice().
+ */
+function locateCanonicalTextPassage(
+  candidateText: string,
+  canonicalText: string
+): { text: string; start: number; end: number } | undefined {
+  const candidateTokens = normalizeText(candidateText).split(' ').filter(Boolean);
+  if (candidateTokens.length === 0) return undefined;
+
+  const sourceTokens: Array<{ token: string; start: number; end: number }> = [];
+  const pattern = /[\\p{L}\\p{N}_]+/gu;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(canonicalText)) !== null) {
+    const token = normalizeText(match[0]);
+    if (token) sourceTokens.push({ token, start: match.index, end: match.index + match[0].length });
+  }
+
+  for (let i = 0; i <= sourceTokens.length - candidateTokens.length; i++) {
+    if (!candidateTokens.every((token, j) => sourceTokens[i + j].token === token)) continue;
+    const start = sourceTokens[i].start;
+    const end = sourceTokens[i + candidateTokens.length - 1].end;
+    const text = canonicalText.slice(start, end);
+    if (normalizeText(text) === candidateTokens.join(' ')) return { text, start, end };
+  }
+  return undefined;
+}
+
 export function extractSimilarityFindingsFromEvidenceMatches(
   documentText: string,
   documentHash: string,
@@ -1014,40 +1043,29 @@ export function extractSimilarityFindingsFromEvidenceMatches(
     const lookupSnippet = match.matchedText || match.originalSnippet || match.title;
     if (!lookupSnippet) continue;
 
-    const normDoc = normalizeText(documentText);
+    const canonicalDocumentText = toCanonicalEvidenceText(documentText);
     const normSnippet = normalizeText(lookupSnippet);
     if (!normSnippet) continue;
 
-    let srcIdx = normDoc.indexOf(normSnippet);
+    let aligned = locateCanonicalTextPassage(lookupSnippet, canonicalDocumentText);
     let matchedPassageText = lookupSnippet;
-    let sourceSegmentText = '';
-    let matchMethod: SimilarityMatchMethod = 'TOKEN_OVERLAP';
+    let matchMethod: SimilarityMatchMethod = match.matchType === 'exact' ? 'EXACT_PHRASE' : 'TOKEN_OVERLAP';
 
-    if (srcIdx !== -1) {
-      sourceSegmentText = lookupSnippet;
-      if (match.matchType === 'exact' || (normSnippet.length >= 12 && normDoc.includes(normSnippet))) {
-        matchMethod = 'EXACT_PHRASE';
-      } else {
-        matchMethod = 'NGRAM';
-      }
-    } else {
+    if (!aligned) {
       const sentences = segmentSentences(lookupSnippet);
-      for (const sent of sentences) {
-        const normSent = normalizeText(sent);
-        if (normSent.length >= 12) {
-          const idx = normDoc.indexOf(normSent);
-          if (idx !== -1) {
-            srcIdx = idx;
-            matchedPassageText = sent;
-            sourceSegmentText = sent;
-            matchMethod = 'NGRAM';
-            break;
-          }
+      for (const sentence of sentences) {
+        if (normalizeText(sentence).length < 12) continue;
+        const candidate = locateCanonicalTextPassage(sentence, canonicalDocumentText);
+        if (candidate) {
+          aligned = candidate;
+          matchedPassageText = sentence;
+          matchMethod = 'NGRAM';
+          break;
         }
       }
     }
 
-    if (srcIdx === -1) {
+    if (!aligned) {
       // Match could not be located in the canonical document. Record the
       // suppression in the caller's warnings array so the analysis result
       // does not silently drop evidence.
@@ -1068,12 +1086,15 @@ export function extractSimilarityFindingsFromEvidenceMatches(
       findingId,
       sourceDocumentId: documentHash,
       matchedDocumentId: match.sourceId,
-      sourceSegment: sourceSegmentText || matchedPassageText,
-      matchedSegment: lookupSnippet.slice(0, 150),
+      sourceSegment: aligned.text,
+      // The provider returned a snippet, not its complete canonical document.
+      // Preserve the excerpt, but do not claim document-level source coordinates.
+      matchedSegment: matchedPassageText,
       similarityScore: match.matchPercentage,
       matchMethod,
-      sourceStart: srcIdx,
-      sourceEnd: srcIdx + lookupSnippet.length,
+      sourceStart: aligned.start,
+      sourceEnd: aligned.end,
+      offsetBasis: 'CANONICAL_EVIDENCE_TEXT_UTF16',
       provenance: 'DETERMINISTIC'
     });
   }
