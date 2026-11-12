@@ -415,6 +415,20 @@ export interface PlagiarismEvidenceResult {
  */
 export type SimilarityMatchMethod = 'EXACT_PHRASE' | 'NGRAM' | 'TOKEN_OVERLAP';
 
+/**
+ * G4-A canonical offset contract:
+ * - sourceSegment belongs to sourceDocumentId (the submitted/first document).
+ * - matchedSegment belongs to matchedDocumentId (the comparison/second document).
+ * - sourceStart/sourceEnd are a half-open [start, end) character range in
+ *   toCanonicalEvidenceText(sourceDocument.rawText || sourceDocument.normalizedText || '').
+ * - matchedStart/matchedEnd are a half-open [start, end) character range in
+ *   toCanonicalEvidenceText(matchedDocument.rawText || matchedDocument.normalizedText || '').
+ * - All offsets are JavaScript UTF-16 string indices, matching String.slice().
+ * - Offsets MUST NOT be applied directly to raw extracted text or file bytes.
+ * - Both segment strings MUST equal the corresponding canonicalText.slice(start, end).
+ * - If an exact source-side range cannot be established, matchedStart/matchedEnd
+ *   remain undefined and the finding must not claim source-side highlight fidelity.
+ */
 export interface SimilarityFinding {
   findingId: string;
   sourceDocumentId: string;
@@ -423,10 +437,16 @@ export interface SimilarityFinding {
   matchedSegment: string;
   similarityScore: number;
   matchMethod: SimilarityMatchMethod;
+  /** Half-open canonical submitted-document character range. */
   sourceStart?: number;
+  /** Exclusive end of the canonical submitted-document character range. */
   sourceEnd?: number;
+  /** Half-open canonical comparison-document character range. */
   matchedStart?: number;
+  /** Exclusive end of the canonical comparison-document character range. */
   matchedEnd?: number;
+  /** Offset coordinate system used by any populated range fields. */
+  offsetBasis?: 'CANONICAL_EVIDENCE_TEXT_UTF16';
   provenance: 'DETERMINISTIC';
 }
 
