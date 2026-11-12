@@ -965,16 +965,26 @@ export function extractSimilarityFindingsFromEvidenceMatches(
         `${documentHash}:${s.sourceId}:${s.documentUnitId}:${s.similarityPercentage}`
       );
 
+      const matched = locateCanonicalMatchedPassage(s, toCanonicalEvidenceText(s.sourceText || ''));
+      if (!matched) {
+        if (Array.isArray(warningsOut)) {
+          warningsOut.push(`Source passage alignment unavailable for finding ${findingId}; source-side highlighting is withheld because only a provider snippet is available.`);
+        }
+      }
       findings.push({
         findingId,
         sourceDocumentId: documentHash,
         matchedDocumentId: s.sourceId,
         sourceSegment: s.studentText,
-        matchedSegment: s.sourceText.slice(0, 200),
+        matchedSegment: matched?.text || '',
         similarityScore: s.similarityPercentage,
         matchMethod,
         sourceStart: s.documentLocation.startChar,
         sourceEnd: s.documentLocation.endChar,
+        // Provider evidence contains a snippet, not the full canonical source
+        // document. A snippet-relative location must not be misrepresented as
+        // a document-level matchedStart/matchedEnd range.
+        offsetBasis: 'CANONICAL_EVIDENCE_TEXT_UTF16',
         provenance: 'DETERMINISTIC'
       });
     }
