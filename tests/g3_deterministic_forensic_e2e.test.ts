@@ -70,6 +70,30 @@ describe('G3 deterministic forensic interrogation', () => {
     const ngramOrLexical = similarity.findings.find(f => f.matchMethod === 'NGRAM' || f.matchMethod === 'TOKEN_OVERLAP');
     expect(ngramOrLexical).toBeDefined();
     expect(policy.findings.some(f => f.similarityFindingId === ngramOrLexical!.findingId)).toBe(true);
+
+    const forensicSignature = {
+      studentDocumentId: studentDoc.documentId,
+      sourceDocumentId: sourceDoc.documentId,
+      overallSimilarity: similarity.overallSimilarity,
+      findingCount: similarity.findings.length,
+      findings: similarity.findings.map(f => ({
+        findingId: f.findingId,
+        sourceId: f.matchedDocumentId,
+        matchMethod: f.matchMethod,
+        score: f.similarityScore,
+        studentStart: f.sourceStart,
+        studentEnd: f.sourceEnd,
+        studentPassage: f.sourceSegment,
+        sourcePassage: f.matchedSegment
+      })),
+      policy: {
+        version: policy.policyVersion,
+        riskLevel: policy.riskLevel,
+        evidenceCount: policy.evidenceCount,
+        requiresHumanReview: policy.requiresHumanReview
+      }
+    };
+    console.log('G3_FORENSIC_REPORT ' + JSON.stringify(forensicSignature));
   });
 
   it('returns no plagiarism evidence for an unrelated negative control', () => {
