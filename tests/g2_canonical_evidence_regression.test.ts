@@ -65,13 +65,13 @@ describe('G2 canonical evidence regression', () => {
     const sentences = first.paragraphs.flatMap(p => p.sentences).map(s => s.text);
 
     expect(sentences).toEqual(second.paragraphs.flatMap(p => p.sentences).map(s => s.text));
-    expect(sentences.length).toBe(3);
+    expect(sentences.length).toBe(4);
     expect(sentences[0]).toContain('Dr. Aris Thorne');
     expect(sentences[0]).toContain('Prof. Elena Rostova');
     expect(sentences[1]).toContain('Vol. 14');
     expect(sentences[1]).toContain('10.1038/s41586-023-00001-x');
     expect(sentences[2]).toContain('99.4%');
-    expect(sentences[2]).toContain('Next sentence follows.');
+    expect(sentences[3]).toContain('Next sentence follows.');
   });
 
   it('changes canonical and evidence identity after a small alteration to otherwise preserved content', () => {
@@ -101,7 +101,7 @@ describe('G2 canonical evidence regression', () => {
   });
 
   it('uses identical canonical evidence text for equivalent whitespace layouts', () => {
-    const layoutA = 'First sentence.\\n\\nSecond sentence.\\nThird sentence.';
+    const layoutA = 'First sentence.\n\nSecond sentence.\nThird sentence.';
     const layoutB = 'First sentence. Second sentence. Third sentence.';
     expect(toCanonicalEvidenceText(layoutA)).toBe(toCanonicalEvidenceText(layoutB));
     expect(computeHash(toCanonicalEvidenceText(layoutA))).toBe(computeHash(toCanonicalEvidenceText(layoutB)));
