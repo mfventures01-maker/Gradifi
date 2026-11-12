@@ -14,7 +14,8 @@ async function run() {
   console.log('DOC_B_ID:', docB.documentId);
 
   const result: any = evaluateDocumentSimilarity(docA, docB);
-  const findings = result.findings || [];\n  const canonicalEvidenceText = toCanonicalEvidenceText(docA.rawText);
+  const findings = result.findings || [];
+  const canonicalEvidenceText = toCanonicalEvidenceText(docA.rawText);
 
   console.log('FINDINGS_COUNT:', findings.length);
   if (findings.length === 0) {
@@ -44,7 +45,8 @@ async function run() {
     console.error('FAIL: no findings had offsets to verify');
     if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
   }
-  console.log('OFFSET_COORDINATE_SPACE: canonical whitespace-normalized evidence text');\n  console.log('G2-4 OFFSET FIDELITY: PASS');
+  console.log('OFFSET_COORDINATE_SPACE: canonical whitespace-normalized evidence text');
+  console.log('G2-4 OFFSET FIDELITY: PASS');
   if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(0);
 }
 
