@@ -738,6 +738,68 @@ export function toCanonicalEvidenceText(text: string): string {
     .trim();
 }
 
+/**
+ * Locate the strongest contiguous phrase evidence in the comparison document.
+ * Phrase offsets produced by detectPhraseMatches are offsets in normalizeText(),
+ * so they are deliberately NOT copied into canonical-document coordinates.
+ * This helper re-aligns normalized phrase tokens against canonical source tokens
+ * and returns a verified half-open UTF-16 range in canonicalSourceText.
+ */
+function locateCanonicalMatchedPassage(
+  sentenceEvidence: SentenceMatchEvidence,
+  canonicalSourceText: string
+): { text: string; start: number; end: number } | undefined {
+  type TokenSpan = { token: string; start: number; end: number };
+  const sourceTokens: TokenSpan[] = [];
+  const tokenPattern = /[\\p{L}\\p{N}_]+/gu;
+  let match: RegExpExecArray | null;
+  while ((match = tokenPattern.exec(canonicalSourceText)) !== null) {
+    const normalized = normalizeText(match[0]);
+    if (normalized) sourceTokens.push({ token: normalized, start: match.index, end: match.index + match[0].length });
+  }
+
+  const candidates = sentenceEvidence.matchedPhrases
+    .map(phrase => normalizeText(phrase.normalizedPhrase || phrase.submittedPhrase).split(' ').filter(Boolean))
+    .filter(tokens => tokens.length > 0)
+    .sort((a, b) => b.length - a.length || a.join(' ').localeCompare(b.join(' ')));
+
+  for (const phraseTokens of candidates) {
+    for (let i = 0; i <= sourceTokens.length - phraseTokens.length; i++) {
+      let matches = true;
+      for (let j = 0; j < phraseTokens.length; j++) {
+        if (sourceTokens[i + j].token !== phraseTokens[j]) {
+          matches = false;
+          break;
+        }
+      }
+      if (!matches) continue;
+
+      const start = sourceTokens[i].start;
+      const end = sourceTokens[i + phraseTokens.length - 1].end;
+      const text = canonicalSourceText.slice(start, end);
+      if (text && normalizeText(text) === phraseTokens.join(' ')) {
+        return { text, start, end };
+      }
+    }
+  }
+
+  // Exact sentence containment is a safe fallback when phrase segmentation
+  // did not emit a phrase record.
+  const sentenceTokens = tokenize(sentenceEvidence.studentText);
+  if (sentenceTokens.length >= 3) {
+    for (let i = 0; i <= sourceTokens.length - sentenceTokens.length; i++) {
+      if (sentenceTokens.every((token, j) => sourceTokens[i + j].token === token)) {
+        const start = sourceTokens[i].start;
+        const end = sourceTokens[i + sentenceTokens.length - 1].end;
+        const text = canonicalSourceText.slice(start, end);
+        if (normalizeText(text) === sentenceTokens.join(' ')) return { text, start, end };
+      }
+    }
+  }
+
+  return undefined;
+}
+
 export function evaluateDocumentSimilarityInternal(
   sourceDoc: CanonicalAnalysisDocument,
   comparisonDoc: CanonicalAnalysisDocument
@@ -793,19 +855,26 @@ export function evaluateDocumentSimilarityInternal(
     policyVersion: POLICY_VERSION
   });
 
-  // Convert sentence & phrase flags into explainable SimilarityFinding items
+  // Convert sentence evidence into findings with independently verified
+  // canonical ranges in BOTH documents. Never use a source-document prefix.
   for (const s of engineOutput.aggregation.sentenceFlags) {
+    const matched = locateCanonicalMatchedPassage(s, compText);
     const findingId = computeHash(`${sourceDoc.documentId}:${comparisonDoc.documentId}:SEN:${s.documentUnitId}:${s.similarityPercentage}`);
+    if (!matched) {
+      warnings.push(`Source passage alignment unavailable for finding ${findingId}; source-side highlighting is withheld.`);
+    }
     findings.push({
       findingId,
       sourceDocumentId: sourceDoc.documentId,
       matchedDocumentId: comparisonDoc.documentId,
       sourceSegment: s.studentText,
-      matchedSegment: s.sourceText.slice(0, 200),
+      matchedSegment: matched?.text || '',
       similarityScore: s.similarityPercentage,
       matchMethod: s.matchType === 'exact_match' ? 'EXACT_PHRASE' : (s.matchType === 'ngram_overlap' ? 'NGRAM' : 'TOKEN_OVERLAP'),
       sourceStart: s.documentLocation.startChar,
       sourceEnd: s.documentLocation.endChar,
+      matchedStart: matched?.start,
+      matchedEnd: matched?.end,
       offsetBasis: 'CANONICAL_EVIDENCE_TEXT_UTF16',
       provenance: 'DETERMINISTIC'
     });
