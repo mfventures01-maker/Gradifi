@@ -7,7 +7,8 @@
  */
 
 import type { PublicVerificationRecord } from './verificationPersistenceService.js';
-import { computeHash, toCanonicalEvidenceText } from './deterministicEngine.js';
+import { computeHash } from './documentNormalizer.js';
+import { toCanonicalEvidenceText } from './deterministicEngine.js';
 
 export type PersistedIntegrityStatus = 'VALID' | 'MALFORMED_RECORD' | 'INTEGRITY_FAILED';
 
