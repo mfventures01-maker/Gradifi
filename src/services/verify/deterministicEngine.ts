@@ -729,7 +729,7 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
  * this canonical evidence text view, not byte offsets or offsets into the
  * original container file.
  */
-function toCanonicalEvidenceText(text: string): string {
+export function toCanonicalEvidenceText(text: string): string {
   return (text || '')
     .replace(/\u00a0/g, ' ')
     .replace(/\r\n?/g, '\n')
