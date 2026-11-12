@@ -995,22 +995,25 @@ export function extractSimilarityFindingsFromEvidenceMatches(
         `${documentHash}:${s.sourceId}:${s.documentUnitId}:${s.similarityPercentage}`
       );
 
+      const canonicalDocumentText = toCanonicalEvidenceText(documentText);
+      const submittedAlignment = locateCanonicalTextPassage(s.studentText, canonicalDocumentText);
       const matched = locateCanonicalMatchedPassage(s, toCanonicalEvidenceText(s.sourceText || ''));
-      if (!matched) {
-        if (Array.isArray(warningsOut)) {
-          warningsOut.push(`Source passage alignment unavailable for finding ${findingId}; source-side highlighting is withheld because only a provider snippet is available.`);
-        }
+      if (!submittedAlignment && Array.isArray(warningsOut)) {
+        warningsOut.push(`Submitted passage alignment unavailable for finding ${findingId}; submitted-side highlighting is withheld.`);
+      }
+      if (!matched && Array.isArray(warningsOut)) {
+        warningsOut.push(`Source passage alignment unavailable for finding ${findingId}; source-side highlighting is withheld because only a provider snippet is available.`);
       }
       findings.push({
         findingId,
         sourceDocumentId: documentHash,
         matchedDocumentId: s.sourceId,
-        sourceSegment: s.studentText,
+        sourceSegment: submittedAlignment?.text || s.studentText,
         matchedSegment: matched?.text || '',
         similarityScore: s.similarityPercentage,
         matchMethod,
-        sourceStart: s.documentLocation.startChar,
-        sourceEnd: s.documentLocation.endChar,
+        sourceStart: submittedAlignment?.start,
+        sourceEnd: submittedAlignment?.end,
         // Provider evidence contains a snippet, not the full canonical source
         // document. A snippet-relative location must not be misrepresented as
         // a document-level matchedStart/matchedEnd range.
