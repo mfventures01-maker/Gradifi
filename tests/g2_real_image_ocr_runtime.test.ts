@@ -5,24 +5,25 @@ import { ingestDocument } from '../src/services/verify/universalIngestionService
 import { createWorker } from 'tesseract.js';
 
 const phrase = 'GRADIFI G2 CANONICAL EVIDENCE TEST 7F3A9C';
-const width = 2400;
-const height = 600;
+const width = 2800;
+const height = 720;
+const fontFamily = 'Liberation Sans';
 const canvas = createCanvas(width, height);
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, width, height);
 ctx.fillStyle = '#111111';
-ctx.font = 'bold 64px Arial';
+ctx.font = `bold 76px "${fontFamily}"`;
 const phraseWidth = ctx.measureText(phrase).width;
-const phraseFontSize = phraseWidth > width - 160
-  ? Math.floor(64 * ((width - 160) / phraseWidth))
-  : 64;
-ctx.font = `bold ${phraseFontSize}px Arial`;
+const phraseFontSize = phraseWidth > width - 240
+  ? Math.floor(76 * ((width - 240) / phraseWidth))
+  : 76;
+ctx.font = `bold ${phraseFontSize}px "${fontFamily}"`;
 ctx.textBaseline = 'middle';
 ctx.textAlign = 'center';
-ctx.fillText(phrase, width / 2, 210, width - 160);
-ctx.font = '36px Arial';
-ctx.fillText('Repeatable image ingestion certification fixture', width / 2, 360, width - 160);
+ctx.fillText(phrase, width / 2, 250, width - 240);
+ctx.font = `42px "${fontFamily}"`;
+ctx.fillText('Repeatable image ingestion certification fixture', width / 2, 500, width - 240);
 
 const fixtures = [
   { name: 'g2-runtime-fixture.png', mimeType: 'image/png', bytes: canvas.toBuffer('image/png') },
