@@ -42,7 +42,7 @@ export async function handlePersistenceServerRequest(
     .maybeSingle();
 
   if (fetchError && fetchError.code !== 'PGRST116') {
-    console.warn('Supabase server query error:', fetchError.message);
+    throw new Error(`Failed to read existing verification record before persistence: ${fetchError.message}`);
   }
 
   if (existing) {
