@@ -5,6 +5,7 @@
 
 import { EvidenceEngineResult, AnalysisResultEnvelope } from './types.js';
 import { supabase } from '../../lib/supabase.js';
+import { validatePersistedVerificationRecord } from './verificationPersistenceIntegrity.js';
 
 export interface PublicVerificationRecord {
   id?: string;
@@ -93,7 +94,7 @@ export class VerificationPersistenceService {
   ): PublicVerificationRecord {
     const verificationId = this.validateResultIntegrity(result);
 
-    return {
+    const record: PublicVerificationRecord = {
       verification_id: verificationId,
       document_hash: result.documentHash,
       evidence_hash: result.evidenceHash,
@@ -106,6 +107,14 @@ export class VerificationPersistenceService {
         persistedAt: new Date().toISOString(),
       },
     };
+
+    const integrity = validatePersistedVerificationRecord(record);
+    if (integrity.status !== 'VALID') {
+      throw new VerificationValidationError(
+        `Verification envelope failed G4-D integrity validation: ${integrity.reason || integrity.status}`
+      );
+    }
+    return record;
   }
 
   /**
@@ -164,6 +173,10 @@ export class VerificationPersistenceService {
     }
 
     if (existing) {
+      const integrity = validatePersistedVerificationRecord(existing);
+      if (integrity.status !== 'VALID') {
+        throw new VerificationConflictError(`Existing verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
+      }
       // 2. Conflict Check: Verify hash immutability
       if (
         existing.document_hash !== recordPayload.document_hash ||
@@ -196,6 +209,13 @@ export class VerificationPersistenceService {
           .eq('verification_id', recordPayload.verification_id)
           .single();
 
+        if (reFetched) {
+          const integrity = validatePersistedVerificationRecord(reFetched);
+          if (integrity.status !== 'VALID') {
+            throw new VerificationConflictError(`Concurrent verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
+          }
+        }
+
         if (
           reFetched &&
           reFetched.document_hash === recordPayload.document_hash &&
@@ -215,6 +235,10 @@ export class VerificationPersistenceService {
       throw new Error(`Failed to persist verification record: ${insertError.message}`);
     }
 
+    const insertedIntegrity = validatePersistedVerificationRecord(inserted);
+    if (insertedIntegrity.status !== 'VALID') {
+      throw new VerificationConflictError(`Inserted verification record failed G4-D integrity validation: ${insertedIntegrity.reason || insertedIntegrity.status}`);
+    }
     return {
       record: inserted as PublicVerificationRecord,
       status: 'CREATED',
