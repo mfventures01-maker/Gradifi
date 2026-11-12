@@ -1,0 +1,48 @@
+name: G2 Canonical Authority Regression
+
+on:
+  push:
+    branches:
+      - fix/g2-image-ocr-ingestion
+  pull_request:
+    branches:
+      - fix/g2-image-ocr-ingestion
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g2-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Canonical offsets, repeatability, punctuation and tamper regression
+        run: npx vitest run tests/g2_canonical_evidence_regression.test.ts
+
+      - name: TXT, DOCX and PDF canonical authority closure
+        run: npx tsx tests/g2_canonical_authority_cross_format.test.ts
+
+      - name: Canonical offset fidelity
+        run: npx tsx tests/g2_offset_fidelity.test.ts
+
+      - name: OCR determinism regression
+        run: npx tsx tests/g2_ocr_determinism.test.ts
+
+      - name: Native PDF structural ingestion regression
+        run: npx vitest run tests/g2_pdf_structural_e2e.test.ts
+
+      - name: Existing G2 repair regression
+        run: npx tsx tests/g2_repairs_regression.test.ts
