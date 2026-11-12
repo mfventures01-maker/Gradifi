@@ -1,0 +1,30 @@
+name: G3 Deterministic Forensic E2E
+
+on:
+  push:
+    branches:
+      - fix/g2-image-ocr-ingestion
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g3-forensic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: G3 deterministic positive, negative, span and repeatability proof
+        run: npx vitest run tests/g3_deterministic_forensic_e2e.test.ts
