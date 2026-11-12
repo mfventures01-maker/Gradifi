@@ -175,7 +175,7 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
     // equals canonicalTokens.length).
     const abbreviations = ['Dr','Prof','Mr','Mrs','Ms','Vol','No','Fig','Sec','Eq','Ch','pp','p','etc','e\\.g','i\\.e','vs','Viz'];
     const abbrPattern = '(?:\\b(?:' + abbreviations.join('|') + ')\\.)';
-    const doiPattern = '(?:\\b10\\.\\d{4,}\\/\\S+?\\.(?=\\s|$))';
+    const doiPattern = '(?:\\b10\\.\\d{4,}\\/\\S+?(?=[.!?](?:\\s|$)))';
     const decimalPattern = '(?:\\b\\d+\\.\\d+)';
     const initialPattern = '(?:\\b[A-Z]\\.(?=\\s+[A-Z]))';
 
