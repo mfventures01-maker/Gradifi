@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildCanonicalAnalysisDocument } from '../src/services/verify/documentNormalizer';
 import { toCanonicalEvidenceText } from '../src/services/verify/deterministicEngine';
+import { normalizeText } from '../src/services/verify/documentNormalizer';
 import { verifyCoreService } from '../src/services/verify/verifyCoreService';
 
 const sourceText = [
@@ -45,6 +46,7 @@ describe('G4-B canonical source passage alignment', () => {
     expect(exact).toBeDefined();
     expect(exact!.matchedStart).toBeDefined();
     expect(exact!.matchedSegment).not.toBe('');
+    expect(normalizeText(exact!.matchedSegment)).toBe(normalizeText(exact!.sourceSegment));
     expect(canonicalSource.slice(exact!.matchedStart!, exact!.matchedEnd!)).toBe(exact!.matchedSegment);
     expect(exact!.matchedStart).toBeGreaterThan(canonicalSource.indexOf('Preface'));
   });
