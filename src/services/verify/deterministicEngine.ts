@@ -758,6 +758,21 @@ function locateCanonicalMatchedPassage(
     if (normalized) sourceTokens.push({ token: normalized, start: match.index, end: match.index + match[0].length });
   }
 
+  // Prefer the complete sentence when it is present verbatim after
+  // normalization. This preserves the most useful source highlight for exact
+  // matches instead of returning only one of its shorter phrase windows.
+  const sentenceTokens = tokenize(sentenceEvidence.studentText);
+  if (sentenceTokens.length >= 3) {
+    for (let i = 0; i <= sourceTokens.length - sentenceTokens.length; i++) {
+      if (sentenceTokens.every((token, j) => sourceTokens[i + j].token === token)) {
+        const start = sourceTokens[i].start;
+        const end = sourceTokens[i + sentenceTokens.length - 1].end;
+        const text = canonicalSourceText.slice(start, end);
+        if (normalizeText(text) === sentenceTokens.join(' ')) return { text, start, end };
+      }
+    }
+  }
+
   const candidates = sentenceEvidence.matchedPhrases
     .map(phrase => normalizeText(phrase.normalizedPhrase || phrase.submittedPhrase).split(' ').filter(Boolean))
     .filter(tokens => tokens.length > 0)
@@ -779,20 +794,6 @@ function locateCanonicalMatchedPassage(
       const text = canonicalSourceText.slice(start, end);
       if (text && normalizeText(text) === phraseTokens.join(' ')) {
         return { text, start, end };
-      }
-    }
-  }
-
-  // Exact sentence containment is a safe fallback when phrase segmentation
-  // did not emit a phrase record.
-  const sentenceTokens = tokenize(sentenceEvidence.studentText);
-  if (sentenceTokens.length >= 3) {
-    for (let i = 0; i <= sourceTokens.length - sentenceTokens.length; i++) {
-      if (sentenceTokens.every((token, j) => sourceTokens[i + j].token === token)) {
-        const start = sourceTokens[i].start;
-        const end = sourceTokens[i + sentenceTokens.length - 1].end;
-        const text = canonicalSourceText.slice(start, end);
-        if (normalizeText(text) === sentenceTokens.join(' ')) return { text, start, end };
       }
     }
   }
