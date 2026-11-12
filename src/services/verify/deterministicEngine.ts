@@ -956,7 +956,7 @@ function locateCanonicalTextPassage(
   if (candidateTokens.length === 0) return undefined;
 
   const sourceTokens: Array<{ token: string; start: number; end: number }> = [];
-  const pattern = /[\\p{L}\\p{N}_]+/gu;
+  const pattern = /[\p{L}\p{N}_]+/gu;
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(canonicalText)) !== null) {
     const token = normalizeText(match[0]);
