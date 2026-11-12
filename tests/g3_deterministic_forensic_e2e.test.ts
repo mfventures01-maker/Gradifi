@@ -118,7 +118,7 @@ describe('G3 deterministic forensic interrogation', () => {
 
   it('changes canonical identity when submitted content is altered', () => {
     const baseline = runG3(studentText, sourceText);
-    const altered = runG3(studentText.replace('community gardens', 'community farms'), sourceText);
+    const altered = runG3(studentText.replace('Community gardens', 'Community farms'), sourceText);
     expect(altered.studentDoc.documentId).not.toBe(baseline.studentDoc.documentId);
   });
 });
