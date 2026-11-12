@@ -1,4 +1,4 @@
-import { createCanvas } from '@napi-rs/canvas';
+import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ingestDocument } from '../src/services/verify/universalIngestionService.js';
@@ -8,6 +8,19 @@ const phrase = 'GRADIFI G2 CANONICAL EVIDENCE TEST 7F3A9C';
 const width = 2800;
 const height = 720;
 const fontFamily = 'Liberation Sans';
+// Register the exact PDF.js-bundled Liberation Sans files. This avoids host-font
+// substitution and keeps fixture rasterization consistent across Windows and CI.
+const standardFontsDir = path.resolve(process.cwd(), 'node_modules/pdfjs-dist/standard_fonts');
+const regularFontPath = path.join(standardFontsDir, 'LiberationSans-Regular.ttf');
+const boldFontPath = path.join(standardFontsDir, 'LiberationSans-Bold.ttf');
+if (!fs.existsSync(regularFontPath) || !fs.existsSync(boldFontPath)) {
+  throw new Error(`OCR_FIXTURE_FONT_MISSING: expected bundled Liberation Sans files in ${standardFontsDir}`);
+}
+const regularFontRegistered = GlobalFonts.registerFromPath(regularFontPath, fontFamily);
+const boldFontRegistered = GlobalFonts.registerFromPath(boldFontPath, fontFamily);
+if (!regularFontRegistered || !boldFontRegistered) {
+  throw new Error(`OCR_FIXTURE_FONT_REGISTRATION_FAILED: regular=${regularFontRegistered}, bold=${boldFontRegistered}`);
+}
 const canvas = createCanvas(width, height);
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = '#ffffff';
