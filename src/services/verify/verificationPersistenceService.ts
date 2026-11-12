@@ -86,6 +86,13 @@ export class VerificationPersistenceService {
   }
 
   /**
+   * G4-D read-only validation for database rows before idempotent return or public display.
+   */
+  static validatePersistedRecord(record: PublicVerificationRecord | Record<string, any>) {
+    return validatePersistedVerificationRecord(record);
+  }
+
+  /**
    * Converts a certified EvidenceEngineResult into a persistent PublicVerificationRecord database payload.
    */
   static buildPersistenceRecord(
@@ -153,6 +160,9 @@ export class VerificationPersistenceService {
     const serviceRoleKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY');
     const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
 
+    if (!serviceRoleKey || !supabaseUrl) {
+      throw new Error('Trusted persistence requires VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY outside the browser.');
+    }
     let client = supabase;
     if (serviceRoleKey && supabaseUrl) {
       const { createClient } = await import('@supabase/supabase-js');
@@ -169,7 +179,7 @@ export class VerificationPersistenceService {
       .maybeSingle();
 
     if (fetchError && fetchError.code !== 'PGRST116') {
-      console.warn('Supabase query returned error (or offline mode):', fetchError.message);
+      throw new Error(`Failed to read existing verification record before persistence: ${fetchError.message}`);
     }
 
     if (existing) {
