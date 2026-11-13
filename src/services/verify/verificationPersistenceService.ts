@@ -97,7 +97,7 @@ export class VerificationPersistenceService {
    */
   static buildPersistenceRecord(
     result: PersistableEvidenceResult,
-    envelope?: G4DPersistenceEnvelope
+    envelope: G4DPersistenceEnvelope
   ): PublicVerificationRecord {
     const verificationId = this.validateResultIntegrity(result);
 
@@ -109,10 +109,7 @@ export class VerificationPersistenceService {
       policy_version: result.policyVersion || 'G3-POLICY-v1',
       overall_similarity: result.overallSimilarity,
       total_sources_found: result.totalSourcesFound || 0,
-      evidence_envelope: envelope || {
-        result,
-        persistedAt: new Date().toISOString(),
-      },
+      evidence_envelope: envelope,
     };
 
     const integrity = validatePersistedVerificationRecord(record);
@@ -130,7 +127,7 @@ export class VerificationPersistenceService {
    */
   async persistVerificationRecord(
     result: PersistableEvidenceResult,
-    envelope?: G4DPersistenceEnvelope
+    envelope: G4DPersistenceEnvelope
   ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
     const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope);
 
