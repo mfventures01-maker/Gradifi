@@ -46,3 +46,12 @@ jobs:
 
       - name: Existing G2 repair regression
         run: npx tsx tests/g2_repairs_regression.test.ts
+
+      - name: G4-D TypeScript contract check
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
+
+      - name: G4-D browser payload and persistence integrity regression
+        run: npx vitest run tests/g4d_persisted_evidence_integrity.test.ts --reporter=verbose
