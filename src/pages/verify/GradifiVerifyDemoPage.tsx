@@ -34,7 +34,8 @@ import {
 } from 'lucide-react';
 import { verifyCoreService } from '../../services/verify/verifyCoreService';
 import { verificationPersistenceService } from '../../services/verify/verificationPersistenceService';
-import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument } from '../../services/verify/types';
+import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument, GranularSimilarityResult } from '../../services/verify/types';
+import { applyHighlights, methodToClass } from '../../components/verify/highlightUtils';
 import { buildG4DPersistencePayload } from '../../services/verify/g4dPersistencePayload';
 import { toPublicVerificationResult, PublicVerificationResult } from '../../services/verify/publicVerificationResult';
 import { ingestDocument } from '../../services/verify/universalIngestionService';
@@ -106,6 +107,14 @@ export const GradifiVerifyDemoPage: React.FC = () => {
   // Verification result state
   const [verifying, setVerifying] = useState(false);
   const [result, setResult] = useState<EvidenceEngineResult | null>(null);
+  // G5 direct document-to-document comparison: primary document is the student submission;
+  // comparison document is the uploaded source/candidate reference.
+  const [g5SourceDoc, setG5SourceDoc] = useState<CanonicalAnalysisDocument | null>(null);
+  const [g5SourceFilename, setG5SourceFilename] = useState<string>('');
+  const [g5SourceLoading, setG5SourceLoading] = useState(false);
+  const [g5Comparing, setG5Comparing] = useState(false);
+  const [g5Error, setG5Error] = useState<string | null>(null);
+  const [g5Result, setG5Result] = useState<GranularSimilarityResult | null>(null);
   const { verificationId: routeParamId } = useParams<{ verificationId?: string }>();
   const [verificationId, setVerificationId] = useState<string>('');
   const [qrSvgHtml, setQrSvgHtml] = useState<string>('');
@@ -285,6 +294,80 @@ Distributed machine learning frameworks require mathematical determinism to guar
       setVerifying(false);
     }
   };
+
+  // Upload the comparison/source document for the direct G5 path.
+  const handleG5SourceUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setG5SourceLoading(true);
+    setG5Error(null);
+    setG5Result(null);
+    try {
+      const res = await ingestDocument(file);
+      if (!res.success || !res.text?.trim()) {
+        throw new Error(res.error?.message || 'The source document produced no extractable text.');
+      }
+
+      const sourceDoc = buildCanonicalAnalysisDocument({
+        rawText: res.text,
+        filename: res.filename || file.name,
+        fileSizeBytes: file.size,
+        mimeType: file.type || undefined,
+        extractionMethod: res.extractionMethod as any
+      });
+      if (sourceDoc.extractionStatus !== 'SUCCESS' || !sourceDoc.normalizedText) {
+        throw new Error('The source document could not be normalized into a canonical document.');
+      }
+
+      setG5SourceDoc(sourceDoc);
+      setG5SourceFilename(file.name);
+    } catch (err: any) {
+      setG5SourceDoc(null);
+      setG5SourceFilename('');
+      setG5Error(err?.message || 'Failed to ingest the comparison source document.');
+    } finally {
+      setG5SourceLoading(false);
+      e.target.value = '';
+    }
+  };
+
+  // G5 direct comparison is deliberately separate from provider federation and receipt persistence.
+  // The canonical engine treats the first argument as the submitted/student document and the
+  // second argument as the comparison/source document.
+  const handleRunG5Comparison = () => {
+    if (!canonicalDoc?.rawText.trim()) {
+      setG5Error('Upload or enter the student submission first.');
+      return;
+    }
+    if (!g5SourceDoc?.rawText.trim()) {
+      setG5Error('Upload the source document to compare against.');
+      return;
+    }
+
+    setG5Comparing(true);
+    setG5Error(null);
+    try {
+      const comparison = verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
+      setG5Result(comparison);
+    } catch (err: any) {
+      setG5Result(null);
+      setG5Error(err?.message || 'The canonical G5 comparison failed.');
+    } finally {
+      setG5Comparing(false);
+    }
+  };
+
+  // G5 ranges are expressed in canonical evidence text coordinates. Re-resolve the
+  // student-side passages against the displayed raw text rather than trusting those
+  // offsets as raw-file coordinates.
+  const g5HighlightSegments = g5Result
+    ? applyHighlights(documentText, g5Result.findings.map(finding => ({
+        ...finding,
+        sourceStart: undefined,
+        sourceEnd: undefined
+      })))
+    : [];
 
   // Compute similarity category badge
   const getSimilarityCategory = (score: number) => {
@@ -888,10 +971,120 @@ Distributed machine learning frameworks require mathematical determinism to guar
                 </div>
               </div>
             )}
+
+            {/* G5 direct source/student comparison. This path does not create a receipt or write persistence. */}
+            <div className="bg-slate-900/80 border border-indigo-500/30 rounded-2xl p-6 shadow-xl space-y-4">
+              <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+                <Layers className="w-5 h-5 text-indigo-400" />
+                <div>
+                  <h2 className="text-base font-bold text-white">G5. Direct Source Comparison</h2>
+                  <p className="text-[11px] text-slate-400">Compare the student submission above against one uploaded source document using the canonical deterministic engine.</p>
+                </div>
+              </div>
+
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Comparison source document</label>
+              <div className="relative border-2 border-dashed border-slate-700 hover:border-indigo-500/60 rounded-xl p-5 text-center bg-slate-950/50">
+                <input
+                  type="file"
+                  accept=".pdf,.txt,.docx,.rtf,.odt,.epub,.html,.htm,.md,.pptx,.xlsx,.csv,.json,.xml"
+                  onChange={handleG5SourceUpload}
+                  disabled={g5SourceLoading || g5Comparing}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                />
+                <FileUp className="w-7 h-7 text-indigo-400 mx-auto mb-2" />
+                <div className="text-sm font-semibold text-slate-200">Upload source / reference document</div>
+                <div className="text-[11px] text-slate-500 mt-1">DOCX, PDF, TXT and supported ingestion formats</div>
+              </div>
+
+              {g5SourceLoading && <p className="text-xs text-indigo-300">Extracting and normalizing comparison source...</p>}
+              {g5SourceDoc && (
+                <div className="p-3 bg-slate-950/70 border border-emerald-500/30 rounded-xl flex items-center justify-between gap-3 text-xs">
+                  <div className="min-w-0">
+                    <div className="font-bold text-slate-200 truncate">{g5SourceFilename}</div>
+                    <div className="text-slate-500">Canonical ID: <code>{g5SourceDoc.documentId}</code></div>
+                  </div>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                </div>
+              )}
+
+              {g5Error && <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300">{g5Error}</div>}
+
+              <button
+                type="button"
+                onClick={handleRunG5Comparison}
+                disabled={g5Comparing || g5SourceLoading || !canonicalDoc?.rawText.trim() || !g5SourceDoc}
+                className="w-full py-3 px-5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-indigo-500/30 bg-indigo-600/20 text-indigo-100 hover:bg-indigo-600/30 disabled:bg-slate-800 disabled:text-slate-500 disabled:border-slate-700 disabled:cursor-not-allowed"
+              >
+                {g5Comparing ? <><RefreshCw className="w-4 h-4 animate-spin" /> Running deterministic G5 comparison...</> : <><Search className="w-4 h-4" /> Compare Student Against Source</>}
+              </button>
+              <p className="text-[10px] text-slate-500">Local deterministic comparison only. It does not trigger provider searches, issue a verification receipt, or write to production storage.</p>
+            </div>
           </div>
 
           {/* Right Column: Verification & Evidence Results (7 Cols) */}
           <div className="lg:col-span-7 space-y-6">
+
+            {g5Result && (
+              <div className="bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-6 shadow-xl space-y-4" data-testid="g5-direct-comparison-result">
+                <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                  <div>
+                    <h2 className="text-lg font-bold text-white">G5 Deterministic Comparison Result</h2>
+                    <p className="text-[11px] text-slate-400">Student submission compared directly with {g5SourceFilename || 'the uploaded source document'}</p>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-1">DETERMINISTIC</span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                  <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl">
+                    <div className="text-[10px] uppercase text-slate-500 font-bold">Similarity</div>
+                    <div className="text-xl font-black text-white">{g5Result.overallSimilarity.toFixed(1)}%</div>
+                  </div>
+                  <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl">
+                    <div className="text-[10px] uppercase text-slate-500 font-bold">Findings</div>
+                    <div className="text-xl font-black text-white">{g5Result.findings.length}</div>
+                  </div>
+                  <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl">
+                    <div className="text-[10px] uppercase text-slate-500 font-bold">Paragraph flags</div>
+                    <div className="text-xl font-black text-white">{g5Result.paragraphFlags.length}</div>
+                  </div>
+                  <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl">
+                    <div className="text-[10px] uppercase text-slate-500 font-bold">Sentence flags</div>
+                    <div className="text-xl font-black text-white">{g5Result.sentenceFlags.length}</div>
+                  </div>
+                </div>
+
+                <div className="text-[10px] text-slate-500 font-mono">Engine: {g5Result.engineVersion} | Policy: {g5Result.policyVersion} | Student ID: {g5Result.sourceDocumentId} | Source ID: {g5Result.matchedDocumentId}</div>
+
+                <div className="space-y-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Student submission with matched passages highlighted</h3>
+                  <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto">
+                    {g5HighlightSegments.map((segment, index) => segment.findingId ? (
+                      <mark key={`${segment.findingId}-${index}`} className={`rounded px-0.5 border ${methodToClass(segment.method)}`} title={`${segment.method || 'MATCH'} · ${segment.findingId}`}>{segment.text}</mark>
+                    ) : <span key={`plain-${index}`}>{segment.text}</span>)}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Matched evidence pairs</h3>
+                  {g5Result.findings.length === 0 ? (
+                    <p className="text-xs text-slate-400 p-3 bg-slate-950 rounded-xl border border-slate-800">No deterministic matching passages were identified in this source/student pair.</p>
+                  ) : g5Result.findings.slice(0, 20).map((finding, index) => (
+                    <div key={finding.findingId} className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] font-mono text-slate-500">Finding {index + 1} · {finding.matchMethod}</span>
+                        <span className="text-xs font-bold text-indigo-300">{finding.similarityScore.toFixed(1)}%</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div><div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Student passage</div><p className="text-slate-200 whitespace-pre-wrap">{finding.sourceSegment}</p></div>
+                        <div><div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Source passage</div><p className="text-slate-200 whitespace-pre-wrap">{finding.matchedSegment || 'Source-side alignment unavailable for this finding.'}</p></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {g5Result.warnings.length > 0 && <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-200"><strong>Engine warnings:</strong><ul className="list-disc pl-5 mt-1">{g5Result.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></div>}
+              </div>
+            )}
             
             {!result ? (
               <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[480px]">
