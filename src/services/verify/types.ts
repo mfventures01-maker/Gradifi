@@ -530,7 +530,7 @@ export type PersistableEvidenceResult = Pick<
   'documentHash' | 'evidenceHash' | 'engineVersion' |
   'policyVersion' | 'overallSimilarity' | 'totalSourcesFound'
 > & {
-  similarityAnalysis?: Pick<SimilarityAnalysisResult, 'findings'>;
+  similarityAnalysis: Pick<SimilarityAnalysisResult, 'findings'>;
 };
 
 /**
