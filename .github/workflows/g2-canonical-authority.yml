@@ -15,7 +15,7 @@ permissions:
 jobs:
   g2-regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,3 +46,21 @@ jobs:
 
       - name: Existing G2 repair regression
         run: npx tsx tests/g2_repairs_regression.test.ts
+
+      - name: Generate server runtime required by API imports
+        run: npm run build:server
+
+      - name: G4-D TypeScript contract check
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
+
+      - name: G4-D browser payload and persistence integrity regression
+        run: npx vitest run tests/g4d_persisted_evidence_integrity.test.ts --reporter=verbose
+
+      - name: Install Chromium for browser runtime certification
+        run: npx playwright install --with-deps chromium
+
+      - name: G4-D browser-to-persistence POST runtime certification
+        run: npx playwright test --config=playwright.g4d.config.ts

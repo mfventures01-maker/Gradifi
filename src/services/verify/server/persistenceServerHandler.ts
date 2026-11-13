@@ -6,11 +6,11 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { VerificationPersistenceService, PublicVerificationRecord } from '../verificationPersistenceService.js';
-import { EvidenceEngineResult, AnalysisResultEnvelope } from '../types.js';
+import { G4DPersistenceEnvelope, PersistableEvidenceResult } from '../types.js';
 
 export interface PersistenceServerRequestPayload {
-  result: EvidenceEngineResult;
-  envelope?: AnalysisResultEnvelope;
+  result: PersistableEvidenceResult;
+  envelope: G4DPersistenceEnvelope;
 }
 
 export async function handlePersistenceServerRequest(
@@ -18,6 +18,16 @@ export async function handlePersistenceServerRequest(
 ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
   if (!payload || !payload.result) {
     throw new Error('Missing certified verification result in persistence payload');
+  }
+  if (
+    !payload.envelope ||
+    !payload.envelope.deterministicResult ||
+    !payload.envelope.canonicalDocument ||
+    typeof payload.envelope.canonicalDocument.rawText !== 'string' ||
+    !payload.result.similarityAnalysis ||
+    !Array.isArray(payload.result.similarityAnalysis.findings)
+  ) {
+    throw new Error('G4-D persistence payload must include an embedded deterministic result, canonical submitted text, and similarity findings.');
   }
 
   const supabaseUrl = process.env.VITE_SUPABASE_URL;

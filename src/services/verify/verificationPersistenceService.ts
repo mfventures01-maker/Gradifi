@@ -3,7 +3,7 @@
  * HOEOS G6.2 Standard: Trusted Write Path, Idempotent Record Persistence & Conflict Protection.
  */
 
-import { EvidenceEngineResult, AnalysisResultEnvelope } from './types.js';
+import { G4DPersistenceEnvelope, PersistableEvidenceResult } from './types.js';
 import { supabase } from '../../lib/supabase.js';
 import { validatePersistedVerificationRecord } from './verificationPersistenceIntegrity.js';
 
@@ -57,7 +57,7 @@ export class VerificationPersistenceService {
   /**
    * Validates the data integrity of a certified G5 result before persistence.
    */
-  static validateResultIntegrity(result: EvidenceEngineResult, providedVerificationId?: string): string {
+  static validateResultIntegrity(result: PersistableEvidenceResult, providedVerificationId?: string): string {
     if (!result) {
       throw new VerificationValidationError('Missing certified verification result');
     }
@@ -93,11 +93,11 @@ export class VerificationPersistenceService {
   }
 
   /**
-   * Converts a certified EvidenceEngineResult into a persistent PublicVerificationRecord database payload.
+   * Converts a certified PersistableEvidenceResult into a persistent PublicVerificationRecord database payload.
    */
   static buildPersistenceRecord(
-    result: EvidenceEngineResult,
-    envelope?: AnalysisResultEnvelope
+    result: PersistableEvidenceResult,
+    envelope: G4DPersistenceEnvelope
   ): PublicVerificationRecord {
     const verificationId = this.validateResultIntegrity(result);
 
@@ -109,10 +109,7 @@ export class VerificationPersistenceService {
       policy_version: result.policyVersion || 'G3-POLICY-v1',
       overall_similarity: result.overallSimilarity,
       total_sources_found: result.totalSourcesFound || 0,
-      evidence_envelope: envelope || {
-        result,
-        persistedAt: new Date().toISOString(),
-      },
+      evidence_envelope: envelope,
     };
 
     const integrity = validatePersistedVerificationRecord(record);
@@ -129,8 +126,8 @@ export class VerificationPersistenceService {
    * Enforces idempotency (same result = no-op return) and conflict rejection (conflicting hashes = throw error).
    */
   async persistVerificationRecord(
-    result: EvidenceEngineResult,
-    envelope?: AnalysisResultEnvelope
+    result: PersistableEvidenceResult,
+    envelope: G4DPersistenceEnvelope
   ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
     const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope);
 
