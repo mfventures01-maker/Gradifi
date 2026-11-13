@@ -47,6 +47,9 @@ jobs:
       - name: Existing G2 repair regression
         run: npx tsx tests/g2_repairs_regression.test.ts
 
+      - name: Generate server runtime required by API imports
+        run: npm run build:server
+
       - name: G4-D TypeScript contract check
         run: npm run typecheck
 
