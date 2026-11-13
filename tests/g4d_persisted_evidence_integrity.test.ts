@@ -7,7 +7,7 @@ import {
 import {
   VerificationPersistenceService
 } from '../src/services/verify/verificationPersistenceService';
-import type { EvidenceEngineResult } from '../src/services/verify/types';
+import type { EvidenceEngineResult, G4DPersistenceEnvelope, PersistableEvidenceResult } from '../src/services/verify/types';
 
 const rawText = [
   'Introductory material.',
@@ -77,6 +77,45 @@ function fixture() {
 }
 
 describe('G4-D persisted evidence and retrieval integrity', () => {
+  it('accepts the bounded browser persistence projection with embedded result and canonical text', () => {
+    const fullRecord = fixture();
+    const fullResult = fullRecord.evidence_envelope.deterministicResult as EvidenceEngineResult;
+    const similarityAnalysis = fullResult.similarityAnalysis;
+    if (!similarityAnalysis) throw new Error('Fixture must include deterministic similarity analysis');
+
+    const persistableResult: PersistableEvidenceResult = {
+      documentHash: fullResult.documentHash,
+      evidenceHash: fullResult.evidenceHash,
+      engineVersion: fullResult.engineVersion,
+      policyVersion: fullResult.policyVersion,
+      overallSimilarity: fullResult.overallSimilarity,
+      totalSourcesFound: fullResult.totalSourcesFound,
+      similarityAnalysis: { findings: similarityAnalysis.findings }
+    };
+
+    const envelope: G4DPersistenceEnvelope = {
+      analysisId: 'analysis-g4d-browser-contract',
+      documentId: fullResult.documentHash,
+      timestamp: fullResult.timestamp,
+      engineVersion: fullResult.engineVersion,
+      policyVersion: fullResult.policyVersion,
+      status: 'VERIFIED',
+      deterministicResult: persistableResult,
+      canonicalDocument: { rawText },
+      processingTimeMs: 1
+    };
+
+    const persisted = VerificationPersistenceService.buildPersistenceRecord(
+      persistableResult,
+      envelope
+    );
+    const retrieved = JSON.parse(JSON.stringify(persisted));
+    expect(validatePersistedVerificationRecord(retrieved)).toEqual({ status: 'VALID' });
+    expect(retrieved.evidence_envelope.deterministicResult.documentHash)
+      .toBe(retrieved.document_hash);
+    expect(retrieved.evidence_envelope.canonicalDocument.rawText).toBe(rawText);
+  });
+
   it('persists and JSON-round-trips the original hashes, score, and canonical finding coordinates', () => {
     const persisted = fixture();
     const retrieved = JSON.parse(JSON.stringify(persisted));
