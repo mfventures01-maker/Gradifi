@@ -7,7 +7,8 @@ import {
 import {
   VerificationPersistenceService
 } from '../src/services/verify/verificationPersistenceService';
-import type { EvidenceEngineResult, G4DPersistenceEnvelope, PersistableEvidenceResult } from '../src/services/verify/types';
+import type { EvidenceEngineResult, G4DPersistenceEnvelope, PersistableEvidenceResult, CanonicalAnalysisDocument } from '../src/services/verify/types';
+import { buildG4DPersistencePayload } from '../src/services/verify/g4dPersistencePayload';
 
 const rawText = [
   'Introductory material.',
@@ -61,59 +62,80 @@ function fixture() {
     }
   } as unknown as EvidenceEngineResult;
 
-  const envelope = {
+  const persistableResult: PersistableEvidenceResult = {
+    documentHash: result.documentHash,
+    evidenceHash: result.evidenceHash,
+    engineVersion: result.engineVersion,
+    policyVersion: result.policyVersion,
+    overallSimilarity: result.overallSimilarity,
+    totalSourcesFound: result.totalSourcesFound,
+    similarityAnalysis: { findings: result.similarityAnalysis!.findings }
+  };
+  const envelope: G4DPersistenceEnvelope = {
     analysisId: 'analysis-g4d-001',
     documentId: result.documentHash,
     timestamp: result.timestamp,
     engineVersion: result.engineVersion,
     policyVersion: result.policyVersion,
     status: 'VERIFIED',
-    deterministicResult: result,
-    canonicalDocument: { rawText } as any,
+    deterministicResult: persistableResult,
+    canonicalDocument: { rawText },
     processingTimeMs: 1
-  } as any;
+  };
 
-  return VerificationPersistenceService.buildPersistenceRecord(result, envelope);
+  return VerificationPersistenceService.buildPersistenceRecord(persistableResult, envelope);
 }
 
 describe('G4-D persisted evidence and retrieval integrity', () => {
-  it('accepts the bounded browser persistence projection with embedded result and canonical text', () => {
-    const fullRecord = fixture();
-    const fullResult = fullRecord.evidence_envelope.deterministicResult as EvidenceEngineResult;
-    const similarityAnalysis = fullResult.similarityAnalysis;
-    if (!similarityAnalysis) throw new Error('Fixture must include deterministic similarity analysis');
+  it('builds the exact browser payload accepted by G4-D after JSON serialization', () => {
+    const persistedFixture = fixture();
+    const persistedResult = persistedFixture.evidence_envelope.deterministicResult as PersistableEvidenceResult;
+    const browserResult = {
+      ...persistedResult,
+      timestamp: '2026-11-12T00:00:00.000Z',
+      processingTimeMs: 1,
+      fineGrainedStatuses: { openalex: 'VERIFIED' },
+      canonicalDocument: {
+        documentId: persistedResult.documentHash,
+        rawText
+      } as CanonicalAnalysisDocument
+    } as EvidenceEngineResult;
 
-    const persistableResult: PersistableEvidenceResult = {
-      documentHash: fullResult.documentHash,
-      evidenceHash: fullResult.evidenceHash,
-      engineVersion: fullResult.engineVersion,
-      policyVersion: fullResult.policyVersion,
-      overallSimilarity: fullResult.overallSimilarity,
-      totalSourcesFound: fullResult.totalSourcesFound,
-      similarityAnalysis: { findings: similarityAnalysis.findings }
-    };
-
-    const envelope: G4DPersistenceEnvelope = {
-      analysisId: 'analysis-g4d-browser-contract',
-      documentId: fullResult.documentHash,
-      timestamp: fullResult.timestamp,
-      engineVersion: fullResult.engineVersion,
-      policyVersion: fullResult.policyVersion,
-      status: 'VERIFIED',
-      deterministicResult: persistableResult,
-      canonicalDocument: { rawText },
-      processingTimeMs: 1
-    };
-
+    const browserPayload = buildG4DPersistencePayload(browserResult);
+    const serializedPayload = JSON.parse(JSON.stringify(browserPayload));
     const persisted = VerificationPersistenceService.buildPersistenceRecord(
-      persistableResult,
-      envelope
+      serializedPayload.result,
+      serializedPayload.envelope
     );
     const retrieved = JSON.parse(JSON.stringify(persisted));
+
     expect(validatePersistedVerificationRecord(retrieved)).toEqual({ status: 'VALID' });
     expect(retrieved.evidence_envelope.deterministicResult.documentHash)
       .toBe(retrieved.document_hash);
     expect(retrieved.evidence_envelope.canonicalDocument.rawText).toBe(rawText);
+    expect(retrieved.evidence_envelope.deterministicResult.similarityAnalysis.findings)
+      .toEqual(browserResult.similarityAnalysis?.findings);
+  });
+
+  it('fails closed when the browser result has no canonical text or deterministic findings', () => {
+    const persistedResult = fixture().evidence_envelope.deterministicResult as PersistableEvidenceResult;
+    const base = {
+      ...persistedResult,
+      timestamp: '2026-11-12T00:00:00.000Z',
+      processingTimeMs: 1,
+      fineGrainedStatuses: {}
+    } as EvidenceEngineResult;
+
+    expect(() => buildG4DPersistencePayload({
+      ...base,
+      canonicalDocument: undefined
+    })).toThrow(/canonical submitted document text/);
+
+    expect(() => buildG4DPersistencePayload({
+      ...base,
+      canonicalDocument: { rawText } as CanonicalAnalysisDocument,
+      similarityAnalysis: undefined
+    })).toThrow(/deterministic similarity findings/);
   });
 
   it('persists and JSON-round-trips the original hashes, score, and canonical finding coordinates', () => {
