@@ -9,6 +9,7 @@ import {
 } from '../src/services/verify/verificationPersistenceService';
 import type { EvidenceEngineResult, G4DPersistenceEnvelope, PersistableEvidenceResult, CanonicalAnalysisDocument } from '../src/services/verify/types';
 import { buildG4DPersistencePayload } from '../src/services/verify/g4dPersistencePayload';
+import { handlePersistenceServerRequest } from '../src/services/verify/server/persistenceServerHandler';
 
 const rawText = [
   'Introductory material.',
@@ -115,6 +116,40 @@ describe('G4-D persisted evidence and retrieval integrity', () => {
     expect(retrieved.evidence_envelope.canonicalDocument.rawText).toBe(rawText);
     expect(retrieved.evidence_envelope.deterministicResult.similarityAnalysis.findings)
       .toEqual(browserResult.similarityAnalysis?.findings);
+  });
+
+  it('passes the browser JSON payload through the server contract guard', async () => {
+    const persistedResult = fixture().evidence_envelope.deterministicResult as PersistableEvidenceResult;
+    const browserResult = {
+      ...persistedResult,
+      timestamp: '2026-11-12T00:00:00.000Z',
+      processingTimeMs: 1,
+      fineGrainedStatuses: { openalex: 'VERIFIED' },
+      canonicalDocument: {
+        documentId: persistedResult.documentHash,
+        rawText
+      } as CanonicalAnalysisDocument
+    } as EvidenceEngineResult;
+    const payload = JSON.parse(JSON.stringify(buildG4DPersistencePayload(browserResult)));
+
+    const previousUrl = process.env.VITE_SUPABASE_URL;
+    const previousServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    process.env.VITE_SUPABASE_URL = '';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = '';
+    try {
+      await expect(handlePersistenceServerRequest(payload))
+        .rejects.toThrow(/trusted persistence configuration unavailable/);
+    } finally {
+      if (previousUrl === undefined) delete process.env.VITE_SUPABASE_URL;
+      else process.env.VITE_SUPABASE_URL = previousUrl;
+      if (previousServiceRoleKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+      else process.env.SUPABASE_SERVICE_ROLE_KEY = previousServiceRoleKey;
+    }
+
+    await expect(handlePersistenceServerRequest({
+      result: payload.result,
+      envelope: { ...payload.envelope, deterministicResult: undefined }
+    } as any)).rejects.toThrow(/must include an embedded deterministic result/);
   });
 
   it('fails closed when the browser result has no canonical text or deterministic findings', () => {
