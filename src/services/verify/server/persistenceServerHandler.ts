@@ -6,11 +6,11 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { VerificationPersistenceService, PublicVerificationRecord } from '../verificationPersistenceService.js';
-import { EvidenceEngineResult, AnalysisResultEnvelope } from '../types.js';
+import { G4DPersistenceEnvelope, PersistableEvidenceResult } from '../types.js';
 
 export interface PersistenceServerRequestPayload {
-  result: EvidenceEngineResult;
-  envelope?: AnalysisResultEnvelope;
+  result: PersistableEvidenceResult;
+  envelope?: G4DPersistenceEnvelope;
 }
 
 export async function handlePersistenceServerRequest(
