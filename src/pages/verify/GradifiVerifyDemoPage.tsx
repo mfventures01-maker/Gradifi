@@ -262,7 +262,13 @@ Distributed machine learning frameworks require mathematical determinism to guar
       // the embedded deterministic result, canonical submitted text, and
       // submitted-side similarity ranges. Provider payloads and UI metadata
       // are deliberately excluded from this persistence projection.
-      const canonicalRawText = res.canonicalDocument?.rawText ?? documentText;
+      if (!res.canonicalDocument?.rawText) {
+        throw new Error('G4-D persistence requires the canonical submitted document text.');
+      }
+      if (!res.similarityAnalysis) {
+        throw new Error('G4-D persistence requires deterministic similarity findings.');
+      }
+      const canonicalRawText = res.canonicalDocument.rawText;
       const persistResult: PersistableEvidenceResult = {
         documentHash: res.documentHash,
         evidenceHash: res.evidenceHash,
@@ -270,9 +276,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
         policyVersion: res.policyVersion,
         overallSimilarity: res.overallSimilarity,
         totalSourcesFound: res.totalSourcesFound,
-        similarityAnalysis: res.similarityAnalysis
-          ? { findings: res.similarityAnalysis.findings }
-          : undefined
+        similarityAnalysis: { findings: res.similarityAnalysis.findings }
       };
 
       const providerOutcomes = Object.values(res.fineGrainedStatuses);
