@@ -224,6 +224,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
     if (!file) return;
 
     setUploadStatus('PROCESSING');
+    setG5Result(null);
     setUploadError(null);
     setUploadProgress(10);
     setProgressMsg('Detecting format and validating document structure...');
@@ -810,7 +811,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
             <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <FileUp className="w-5 h-5 text-blue-400" /> 1. PDF Document Upload
+                  <FileUp className="w-5 h-5 text-blue-400" /> 1. Student Submission Upload
                 </h2>
                 <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full border ${
                   uploadStatus === 'EXTRACTED' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' :
@@ -888,6 +889,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                 <textarea
                   value={documentText}
                   onChange={(e) => {
+                    setG5Result(null);
                     setDocumentText(e.target.value);
                     if (e.target.value.trim()) {
                       setUploadStatus('EXTRACTED');
