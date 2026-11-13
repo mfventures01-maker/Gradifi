@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 import { verifyCoreService } from '../../services/verify/verifyCoreService';
 import { verificationPersistenceService } from '../../services/verify/verificationPersistenceService';
-import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument } from '../../services/verify/types';
+import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument, G4DPersistenceEnvelope, PersistableEvidenceResult } from '../../services/verify/types';
 import { toPublicVerificationResult, PublicVerificationResult } from '../../services/verify/publicVerificationResult';
 import { ingestDocument } from '../../services/verify/universalIngestionService';
 import { resolveMatchedEvidenceSpans } from '../../services/verify/matchedTextHighlightingService';
@@ -258,28 +258,52 @@ Distributed machine learning frameworks require mathematical determinism to guar
     try {
       const res = await verifyCoreService.executeVerifyRun(documentText);
 
-      // Slim persistence payload — stays under Vercel's 4.5 MB function body limit.
-      const persistResult = {
+      // Keep the request bounded while preserving every field G4-D needs:
+      // the embedded deterministic result, canonical submitted text, and
+      // submitted-side similarity ranges. Provider payloads and UI metadata
+      // are deliberately excluded from this persistence projection.
+      const canonicalRawText = res.canonicalDocument?.rawText ?? documentText;
+      const persistResult: PersistableEvidenceResult = {
         documentHash: res.documentHash,
         evidenceHash: res.evidenceHash,
         engineVersion: res.engineVersion,
         policyVersion: res.policyVersion,
         overallSimilarity: res.overallSimilarity,
-        totalSourcesFound: res.totalSourcesFound
+        totalSourcesFound: res.totalSourcesFound,
+        similarityAnalysis: res.similarityAnalysis
+          ? { findings: res.similarityAnalysis.findings }
+          : undefined
       };
 
-      const persistEnvelope = {
-        findingCount: res.findings?.length ?? 0,
-        sourceCount: res.verifiedSources?.length ?? 0,
-        firstSourceIds: (res.verifiedSources ?? []).slice(0, 10).map(s => s.sourceId),
-        uniqueMatchedCoverage: res.uniqueMatchedCoverage ?? res.overallSimilarity,
-        highestSourceMatch: res.highestSourceMatch ?? 0,
-        timestamp: res.timestamp ?? new Date().toISOString()
+      const providerOutcomes = Object.values(res.fineGrainedStatuses);
+      const successfulProviderOutcomes = providerOutcomes.filter(status =>
+        status === 'VERIFIED' ||
+        status === 'PARTIALLY_VERIFIED' ||
+        status === 'EMPTY_RESULT'
+      ).length;
+      const envelopeStatus =
+        successfulProviderOutcomes === 0
+          ? 'FAILED'
+          : successfulProviderOutcomes === providerOutcomes.length
+            ? 'VERIFIED'
+            : 'PARTIALLY_VERIFIED';
+
+      const persistEnvelope: G4DPersistenceEnvelope = {
+        analysisId: `ANL-${res.documentHash.slice(0, 8)}-${Date.now().toString(36).toUpperCase()}`,
+        documentId: res.canonicalDocument?.documentId ?? res.documentHash,
+        timestamp: res.timestamp,
+        engineVersion: res.engineVersion,
+        policyVersion: res.policyVersion,
+        status: envelopeStatus,
+        deterministicResult: persistResult,
+        canonicalDocument: { rawText: canonicalRawText },
+        processingTimeMs: res.processingTimeMs,
+        warnings: res.similarityAnalysis?.warnings
       };
 
       const { record } = await verificationPersistenceService.persistVerificationRecord(
-        persistResult as any,
-        persistEnvelope as any
+        persistResult,
+        persistEnvelope
       );
 
       if (!record?.verification_id) {
