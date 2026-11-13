@@ -18,12 +18,13 @@ test('real browser builds and POSTs the complete G4-D persistence payload', asyn
   await page.goto('/');
 
   const browserResult = await page.evaluate(async () => {
+    const loadModule = (path: string) => import(/* @vite-ignore */ path);
     const [{ buildG4DPersistencePayload }, { verificationPersistenceService }, { computeHash }, { toCanonicalEvidenceText }] =
       await Promise.all([
-        import('/src/services/verify/g4dPersistencePayload.ts'),
-        import('/src/services/verify/verificationPersistenceService.ts'),
-        import('/src/services/verify/documentNormalizer.ts'),
-        import('/src/services/verify/deterministicEngine.ts')
+        loadModule('/src/services/verify/g4dPersistencePayload.ts'),
+        loadModule('/src/services/verify/verificationPersistenceService.ts'),
+        loadModule('/src/services/verify/documentNormalizer.ts'),
+        loadModule('/src/services/verify/deterministicEngine.ts')
       ]);
 
     const rawText = [
