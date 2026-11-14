@@ -29,3 +29,7 @@ The CI runner intentionally has no Supabase service-role key. The expected behav
 - No fake QR or public receipt is issued.
 
 A positive persisted-receipt runtime gate still requires a dedicated isolated Supabase environment and test credentials. Production remains untouched.
+
+## Public endpoint abuse controls
+
+The server-run endpoint currently has a per-process in-memory request limit. Serverless instances do not share that map, so it is a best-effort demo throttle, not a distributed abuse-control boundary. Before a public production release, add shared rate limiting (or an equivalent API gateway control), abuse monitoring and a user/session policy for provider-cost protection.
