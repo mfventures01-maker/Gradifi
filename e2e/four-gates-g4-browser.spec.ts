@@ -49,7 +49,7 @@ test.describe('HOEOS Gate 4 Controlled UI Highlight Contract', () => {
         extractedAt: timestamp
       },
       rawText: canonicalText,
-      normalizedText: canonicalText.replace(/\\s+/g, ' ').trim().toLowerCase(),
+      normalizedText: canonicalText.replace(/\s+/g, ' ').trim().toLowerCase(),
       title: G4_POSITIVE_FIXTURE.metadata.title,
       authors: G4_POSITIVE_FIXTURE.metadata.authors,
       abstract: 'Controlled deterministic fixture for the G4 browser highlight contract.',
@@ -60,9 +60,9 @@ test.describe('HOEOS Gate 4 Controlled UI Highlight Contract', () => {
       identifiers: [G4_POSITIVE_FIXTURE.metadata.doi, G4_POSITIVE_FIXTURE.metadata.isbn],
       stats: {
         characterCount: canonicalText.length,
-        wordCount: canonicalText.trim().split(/\\s+/).length,
+        wordCount: canonicalText.trim().split(/\s+/).length,
         sentenceCount: 8,
-        tokenCount: canonicalText.trim().split(/\\s+/).length,
+        tokenCount: canonicalText.trim().split(/\s+/).length,
         estimatedPageCount: 1
       },
       extractionStatus: 'SUCCESS',
@@ -217,19 +217,19 @@ test.describe('HOEOS Gate 4 Controlled UI Highlight Contract', () => {
     fs.mkdirSync(evidenceDir, { recursive: true });
     fs.writeFileSync(
       path.join(evidenceDir, 'G4_MARK_ASSERTIONS.txt'),
-      `EXECUTION_MODE: CONTROLLED_UI_FIXTURE_NOT_SERVER_RUNTIME\\nMARK_COUNT: ${markCount}\\nEXPECTED_COUNT: ${G4_EXPECTED_HIGHLIGHTS.length}\\nHIGHLIGHTS:\\n${verifiedHighlights.map(x => JSON.stringify(x)).join('\\n')}\\nEXACT_CANONICAL_OFFSETS: true\\nVERDICT: PASS\\n`
+      `EXECUTION_MODE: CONTROLLED_UI_FIXTURE_NOT_SERVER_RUNTIME\nMARK_COUNT: ${markCount}\nEXPECTED_COUNT: ${G4_EXPECTED_HIGHLIGHTS.length}\nHIGHLIGHTS:\n${verifiedHighlights.map(x => JSON.stringify(x)).join('\n')}\nEXACT_CANONICAL_OFFSETS: true\nVERDICT: PASS\n`
     );
     fs.writeFileSync(
       path.join(evidenceDir, 'G4_CANONICAL_IDENTITY.txt'),
-      `CANONICAL_TEXT_LENGTH: ${canonicalText.length}\\nDOCUMENT_HASH: ${documentHash}\\nEVIDENCE_HASH: ${evidenceHash}\\nFIXTURE_PROVENANCE: G4_POSITIVE_FIXTURE\\nMATCH_EXACT: true\\nSERVER_RUNTIME_CERTIFIED: false\\n`
+      `CANONICAL_TEXT_LENGTH: ${canonicalText.length}\nDOCUMENT_HASH: ${documentHash}\nEVIDENCE_HASH: ${evidenceHash}\nFIXTURE_PROVENANCE: G4_POSITIVE_FIXTURE\nMATCH_EXACT: true\nSERVER_RUNTIME_CERTIFIED: false\n`
     );
     fs.writeFileSync(
       path.join(evidenceDir, 'G4_NETWORK_CONSOLE.txt'),
-      `API_ROUTE_INTERCEPTED: ${interceptedRun}\\nCONSOLE_LOGS_COUNT: ${consoleLogs.length}\\nNETWORK_FAILURES_COUNT: ${networkFailures.length}\\n\\nCONSOLE_LOGS:\\n${consoleLogs.join('\\n')}\\n\\nNETWORK_FAILURES:\\n${networkFailures.join('\\n')}\\n`
+      `API_ROUTE_INTERCEPTED: ${interceptedRun}\nCONSOLE_LOGS_COUNT: ${consoleLogs.length}\nNETWORK_FAILURES_COUNT: ${networkFailures.length}\n\nCONSOLE_LOGS:\n${consoleLogs.join('\n')}\n\nNETWORK_FAILURES:\n${networkFailures.join('\n')}\n`
     );
     fs.writeFileSync(
       path.join(evidenceDir, 'G4_BROWSER_RUNTIME.txt'),
-      `PLAYWRIGHT_UI_CONTRACT_STATUS: PASS\\nEXECUTION_MODE: CONTROLLED_UI_FIXTURE_NOT_SERVER_RUNTIME\\nMARK_COUNT: ${markCount}\\nBACKEND_RUNTIME_CERTIFIED: false\\nSCREENSHOT_PATH: tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png\\n`
+      `PLAYWRIGHT_UI_CONTRACT_STATUS: PASS\nEXECUTION_MODE: CONTROLLED_UI_FIXTURE_NOT_SERVER_RUNTIME\nMARK_COUNT: ${markCount}\nBACKEND_RUNTIME_CERTIFIED: false\nSCREENSHOT_PATH: tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png\n`
     );
     fs.writeFileSync(
       path.join(evidenceDir, 'G4_RESULT.json'),
