@@ -38,6 +38,36 @@ export default defineConfig({
       // Excluded from the default run. Runnable individually:
       //   npx vitest run tests/ocrService.test.ts
       'tests/ocrService.test.ts',
+
+      // Standalone HOEOS assertion programs execute their own assertions and may
+      // call process.exit. Run them in isolated child processes via
+      // npm run test:hoeos-scripts instead of loading them as Vitest suites.
+      'tests/aiEvidenceFirewall.test.ts',
+      'tests/bulkIngestionAndMetadata.test.ts',
+      'tests/canonicalDocumentContract.test.ts',
+      'tests/contentValidation.test.ts',
+      'tests/demoWorkflow3Runs.test.ts',
+      'tests/deterministicEvidenceBridge.test.ts',
+      'tests/g2_ocr_determinism.test.ts',
+      'tests/gemini_adapter.test.ts',
+      'tests/gemmaServerHandler.test.ts',
+      'tests/identityCorrespondence.test.ts',
+      'tests/plagiarismEvidencePolicy.test.ts',
+      'tests/publicOriginalityExposure.test.ts',
+      'tests/publicVerificationResolution.test.ts',
+      'tests/qrGenerator.test.ts',
+      'tests/queryBuilder.test.ts',
+      'tests/sourceRetrieval.test.ts',
+      'tests/unpaywallOAResolver.test.ts',
+      'tests/verificationMatrixState.test.ts',
+      'tests/verificationSchemaRLS.test.ts',
+      'tests/verifyCore.test.ts',
+      'tests/federation/federationDeterminism.test.ts',
+      'tests/federation/rateLimiter.test.ts',
+      'tests/federation/requestQueue.test.ts',
+      'tests/nemotron/retry.test.ts',
+      'tests/pipeline/pipelineAudit.test.ts',
+      'tests/pipeline/pipelineAuditFailClosed.test.ts',
     ],
     environment: 'node',
   },
