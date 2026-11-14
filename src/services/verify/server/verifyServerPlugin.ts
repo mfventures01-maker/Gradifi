@@ -22,7 +22,7 @@ import { handleSemanticScholarServerSearch } from './semanticScholarServerHandle
 import { handleGeminiServerReasoning } from './geminiServerHandler.js';
 import { handleNemotronServerReasoning } from './nemotronServerHandler.js';
 import { handleGemmaServerReasoning } from './gemmaServerHandler.js';
-import { handlePersistenceServerRequest } from './persistenceServerHandler.js';
+import { handleTrustedVerifyRun } from './verifyRunServerHandler.js';
 
 function createSearchMiddleware(providerId: string, handler: (payload: any) => Promise<any>) {
   return async (req: any, res: any) => {
@@ -70,7 +70,22 @@ export function verifyServerPlugin(): Plugin {
   return {
     name: 'gradifi-verify-server-plugin',
     configureServer(server) {
-      server.middlewares.use('/api/verify/persist', async (req, res) => {
+      // Legacy client-authored persistence is disabled in local Vite as well as Vercel.
+      server.middlewares.use('/api/verify/persist', (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-store');
+        res.statusCode = req.method === 'POST' ? 410 : 405;
+        res.end(JSON.stringify({
+          code: 'CLIENT_AUTHORED_PERSISTENCE_DISABLED',
+          error: 'Submit documentText to /api/verify/run. Client-authored scores and hashes are not accepted.'
+        }));
+      });
+
+      // Run the authoritative engine on the server; only this result may be persisted.
+      server.middlewares.use('/api/verify/run', async (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-store');
+
         if (req.method !== 'POST') {
           res.statusCode = 405;
           res.end(JSON.stringify({ error: 'Method Not Allowed' }));
@@ -78,36 +93,35 @@ export function verifyServerPlugin(): Plugin {
         }
 
         let body = '';
-        req.on('data', chunk => { body += chunk; });
+        req.on('data', (chunk) => {
+          body += chunk;
+          if (body.length > 1_100_000) {
+            res.statusCode = 413;
+            res.end(JSON.stringify({ code: 'DOCUMENT_TOO_LARGE', error: 'Request body exceeds the verification limit.' }));
+            req.destroy();
+          }
+        });
+
         req.on('end', async () => {
           try {
             const payload = body ? JSON.parse(body) : {};
-            const result = await handlePersistenceServerRequest(payload);
-            res.setHeader('Content-Type', 'application/json');
+            const result = await handleTrustedVerifyRun(payload);
             res.statusCode = 200;
             res.end(JSON.stringify(result));
           } catch (err: any) {
-            res.setHeader('Content-Type', 'application/json');
-
-            const errName = err?.name || err?.constructor?.name || '';
-            const errMessage = String(err?.message || '');
-
-            if (
-              errName === 'VerificationConflictError' ||
-              errMessage.toLowerCase().includes('conflicting verification record')
-            ) {
-              res.statusCode = 200;
-              res.end(JSON.stringify({
-                status: 'ALREADY_PERSISTED',
-                verificationId: err?.verificationId || null,
-                message: errMessage || 'Verification record already exists'
-              }));
-              return;
-            }
-
-            res.statusCode = 500;
+            const code = err?.message === 'DOCUMENT_TOO_LARGE'
+              ? 'DOCUMENT_TOO_LARGE'
+              : err?.message === 'DOCUMENT_TEXT_REQUIRED'
+                ? 'DOCUMENT_TEXT_REQUIRED'
+                : 'VERIFY_RUN_FAILED';
+            res.statusCode = code === 'DOCUMENT_TOO_LARGE' ? 413 : code === 'DOCUMENT_TEXT_REQUIRED' ? 400 : 500;
             res.end(JSON.stringify({
-              error: errMessage || 'Failed to persist verification record'
+              code,
+              error: code === 'DOCUMENT_TOO_LARGE'
+                ? 'Document text exceeds the 1 MB verification limit.'
+                : code === 'DOCUMENT_TEXT_REQUIRED'
+                  ? 'A non-empty documentText field is required.'
+                  : 'Server-side verification could not be completed.'
             }));
           }
         });
