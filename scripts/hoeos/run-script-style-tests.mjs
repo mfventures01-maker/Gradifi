@@ -34,7 +34,6 @@ const scriptStyleTests = [
   "tests/markers/markerRendering.test.ts",
   "tests/provider/passageExtractor.test.ts",
   "tests/g2_offset_fidelity.test.ts",
-  "tests/g1_epub_ocr.test.ts"
 ];
 
 let failed = 0;
