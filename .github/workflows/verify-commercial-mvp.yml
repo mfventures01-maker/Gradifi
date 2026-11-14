@@ -45,6 +45,9 @@ jobs:
       - name: Vitest suite
         run: npm test -- --reporter=default --reporter=junit --outputFile=test-results/vitest-junit.xml
 
+      - name: Standalone HOEOS assertion suites
+        run: npm run test:hoeos-scripts
+
       - name: Production build
         run: npm run build
 
@@ -53,7 +56,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: verify-g0-test-report
-          path: test-results/vitest-junit.xml
+          path: |
+            test-results/vitest-junit.xml
+            test-results/npm-audit.json
           if-no-files-found: ignore
           retention-days: 14
 
