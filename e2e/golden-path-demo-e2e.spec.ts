@@ -7,6 +7,12 @@ test.describe('HOEOS G12 Unified Commercial Golden-Path Demo Certification Suite
   test('executes complete 7-step commercial verification journey: real-PDF upload -> canonical extraction -> federated verification -> passage highlighting -> correction guidance -> receipt persistence -> public resolution', async ({ page }) => {
     test.setTimeout(180000);
 
+    const hasIsolatedReceiptStorage = Boolean(
+      process.env.VERIFY_ISOLATED_SUPABASE_URL &&
+      process.env.VERIFY_ISOLATED_SUPABASE_ANON_KEY &&
+      process.env.VERIFY_ISOLATED_SUPABASE_SERVICE_ROLE_KEY
+    );
+
     const consoleLogs: string[] = [];
     const networkFailures: string[] = [];
 
@@ -133,23 +139,27 @@ test.describe('HOEOS G12 Unified Commercial Golden-Path Demo Certification Suite
     }
 
     // =========================================================================
-    // STEP 7: RECEIPT GENERATION, PERSISTENCE & PUBLIC RESOLUTION
     // =========================================================================
-    await expect(page.locator('text=8. Scannable QR Receipt')).toBeVisible();
+    // STEP 7: RECEIPT GENERATION (ISOLATED STORAGE ONLY)
+    // =========================================================================
+    await expect(page.locator('text=8. Verification Receipt')).toBeVisible();
 
-    // Find generated Verification ID (VRF-XXXXXXXXXXXX)
-    const vrfLocator = page.locator('text=/VRF-[0-9A-F]{12}/');
-    await expect(vrfLocator.first()).toBeVisible({ timeout: 15000 });
-    const vrfTextMatch = (await vrfLocator.first().textContent())?.match(/VRF-[0-9A-F]{12}/);
-    expect(vrfTextMatch).not.toBeNull();
-    const verificationId = vrfTextMatch![0];
-    console.log(`Generated and persisted Verification ID: ${verificationId}`);
+    let verificationId: string | null = null;
+    if (hasIsolatedReceiptStorage) {
+      const vrfLocator = page.locator('text=/VRF-[0-9A-F]{12}/');
+      await expect(vrfLocator.first()).toBeVisible({ timeout: 15000 });
+      verificationId = (await vrfLocator.first().textContent())?.match(/VRF-[0-9A-F]{12}/)?.[0] || null;
+      expect(verificationId).not.toBeNull();
 
-    // Verify QR code is rendered
-    const qrSvg = page.locator('.bg-white svg');
-    await expect(qrSvg.first()).toBeVisible();
+      const qrSvg = page.locator('.bg-white svg');
+      await expect(qrSvg.first()).toBeVisible();
+      console.log(`Generated isolated verification receipt: ${verificationId}`);
+    } else {
+      await expect(page.locator('text=NO PUBLIC RECEIPT')).toBeVisible();
+      await expect(page.getByText(/No public QR receipt was created/)).toBeVisible();
+      console.log('No isolated Supabase credentials: receipt persistence correctly fails closed.');
+    }
 
-    // Capture screenshot of complete verified demo page
     const evidenceDir = path.resolve('tests/hoeos/four_gates/evidence/g12');
     fs.mkdirSync(evidenceDir, { recursive: true });
     const demoScreenshotPath = path.join(evidenceDir, 'golden_path_demo_results.png');
@@ -157,40 +167,35 @@ test.describe('HOEOS G12 Unified Commercial Golden-Path Demo Certification Suite
     console.log(`Demo results screenshot saved to: ${demoScreenshotPath}`);
 
     // =========================================================================
-    // STEP 8: INDEPENDENT PUBLIC RECEIPT RESOLUTION (/verify/:id)
+    // STEP 8: INDEPENDENT PUBLIC RECEIPT RESOLUTION (ISOLATED STORAGE ONLY)
     // =========================================================================
-    console.log(`Resolving public verification receipt at /verify/${verificationId}...`);
-    await page.goto(`/verify/${verificationId}`);
-    await page.waitForLoadState('networkidle');
+    if (verificationId) {
+      console.log(`Resolving public verification receipt at /verify/${verificationId}...`);
+      await page.goto(`/verify/${verificationId}`);
+      await page.waitForLoadState('networkidle');
 
-    // Assert Public Verification Receipt header
-    await expect(page.locator('text=PUBLIC VERIFICATION RECEIPT')).toBeVisible({ timeout: 20000 });
+      await expect(page.locator('text=PUBLIC VERIFICATION RECEIPT')).toBeVisible({ timeout: 20000 });
+      await expect(page.locator('text=HASH LINKAGE: VALID')).toBeVisible();
+      await expect(page.getByText(verificationId, { exact: true })).toBeVisible();
+      await expect(page.locator('text=Document SHA-256 Hash')).toBeVisible();
+      await expect(page.locator('text=Evidence Snapshot Hash')).toBeVisible();
+      await expect(page.locator('text=Overall Similarity')).toBeVisible();
 
-    // Assert INTEGRITY: VALID badge
-    await expect(page.locator('text=INTEGRITY: VALID')).toBeVisible();
+      const receiptScreenshotPath = path.join(evidenceDir, 'golden_path_public_receipt.png');
+      await page.screenshot({ path: receiptScreenshotPath, fullPage: true });
+      console.log(`Public receipt screenshot saved to: ${receiptScreenshotPath}`);
 
-    // Assert exact Verification ID is displayed
-    await expect(page.getByText(verificationId, { exact: true })).toBeVisible();
-
-    // Assert Cryptographic Hash & Score elements are rendered
-    await expect(page.locator('text=Document SHA-256 Hash')).toBeVisible();
-    await expect(page.locator('text=Evidence Snapshot Hash')).toBeVisible();
-    await expect(page.locator('text=Overall Similarity')).toBeVisible();
-
-    // Capture screenshot of public verification receipt
-    const receiptScreenshotPath = path.join(evidenceDir, 'golden_path_public_receipt.png');
-    await page.screenshot({ path: receiptScreenshotPath, fullPage: true });
-    console.log(`Public receipt screenshot saved to: ${receiptScreenshotPath}`);
-
-    // =========================================================================
-    // STEP 9: FAILURE BOUNDARY (DETERMINISTIC NOT_FOUND RESOLUTION)
-    // =========================================================================
-    console.log('Testing public resolution failure boundary with non-existent ID...');
-    await page.goto('/verify/VRF-999999999999');
-    await page.waitForLoadState('networkidle');
-
-    await expect(page.locator('text=Public Verification Failed')).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('text=STATUS: NOT_FOUND')).toBeVisible();
-    console.log('Deterministic failure boundary verified.');
+      // =======================================================================
+      // STEP 9: FAILURE BOUNDARY (DETERMINISTIC NOT_FOUND RESOLUTION)
+      // =======================================================================
+      console.log('Testing public resolution failure boundary with non-existent ID...');
+      await page.goto('/verify/VRF-999999999999');
+      await page.waitForLoadState('networkidle');
+      await expect(page.locator('text=Public Verification Failed')).toBeVisible({ timeout: 15000 });
+      await expect(page.locator('text=STATUS: NOT_FOUND')).toBeVisible();
+      console.log('Deterministic failure boundary verified.');
+    } else {
+      console.log('Public receipt resolution is deferred until an isolated Supabase test project is configured.');
+    }
   });
 });
