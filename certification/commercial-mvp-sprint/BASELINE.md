@@ -97,15 +97,15 @@ No GitHub Actions workflow was found in the inspected branch. A green status can
 | Build server runtime, typecheck, Vitest, standalone scripts, production build | PASS (GitHub Actions run 43574738657) |
 | Production dependency audit (`npm audit --omit=dev --audit-level=moderate`) | PASS: 0 production advisories |
 | Production untouched | PASS |
-| P0 persistence trust boundary | FAIL / BLOCKER |
-| Browser DOCX acceptance portability | PASS: repository-pinned fixture; runtime run pending |
+| P0 persistence trust boundary | PARTIAL: server-only execution and service-role requirement implemented; isolated receipt persistence and public verification runtime untested |
+| Browser DOCX acceptance portability | PASS: repository-pinned fixture; real DOCX browser run PASS |
 | CI workflow | PASS: branch-scoped HOEOS workflow added |
 
-**G0 verdict: PASS for source baseline, typecheck, unit tests, standalone HOEOS assertions, production build and production dependency audit.** G1/G5 browser runtime remains pending. The commercial demo must not describe persisted receipts as independently server-certified until an isolated Supabase positive-path test is completed.
+**G0/G1 verdict: PASS for baseline, typecheck, unit tests, 33 standalone HOEOS assertions, production build, production dependency audit, real DOCX/PDF browser journeys, correction/re-verification and no-false-positive evidence consistency. G4 highlight rendering also passes with a controlled UI fixture. Positive live-provider match generation and isolated receipt persistence remain unproven. This is a demo-MVP candidate, not production certification.
 
 ## 8. G0 GitHub Actions execution
 
-Run: https://github.com/mfventures01-maker/Gradifi/actions/runs/43574738657
+Final run: https://github.com/mfventures01-maker/Gradifi/actions/runs/43577350567
 
 The G0 baseline job completed successfully:
 - Server runtime compilation: PASS.
@@ -116,7 +116,7 @@ The G0 baseline job completed successfully:
 - Production dependency audit: PASS with zero production advisories.
 - The CI job committed the validated dependency lockfile update to the sprint branch at commit `df56d4842067180c780b1729275dcb6bbd5d53e9`.
 
-The first browser job in that run failed before Playwright execution because it checked out the workflow event SHA, which predated the lockfile commit, and `npm ci` correctly rejected the package/lock mismatch. The workflow has since been corrected to check out the latest sprint branch head for browser validation. The browser job is being expanded to cover both DOCX and PDF and can use only explicitly named isolated Supabase secrets. It refuses the known production project ref `ehkmfnaqkdgkjmdxxbwj`.
+The first browser attempt exposed stale fixture assertions and an unsuitable positive-match expectation. The DOCX filename assertion was aligned to the committed fixture name; the PDF fixture is now a no-false-positive control; and the G4 positive renderer test uses an explicitly labelled deterministic UI fixture. The final browser job checks out the latest sprint branch head, uses zero automatic Playwright retries, and refuses the known production project ref `ehkmfnaqkdgkjmdxxbwj`.
 
 No production Supabase request, write, migration, deployment or secret access was performed.
 
@@ -126,7 +126,9 @@ No production Supabase request, write, migration, deployment or secret access wa
 - **P0-B — anonymous persistence fallback:** repaired in source. Trusted persistence requires `SUPABASE_SERVICE_ROLE_KEY`; the legacy persistence service refuses browser-side writes and refuses anonymous-key fallback in Node. Negative-control tests cover both persistence boundaries.
 - **P0-C — public receipt privacy and assurance:** new receipts use a metadata-only envelope. Submitted text, canonical raw text and matched student passages are excluded. Public wording now claims hash linkage only, not an immutable or independently recomputed certificate. A digital signature and independent public evidence recomputation remain outside this MVP.
 - **Correction workflow:** editable extracted text and a fresh server-side re-verification action are implemented. The DOCX browser gate checks that the document hash changes on re-run.
-- **G1/G5 runtime:** browser execution is pending in the corrected workflow. The workflow supports optional `VERIFY_ISOLATED_SUPABASE_*` secrets for positive receipt tests and blocks the known production project ref. With no isolated secrets, the expected behavior is a real server result with `NO PUBLIC RECEIPT`.
+- **G1/G5 runtime:** real DOCX and PDF browser journeys passed through `/api/verify/run`; both produced server-computed results and no public receipt because no isolated Supabase credentials were supplied. The current real-file fixtures produced zero deterministic findings, and the PDF test confirmed zero findings means zero highlights. Positive live-provider finding generation remains unproven.
+- **G4 UI contract:** passed in a real browser with two controlled deterministic findings. Playwright intercepted `/api/verify/run` with `G4_POSITIVE_FIXTURE`; exact highlighted text, source IDs, finding IDs and canonical offsets matched. This is a UI rendering certification only, not a server/provider runtime PASS.
+- **Dependency audit:** production dependency audit is 0 advisories. Full development-tool audit remains 15 advisories (8 moderate, 5 high, 2 critical), concentrated in `vitest@2.1.9`/`tinypool` and `@vercel/node@15.0.0`; major upgrades were deferred for compatibility validation.
 - **Production:** no production Supabase requests, writes, migration execution, deployments or secret access have been performed.
 
 ## 10. Source-of-truth branch finding
@@ -134,3 +136,24 @@ No production Supabase request, write, migration, deployment or secret access wa
 A direct GitHub comparison found that `clean-deploy` and `main` are divergent: `clean-deploy` is 151 commits ahead and 1 commit behind `main`. The current `main` branch does not contain the Verify application paths used by this sprint, including `src/services/verify/verifyCoreService.ts`, `src/services/verify/deterministicEngine.ts`, `src/pages/verify/GradifiVerifyDemoPage.tsx`, or the Verify persistence service. Its `package.json` is also a much smaller, different baseline.
 
 **Decision:** the commercial Verify sprint remains based on `clean-deploy`, the branch that actually contains the G5/Verify implementation and forensic evidence. Do not merge this sprint branch directly into `main`. A separate branch-lineage reconciliation is required before any promotion to `main`; merging the current sprint branch as-is would import the 151-commit divergence.
+
+## 11. Final sprint acceptance evidence
+
+Final GitHub Actions run: https://github.com/mfventures01-maker/Gradifi/actions/runs/43577350567
+
+| Gate | Result | Evidence boundary |
+|---|---|---|
+| G0 server build, typecheck, Vitest, standalone assertions, production build | PASS | GitHub Actions runtime |
+| Production dependency audit | PASS: 0 advisories | `npm audit --omit=dev` |
+| Full development-tool audit | DEFERRED: 15 advisories | 8 moderate, 5 high, 2 critical; major upgrades not forced |
+| G1 real DOCX ingestion | PASS | Repository fixture; browser extraction and server-run verification |
+| G1 correction and re-verification | PASS | Edited text re-submitted; document hash changed |
+| PDF ingestion and no-false-positive control | PASS | Real PDF; zero findings produced zero highlight marks |
+| G4 positive highlight rendering | PASS | Controlled UI fixture only; two findings with exact source IDs and canonical offsets |
+| Positive live-provider match generation | NOT PROVEN | Real DOCX/PDF fixtures returned no deterministic findings |
+| Isolated Supabase receipt persistence/public lookup | NOT RUN | No isolated Supabase credentials supplied |
+| Production Supabase untouched | PASS | No production requests, writes, migrations, deployments or secret access |
+
+The browser evidence artifact is attached to the final Actions run as `verify-g1-docx-browser-evidence`. It contains the DOCX/PDF screenshots, runtime log and G4 fixture screenshot/assertion files.
+
+**Final classification:** commercial demo-MVP candidate. The document ingestion, server-side execution, correction/re-verification and evidence UI paths are demonstrable. Do not market positive live plagiarism detection, persistent public QR receipts, independent certificate attestation or production readiness as certified until the open runtime gates are closed.
