@@ -10,7 +10,7 @@ import { EvidenceEngineResult, AnalysisResultEnvelope } from '../types.js';
 
 export interface PersistenceServerRequestPayload {
   result: EvidenceEngineResult;
-  envelope?: AnalysisResultEnvelope;
+  envelope?: Record<string, unknown>;
 }
 
 export async function handlePersistenceServerRequest(
@@ -33,7 +33,7 @@ export async function handlePersistenceServerRequest(
 
   const recordPayload = VerificationPersistenceService.buildPersistenceRecord(
     payload.result,
-    payload.envelope
+    payload.envelope as unknown as AnalysisResultEnvelope
   );
 
   if (
