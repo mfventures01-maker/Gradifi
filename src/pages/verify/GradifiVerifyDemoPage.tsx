@@ -393,7 +393,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
               Target ID: <span className="text-blue-400 font-bold">{routeParamId.trim().toUpperCase()}</span>
             </p>
             <p className="text-xs text-slate-500">
-              Querying authoritative public system of record and verifying cryptographic hash grounding...
+              Retrieving the public record and checking its document/evidence hash linkage...
             </p>
           </div>
         </div>
@@ -429,7 +429,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                       PUBLIC VERIFICATION RECEIPT
                     </h1>
                     <p className="text-xs text-slate-400">
-                      Authoritative Certificate Retrieved from Public System of Record
+                      Receipt retrieved; document and evidence hash linkage checked
                     </p>
                   </div>
                 </div>
@@ -439,7 +439,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black tracking-wide bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  INTEGRITY: VALID
+                  HASH LINKAGE: VALID
                 </span>
               </div>
             </div>
