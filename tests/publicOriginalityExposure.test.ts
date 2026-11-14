@@ -84,12 +84,12 @@ async function runPublicOriginalityExposureTests() {
   // 4. Certified Engine & Policy Execution Verification
   console.log('\n4. Certified G3/G5 Engine Reference:');
   assert(
-    verifyDemoContent.includes('verifyCoreService'),
-    'GradifiVerifyDemoPage references certified verifyCoreService'
+    verifyDemoContent.includes("fetch('/api/verify/run'"),
+    'GradifiVerifyDemoPage sends document text to the trusted server-side run endpoint'
   );
   assert(
-    verifyDemoContent.includes('executeVerifyRun'),
-    'GradifiVerifyDemoPage invokes executeVerifyRun()'
+    !verifyDemoContent.includes('verifyCoreService') && !verifyDemoContent.includes('executeVerifyRun'),
+    'Browser page does not execute or accept client-authored authoritative verification results'
   );
 
   // 5. Zero Math.random() in Certified Verify Pipeline
