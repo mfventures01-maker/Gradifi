@@ -1,7 +1,7 @@
 /**
  * GRADIFI VERIFY - SERVER-SIDE PERSISTENCE HANDLER
- * Trusted server execution boundary for persisting certified verification records.
- * HOEOS Standard: Strict RLS enforcement, Service Role / Server Key Authority, Zero Client Key Exposure.
+ * Trusted server execution boundary for persisting server-computed verification records.
+ * Never fall back to an anonymous key for privileged writes.
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -17,24 +17,33 @@ export async function handlePersistenceServerRequest(
   payload: PersistenceServerRequestPayload
 ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
   if (!payload || !payload.result) {
-    throw new Error('Missing certified verification result in persistence payload');
+    throw new Error('Missing server-computed verification result');
   }
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Supabase server configuration unavailable');
+    throw new Error('Trusted receipt storage is not configured');
   }
 
-  // Create trusted server-side Supabase client using service_role authority
   const serverSupabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
 
-  const recordPayload = VerificationPersistenceService.buildPersistenceRecord(payload.result, payload.envelope);
+  const recordPayload = VerificationPersistenceService.buildPersistenceRecord(
+    payload.result,
+    payload.envelope
+  );
 
-  // 1. Check for existing record by verification_id
+  if (
+    !Number.isFinite(recordPayload.overall_similarity) ||
+    recordPayload.overall_similarity < 0 ||
+    recordPayload.overall_similarity > 100
+  ) {
+    throw new Error('Server-computed similarity score is outside the accepted range');
+  }
+
   const { data: existing, error: fetchError } = await serverSupabase
     .from('public_verification_records')
     .select('*')
@@ -42,7 +51,7 @@ export async function handlePersistenceServerRequest(
     .maybeSingle();
 
   if (fetchError && fetchError.code !== 'PGRST116') {
-    console.warn('Supabase server query error:', fetchError.message);
+    throw new Error('Receipt storage lookup failed');
   }
 
   if (existing) {
@@ -61,7 +70,6 @@ export async function handlePersistenceServerRequest(
     };
   }
 
-  // 2. Trusted Insert with service_role authority
   const { data: inserted, error: insertError } = await serverSupabase
     .from('public_verification_records')
     .insert(recordPayload)
@@ -70,13 +78,14 @@ export async function handlePersistenceServerRequest(
 
   if (insertError) {
     if (insertError.code === '23505') {
-      const { data: reFetched } = await serverSupabase
+      const { data: reFetched, error: reFetchError } = await serverSupabase
         .from('public_verification_records')
         .select('*')
         .eq('verification_id', recordPayload.verification_id)
         .single();
 
       if (
+        !reFetchError &&
         reFetched &&
         reFetched.document_hash === recordPayload.document_hash &&
         reFetched.evidence_hash === recordPayload.evidence_hash
@@ -87,10 +96,10 @@ export async function handlePersistenceServerRequest(
         };
       }
 
-      throw new Error(`Conflicting verification record created concurrently for ID '${recordPayload.verification_id}'`);
+      throw new Error('Conflicting verification record created concurrently');
     }
 
-    throw new Error(`Failed to persist verification record on server: ${insertError.message}`);
+    throw new Error('Trusted receipt persistence failed');
   }
 
   return {
