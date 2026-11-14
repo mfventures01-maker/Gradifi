@@ -4,7 +4,7 @@ import path from 'path';
 
 test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
   test('executes real commercial upload, server verification, correction and re-check', async ({ page }) => {
-    test.setTimeout(180000);
+    test.setTimeout(90000);
     const hasIsolatedReceiptStorage = Boolean(
       process.env.VERIFY_ISOLATED_SUPABASE_URL &&
       process.env.VERIFY_ISOLATED_SUPABASE_ANON_KEY &&
