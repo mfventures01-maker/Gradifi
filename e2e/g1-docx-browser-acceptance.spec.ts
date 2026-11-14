@@ -62,7 +62,7 @@ test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
     console.log(`Extraction completed in ${extractionDurationMs}ms`);
 
     // 6. Verify File Info Badge is populated
-    await expect(page.locator('text=DIGITAL THERMOMETER real.docx')).toBeVisible();
+    await expect(page.locator('text=DIGITAL_THERMOMETER_real.docx')).toBeVisible();
     await expect(page.locator('text=Method: docx_xml_extractor')).toBeVisible();
 
     // 7. Verify Canonical Text in document textarea
