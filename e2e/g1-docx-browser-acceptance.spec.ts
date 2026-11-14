@@ -93,6 +93,11 @@ test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
     // 10. Wait for verification completion / evidence viewer or results
     await page.waitForSelector('text=3. Google Books Evidence', { timeout: 30000 });
     await expect(page.locator('text=Canonical Document Evidence Payload')).toBeVisible();
+
+    // CI has no Supabase service-role secret by design. The server-computed
+    // result must remain visible without inventing a persisted public receipt.
+    await expect(page.getByText('NO PUBLIC RECEIPT')).toBeVisible();
+    await expect(page.getByText(/No public QR receipt was created/)).toBeVisible();
     const verificationEndTime = Date.now();
     const totalElapsedMs = verificationEndTime - uploadStartTime;
     console.log(`Full verification completed in ${totalElapsedMs}ms`);
