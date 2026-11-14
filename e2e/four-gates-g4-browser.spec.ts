@@ -60,7 +60,7 @@ test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
 
     // 6. Retrieve attributes from primary mark element
     const primaryMark = markElements.first();
-    const markText = (await primaryMark.textContent()) || '';
+    const markText = (await primaryMark.locator('[data-highlight-text]').textContent()) || '';
     const sourceId = await primaryMark.getAttribute('data-source-id');
     const findingId = await primaryMark.getAttribute('data-finding-id');
     const startOffset = Number(await primaryMark.getAttribute('data-start-offset'));
