@@ -97,13 +97,30 @@ jobs:
           retention-days: 14
 
   docx-browser:
-    name: G1/G5 Real DOCX Browser Golden Path
+    name: G1/G5 DOCX and PDF Browser Golden Paths
     needs: baseline
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+    env:
+      VERIFY_ISOLATED_SUPABASE_URL: ${{ secrets.VERIFY_ISOLATED_SUPABASE_URL }}
+      VERIFY_ISOLATED_SUPABASE_ANON_KEY: ${{ secrets.VERIFY_ISOLATED_SUPABASE_ANON_KEY }}
+      VERIFY_ISOLATED_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.VERIFY_ISOLATED_SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_URL: ${{ secrets.VERIFY_ISOLATED_SUPABASE_URL }}
+      VITE_SUPABASE_URL: ${{ secrets.VERIFY_ISOLATED_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.VERIFY_ISOLATED_SUPABASE_SERVICE_ROLE_KEY }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VERIFY_ISOLATED_SUPABASE_ANON_KEY }}
     steps:
-      - name: Checkout sprint branch
+      - name: Checkout validated sprint branch head
         uses: actions/checkout@v4
+        with:
+          ref: sprint/verify-commercial-mvp-10h
+
+      - name: Refuse production Supabase target
+        run: |
+          if [[ -n "$VERIFY_ISOLATED_SUPABASE_URL" && "$VERIFY_ISOLATED_SUPABASE_URL" == *"ehkmfnaqkdgkjmdxxbwj"* ]]; then
+            echo "Refusing to run persistence tests against the production Supabase project."
+            exit 1
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -117,8 +134,8 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run real DOCX browser verification
-        run: npx playwright test e2e/g1-docx-browser-acceptance.spec.ts --reporter=line
+      - name: Run real DOCX and PDF browser verification
+        run: npx playwright test e2e/g1-docx-browser-acceptance.spec.ts e2e/golden-path-demo-e2e.spec.ts --reporter=line
 
       - name: Preserve browser evidence
         if: always()
@@ -127,6 +144,7 @@ jobs:
           name: verify-g1-docx-browser-evidence
           path: |
             tests/hoeos/g2/evidence/g1_browser/
+            tests/hoeos/four_gates/evidence/g12/
             test-results/
             playwright-report/
           if-no-files-found: ignore
