@@ -13,13 +13,6 @@ export default defineConfig({
       '**/node_modules/**',
       '**/*.temp.test.ts',
       '**/*.bak',
-
-      // Script-style files: assertions pass when run standalone via `npx tsx`,
-      // but the file uses an IIFE instead of vitest's describe/it. Vitest
-      // reports "No test suite found" for each. Excluding them from the
-      // default run keeps their evidence available (they remain runnable
-      // individually) without making the suite result inaccurate.
-      'tests/g1_docx_fidelity.test.ts',
       'tests/g2_repairs_regression.test.ts',
       'tests/g4-offset-invariants.test.ts',
       'tests/correction/correctionPanel.test.ts',
