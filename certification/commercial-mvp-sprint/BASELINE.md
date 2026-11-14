@@ -93,11 +93,29 @@ No GitHub Actions workflow was found in the inspected branch. A green status can
 | Sprint branch created from Verify product baseline | PASS |
 | Baseline commit and branch divergence recorded | PASS |
 | Existing build/test commands identified | PASS |
-| Current working-tree status captured | BLOCKED: GitHub source API cannot expose local status |
-| Build/typecheck/test rerun on sprint HEAD | NOT RUN |
+| Current local working-tree status captured | BLOCKED: GitHub source API cannot expose a local checkout status |
+| Build server runtime, typecheck, Vitest, standalone scripts, production build | PASS (GitHub Actions run 43574738657) |
+| Production dependency audit (`npm audit --omit=dev --audit-level=moderate`) | PASS: 0 production advisories |
 | Production untouched | PASS |
 | P0 persistence trust boundary | FAIL / BLOCKER |
-| Browser DOCX acceptance portability | FAIL / BLOCKER |
-| CI workflow | MISSING / BLOCKER |
+| Browser DOCX acceptance portability | PASS: repository-pinned fixture; runtime run pending |
+| CI workflow | PASS: branch-scoped HOEOS workflow added |
 
-**G0 verdict: BASELINE INSPECTED, NOT YET RUNTIME CERTIFIED.** The sprint may proceed with source-only repairs and isolated tests. The commercial demo must not describe persisted receipts as independently server-certified until P0-A through P0-C are closed and runtime-tested.
+**G0 verdict: PASS for source baseline, typecheck, unit tests, standalone HOEOS assertions, production build and production dependency audit.** G1/G5 browser runtime remains pending. The commercial demo must not describe persisted receipts as independently server-certified until an isolated Supabase positive-path test is completed.
+
+## 8. G0 GitHub Actions execution
+
+Run: https://github.com/mfventures01-maker/Gradifi/actions/runs/43574738657
+
+The G0 baseline job completed successfully:
+- Server runtime compilation: PASS.
+- Client and server typecheck: PASS.
+- Vitest suite: PASS.
+- Standalone HOEOS assertion scripts: PASS (33 scripts).
+- Production build: PASS.
+- Production dependency audit: PASS with zero production advisories.
+- The CI job committed the validated dependency lockfile update to the sprint branch at commit `df56d4842067180c780b1729275dcb6bbd5d53e9`.
+
+The first browser job in that run failed before Playwright execution because it checked out the workflow event SHA, which predated the lockfile commit, and `npm ci` correctly rejected the package/lock mismatch. The workflow has since been corrected to check out the latest sprint branch head for browser validation. The browser job is being expanded to cover both DOCX and PDF and can use only explicitly named isolated Supabase secrets. It refuses the known production project ref `ehkmfnaqkdgkjmdxxbwj`.
+
+No production Supabase request, write, migration, deployment or secret access was performed.
