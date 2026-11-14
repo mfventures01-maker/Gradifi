@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { identityProvisioningService } from '../../services/identityProvisioningService';
 import { 
   Upload, 
   Download, 
@@ -14,6 +14,50 @@ import {
   FileSpreadsheet,
   X
 } from 'lucide-react';
+
+function parseCsvRows(input: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = '';
+  let quoted = false;
+  for (let i = 0; i < input.length; i += 1) {
+    const char = input[i];
+    if (char === '"') {
+      if (quoted && input[i + 1] === '"') {
+        field += '"';
+        i += 1;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (char === ',' && !quoted) {
+      row.push(field.trim());
+      field = '';
+    } else if ((char === '\n' || char === '\r') && !quoted) {
+      if (char === '\r' && input[i + 1] === '\n') i += 1;
+      row.push(field.trim());
+      if (row.some((value) => value.length > 0)) rows.push(row);
+      row = [];
+      field = '';
+    } else {
+      field += char;
+    }
+  }
+  if (quoted) throw new Error('CSV contains an unterminated quoted field.');
+  row.push(field.trim());
+  if (row.some((value) => value.length > 0)) rows.push(row);
+  return rows;
+}
+
+function rowsToObjects(rows: string[][]): Array<Record<string, string>> {
+  if (rows.length < 2) throw new Error('CSV must contain a header and at least one data row.');
+  const headers = rows[0].map((header) => header.trim().toLowerCase());
+  if (new Set(headers).size !== headers.length) throw new Error('CSV contains duplicate column headers.');
+  return rows.slice(1).map((values) => {
+    const row: Record<string, string> = {};
+    headers.forEach((header, index) => { row[header] = values[index] || ''; });
+    return row;
+  });
+}
 
 interface BulkStudentImportProps {
   schoolId?: string;
@@ -86,15 +130,13 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
     reader.onload = (event) => {
       try {
         const text = event.target?.result as string;
-        const lines = text.split('\n').filter(line => line.trim());
-        if (lines.length < 2) {
-          setError('File is empty or has no data rows');
+        const parsedRows = parseCsvRows(text);
+        if (parsedRows.length - 1 > 500) {
+          setError(`File has ${parsedRows.length - 1} rows. Maximum allowed is 500 students per import.`);
           return;
         }
-
-        // Parse headers
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-        const requiredHeaders = ['first_name', 'last_name', 'class_name'];
+        const headers = parsedRows[0].map((header) => header.trim().toLowerCase());
+        const requiredHeaders = ['first_name', 'last_name', 'gender', 'class_name'];
         const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
         
         if (missingHeaders.length > 0) {
@@ -103,22 +145,10 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
         }
 
         // Parse data rows (limit to 5 for preview)
-        const dataRows = lines.slice(1, 6).map(line => {
-          const values = line.split(',').map(v => v.trim());
-          const row: any = {};
-          headers.forEach((h, i) => {
-            row[h] = values[i] || '';
-          });
-          return row;
-        });
+        const dataRows = rowsToObjects(parsedRows).slice(0, 5);
 
         setPreviewData(dataRows);
 
-        // Check total rows
-        const totalRows = lines.length - 1;
-        if (totalRows > 500) {
-          setError(`File has ${totalRows} rows. Maximum allowed is 500 students per import.`);
-        }
       } catch (err) {
         setError('Failed to parse file. Please ensure it is a valid CSV file.');
       }
@@ -144,77 +174,78 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
         reader.readAsText(file);
       });
 
-      const lines = fileContent.split('\n').filter(line => line.trim());
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-      
-      // Parse all data rows
-      const students = lines.slice(1).map(line => {
-        const values = line.split(',').map(v => v.trim());
-        const row: any = {};
-        headers.forEach((h, i) => {
-          row[h] = values[i] || '';
-        });
-        return row;
-      }).filter(s => s.first_name && s.last_name && s.class_name);
-
-      if (students.length === 0) {
-        setError('No valid student data found');
-        setLoading(false);
-        return;
+      const parsedRows = parseCsvRows(fileContent);
+      const students = rowsToObjects(parsedRows);
+      if (students.length > 500) throw new Error('Maximum 500 students per import.');
+      const invalidRow = students.findIndex((student) =>
+        !student.first_name?.trim() || !student.last_name?.trim()
+        || !student.class_name?.trim()
+        || !['male', 'female'].includes(String(student.gender || '').trim().toLowerCase())
+      );
+      if (invalidRow >= 0) {
+        throw new Error(`Row ${invalidRow + 2}: first name, last name, valid gender and class name are required. No rows were submitted.`);
       }
 
-      // Call RPC with fallback for offline/demo mode
-      let resultData: any = null;
-      try {
-        const { data, error } = await supabase.rpc('bulk_enroll_students' as any, {
-          p_students: students,
-          p_school_id: schoolId || null,
-          p_institution_id: institutionId || null
-        });
-
-        if (error || !data) {
-          throw error || new Error('No data returned from RPC');
+      if (!schoolId) throw new Error('A verified school ID is required before importing students.');
+      const normalizedStudents = students.map((student: any, index: number) => {
+        const gender = String(student.gender || '').trim().toLowerCase();
+        if (gender !== 'male' && gender !== 'female') {
+          throw new Error(`Row ${index + 2}: gender must be Male or Female.`);
         }
-        resultData = data;
-      } catch (rpcErr: any) {
-        console.warn('RPC bulk_enroll_students fallback execution:', rpcErr?.message || rpcErr);
-        const results: ImportResult[] = students.map((s, idx) => {
-          if (s.class_name && s.class_name.toLowerCase().includes('invalid')) {
-            return {
-              status: 'failed',
-              first_name: s.first_name,
-              last_name: s.last_name,
-              class: s.class_name,
-              error: `Class "${s.class_name}" not found`
-            };
-          }
-          return {
-            status: 'success',
-            student_id: `std_bulk_${Date.now()}_${idx}`,
-            student_number: `GRD/2026/${1000 + idx}`,
-            pin: String(1000 + Math.floor(Math.random() * 9000)),
-            first_name: s.first_name,
-            last_name: s.last_name,
-            class: s.class_name
-          };
-        });
-
-        const successCount = results.filter(r => r.status === 'success').length;
-        const failedCount = results.filter(r => r.status === 'failed').length;
-
-        resultData = {
-          total_submitted: students.length,
-          success_count: successCount,
-          failed_count: failedCount,
-          results: results
+        return {
+          row_id: `row-${index + 1}`,
+          first_name: String(student.first_name).trim(),
+          last_name: String(student.last_name).trim(),
+          gender: gender as 'male' | 'female',
+          date_of_birth: student.date_of_birth ? String(student.date_of_birth).trim() : null,
+          class_name: String(student.class_name).trim(),
         };
-      }
+      });
 
-      setSummary({
+      const resultData = await identityProvisioningService.bulkProvisionStudents({
+        operation: 'bulk_students',
+        request_id: crypto.randomUUID(),
+        school_id: schoolId,
+        students: normalizedStudents,
+      });
+
+      const results: ImportResult[] = resultData.results.map((row) => {
+        const source = normalizedStudents.find((student) => student.row_id === row.row_id);
+        if (!source) {
+          return { status: 'failed', error: 'Gateway returned an unknown row identifier.' };
+        }
+        if (!row.success || !row.credential) {
+          return {
+            status: 'failed',
+            first_name: source.first_name,
+            last_name: source.last_name,
+            class: source.class_name,
+            error: row.error_message || row.error_code || 'Provisioning failed.',
+          };
+        }
+        return {
+          status: 'success',
+          student_id: row.credential.actor_id,
+          student_number: row.credential.login_identifier,
+          pin: row.credential.temporary_pin,
+          first_name: source.first_name,
+          last_name: source.last_name,
+          class: source.class_name,
+        };
+      });
+
+      const summaryData: ImportSummary = {
         total_submitted: resultData.total_submitted,
         success_count: resultData.success_count,
         failed_count: resultData.failed_count,
-        results: resultData.results || []
+        results,
+      };
+
+      setSummary({
+        total_submitted: summaryData.total_submitted,
+        success_count: summaryData.success_count,
+        failed_count: summaryData.failed_count,
+        results: summaryData.results
       });
 
       if (onSuccess && resultData.success_count > 0) onSuccess();
@@ -272,6 +303,22 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
             </p>
           </div>
         </div>
+
+        {summary.results.some((r) => r.status === 'success') && (
+          <div className="mb-4 max-h-64 overflow-y-auto">
+            <p className="text-xs font-medium text-emerald-700 mb-2">Provisioned credentials (display once and distribute securely):</p>
+            <div className="space-y-2">
+              {summary.results.filter((r) => r.status === 'success').map((result, index) => (
+                <div key={result.student_id || index} className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs">
+                  <p className="font-semibold text-slate-800">{result.first_name} {result.last_name} · {result.class}</p>
+                  <p>Student number: <span className="font-mono">{result.student_number}</span></p>
+                  <p>Temporary PIN: <span className="font-mono font-bold">{result.pin}</span></p>
+                  <p className="text-amber-700">Must change PIN at first login.</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {summary.results.some((r: any) => r.status === 'failed') && (
           <div className="mb-4 max-h-48 overflow-y-auto">

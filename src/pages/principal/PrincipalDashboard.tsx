@@ -112,7 +112,7 @@ export const PrincipalDashboard: React.FC = () => {
     {
       label: 'Exam Schedule',
       icon: Calendar,
-      onClick: () => navigate('/cbt'),
+      onClick: () => navigate('/cbt/manager'),
     },
   ];
 
