@@ -5,7 +5,7 @@ import crypto from 'crypto';
 
 test.describe('HOEOS G12 Unified Commercial Golden-Path Demo Certification Suite', () => {
   test('executes complete 7-step commercial verification journey: real-PDF upload -> canonical extraction -> federated verification -> passage highlighting -> correction guidance -> receipt persistence -> public resolution', async ({ page }) => {
-    test.setTimeout(180000);
+    test.setTimeout(90000);
 
     const hasIsolatedReceiptStorage = Boolean(
       process.env.VERIFY_ISOLATED_SUPABASE_URL &&
