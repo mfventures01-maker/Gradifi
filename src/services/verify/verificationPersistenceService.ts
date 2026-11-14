@@ -4,7 +4,6 @@
  */
 
 import { EvidenceEngineResult, AnalysisResultEnvelope } from './types.js';
-import { supabase } from '../../lib/supabase.js';
 
 export interface PublicVerificationRecord {
   id?: string;
@@ -116,43 +115,33 @@ export class VerificationPersistenceService {
     result: EvidenceEngineResult,
     envelope?: AnalysisResultEnvelope
   ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
-    const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope);
-
-    // Browser context: Delegate to trusted server endpoint /api/verify/persist
     if (typeof window !== 'undefined') {
-      const response = await fetch('/api/verify/persist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ result, envelope })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const msg = errorData.error || `Server returned HTTP ${response.status}`;
-        if (msg.includes('Conflicting verification record')) {
-          throw new VerificationConflictError(msg);
-        }
-        throw new Error(msg);
-      }
-
-      const resData = await response.json();
-      return resData;
+      throw new VerificationValidationError(
+        'Client-authored persistence is disabled. Use the trusted /api/verify/run endpoint.'
+      );
     }
 
-    // Node / Server Context: Use service role client if process.env.SUPABASE_SERVICE_ROLE_KEY is present
-    const getEnvVar = (key: string) => (typeof process !== 'undefined' && process.env ? process.env[key] : undefined);
+    if (!envelope) {
+      throw new VerificationValidationError(
+        'A metadata-only public receipt envelope is required for persistence.'
+      );
+    }
+
+    const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope);
+    const getEnvVar = (key: string) =>
+      typeof process !== 'undefined' && process.env ? process.env[key] : undefined;
     const serviceRoleKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY');
-    const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
+    const supabaseUrl = getEnvVar('SUPABASE_URL') || getEnvVar('VITE_SUPABASE_URL');
 
-    let client = supabase;
-    if (serviceRoleKey && supabaseUrl) {
-      const { createClient } = await import('@supabase/supabase-js');
-      client = createClient(supabaseUrl, serviceRoleKey, {
-        auth: { persistSession: false, autoRefreshToken: false }
-      });
+    if (!serviceRoleKey || !supabaseUrl) {
+      throw new VerificationValidationError('Trusted receipt storage is not configured.');
     }
 
-    // 1. Check for existing record by verification_id
+    const { createClient } = await import('@supabase/supabase-js');
+    const client = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+
     const { data: existing, error: fetchError } = await client
       .from('public_verification_records')
       .select('*')
@@ -160,28 +149,25 @@ export class VerificationPersistenceService {
       .maybeSingle();
 
     if (fetchError && fetchError.code !== 'PGRST116') {
-      console.warn('Supabase query returned error (or offline mode):', fetchError.message);
+      throw new Error('Receipt storage lookup failed.');
     }
 
     if (existing) {
-      // 2. Conflict Check: Verify hash immutability
       if (
         existing.document_hash !== recordPayload.document_hash ||
         existing.evidence_hash !== recordPayload.evidence_hash
       ) {
         throw new VerificationConflictError(
-          `Conflicting verification record exists for ID '${recordPayload.verification_id}'. Existing documentHash: '${existing.document_hash}', New: '${recordPayload.document_hash}'`
+          `Conflicting verification record exists for ID '${recordPayload.verification_id}'.`
         );
       }
 
-      // Idempotent success: return existing record
       return {
         record: existing as PublicVerificationRecord,
-        status: 'IDEMPOTENT_EXISTS',
+        status: 'IDEMPOTENT_EXISTS'
       };
     }
 
-    // 3. Insert new certified record with server authority
     const { data: inserted, error: insertError } = await client
       .from('public_verification_records')
       .insert(recordPayload)
@@ -190,34 +176,35 @@ export class VerificationPersistenceService {
 
     if (insertError) {
       if (insertError.code === '23505') {
-        const { data: reFetched } = await client
+        const { data: reFetched, error: reFetchError } = await client
           .from('public_verification_records')
           .select('*')
           .eq('verification_id', recordPayload.verification_id)
           .single();
 
         if (
+          !reFetchError &&
           reFetched &&
           reFetched.document_hash === recordPayload.document_hash &&
           reFetched.evidence_hash === recordPayload.evidence_hash
         ) {
           return {
             record: reFetched as PublicVerificationRecord,
-            status: 'IDEMPOTENT_EXISTS',
+            status: 'IDEMPOTENT_EXISTS'
           };
         }
 
         throw new VerificationConflictError(
-          `Conflicting verification record created concurrently for ID '${recordPayload.verification_id}'`
+          `Conflicting verification record created concurrently for ID '${recordPayload.verification_id}'.`
         );
       }
 
-      throw new Error(`Failed to persist verification record: ${insertError.message}`);
+      throw new Error('Trusted receipt persistence failed.');
     }
 
     return {
       record: inserted as PublicVerificationRecord,
-      status: 'CREATED',
+      status: 'CREATED'
     };
   }
 }
