@@ -109,3 +109,21 @@ No receipt rows were modified. Synthetic insert was rolled back. No other tables
 If rollback is required, the previous API role grants can be restored with table-specific GRANT statements, but this should only be done after confirming the incident or regression and obtaining an explicit rollback decision. Do not restore broad TRUNCATE/TRIGGER/MAINTAIN privileges merely as a convenience.
 
 **Important remaining risk:** the public SELECT policy still exposes every row to anon/authenticated, while the table-level SELECT grant remains necessary for QR receipt lookup. The committed browser projection narrows the normal application query after deployment, but it does not prevent a caller from requesting other columns through the Data API. A true column-level allowlist or server-shaped public receipt endpoint is still required to enforce field-level confidentiality against direct API clients.
+
+
+## Column-level public receipt allowlist follow-up
+
+A second production migration was applied after recognizing that a browser-side SELECT projection alone does not stop direct Data API callers from requesting other table columns.
+
+Migration ledger: 20261114105314 / verify_receipt_column_allowlist_20261114.
+
+The migration revoked table-level SELECT from anon and authenticated, then granted SELECT only on the nine public receipt columns listed above. service_role retains table-level SELECT and INSERT for the trusted server persistence handler.
+
+Post-change role simulation:
+- anon SELECT of the nine allowlisted columns: PASS.
+- authenticated SELECT of the nine allowlisted columns: PASS.
+- anon SELECT of hidden column `status`: denied with SQLSTATE 42501.
+- authenticated SELECT of hidden column `status`: denied with SQLSTATE 42501.
+- Effective privilege inspection: anon/authenticated have no table-level SELECT; they have column SELECT on `verification_id` and no column SELECT on `status`; service_role retains table SELECT and INSERT.
+
+This closes the direct-column privilege gap at the PostgreSQL grant layer, subject to the Data API honoring the same database roles as expected. HTTP/PostgREST requests with real JWT/API credentials have not yet been exercised.
