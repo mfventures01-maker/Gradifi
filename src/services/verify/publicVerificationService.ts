@@ -21,6 +21,18 @@ export interface PublicVerificationResolution {
   errorMessage?: string;
 }
 
+const PUBLIC_RECEIPT_COLUMNS = [
+  'verification_id',
+  'document_hash',
+  'evidence_hash',
+  'engine_version',
+  'policy_version',
+  'overall_similarity',
+  'total_sources_found',
+  'evidence_envelope',
+  'created_at',
+].join(',');
+
 export class PublicVerificationService {
   /**
    * Validates the format of a public verification ID.
@@ -35,8 +47,8 @@ export class PublicVerificationService {
   }
 
   /**
-   * Resolves a public verification record from the authoritative public.public_verification_records table.
-   * Performs format validation, database query, and strict identity/hash integrity validation.
+   * Resolves only the approved public receipt fields. Internal/future columns are
+   * deliberately excluded from the browser-facing Data API projection.
    */
   async resolveVerification(verificationId: string): Promise<PublicVerificationResolution> {
     if (!verificationId || verificationId.trim().length === 0) {
@@ -60,7 +72,7 @@ export class PublicVerificationService {
     try {
       const { data, error } = await supabase
         .from('public_verification_records')
-        .select('*')
+        .select(PUBLIC_RECEIPT_COLUMNS)
         .eq('verification_id', cleanId)
         .maybeSingle();
 
@@ -81,7 +93,6 @@ export class PublicVerificationService {
         };
       }
 
-      // PHASE 3 — Integrity Validation: Check document_hash <-> verification_id correlation
       if (!data.document_hash || typeof data.document_hash !== 'string') {
         return {
           status: 'MALFORMED_RECORD',
@@ -99,7 +110,6 @@ export class PublicVerificationService {
         };
       }
 
-      // Validate presence of required evidence fields
       if (!data.evidence_hash || !data.evidence_envelope) {
         return {
           status: 'MALFORMED_RECORD',
@@ -111,7 +121,7 @@ export class PublicVerificationService {
       return {
         status: 'VALID',
         verificationId: cleanId,
-        record: data as PublicVerificationRecord,
+        record: data as unknown as PublicVerificationRecord,
       };
     } catch (err: any) {
       console.error('Public verification resolution error:', err);
