@@ -104,8 +104,18 @@ describe('HOEOS P0 trusted verification run boundary', () => {
       };
     });
 
+    const forgedClientResult = {
+      ...result,
+      documentHash: '0'.repeat(64),
+      evidenceHash: '0'.repeat(64),
+      overallSimilarity: 0
+    };
+
     const response = await handleTrustedVerifyRun(
-      { documentText: 'server receives the submitted document' },
+      {
+        documentText: 'server receives the submitted document',
+        result: forgedClientResult
+      } as any,
       { execute, persist } as any
     );
 
