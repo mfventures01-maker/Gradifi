@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
-  test('executes real verification UI with Golden DOCX and verifies DOM <mark> elements', async ({ page }) => {
+  test('executes real verification UI with Golden DOCX and verifies authoritative DOM highlight spans', async ({ page }) => {
     test.setTimeout(90000);
 
     const consoleLogs: string[] = [];
@@ -45,13 +45,15 @@ test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
     await expect(page.locator('text=Highlighted passages indicate deterministic text matching')).toBeVisible();
 
     // Ensure forbidden verdict words are absent
-    const viewerHtml = await page.locator('text=Visual Evidence Boundary').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]').innerHTML();
+    const viewer = page.getByTestId('canonical-document-viewer');
+    await expect(viewer).toBeVisible();
+    const viewerHtml = await viewer.innerHTML();
     expect(viewerHtml).not.toContain('PLAGIARIZED');
     expect(viewerHtml).not.toContain('GUILTY');
     expect(viewerHtml).not.toContain('PROVEN PLAGIARISM');
 
     // 5. Assert mark elements in DOM
-    const markElements = page.locator('mark[data-evidence-span]');
+    const markElements = viewer.locator('mark[data-finding-id][data-source-id][data-start-offset][data-end-offset]');
     const markCount = await markElements.count();
     console.log(`G4_BROWSER_MARK_COUNT: ${markCount}`);
     expect(markCount).toBeGreaterThan(0);
@@ -60,16 +62,22 @@ test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
     const primaryMark = markElements.first();
     const markText = (await primaryMark.textContent()) || '';
     const sourceId = await primaryMark.getAttribute('data-source-id');
-    const spanId = await primaryMark.getAttribute('data-evidence-span');
+    const findingId = await primaryMark.getAttribute('data-finding-id');
+    const startOffset = Number(await primaryMark.getAttribute('data-start-offset'));
+    const endOffset = Number(await primaryMark.getAttribute('data-end-offset'));
 
     console.log(`G4_PRIMARY_MARK_TEXT: "${markText}"`);
     console.log(`G4_PRIMARY_SOURCE_ID: ${sourceId}`);
-    console.log(`G4_PRIMARY_SPAN_ID: ${spanId}`);
+    console.log(`G4_PRIMARY_FINDING_ID: ${findingId}`);
+    console.log(`G4_PRIMARY_OFFSETS: ${startOffset}-${endOffset}`);
 
     expect(markText.length).toBeGreaterThan(0);
     expect(sourceId).toBeTruthy();
-    expect(spanId).toBeTruthy();
-    expect(documentText).toContain(markText);
+    expect(findingId).toBeTruthy();
+    expect(Number.isInteger(startOffset)).toBeTruthy();
+    expect(Number.isInteger(endOffset)).toBeTruthy();
+    expect(endOffset).toBeGreaterThan(startOffset);
+    expect(documentText.slice(startOffset, endOffset)).toBe(markText);
 
     // 7. Capture screenshot artifact
     const screenshotDir = path.join(process.cwd(), 'tests', 'hoeos', 'four_gates', 'evidence', 'g4');
@@ -80,8 +88,8 @@ test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
 
     // 8. Record console & network evidence
     const evidenceDir = path.join(process.cwd(), 'tests', 'hoeos', 'four_gates', 'evidence');
-    fs.writeFileSync(path.join(evidenceDir, 'G4_MARK_ASSERTIONS.txt'), `MARK_COUNT: ${markCount}\nPRIMARY_MARK_TEXT: "${markText}"\nSOURCE_ID: ${sourceId}\nSPAN_ID: ${spanId}\nTEXT_IN_DOCUMENT_VERIFIED: true\nVERDICT: PASS\n`);
-    fs.writeFileSync(path.join(evidenceDir, 'G4_CANONICAL_IDENTITY.txt'), `CANONICAL_TEXT_LENGTH: ${documentText.length}\nMARK_TEXT: "${markText}"\nMATCH_EXACT: true\nAUTHORITATIVE_IDENTITY_VERDICT: PASS\n`);
+    fs.writeFileSync(path.join(evidenceDir, 'G4_MARK_ASSERTIONS.txt'), `MARK_COUNT: ${markCount}\nPRIMARY_MARK_TEXT: "${markText}"\nSOURCE_ID: ${sourceId}\nFINDING_ID: ${findingId}\nSTART_OFFSET: ${startOffset}\nEND_OFFSET: ${endOffset}\nTEXT_IN_DOCUMENT_VERIFIED: true\nVERDICT: PASS\n`);
+    fs.writeFileSync(path.join(evidenceDir, 'G4_CANONICAL_IDENTITY.txt'), `CANONICAL_TEXT_LENGTH: ${documentText.length}\nMARK_TEXT: "${markText}"\nSTART_OFFSET: ${startOffset}\nEND_OFFSET: ${endOffset}\nMATCH_EXACT: true\nAUTHORITATIVE_IDENTITY_VERDICT: PASS\n`);
     fs.writeFileSync(path.join(evidenceDir, 'G4_NETWORK_CONSOLE.txt'), `CONSOLE_LOGS_COUNT: ${consoleLogs.length}\nNETWORK_FAILURES_COUNT: ${networkFailures.length}\n\nCONSOLE_LOGS:\n${consoleLogs.join('\n')}\n\nNETWORK_FAILURES:\n${networkFailures.join('\n')}\n`);
     fs.writeFileSync(path.join(evidenceDir, 'G4_BROWSER_RUNTIME.txt'), `PLAYWRIGHT_E2E_STATUS: PASS\nMARK_COUNT: ${markCount}\nSCREENSHOT_PATH: tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png\n`);
     fs.writeFileSync(path.join(evidenceDir, 'G4_RESULT.json'), JSON.stringify({
@@ -90,7 +98,9 @@ test.describe('HOEOS Gate 4 Real Browser Authoritative Highlighting', () => {
       markCount,
       primaryMarkText: markText,
       sourceId,
-      spanId,
+      findingId,
+      startOffset,
+      endOffset,
       authoritativeTextMatch: true,
       offsetInvariant: true,
       screenshotPath: 'tests/hoeos/four_gates/evidence/g4/g4_browser_highlight.png'
