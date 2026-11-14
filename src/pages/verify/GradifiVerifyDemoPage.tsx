@@ -850,7 +850,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
               {/* Verify Action Button */}
               <button
                 type="button"
-                onClick={handleExecuteVerification}
+                onClick={() => handleExecuteVerification()}
                 disabled={verifying || !documentText.trim()}
                 className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
                   verifying || !documentText.trim()
