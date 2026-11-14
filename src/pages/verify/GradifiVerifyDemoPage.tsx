@@ -299,7 +299,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
       } else {
         setVerificationId('');
         setReceiptWarning(
-          'The server completed this verification, but trusted receipt storage is unavailable in this isolated demo environment. No public QR receipt was created.'
+          'The server completed this verification, but trusted receipt storage is unavailable. No public QR receipt was created, so this result cannot be resolved publicly.'
         );
       }
 
