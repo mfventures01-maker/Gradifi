@@ -1,0 +1,217 @@
+{
+  "baseline": {
+    "repository": "mfventures01-maker/Gradifi",
+    "branch": "sprint/verify-commercial-mvp-10h",
+    "project_ref": "ehkmfnaqkdgkjmdxxbwj",
+    "evidence_class": "STATIC + STRUCTURAL",
+    "runtime_certification": false,
+    "production_mutations": false
+  },
+  "call_sites": [
+    {
+      "id": "VERIFY-UI-RUN",
+      "file": "src/pages/verify/GradifiVerifyDemoPage.tsx",
+      "operation": "POST /api/verify/run",
+      "input": "documentText only",
+      "database_access": "None in browser; server handler executes Verify and persists receipt",
+      "status": "MATCHES TRUSTED SERVER WRITE DESIGN",
+      "notes": "UI accepts a receipt ID only when server returns CREATED or IDEMPOTENT_EXISTS; otherwise it does not display a public QR receipt."
+    },
+    {
+      "id": "VERIFY-SERVER-PERSIST",
+      "file": "src/services/verify/server/persistenceServerHandler.ts",
+      "operation": "SELECT by verification_id; INSERT record; SELECT returned row; on unique conflict re-SELECT",
+      "table": "public.public_verification_records",
+      "role": "service_role via SUPABASE_SERVICE_ROLE_KEY",
+      "required_privileges": ["SELECT","INSERT"],
+      "observed_privileges": {"service_role_select":true,"service_role_insert":true},
+      "rls": "enabled",
+      "policy": "Only public SELECT policy is present; service_role bypasses RLS",
+      "status": "PERMISSION MATCH"
+    },
+    {
+      "id": "VERIFY-PUBLIC-RECEIPT",
+      "file": "src/services/verify/publicVerificationService.ts",
+      "operation": "SELECT * FROM public_verification_records WHERE verification_id = ?",
+      "role": "anon key from src/lib/supabase.ts",
+      "required_privileges": ["SELECT"],
+      "observed_privileges": {"anon_select":true},
+      "policy": {"name":"Public Verification Record Select Policy","roles":["anon","authenticated"],"command":"SELECT","using":"true"},
+      "status": "PERMISSION MATCH WITH OVERBROAD RESPONSE SHAPE",
+      "risk": "select('*') exposes every current and future column allowed by the table policy; public receipt contract should be an explicit column allowlist or server-shaped DTO."
+    },
+    {
+      "id": "VERIFY-LEGACY-PERSIST",
+      "file": "api/verify/persist.ts",
+      "operation": "POST legacy client-authored persistence endpoint",
+      "database_access": "None",
+      "response": "HTTP 410 CLIENT_AUTHORED_PERSISTENCE_DISABLED",
+      "status": "SAFE BLOCK"
+    },
+    {
+      "id": "VERIFY-VITE-LEGACY-PERSIST",
+      "file": "src/services/verify/server/verifyServerPlugin.ts",
+      "operation": "POST /api/verify/persist",
+      "database_access": "None",
+      "response": "HTTP 410 CLIENT_AUTHORED_PERSISTENCE_DISABLED",
+      "status": "SAFE BLOCK"
+    },
+    {
+      "id": "VERIFY-PIPELINE-AUDIT",
+      "file": "src/services/verify/pipelineAudit.ts",
+      "operation": "Calls verificationPersistenceService.persistVerificationRecord",
+      "database_access": "The shared service requires server environment variables and throws when window is defined",
+      "status": "NOT A VALID BROWSER WRITE PATH",
+      "notes": "This is an audit/diagnostic call site, not the production UI route. Confirm any server-side invocation before treating it as an active production path."
+    }
+  ],
+  "verify_table_access_review": [
+    {
+      "table":"public_verification_records",
+      "rls":true,
+      "policies":[{"role":["anon","authenticated"],"command":"SELECT","using":"true"}],
+      "application_need":{"anon":["SELECT"],"authenticated":["SELECT"],"service_role":["SELECT","INSERT"]},
+      "catalog_observation":"anon and authenticated also hold broad DML, TRUNCATE and TRIGGER grants; RLS has no INSERT/UPDATE/DELETE policy. service_role has SELECT and INSERT and bypasses RLS.",
+      "classification":"P1 LEAST-PRIVILEGE GAP; public SELECT is intentional, extra grants are unnecessary for the observed call sites"
+    },
+    {
+      "table":"verification_runs",
+      "rls":true,
+      "policies":[{"role":["authenticated"],"command":"SELECT","using":"institution membership through tenant_identity_map"}],
+      "application_need":"No direct access found in inspected Verify MVP call sites",
+      "catalog_observation":"anon/authenticated have broad table privileges including TRUNCATE; RLS has only the authenticated SELECT policy.",
+      "classification":"UNUSED BY CURRENT VERIFY ROUTE; permission scope requires owner/call-site confirmation"
+    },
+    {
+      "table":"tenant_identity_map",
+      "rls":true,
+      "policies":[{"role":["authenticated"],"command":"SELECT","using":"auth.uid() = user_id"}],
+      "application_need":"No direct Verify browser/server table call found; policy is a dependency of verification_runs and billable_events policies",
+      "catalog_observation":"Broad anon/authenticated DML and TRUNCATE grants despite SELECT-only row policy.",
+      "classification":"SHARED IDENTITY DEPENDENCY; do not alter without whole-app review"
+    },
+    {
+      "table":"documents",
+      "rls":true,
+      "policies":[],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad DML and TRUNCATE grants; RLS has no policy.",
+      "classification":"UNUSED IN CURRENT VERIFIED PATH; broad grants require owner and API-surface review"
+    },
+    {
+      "table":"plagiarism_checks",
+      "rls":true,
+      "policies":[],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad DML and TRUNCATE grants; RLS has no policy.",
+      "classification":"UNUSED IN CURRENT VERIFIED PATH; broad grants require owner and API-surface review"
+    },
+    {
+      "table":"plagiarism_matches",
+      "rls":true,
+      "policies":[],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad DML and TRUNCATE grants; RLS has no policy.",
+      "classification":"UNUSED IN CURRENT VERIFIED PATH; broad grants require owner and API-surface review"
+    },
+    {
+      "table":"plagiarism_reports",
+      "rls":true,
+      "policies":[],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad DML and TRUNCATE grants; RLS has no policy.",
+      "classification":"UNUSED IN CURRENT VERIFIED PATH; broad grants require owner and API-surface review"
+    },
+    {
+      "table":"plagiarism_corrections",
+      "rls":true,
+      "policies":[],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad DML and TRUNCATE grants; RLS has no policy.",
+      "classification":"UNUSED IN CURRENT VERIFIED PATH; broad grants require owner and API-surface review"
+    },
+    {
+      "table":"institution_plagiarism_checks",
+      "rls":true,
+      "policies":[],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad DML and TRUNCATE grants; RLS has no policy.",
+      "classification":"SHARED INSTITUTION FEATURE; broad grants require owner and API-surface review"
+    },
+    {
+      "table":"services",
+      "rls":true,
+      "policies":[{"role":["authenticated"],"command":"SELECT","using":"status = active"}],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad table privileges, but only authenticated active-row SELECT policy.",
+      "classification":"BILLING CATALOG; not used by current Verify execution path"
+    },
+    {
+      "table":"service_versions",
+      "rls":true,
+      "policies":[{"role":["authenticated"],"command":"SELECT","using":"active version of active service"}],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad table privileges, but only authenticated active-row SELECT policy.",
+      "classification":"BILLING CATALOG; not used by current Verify execution path"
+    },
+    {
+      "table":"price_versions",
+      "rls":true,
+      "policies":[{"role":["authenticated"],"command":"SELECT","using":"active effective price version"}],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad table privileges, but only authenticated active-row SELECT policy.",
+      "classification":"BILLING CATALOG; not used by current Verify execution path"
+    },
+    {
+      "table":"billable_events",
+      "rls":true,
+      "policies":[{"role":["authenticated"],"command":"SELECT","using":"tenant membership"}],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated have broad DML and TRUNCATE grants; only authenticated SELECT row policy.",
+      "classification":"BILLING EVENT TABLE; not used by current Verify execution path"
+    },
+    {
+      "table":"audit_logs",
+      "rls":true,
+      "policies":[],
+      "application_need":"No direct Verify MVP call found",
+      "catalog_observation":"anon/authenticated SELECT/TRIGGER/REFERENCES observed; service_role SELECT observed but INSERT not granted in the live catalog check.",
+      "classification":"AUDIT PATH NOT CONNECTED; do not assume Verify persistence is audit logged"
+    }
+  ],
+  "cross_cutting_findings": [
+    {
+      "id":"VAM-001",
+      "severity":"HIGH",
+      "finding":"Anon and authenticated have TRUNCATE and TRIGGER table privileges on most Verify tables.",
+      "qualification":"RLS does not constrain TRUNCATE. This is a material privilege-hardening gap. The observed app code does not expose a direct SQL/TRUNCATE route; exploitability requires confirming all exposed RPCs, SQL execution surfaces and role grants.",
+      "action":"Do not blanket revoke. Trace RPC definitions, exposed schemas, SQL execution extensions and shared app dependencies first."
+    },
+    {
+      "id":"VAM-002",
+      "severity":"MEDIUM",
+      "finding":"public_verification_records is intentionally publicly readable, but the browser uses SELECT *.",
+      "action":"Constrain public receipt projection to an explicit allowlist and preserve the metadata-only envelope contract."
+    },
+    {
+      "id":"VAM-003",
+      "severity":"MEDIUM",
+      "finding":"api/verify/run.ts has no user-authentication check; it relies on a process-local in-memory rate limiter (8 requests per minute per IP).",
+      "qualification":"Static code observation only. Rate-limit behavior under deployed Vercel concurrency and abuse has not been runtime-tested.",
+      "action":"Decide whether the public demo endpoint is intentionally anonymous; if production commercial use, add durable rate limiting, abuse controls and an explicit authorization/billing policy."
+    },
+    {
+      "id":"VAM-004",
+      "severity":"MEDIUM",
+      "finding":"No Verify-specific Storage bucket or Storage API call was found; only private answer-scripts bucket exists.",
+      "action":"Keep uploaded documents in the current in-memory processing path unless a separate privacy and retention design authorizes Storage."
+    }
+  ],
+  "important_limits": [
+    "This is a static source-to-catalog mapping, not runtime authorization testing.",
+    "No anon/authenticated HTTP requests were executed against the live REST API.",
+    "No SQL/RPC exploitability test was executed for TRUNCATE or TRIGGER grants.",
+    "No grants, policies, functions, schema settings, migrations, data or deployment were changed.",
+    "The 14-table Verify access set is the pre-existing Verify/supporting-table scope; only the receipt table is directly used by the currently inspected production UI/server persistence path."
+  ]
+}
