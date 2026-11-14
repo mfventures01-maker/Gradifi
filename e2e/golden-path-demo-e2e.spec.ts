@@ -108,7 +108,7 @@ test.describe('HOEOS G12 Unified Commercial Golden-Path Demo Certification Suite
     } else {
       expect(markCount).toBeGreaterThan(0);
       const firstMark = marks.first();
-      const markText = (await firstMark.textContent() || '').trim();
+      const markText = (await firstMark.locator('[data-highlight-text]').textContent() || '').trim();
       const startOffsetStr = await firstMark.getAttribute('data-start-offset');
       const endOffsetStr = await firstMark.getAttribute('data-end-offset');
       const findingId = await firstMark.getAttribute('data-finding-id');
