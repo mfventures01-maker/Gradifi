@@ -32,8 +32,6 @@ import {
   Eye,
   FileCheck
 } from 'lucide-react';
-import { verifyCoreService } from '../../services/verify/verifyCoreService';
-import { verificationPersistenceService } from '../../services/verify/verificationPersistenceService';
 import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument } from '../../services/verify/types';
 import { toPublicVerificationResult, PublicVerificationResult } from '../../services/verify/publicVerificationResult';
 import { ingestDocument } from '../../services/verify/universalIngestionService';
@@ -108,6 +106,7 @@ export const GradifiVerifyDemoPage: React.FC = () => {
   const { verificationId: routeParamId } = useParams<{ verificationId?: string }>();
   const [verificationId, setVerificationId] = useState<string>('');
   const [qrSvgHtml, setQrSvgHtml] = useState<string>('');
+  const [receiptWarning, setReceiptWarning] = useState<string | null>(null);
   const [resolvingPublic, setResolvingPublic] = useState(false);
   const [publicResolution, setPublicResolution] = useState<PublicVerificationResolution | null>(null);
   const [selectedSourceId, setSelectedSourceId] = useState<string | undefined>(undefined);
@@ -150,6 +149,8 @@ export const GradifiVerifyDemoPage: React.FC = () => {
       generateQRCodeSVG(`${window.location.origin}/verify/${verificationId}`, 130)
         .then(setQrSvgHtml)
         .catch(() => setQrSvgHtml(''));
+    } else {
+      setQrSvgHtml('');
     }
   }, [verificationId]);
 
@@ -245,7 +246,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
     }
   };
 
-  // Execute federated evidence run
+  // Execute the authoritative server-side verification run.
   const handleExecuteVerification = async () => {
     if (!documentText.trim()) {
       setUploadError('Please select or enter document text to verify.');
@@ -254,46 +255,49 @@ Distributed machine learning frameworks require mathematical determinism to guar
 
     setVerifying(true);
     setCurrentStep('federation');
+    setUploadError(null);
+    setReceiptWarning(null);
+    setVerificationId('');
+    setResult(null);
 
     try {
-      const res = await verifyCoreService.executeVerifyRun(documentText);
+      const response = await fetch('/api/verify/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ documentText })
+      });
 
-      // Slim persistence payload — stays under Vercel's 4.5 MB function body limit.
-      const persistResult = {
-        documentHash: res.documentHash,
-        evidenceHash: res.evidenceHash,
-        engineVersion: res.engineVersion,
-        policyVersion: res.policyVersion,
-        overallSimilarity: res.overallSimilarity,
-        totalSourcesFound: res.totalSourcesFound
-      };
-
-      const persistEnvelope = {
-        findingCount: res.findings?.length ?? 0,
-        sourceCount: res.verifiedSources?.length ?? 0,
-        firstSourceIds: (res.verifiedSources ?? []).slice(0, 10).map(s => s.sourceId),
-        uniqueMatchedCoverage: res.uniqueMatchedCoverage ?? res.overallSimilarity,
-        highestSourceMatch: res.highestSourceMatch ?? 0,
-        timestamp: res.timestamp ?? new Date().toISOString()
-      };
-
-      const { record } = await verificationPersistenceService.persistVerificationRecord(
-        persistResult as any,
-        persistEnvelope as any
-      );
-
-      if (!record?.verification_id) {
-        throw new Error('Persistence returned no verification_id');
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || `Verification endpoint returned HTTP ${response.status}`);
       }
 
-      setVerificationId(record.verification_id);
+      const res = payload.result as EvidenceEngineResult | undefined;
+      if (!res?.documentHash || !res?.evidenceHash || typeof res.overallSimilarity !== 'number') {
+        throw new Error('Server returned an incomplete verification result.');
+      }
+
       setResult(res);
+
+      const persistedId = payload.persistence?.verificationId;
+      if (
+        (payload.persistence?.status === 'CREATED' || payload.persistence?.status === 'IDEMPOTENT_EXISTS') &&
+        typeof persistedId === 'string' &&
+        persistedId.startsWith('VRF-')
+      ) {
+        setVerificationId(persistedId);
+      } else {
+        setVerificationId('');
+        setReceiptWarning(
+          'The server completed this verification, but trusted receipt storage is unavailable in this isolated demo environment. No public QR receipt was created.'
+        );
+      }
+
       setCurrentStep('result');
     } catch (err: any) {
-      console.error('Verification execution error:', err);
+      console.error('Server-side verification error:', err);
       setUploadError(
-        err?.message ||
-        'Verification completed locally but could not be committed to authoritative storage. Receipt cannot be issued.'
+        err?.message || 'Server-side verification could not be completed. No result or receipt was issued.'
       );
       setVerificationId('');
       setResult(null);
@@ -320,7 +324,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
     doc.text('GRADIFI VERIFICATION REPORT', 14, 20);
 
     doc.setFontSize(11);
-    doc.text(`Verification ID: ${verificationId}`, 14, 30);
+    doc.text(`Verification ID: ${verificationId || 'DEMO ONLY - NO PERSISTED RECEIPT'}`, 14, 30);
     doc.text(`Timestamp: ${result.timestamp || new Date().toISOString()}`, 14, 36);
     doc.text(`Hash: ${result.evidenceHash || result.documentHash}`, 14, 42);
     doc.text(`Overall Similarity: ${result.overallSimilarity}%`, 14, 48);
@@ -338,9 +342,9 @@ Distributed machine learning frameworks require mathematical determinism to guar
       }
     }
 
-    const filename = verificationId.startsWith('VRF-')
+    const filename = verificationId
       ? `${verificationId}.pdf`
-      : `VRF-${verificationId}.pdf`;
+      : `Gradifi-Verify-Demo-${result.documentHash.slice(0, 8)}.pdf`;
     doc.save(filename);
   };
 
@@ -1363,19 +1367,32 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   
                   {/* Left: QR Code & Receipt Info */}
                   <div className="flex items-center gap-5">
-                    <div
-                      className="shrink-0 p-2 bg-white rounded-xl shadow-lg"
-                      dangerouslySetInnerHTML={{
-                        __html: qrSvgHtml
-                      }}
-                    />
+                    {verificationId && qrSvgHtml ? (
+                      <div
+                        className="shrink-0 p-2 bg-white rounded-xl shadow-lg"
+                        dangerouslySetInnerHTML={{ __html: qrSvgHtml }}
+                      />
+                    ) : (
+                      <div className="shrink-0 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300">
+                        <ShieldCheck className="w-8 h-8" />
+                      </div>
+                    )}
                     <div className="space-y-1.5 text-xs">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-blue-400">8. Scannable QR Receipt</div>
-                      <div className="font-extrabold text-base text-white font-mono">{verificationId}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-blue-400">8. Verification Receipt</div>
+                      {verificationId ? (
+                        <div className="font-extrabold text-base text-white font-mono">{verificationId}</div>
+                      ) : (
+                        <div className="font-extrabold text-sm text-amber-300">NO PUBLIC RECEIPT</div>
+                      )}
                       <div className="text-slate-400 text-[11px]">Timestamp: {new Date(result.timestamp).toUTCString()}</div>
                       <div className="text-slate-500 font-mono text-[10px] truncate max-w-[260px]">
                         Hash: {result.documentHash.slice(0, 16)}...
                       </div>
+                      {!verificationId && (
+                        <p className="max-w-sm text-[11px] leading-relaxed text-amber-200/80">
+                          {receiptWarning || 'Receipt storage is not configured. This result is not publicly resolvable.'}
+                        </p>
+                      )}
                     </div>
                   </div>
 
