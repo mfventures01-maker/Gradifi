@@ -110,6 +110,8 @@ test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
     await expect(recheckButton).toBeEnabled();
     await recheckButton.click();
 
+    // Require the first result screen to disappear before accepting the second.
+    await expect(page.getByText('NO PUBLIC RECEIPT')).toBeHidden({ timeout: 10000 });
     await expect(page.getByText('NO PUBLIC RECEIPT')).toBeVisible({ timeout: 90000 });
     await expect(page.getByLabel('Revised document text')).toHaveValue(revisedText);
     const revisedHash = await hashLocator.last().innerText();
