@@ -128,3 +128,9 @@ No production Supabase request, write, migration, deployment or secret access wa
 - **Correction workflow:** editable extracted text and a fresh server-side re-verification action are implemented. The DOCX browser gate checks that the document hash changes on re-run.
 - **G1/G5 runtime:** browser execution is pending in the corrected workflow. The workflow supports optional `VERIFY_ISOLATED_SUPABASE_*` secrets for positive receipt tests and blocks the known production project ref. With no isolated secrets, the expected behavior is a real server result with `NO PUBLIC RECEIPT`.
 - **Production:** no production Supabase requests, writes, migration execution, deployments or secret access have been performed.
+
+## 10. Source-of-truth branch finding
+
+A direct GitHub comparison found that `clean-deploy` and `main` are divergent: `clean-deploy` is 151 commits ahead and 1 commit behind `main`. The current `main` branch does not contain the Verify application paths used by this sprint, including `src/services/verify/verifyCoreService.ts`, `src/services/verify/deterministicEngine.ts`, `src/pages/verify/GradifiVerifyDemoPage.tsx`, or the Verify persistence service. Its `package.json` is also a much smaller, different baseline.
+
+**Decision:** the commercial Verify sprint remains based on `clean-deploy`, the branch that actually contains the G5/Verify implementation and forensic evidence. Do not merge this sprint branch directly into `main`. A separate branch-lineage reconciliation is required before any promotion to `main`; merging the current sprint branch as-is would import the 151-commit divergence.
