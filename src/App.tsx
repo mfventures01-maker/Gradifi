@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HomePage } from './pages/home/HomePage';
 import { OnboardingWizard } from './pages/onboarding/OnboardingWizard';
+import { HigherEducationOnboarding } from './pages/onboarding/HigherEducationOnboarding';
+import { HigherInstitutionRegistration } from './pages/onboarding/HigherInstitutionRegistration';
+import { HigherEducationDashboard } from './pages/higher-education/HigherEducationDashboard';
 import { LoginPage } from './pages/auth/LoginPage';
 import { AuthGuard } from './components/AuthGuard';
 
@@ -50,6 +53,8 @@ function App() {
         
         {/* Phase 2: Onboarding (No Auth Required) */}
         <Route path="/onboarding" element={<OnboardingWizard />} />
+         <Route path="/onboarding/higher-education/register" element={<HigherInstitutionRegistration />} />
+        <Route path="/onboarding/higher-education" element={<AuthGuard allowedRoles={['dean']}><HigherEducationOnboarding /></AuthGuard>} />
         
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
@@ -62,9 +67,10 @@ function App() {
           <Route path="parent" element={<ParentDashboard />} />
           <Route path="bursar" element={<BursarDashboard />} />
           <Route path="vp" element={<VPDashboard />} />
+          <Route path="higher-education" element={<HigherEducationDashboard />} />
         </Route>
 
-        <Route path="/dashboard" element={<AuthGuard><PrincipalDashboard /></AuthGuard>} />
+        <Route path="/dashboard" element={<AuthGuard allowedRoles={['principal_admin', 'admin']}><PrincipalDashboard /></AuthGuard>} />
         
         {/* Phase 4: AI Grading & CBT (Auth Required) */}
         <Route path="/grading" element={<AuthGuard />}>

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { actorOnboardingService } from '../../services/actorOnboardingService';
 import { 
   Upload, 
   Download, 
@@ -24,6 +25,7 @@ interface BulkStudentImportProps {
 interface ImportResult {
   student_id?: string;
   student_number?: string;
+  login_id?: string;
   pin?: string;
   first_name?: string;
   last_name?: string;
@@ -162,53 +164,52 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
         setLoading(false);
         return;
       }
+      if (students.length > 500) throw new Error('Maximum 500 students per import');
 
-      // Call RPC with fallback for offline/demo mode
-      let resultData: any = null;
-      try {
-        const { data, error } = await supabase.rpc('bulk_enroll_students' as any, {
-          p_students: students,
-          p_school_id: schoolId || null,
-          p_institution_id: institutionId || null
-        });
-
-        if (error || !data) {
-          throw error || new Error('No data returned from RPC');
+      if (!schoolId || !institutionId) throw new Error('A real school and institution must be selected before importing students.');
+      const { data: classes, error: classError } = await supabase
+        .from('classes')
+        .select('id,name')
+        .eq('school_id', schoolId);
+      if (classError) throw classError;
+      const classByName = new Map((classes || []).map((c: any) => [String(c.name).trim().toLowerCase(), c.id]));
+      const results: ImportResult[] = [];
+      for (const student of students) {
+        const classId = classByName.get(String(student.class_name).trim().toLowerCase());
+        if (!classId) {
+          results.push({ status: 'failed', first_name: student.first_name, last_name: student.last_name, class: student.class_name, error: 'Class not found in selected school' });
+          continue;
         }
-        resultData = data;
-      } catch (rpcErr: any) {
-        console.warn('RPC bulk_enroll_students fallback execution:', rpcErr?.message || rpcErr);
-        const results: ImportResult[] = students.map((s, idx) => {
-          if (s.class_name && s.class_name.toLowerCase().includes('invalid')) {
-            return {
-              status: 'failed',
-              first_name: s.first_name,
-              last_name: s.last_name,
-              class: s.class_name,
-              error: `Class "${s.class_name}" not found`
-            };
-          }
-          return {
+        try {
+          const created = await actorOnboardingService.create({
+            actor_type: 'student',
+            institution_id: institutionId,
+            school_id: schoolId,
+            class_id: classId,
+            full_name: `${student.first_name} ${student.last_name}`,
+            gender: student.gender ? String(student.gender).toLowerCase() : null,
+            date_of_birth: student.date_of_birth || null,
+          });
+          results.push({
             status: 'success',
-            student_id: `std_bulk_${Date.now()}_${idx}`,
-            student_number: `GRD/2026/${1000 + idx}`,
-            pin: String(1000 + Math.floor(Math.random() * 9000)),
-            first_name: s.first_name,
-            last_name: s.last_name,
-            class: s.class_name
-          };
-        });
-
-        const successCount = results.filter(r => r.status === 'success').length;
-        const failedCount = results.filter(r => r.status === 'failed').length;
-
-        resultData = {
-          total_submitted: students.length,
-          success_count: successCount,
-          failed_count: failedCount,
-          results: results
-        };
+            student_id: created.actor_record_id || created.user_id,
+            login_id: created.login_id,
+            student_number: created.student_number,
+            pin: created.pin,
+            first_name: student.first_name,
+            last_name: student.last_name,
+            class: student.class_name,
+          });
+        } catch (rowError: any) {
+          results.push({ status: 'failed', first_name: student.first_name, last_name: student.last_name, class: student.class_name, error: rowError?.message || 'Provisioning failed' });
+        }
       }
+      const resultData = {
+        total_submitted: students.length,
+        success_count: results.filter(r => r.status === 'success').length,
+        failed_count: results.filter(r => r.status === 'failed').length,
+        results,
+      };
 
       setSummary({
         total_submitted: resultData.total_submitted,
@@ -272,6 +273,27 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
             </p>
           </div>
         </div>
+
+        {summary.results.some((r: any) => r.status === 'success') && (
+          <div className="mb-4 max-h-72 overflow-y-auto rounded-xl border border-emerald-200">
+            <p className="sticky top-0 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">Issued student credentials</p>
+            <div className="divide-y divide-slate-100">
+              {summary.results.filter((r: any) => r.status === 'success').map((result: ImportResult, index: number) => (
+                <div key={result.student_id || index} className="grid grid-cols-2 gap-2 px-3 py-2 text-xs">
+                  <div>
+                    <p className="font-medium text-slate-800">{result.first_name} {result.last_name}</p>
+                    <p className="font-mono text-slate-500">{result.login_id}</p>
+                    <p className="text-slate-400">Student #: {result.student_number}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-slate-400">Temporary PIN</p>
+                    <p className="font-mono font-bold text-emerald-700">{result.pin}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {summary.results.some((r: any) => r.status === 'failed') && (
           <div className="mb-4 max-h-48 overflow-y-auto">
@@ -452,7 +474,8 @@ export const BulkStudentImport: React.FC<BulkStudentImportProps> = ({
               <li>Maximum 500 students per import</li>
               <li>Required columns: first_name, last_name, class_name</li>
               <li>Class names must match existing classes (e.g., "JSS 1")</li>
-              <li>Each student receives a unique 4-digit PIN for login</li>
+              <li>Each student receives a system-generated login ID and a temporary 4-digit PIN</li>
+              <li>Save or securely distribute the issued credentials before leaving the import summary</li>
             </ul>
           </div>
         </div>
