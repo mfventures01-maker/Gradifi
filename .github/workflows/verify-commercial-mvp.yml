@@ -48,3 +48,39 @@ jobs:
           path: test-results/vitest-junit.xml
           if-no-files-found: ignore
           retention-days: 14
+
+  docx-browser:
+    name: G1/G5 Real DOCX Browser Golden Path
+    needs: baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout sprint branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run real DOCX browser verification
+        run: npx playwright test e2e/g1-docx-browser-acceptance.spec.ts --reporter=line
+
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-g1-docx-browser-evidence
+          path: |
+            tests/hoeos/g2/evidence/g1_browser/
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
