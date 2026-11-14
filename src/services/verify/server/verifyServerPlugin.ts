@@ -93,16 +93,23 @@ export function verifyServerPlugin(): Plugin {
         }
 
         let body = '';
+        let tooLarge = false;
         req.on('data', (chunk) => {
+          if (tooLarge) return;
           body += chunk;
-          if (body.length > 1_100_000) {
-            res.statusCode = 413;
-            res.end(JSON.stringify({ code: 'DOCUMENT_TOO_LARGE', error: 'Request body exceeds the verification limit.' }));
-            req.destroy();
+          if (Buffer.byteLength(body, 'utf8') > 1_100_000) {
+            tooLarge = true;
+            body = '';
           }
         });
 
         req.on('end', async () => {
+          if (tooLarge) {
+            res.statusCode = 413;
+            res.end(JSON.stringify({ code: 'DOCUMENT_TOO_LARGE', error: 'Request body exceeds the verification limit.' }));
+            return;
+          }
+
           try {
             const payload = body ? JSON.parse(body) : {};
             const result = await handleTrustedVerifyRun(payload);
