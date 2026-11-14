@@ -1,12 +1,12 @@
 /**
  * G1 DOCX Fidelity Regression Test
- * Fixture: C:/Users/faith/Downloads/DIGITAL THERMOMETER real.docx
+ * Fixture: tests/fixtures/g1/DIGITAL_THERMOMETER_real.docx
  * Fixture SHA-256: 6B76024857A8722BF17BD4B03456C684E3A04E4AD8AAF7E23F5DF8AC2053E12C
  */
 import * as fs from 'fs';
 import { ingestDocument } from '../src/services/verify/universalIngestionService.js';
 
-const FIXTURE = 'C:/Users/faith/Downloads/DIGITAL THERMOMETER real.docx';
+const FIXTURE = 'tests/fixtures/g1/DIGITAL_THERMOMETER_real.docx';
 
 let passed = 0;
 let failed = 0;
