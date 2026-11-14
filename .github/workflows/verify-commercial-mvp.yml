@@ -139,7 +139,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run real DOCX and PDF browser verification
-        run: npx playwright test e2e/g1-docx-browser-acceptance.spec.ts e2e/golden-path-demo-e2e.spec.ts e2e/four-gates-g4-browser.spec.ts --reporter=line
+        run: npx playwright test e2e/g1-docx-browser-acceptance.spec.ts e2e/golden-path-demo-e2e.spec.ts e2e/four-gates-g4-browser.spec.ts --reporter=line --retries=0
 
       - name: Preserve browser evidence
         if: always()
