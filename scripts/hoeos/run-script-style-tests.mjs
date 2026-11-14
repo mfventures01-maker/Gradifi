@@ -41,7 +41,8 @@ for (const file of scriptStyleTests) {
   console.log(`\n=== HOEOS standalone test: ${file} ===`);
   const run = spawnSync(process.execPath, ['--import', 'tsx', file], {
     stdio: 'inherit',
-    env: process.env
+    env: process.env,
+    timeout: 60_000
   });
 
   if (run.error) {
