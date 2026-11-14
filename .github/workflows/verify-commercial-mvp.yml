@@ -50,6 +50,9 @@ jobs:
       - name: Reinstall from security-patched lockfile
         run: npm ci
 
+      - name: Enforce production dependency audit gate
+        run: npm audit --omit=dev --audit-level=moderate
+
       - name: Build server runtime imports
         run: npm run build:server
 
