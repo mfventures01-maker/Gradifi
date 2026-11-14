@@ -522,7 +522,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   )}
                   <div className="space-y-1">
                     <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-emerald-400" /> Cryptographically Grounded Receipt
+                      <Check className="w-3.5 h-3.5 text-emerald-400" /> Hash-linked verification receipt
                     </div>
                     <div className="text-[11px] text-slate-400">
                       Independent parties can resolve this receipt and check its document and evidence hash linkage.
