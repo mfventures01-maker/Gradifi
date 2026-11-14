@@ -415,6 +415,20 @@ export interface PlagiarismEvidenceResult {
  */
 export type SimilarityMatchMethod = 'EXACT_PHRASE' | 'NGRAM' | 'TOKEN_OVERLAP';
 
+/**
+ * G4-A canonical offset contract:
+ * - sourceSegment belongs to sourceDocumentId (the submitted/first document).
+ * - matchedSegment belongs to matchedDocumentId (the comparison/second document).
+ * - sourceStart/sourceEnd are a half-open [start, end) character range in
+ *   toCanonicalEvidenceText(sourceDocument.rawText || sourceDocument.normalizedText || '').
+ * - matchedStart/matchedEnd are a half-open [start, end) character range in
+ *   toCanonicalEvidenceText(matchedDocument.rawText || matchedDocument.normalizedText || '').
+ * - All offsets are JavaScript UTF-16 string indices, matching String.slice().
+ * - Offsets MUST NOT be applied directly to raw extracted text or file bytes.
+ * - Both segment strings MUST equal the corresponding canonicalText.slice(start, end).
+ * - If an exact source-side range cannot be established, matchedStart/matchedEnd
+ *   remain undefined and the finding must not claim source-side highlight fidelity.
+ */
 export interface SimilarityFinding {
   findingId: string;
   sourceDocumentId: string;
@@ -423,10 +437,16 @@ export interface SimilarityFinding {
   matchedSegment: string;
   similarityScore: number;
   matchMethod: SimilarityMatchMethod;
+  /** Half-open canonical submitted-document character range. */
   sourceStart?: number;
+  /** Exclusive end of the canonical submitted-document character range. */
   sourceEnd?: number;
+  /** Half-open canonical comparison-document character range. */
   matchedStart?: number;
+  /** Exclusive end of the canonical comparison-document character range. */
   matchedEnd?: number;
+  /** Offset coordinate system used by any populated range fields. */
+  offsetBasis?: 'CANONICAL_EVIDENCE_TEXT_UTF16';
   provenance: 'DETERMINISTIC';
 }
 
@@ -497,6 +517,38 @@ export interface AnalysisInputContract {
     includeAiFederation?: boolean;
     policyVersion?: string;
   };
+}
+
+/**
+ * Minimal deterministic result required for G4-D persistence validation.
+ * Deliberately excludes provider payloads and UI-only metadata to keep the
+ * browser-to-server request bounded while retaining the evidence needed for
+ * hash, score, version, and submitted-text range checks.
+ */
+export type PersistableEvidenceResult = Pick<
+  EvidenceEngineResult,
+  'documentHash' | 'evidenceHash' | 'engineVersion' |
+  'policyVersion' | 'overallSimilarity' | 'totalSourcesFound'
+> & {
+  similarityAnalysis: Pick<SimilarityAnalysisResult, 'findings'>;
+};
+
+/**
+ * G4-D persistence envelope. The canonical submitted text is retained so the
+ * server and read path can independently reproduce documentHash and validate
+ * every submitted-side evidence range.
+ */
+export interface G4DPersistenceEnvelope {
+  analysisId: string;
+  documentId: string;
+  timestamp: string;
+  engineVersion: string;
+  policyVersion: string;
+  status: FineGrainedProviderStatus | 'VERIFIED' | 'PARTIALLY_VERIFIED' | 'FAILED';
+  deterministicResult: PersistableEvidenceResult;
+  canonicalDocument: Pick<CanonicalAnalysisDocument, 'rawText'>;
+  processingTimeMs: number;
+  warnings?: string[];
 }
 
 export interface AnalysisResultEnvelope {

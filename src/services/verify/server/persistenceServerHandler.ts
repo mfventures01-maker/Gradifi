@@ -6,11 +6,11 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { VerificationPersistenceService, PublicVerificationRecord } from '../verificationPersistenceService.js';
-import { EvidenceEngineResult, AnalysisResultEnvelope } from '../types.js';
+import { G4DPersistenceEnvelope, PersistableEvidenceResult } from '../types.js';
 
 export interface PersistenceServerRequestPayload {
-  result: EvidenceEngineResult;
-  envelope?: AnalysisResultEnvelope;
+  result: PersistableEvidenceResult;
+  envelope: G4DPersistenceEnvelope;
 }
 
 export async function handlePersistenceServerRequest(
@@ -19,12 +19,22 @@ export async function handlePersistenceServerRequest(
   if (!payload || !payload.result) {
     throw new Error('Missing certified verification result in persistence payload');
   }
+  if (
+    !payload.envelope ||
+    !payload.envelope.deterministicResult ||
+    !payload.envelope.canonicalDocument ||
+    typeof payload.envelope.canonicalDocument.rawText !== 'string' ||
+    !payload.result.similarityAnalysis ||
+    !Array.isArray(payload.result.similarityAnalysis.findings)
+  ) {
+    throw new Error('G4-D persistence payload must include an embedded deterministic result, canonical submitted text, and similarity findings.');
+  }
 
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Supabase server configuration unavailable');
+    throw new Error('Supabase trusted persistence configuration unavailable: VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.');
   }
 
   // Create trusted server-side Supabase client using service_role authority
@@ -42,10 +52,14 @@ export async function handlePersistenceServerRequest(
     .maybeSingle();
 
   if (fetchError && fetchError.code !== 'PGRST116') {
-    console.warn('Supabase server query error:', fetchError.message);
+    throw new Error(`Failed to read existing verification record before persistence: ${fetchError.message}`);
   }
 
   if (existing) {
+    const integrity = VerificationPersistenceService.validatePersistedRecord(existing);
+    if (integrity.status !== 'VALID') {
+      throw new Error(`Existing verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
+    }
     if (
       existing.document_hash !== recordPayload.document_hash ||
       existing.evidence_hash !== recordPayload.evidence_hash
@@ -76,6 +90,12 @@ export async function handlePersistenceServerRequest(
         .eq('verification_id', recordPayload.verification_id)
         .single();
 
+      if (reFetched) {
+        const integrity = VerificationPersistenceService.validatePersistedRecord(reFetched);
+        if (integrity.status !== 'VALID') {
+          throw new Error(`Concurrent verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
+        }
+      }
       if (
         reFetched &&
         reFetched.document_hash === recordPayload.document_hash &&
@@ -93,6 +113,10 @@ export async function handlePersistenceServerRequest(
     throw new Error(`Failed to persist verification record on server: ${insertError.message}`);
   }
 
+  const insertedIntegrity = VerificationPersistenceService.validatePersistedRecord(inserted);
+  if (insertedIntegrity.status !== 'VALID') {
+    throw new Error(`Inserted verification record failed G4-D integrity validation: ${insertedIntegrity.reason || insertedIntegrity.status}`);
+  }
   return {
     record: inserted as PublicVerificationRecord,
     status: 'CREATED'

@@ -3,8 +3,9 @@
  * HOEOS G6.2 Standard: Trusted Write Path, Idempotent Record Persistence & Conflict Protection.
  */
 
-import { EvidenceEngineResult, AnalysisResultEnvelope } from './types.js';
+import { G4DPersistenceEnvelope, PersistableEvidenceResult } from './types.js';
 import { supabase } from '../../lib/supabase.js';
+import { validatePersistedVerificationRecord } from './verificationPersistenceIntegrity.js';
 
 export interface PublicVerificationRecord {
   id?: string;
@@ -56,7 +57,7 @@ export class VerificationPersistenceService {
   /**
    * Validates the data integrity of a certified G5 result before persistence.
    */
-  static validateResultIntegrity(result: EvidenceEngineResult, providedVerificationId?: string): string {
+  static validateResultIntegrity(result: PersistableEvidenceResult, providedVerificationId?: string): string {
     if (!result) {
       throw new VerificationValidationError('Missing certified verification result');
     }
@@ -85,15 +86,22 @@ export class VerificationPersistenceService {
   }
 
   /**
-   * Converts a certified EvidenceEngineResult into a persistent PublicVerificationRecord database payload.
+   * G4-D read-only validation for database rows before idempotent return or public display.
+   */
+  static validatePersistedRecord(record: PublicVerificationRecord | Record<string, any>) {
+    return validatePersistedVerificationRecord(record);
+  }
+
+  /**
+   * Converts a certified PersistableEvidenceResult into a persistent PublicVerificationRecord database payload.
    */
   static buildPersistenceRecord(
-    result: EvidenceEngineResult,
-    envelope?: AnalysisResultEnvelope
+    result: PersistableEvidenceResult,
+    envelope: G4DPersistenceEnvelope
   ): PublicVerificationRecord {
     const verificationId = this.validateResultIntegrity(result);
 
-    return {
+    const record: PublicVerificationRecord = {
       verification_id: verificationId,
       document_hash: result.documentHash,
       evidence_hash: result.evidenceHash,
@@ -101,11 +109,16 @@ export class VerificationPersistenceService {
       policy_version: result.policyVersion || 'G3-POLICY-v1',
       overall_similarity: result.overallSimilarity,
       total_sources_found: result.totalSourcesFound || 0,
-      evidence_envelope: envelope || {
-        result,
-        persistedAt: new Date().toISOString(),
-      },
+      evidence_envelope: envelope,
     };
+
+    const integrity = validatePersistedVerificationRecord(record);
+    if (integrity.status !== 'VALID') {
+      throw new VerificationValidationError(
+        `Verification envelope failed G4-D integrity validation: ${integrity.reason || integrity.status}`
+      );
+    }
+    return record;
   }
 
   /**
@@ -113,8 +126,8 @@ export class VerificationPersistenceService {
    * Enforces idempotency (same result = no-op return) and conflict rejection (conflicting hashes = throw error).
    */
   async persistVerificationRecord(
-    result: EvidenceEngineResult,
-    envelope?: AnalysisResultEnvelope
+    result: PersistableEvidenceResult,
+    envelope: G4DPersistenceEnvelope
   ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
     const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope);
 
@@ -144,6 +157,9 @@ export class VerificationPersistenceService {
     const serviceRoleKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY');
     const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
 
+    if (!serviceRoleKey || !supabaseUrl) {
+      throw new Error('Trusted persistence requires VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY outside the browser.');
+    }
     let client = supabase;
     if (serviceRoleKey && supabaseUrl) {
       const { createClient } = await import('@supabase/supabase-js');
@@ -160,10 +176,14 @@ export class VerificationPersistenceService {
       .maybeSingle();
 
     if (fetchError && fetchError.code !== 'PGRST116') {
-      console.warn('Supabase query returned error (or offline mode):', fetchError.message);
+      throw new Error(`Failed to read existing verification record before persistence: ${fetchError.message}`);
     }
 
     if (existing) {
+      const integrity = validatePersistedVerificationRecord(existing);
+      if (integrity.status !== 'VALID') {
+        throw new VerificationConflictError(`Existing verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
+      }
       // 2. Conflict Check: Verify hash immutability
       if (
         existing.document_hash !== recordPayload.document_hash ||
@@ -196,6 +216,13 @@ export class VerificationPersistenceService {
           .eq('verification_id', recordPayload.verification_id)
           .single();
 
+        if (reFetched) {
+          const integrity = validatePersistedVerificationRecord(reFetched);
+          if (integrity.status !== 'VALID') {
+            throw new VerificationConflictError(`Concurrent verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
+          }
+        }
+
         if (
           reFetched &&
           reFetched.document_hash === recordPayload.document_hash &&
@@ -215,6 +242,10 @@ export class VerificationPersistenceService {
       throw new Error(`Failed to persist verification record: ${insertError.message}`);
     }
 
+    const insertedIntegrity = validatePersistedVerificationRecord(inserted);
+    if (insertedIntegrity.status !== 'VALID') {
+      throw new VerificationConflictError(`Inserted verification record failed G4-D integrity validation: ${insertedIntegrity.reason || insertedIntegrity.status}`);
+    }
     return {
       record: inserted as PublicVerificationRecord,
       status: 'CREATED',

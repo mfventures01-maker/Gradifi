@@ -1,7 +1,6 @@
 /**
  * GRADIFI / SEFAES - OCR SERVICE
- * Text extraction from images using Tesseract.js
- * Constitutional Law 8: Build Engines, Not Pages
+ * Text extraction from images using Tesseract.js.
  */
 
 import { createWorker } from 'tesseract.js';
@@ -15,17 +14,39 @@ export interface OCRResult {
   charCount: number;
 }
 
+function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  onLateResolve?: (value: T) => void
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      settled = true;
+      reject(new Error('OCR_TIMEOUT'));
+    }, Math.max(1, timeoutMs));
+
+    promise.then(value => {
+      if (settled) {
+        try { onLateResolve?.(value); } catch { /* best-effort late cleanup */ }
+        return;
+      }
+      settled = true;
+      clearTimeout(timer);
+      resolve(value);
+    }, error => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(error);
+    });
+  });
+}
+
 export const ocrService = {
-  /**
-   * Extract text from an image (File, Buffer, or base64 string)
-   * Enforces 30-second OCR timeout and guaranteed worker termination.
-   * @param imageInput - Image file, buffer, or string URL/base64
-   * @param timeoutMs - Max execution time in ms (default 30000ms)
-   * @returns Extracted text with confidence scores
-   */
   async extractText(imageInput: any, timeoutMs: number = 30000): Promise<OCRResult> {
     let worker: any = null;
-    let timeoutTimer: NodeJS.Timeout | null = null;
+    const startedAt = Date.now();
 
     try {
       let payload = imageInput;
@@ -35,65 +56,69 @@ export const ocrService = {
         typeof process !== 'undefined' &&
         process.versions?.node
       ) {
-        const arrayBuffer = await imageInput.arrayBuffer();
-        payload = Buffer.from(arrayBuffer);
+        payload = Buffer.from(await imageInput.arrayBuffer());
       }
 
-      const workerPromise = (async () => {
-        worker = await createWorker('eng');
-        const { data } = await worker.recognize(payload);
-        return data;
-      })();
-
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        timeoutTimer = setTimeout(() => {
-          reject(new Error('OCR_TIMEOUT'));
-        }, timeoutMs);
+      const workerPromise = Promise.resolve().then(() => createWorker('eng'));
+      worker = await withTimeout(workerPromise, timeoutMs, lateWorker => {
+        void lateWorker.terminate();
       });
 
-      const data: any = await Promise.race([workerPromise, timeoutPromise]);
+      const remainingMs = timeoutMs - (Date.now() - startedAt);
+      if (remainingMs <= 0) throw new Error('OCR_TIMEOUT');
+
+      const recognition: any = await withTimeout<any>(
+        worker.recognize(payload),
+        remainingMs
+      );
+      const data: any = recognition?.data || {};
+      const text = typeof data.text === 'string' ? data.text : '';
+      const confidence = Number.isFinite(data.confidence)
+        ? Math.max(0, Math.min(100, data.confidence))
+        : 0;
+      const tesseractWords = Array.isArray(data.words)
+        ? data.words
+            .map((word: any) => ({
+              text: typeof word?.text === 'string' ? word.text.trim() : '',
+              confidence: Number.isFinite(word?.confidence)
+                ? Math.max(0, Math.min(100, word.confidence))
+                : confidence
+            }))
+            .filter((word: { text: string }) => word.text.length > 0)
+        : [];
+      const words = tesseractWords.length > 0
+        ? tesseractWords
+        : (text.match(/[\p{L}\p{N}]+(?:['’.-][\p{L}\p{N}]+)*/gu) || [])
+            .map((word: string) => ({ text: word, confidence }));
 
       return {
-        text: data.text || '',
-        confidence: data.confidence || 0,
-        words: (data.words || []).map((w: any) => ({ text: w.text || '', confidence: w.confidence || 0 })),
-        lines: (data.lines || []).map((l: any) => l.text || ''),
-        wordCount: data.words?.length || 0,
-        charCount: data.text?.length || 0
+        text,
+        confidence,
+        words,
+        lines: Array.isArray(data.lines)
+          ? data.lines.map((line: any) => typeof line?.text === 'string' ? line.text : '')
+          : [],
+        wordCount: words.length,
+        charCount: text.length
       };
     } catch (error: any) {
-      console.error('❌ OCR Error:', error?.message || error);
-      if (error?.message === 'OCR_TIMEOUT') {
-        throw new Error('OCR_TIMEOUT');
-      }
+      if (error?.message === 'OCR_TIMEOUT') throw new Error('OCR_TIMEOUT');
       throw new Error('OCR_WORKER_FAILURE');
     } finally {
-      if (timeoutTimer) {
-        clearTimeout(timeoutTimer);
-      }
       if (worker) {
-        try {
-          await worker.terminate();
-        } catch {
-          // Ignore termination errors during cleanup
-        }
+        try { await worker.terminate(); } catch { /* cleanup must not mask OCR result */ }
       }
     }
   },
 
-  /**
-   * Extract text from multiple images
-   */
   async extractFromPages(images: any[]): Promise<OCRResult[]> {
-    const results = await Promise.all(
-      images.map(img => this.extractText(img))
-    );
+    const results: OCRResult[] = [];
+    for (const image of images) {
+      results.push(await this.extractText(image));
+    }
     return results;
   },
 
-  /**
-   * Clean OCR output
-   */
   cleanText(rawText: string): string {
     return rawText
       .replace(/[^\w\s.,!?'"()-]/g, ' ')
@@ -101,9 +126,6 @@ export const ocrService = {
       .trim();
   },
 
-  /**
-   * Get OCR confidence assessment
-   */
   getConfidenceLevel(confidence: number): 'high' | 'medium' | 'low' {
     if (confidence >= 80) return 'high';
     if (confidence >= 50) return 'medium';

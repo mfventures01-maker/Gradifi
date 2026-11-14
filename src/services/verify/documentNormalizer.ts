@@ -175,7 +175,7 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
     // equals canonicalTokens.length).
     const abbreviations = ['Dr','Prof','Mr','Mrs','Ms','Vol','No','Fig','Sec','Eq','Ch','pp','p','etc','e\\.g','i\\.e','vs','Viz'];
     const abbrPattern = '(?:\\b(?:' + abbreviations.join('|') + ')\\.)';
-    const doiPattern = '(?:\\b10\\.\\d{4,}\\/\\S+?\\.(?=\\s|$))';
+    const doiPattern = '(?:\\b10\\.\\d{4,}\\/\\S+?(?=[.!?](?:\\s|$)))';
     const decimalPattern = '(?:\\b\\d+\\.\\d+)';
     const initialPattern = '(?:\\b[A-Z]\\.(?=\\s+[A-Z]))';
 
@@ -213,7 +213,30 @@ export function segmentDocument(rawText: string, docId: string = 'DOC-001'): Seg
       globalSentenceIdx++;
       const sId = `SEN-${String(globalSentenceIdx).padStart(3, '0')}`;
       const leadingWhitespace = restored.length - restored.trimStart().length;
-      const sStart = pStart + sMatch.index + leadingWhitespace;
+
+      // Protected placeholders can be shorter or longer than the abbreviations
+      // they replace. Convert sentence offsets from protectedText coordinates
+      // back to the original paragraph coordinates before publishing evidence.
+      const protectedOffsetToOriginal = (offset: number): number => {
+        let originalOffset = offset;
+        const spans = protectedSpans
+          .map(span => ({
+            index: protectedText.indexOf(span.placeholder),
+            placeholderLength: span.placeholder.length,
+            originalLength: span.text.length
+          }))
+          .filter(span => span.index >= 0)
+          .sort((a, b) => a.index - b.index);
+
+        for (const span of spans) {
+          if (offset >= span.index + span.placeholderLength) {
+            originalOffset += span.originalLength - span.placeholderLength;
+          }
+        }
+        return originalOffset;
+      };
+
+      const sStart = pStart + protectedOffsetToOriginal(sMatch.index + leadingWhitespace);
       const sEnd = sStart + sText.length;
 
       // Extract sliding window n-gram phrases (N=3, 5, 7)
@@ -310,6 +333,7 @@ export interface BuildCanonicalOptions {
   filename?: string;
   fileSizeBytes?: number;
   extractionMethod?: 'text_reader' | 'pdf_stream_extractor' | 'ocr_tesseract' | 'manual_paste' | 'demo_fixture';
+  mimeType?: string;
   isFixture?: boolean;
   overrideMetadata?: Partial<{
     title: string;
@@ -367,7 +391,7 @@ export function buildCanonicalAnalysisDocument(options: BuildCanonicalOptions): 
   const source: DocumentSourceMetadata = {
     filename: options.filename || (isFixture ? 'sample_academic_paper.pdf' : 'submitted_document.pdf'),
     fileSizeBytes: options.fileSizeBytes || rawText.length,
-    mimeType: options.filename?.endsWith('.pdf') ? 'application/pdf' : 'text/plain',
+    mimeType: options.mimeType || (options.filename?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'text/plain'),
     extractionMethod: options.extractionMethod || (isFixture ? 'demo_fixture' : 'manual_paste'),
     isFixture,
     origin,
