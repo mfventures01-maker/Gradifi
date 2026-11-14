@@ -1,0 +1,50 @@
+name: Gradifi Verify Commercial MVP - HOEOS Gates
+
+on:
+  push:
+    branches:
+      - sprint/verify-commercial-mvp-10h
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-commercial-mvp-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  baseline:
+    name: G0 Baseline - Typecheck, Unit Tests, Production Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout sprint branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Client and server typecheck
+        run: npm run typecheck
+
+      - name: Vitest suite
+        run: npm test -- --reporter=default --reporter=junit --outputFile=test-results/vitest-junit.xml
+
+      - name: Production build
+        run: npm run build
+
+      - name: Preserve test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-g0-test-report
+          path: test-results/vitest-junit.xml
+          if-no-files-found: ignore
+          retention-days: 14
