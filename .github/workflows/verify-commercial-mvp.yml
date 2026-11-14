@@ -34,7 +34,15 @@ jobs:
       - name: Capture dependency audit
         run: |
           mkdir -p test-results
-          npm audit --json > test-results/npm-audit.json || true
+          npm audit --json > test-results/npm-audit-before-fix.json || true
+          npm audit --omit=dev --json > test-results/npm-audit-production-before-fix.json || true
+
+      - name: Apply non-breaking dependency security fixes
+        run: |
+          npm audit fix || true
+          npm audit --json > test-results/npm-audit-after-fix.json || true
+          npm audit --omit=dev --json > test-results/npm-audit-production-after-fix.json || true
+          cp package-lock.json test-results/package-lock-after-audit-fix.json
 
       - name: Build server runtime imports
         run: npm run build:server
@@ -58,7 +66,11 @@ jobs:
           name: verify-g0-test-report
           path: |
             test-results/vitest-junit.xml
-            test-results/npm-audit.json
+            test-results/npm-audit-before-fix.json
+            test-results/npm-audit-production-before-fix.json
+            test-results/npm-audit-after-fix.json
+            test-results/npm-audit-production-after-fix.json
+            test-results/package-lock-after-audit-fix.json
           if-no-files-found: ignore
           retention-days: 14
 
