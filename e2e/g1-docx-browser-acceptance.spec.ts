@@ -25,7 +25,7 @@ test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
     });
 
     // 1. Target Fixture verification
-    const fixturePath = path.resolve('C:/Users/faith/Downloads/DIGITAL THERMOMETER real.docx');
+    const fixturePath = path.resolve('tests/fixtures/g1/DIGITAL_THERMOMETER_real.docx');
     expect(fs.existsSync(fixturePath)).toBe(true);
     const fixtureStats = fs.statSync(fixturePath);
     expect(fixtureStats.size).toBeGreaterThan(100_000);
