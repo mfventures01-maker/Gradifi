@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { handlePersistenceServerRequest } from '../src/services/verify/server/persistenceServerHandler';
 import {
   buildPublicReceiptEnvelope,
   handleTrustedVerifyRun,
@@ -124,6 +125,21 @@ describe('HOEOS P0 trusted verification run boundary', () => {
     expect(serialized).toContain('METADATA_ONLY_NO_SUBMITTED_TEXT');
     expect(serialized).toContain('A Verified Academic Source');
     expect(serialized).toContain('DETERMINISTIC_MATCH');
+  });
+
+  it('fails closed when only an anonymous Supabase key is configured', async () => {
+    vi.stubEnv('SUPABASE_URL', 'https://example.supabase.co');
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://example.supabase.co');
+    vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', '');
+    vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'public-anon-key');
+
+    try {
+      await expect(
+        handlePersistenceServerRequest({ result: makeResult() })
+      ).rejects.toThrow('Trusted receipt storage is not configured');
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it('returns the real server result without inventing a receipt when storage is unavailable', async () => {
