@@ -151,5 +151,6 @@ jobs:
             tests/hoeos/four_gates/evidence/
             test-results/
             playwright-report/
+          include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 14
