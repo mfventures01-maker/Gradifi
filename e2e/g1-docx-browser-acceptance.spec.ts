@@ -4,7 +4,7 @@ import path from 'path';
 
 test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
   test('executes real commercial upload with DIGITAL THERMOMETER real.docx and validates complete chain', async ({ page }) => {
-    test.setTimeout(60000);
+    test.setTimeout(180000);
 
     const consoleLogs: string[] = [];
     const networkFailures: string[] = [];
@@ -98,6 +98,23 @@ test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
     // result must remain visible without inventing a persisted public receipt.
     await expect(page.getByText('NO PUBLIC RECEIPT')).toBeVisible();
     await expect(page.getByText(/No public QR receipt was created/)).toBeVisible();
+
+    // 11. Edit the extracted document and prove a fresh server run changes its hash.
+    const hashLocator = page.getByText(/Hash: [a-f0-9]{16}\.\.\./i);
+    const originalHash = await hashLocator.last().innerText();
+    const revisionEditor = page.getByLabel('Revised document text');
+    const originalRevision = await revisionEditor.inputValue();
+    const revisedText = `${originalRevision}\n\nHOEOS commercial MVP revision marker: 2026-11-14.`;
+    await revisionEditor.fill(revisedText);
+    const recheckButton = page.getByRole('button', { name: 'Run verification on revised text' });
+    await expect(recheckButton).toBeEnabled();
+    await recheckButton.click();
+
+    await expect(page.getByText('NO PUBLIC RECEIPT')).toBeVisible({ timeout: 90000 });
+    await expect(page.getByLabel('Revised document text')).toHaveValue(revisedText);
+    const revisedHash = await hashLocator.last().innerText();
+    expect(revisedHash).not.toBe(originalHash);
+
     const verificationEndTime = Date.now();
     const totalElapsedMs = verificationEndTime - uploadStartTime;
     console.log(`Full verification completed in ${totalElapsedMs}ms`);
@@ -105,7 +122,7 @@ test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
     // Verify no five-minute hang
     expect(totalElapsedMs).toBeLessThan(300000); // 5 minutes = 300,000ms
 
-    // 11. Verify Evidence artifacts
+    // 12. Verify Evidence artifacts
     const screenshotDir = path.resolve('tests/hoeos/g2/evidence/g1_browser');
     fs.mkdirSync(screenshotDir, { recursive: true });
     const screenshotPath = path.join(screenshotDir, 'g1_docx_browser_completion.png');
