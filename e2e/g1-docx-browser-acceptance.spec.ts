@@ -3,8 +3,13 @@ import fs from 'fs';
 import path from 'path';
 
 test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
-  test('executes real commercial upload with DIGITAL THERMOMETER real.docx and validates complete chain', async ({ page }) => {
+  test('executes real commercial upload, server verification, correction and re-check', async ({ page }) => {
     test.setTimeout(180000);
+    const hasIsolatedReceiptStorage = Boolean(
+      process.env.VERIFY_ISOLATED_SUPABASE_URL &&
+      process.env.VERIFY_ISOLATED_SUPABASE_ANON_KEY &&
+      process.env.VERIFY_ISOLATED_SUPABASE_SERVICE_ROLE_KEY
+    );
 
     const consoleLogs: string[] = [];
     const networkFailures: string[] = [];
@@ -94,12 +99,19 @@ test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
     await page.waitForSelector('text=3. Google Books Evidence', { timeout: 30000 });
     await expect(page.locator('text=Canonical Document Evidence Payload')).toBeVisible();
 
-    // CI has no Supabase service-role secret by design. The server-computed
-    // result must remain visible without inventing a persisted public receipt.
-    await expect(page.getByText('NO PUBLIC RECEIPT')).toBeVisible();
-    await expect(page.getByText(/No public QR receipt was created/)).toBeVisible();
+    let firstReceiptId: string | null = null;
+    if (hasIsolatedReceiptStorage) {
+      const firstReceipt = page.getByText(/VRF-[0-9A-F]{12}/).last();
+      await expect(firstReceipt).toBeVisible();
+      firstReceiptId = (await firstReceipt.innerText()).match(/VRF-[0-9A-F]{12}/)?.[0] || null;
+      expect(firstReceiptId).not.toBeNull();
+    } else {
+      // Default CI has no isolated Supabase secrets: no public receipt is expected.
+      await expect(page.getByText('NO PUBLIC RECEIPT')).toBeVisible();
+      await expect(page.getByText(/No public QR receipt was created/)).toBeVisible();
+    }
 
-    // 11. Edit the extracted document and prove a fresh server run changes its hash.
+    // Edit the extracted document and prove a fresh server run changes its hash.
     const hashLocator = page.getByText(/Hash: [a-f0-9]{16}\.\.\./i);
     const originalHash = await hashLocator.last().innerText();
     const revisionEditor = page.getByLabel('Revised document text');
@@ -111,8 +123,17 @@ test.describe('HOEOS G1.1 Real DOCX Browser Runtime Acceptance', () => {
     await recheckButton.click();
 
     // Require the first result screen to disappear before accepting the second.
-    await expect(page.getByText('NO PUBLIC RECEIPT')).toBeHidden({ timeout: 10000 });
-    await expect(page.getByText('NO PUBLIC RECEIPT')).toBeVisible({ timeout: 90000 });
+    if (firstReceiptId) {
+      await expect(page.getByText(firstReceiptId, { exact: true })).toBeHidden({ timeout: 10000 });
+      const secondReceipt = page.getByText(/VRF-[0-9A-F]{12}/).last();
+      await expect(secondReceipt).toBeVisible({ timeout: 90000 });
+      const secondReceiptId = (await secondReceipt.innerText()).match(/VRF-[0-9A-F]{12}/)?.[0] || null;
+      expect(secondReceiptId).not.toBeNull();
+      expect(secondReceiptId).not.toBe(firstReceiptId);
+    } else {
+      await expect(page.getByText('NO PUBLIC RECEIPT')).toBeHidden({ timeout: 10000 });
+      await expect(page.getByText('NO PUBLIC RECEIPT')).toBeVisible({ timeout: 90000 });
+    }
     await expect(page.getByLabel('Revised document text')).toHaveValue(revisedText);
     const revisedHash = await hashLocator.last().innerText();
     expect(revisedHash).not.toBe(originalHash);
