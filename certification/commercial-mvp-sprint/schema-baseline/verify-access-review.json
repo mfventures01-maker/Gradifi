@@ -1,0 +1,2061 @@
+{
+  "generated_at": "2026-11-14",
+  "project_ref": "ehkmfnaqkdgkjmdxxbwj",
+  "scope": "Gradifi Verify and directly supporting billing/tenant/audit objects",
+  "grants": [
+    {
+      "table": "audit_logs",
+      "grantee": "anon",
+      "privileges": [
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER"
+      ]
+    },
+    {
+      "table": "audit_logs",
+      "grantee": "authenticated",
+      "privileges": [
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER"
+      ]
+    },
+    {
+      "table": "audit_logs",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "audit_logs",
+      "grantee": "service_role",
+      "privileges": [
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER"
+      ]
+    },
+    {
+      "table": "billable_events",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "billable_events",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "billable_events",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "billable_events",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "documents",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "documents",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "documents",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "documents",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "institution_plagiarism_checks",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "institution_plagiarism_checks",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "institution_plagiarism_checks",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "institution_plagiarism_checks",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_checks",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_checks",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_checks",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_checks",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_corrections",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_corrections",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_corrections",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_corrections",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_matches",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_matches",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_matches",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_matches",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_reports",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_reports",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_reports",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "plagiarism_reports",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "price_versions",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "price_versions",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "price_versions",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "price_versions",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "public_verification_records",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "public_verification_records",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "public_verification_records",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "public_verification_records",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "service_versions",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "service_versions",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "service_versions",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "service_versions",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "services",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "services",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "services",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "services",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "tenant_identity_map",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "tenant_identity_map",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "tenant_identity_map",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "tenant_identity_map",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "verification_runs",
+      "grantee": "anon",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "verification_runs",
+      "grantee": "authenticated",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "verification_runs",
+      "grantee": "postgres",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "verification_runs",
+      "grantee": "service_role",
+      "privileges": [
+        "DELETE",
+        "INSERT",
+        "REFERENCES",
+        "SELECT",
+        "TRIGGER",
+        "TRUNCATE",
+        "UPDATE"
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "name": "Institution members can read billable events",
+      "roles": [
+        "authenticated"
+      ],
+      "table": "billable_events",
+      "using": "(EXISTS ( SELECT 1\n   FROM tenant_identity_map tim\n  WHERE ((tim.user_id = ( SELECT auth.uid() AS uid)) AND (tim.institution_id = billable_events.institution_id))))",
+      "command": "SELECT",
+      "with_check": null
+    },
+    {
+      "name": "Authenticated users can read active price versions",
+      "roles": [
+        "authenticated"
+      ],
+      "table": "price_versions",
+      "using": "((status = 'active'::text) AND (effective_from <= now()) AND ((effective_to IS NULL) OR (effective_to > now())))",
+      "command": "SELECT",
+      "with_check": null
+    },
+    {
+      "name": "Public Verification Record Select Policy",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "table": "public_verification_records",
+      "using": "true",
+      "command": "SELECT",
+      "with_check": null
+    },
+    {
+      "name": "Authenticated users can read active service versions",
+      "roles": [
+        "authenticated"
+      ],
+      "table": "service_versions",
+      "using": "((status = 'active'::text) AND (EXISTS ( SELECT 1\n   FROM services s\n  WHERE ((s.id = service_versions.service_id) AND (s.status = 'active'::text)))))",
+      "command": "SELECT",
+      "with_check": null
+    },
+    {
+      "name": "Authenticated users can read active services",
+      "roles": [
+        "authenticated"
+      ],
+      "table": "services",
+      "using": "(status = 'active'::text)",
+      "command": "SELECT",
+      "with_check": null
+    },
+    {
+      "name": "Tenant users can read own tenant mapping",
+      "roles": [
+        "authenticated"
+      ],
+      "table": "tenant_identity_map",
+      "using": "(( SELECT auth.uid() AS uid) = user_id)",
+      "command": "SELECT",
+      "with_check": null
+    },
+    {
+      "name": "Institution members can read verification runs",
+      "roles": [
+        "authenticated"
+      ],
+      "table": "verification_runs",
+      "using": "(EXISTS ( SELECT 1\n   FROM tenant_identity_map tim\n  WHERE ((tim.user_id = ( SELECT auth.uid() AS uid)) AND (tim.institution_id = verification_runs.institution_id))))",
+      "command": "SELECT",
+      "with_check": null
+    }
+  ],
+  "functions": [
+    {
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "args": "p_user_id uuid, p_institution_id uuid, p_school_id uuid, p_role text",
+      "name": "bootstrap_tenant_identity",
+      "returns": "jsonb",
+      "definition": "CREATE OR REPLACE FUNCTION public.bootstrap_tenant_identity(p_user_id uuid, p_institution_id uuid, p_school_id uuid, p_role text)\n RETURNS jsonb\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n\r\n    INSERT INTO tenant_identity_map (\r\n        user_id,\r\n        institution_id,\r\n        school_id,\r\n        role,\r\n        created_at\r\n    )\r\n    VALUES (\r\n        p_user_id,\r\n        p_institution_id,\r\n        p_school_id,\r\n        p_role,\r\n        now()\r\n    )\r\n    ON CONFLICT (user_id)\r\n    DO UPDATE SET\r\n        institution_id = EXCLUDED.institution_id,\r\n        school_id = EXCLUDED.school_id,\r\n        role = EXCLUDED.role;\r\n\r\n    RETURN jsonb_build_object(\r\n        'success', true,\r\n        'user_id', p_user_id,\r\n        'institution_id', p_institution_id,\r\n        'school_id', p_school_id,\r\n        'role', p_role\r\n    );\r\n\r\nEND;\r\n$function$\n",
+      "configuration": null,
+      "security_definer": false
+    },
+    {
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "args": "",
+      "name": "current_tenant",
+      "returns": "jsonb",
+      "definition": "CREATE OR REPLACE FUNCTION public.current_tenant()\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nDECLARE\r\n  v_result jsonb;\r\nBEGIN\r\n  SELECT jsonb_build_object(\r\n    'user_id', p.user_id,\r\n    'institution_id', p.institution_id,\r\n    'school_id', p.school_id,\r\n    'role', p.role\r\n  )\r\n  INTO v_result\r\n  FROM public.profiles p\r\n  WHERE p.user_id = auth.uid();\r\n\r\n  RETURN v_result;\r\nEND;\r\n$function$\n",
+      "configuration": null,
+      "security_definer": true
+    },
+    {
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "args": "",
+      "name": "gradifi_reject_audit_mutation",
+      "returns": "trigger",
+      "definition": "CREATE OR REPLACE FUNCTION public.gradifi_reject_audit_mutation()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog'\nAS $function$\nBEGIN\n  IF current_user = 'postgres' THEN\n    IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;\n    RETURN NEW;\n  END IF;\n  RAISE EXCEPTION 'audit_logs is append-only; % is prohibited', TG_OP\n    USING ERRCODE = '42501';\nEND;\n$function$\n",
+      "configuration": [
+        "search_path=pg_catalog"
+      ],
+      "security_definer": false
+    },
+    {
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "args": "p_user_id uuid",
+      "name": "resolve_tenant",
+      "returns": "jsonb",
+      "definition": "CREATE OR REPLACE FUNCTION public.resolve_tenant(p_user_id uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\nAS $function$\r\nDECLARE\r\n    v_record RECORD;\r\nBEGIN\r\n    SELECT \r\n        p.user_id,\r\n        p.institution_id,\r\n        p.school_id,\r\n        p.role,\r\n        p.full_name\r\n    INTO v_record\r\n    FROM public.profiles p\r\n    WHERE p.user_id = p_user_id;\r\n\r\n    IF v_record.user_id IS NULL THEN\r\n        RETURN jsonb_build_object(\r\n            'success', false,\r\n            'error', 'No tenant identity found'\r\n        );\r\n    END IF;\r\n\r\n    RETURN jsonb_build_object(\r\n        'success', true,\r\n        'user_id', v_record.user_id,\r\n        'institution_id', v_record.institution_id,\r\n        'school_id', v_record.school_id,\r\n        'role', v_record.role,\r\n        'full_name', v_record.full_name\r\n    );\r\nEND;\r\n$function$\n",
+      "configuration": null,
+      "security_definer": false
+    },
+    {
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "args": "p_user_id uuid",
+      "name": "resolve_tenant_context",
+      "returns": "jsonb",
+      "definition": "CREATE OR REPLACE FUNCTION public.resolve_tenant_context(p_user_id uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\nAS $function$\r\nDECLARE\r\n  v_institution_id uuid;\r\n  v_school_id uuid;\r\n  v_role text;\r\nBEGIN\r\n\r\n  -- find actor\r\n  SELECT institution_id, school_id, role\r\n  INTO v_institution_id, v_school_id, v_role\r\n  FROM profiles\r\n  WHERE user_id = p_user_id;\r\n\r\n  -- fallback resolution if missing institution\r\n  IF v_institution_id IS NULL THEN\r\n    SELECT institution_id INTO v_institution_id\r\n    FROM schools\r\n    WHERE id = v_school_id;\r\n  END IF;\r\n\r\n  RETURN jsonb_build_object(\r\n    'institution_id', v_institution_id,\r\n    'school_id', v_school_id,\r\n    'role', v_role\r\n  );\r\n\r\nEND;\r\n$function$\n",
+      "configuration": null,
+      "security_definer": false
+    },
+    {
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "args": "p_tenant_id uuid",
+      "name": "set_active_tenant_context",
+      "returns": "void",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_active_tenant_context(p_tenant_id uuid)\n RETURNS void\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n\r\n    PERFORM set_config('app.tenant_id', p_tenant_id::text, true);\r\n\r\nEND;\r\n$function$\n",
+      "configuration": null,
+      "security_definer": false
+    },
+    {
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "args": "tenant_id uuid",
+      "name": "set_tenant_context",
+      "returns": "void",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_tenant_context(tenant_id uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nBEGIN\r\n  PERFORM set_config('app.current_tenant', tenant_id::TEXT, true);\r\nEND;\r\n$function$\n",
+      "configuration": null,
+      "security_definer": true
+    }
+  ],
+  "verify_tables": [
+    {
+      "name": "audit_logs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "actor_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "action",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "entity",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "entity_id",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "before",
+          "type": "jsonb",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "after",
+          "type": "jsonb",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "metadata",
+          "type": "jsonb",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "billable_events",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "institution_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "school_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "service_version_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "price_version_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "idempotency_key",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "quantity",
+          "type": "integer",
+          "default": "1",
+          "not_null": true
+        },
+        {
+          "name": "unit_amount",
+          "type": "numeric(14,2)",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "total_amount",
+          "type": "numeric(14,2)",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "currency",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "default": "'pending'::text",
+          "not_null": true
+        },
+        {
+          "name": "actor_user_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "request_fingerprint",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "metadata",
+          "type": "jsonb",
+          "default": "'{}'::jsonb",
+          "not_null": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": true
+        },
+        {
+          "name": "confirmed_at",
+          "type": "timestamp with time zone",
+          "default": null,
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "documents",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "tenant_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "student_name",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "uploaded_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        }
+      ],
+      "rls_forced": true,
+      "rls_enabled": true
+    },
+    {
+      "name": "institution_plagiarism_checks",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "institution_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "student_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "student_name",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "matriculation_number",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "supervisor_name",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "project_title",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "submission_date",
+          "type": "date",
+          "default": "CURRENT_DATE",
+          "not_null": false
+        },
+        {
+          "name": "similarity_score",
+          "type": "numeric(5,2)",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "ai_probability",
+          "type": "integer",
+          "default": "0",
+          "not_null": false
+        },
+        {
+          "name": "plagiarism_report_url",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "flagged_sections",
+          "type": "jsonb",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "approval_status",
+          "type": "character varying(50)",
+          "default": "'pending'::character varying",
+          "not_null": false
+        },
+        {
+          "name": "supervisor_signature_url",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "hod_signature_url",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "dean_signature_url",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "committee_chairman_signature_url",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "secretary_signature_url",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "supervisor_remarks",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "hod_remarks",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "dean_remarks",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "checked_by",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "checked_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "plagiarism_checks",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "institution_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "student_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "submission_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "document_text",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "document_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "word_count",
+          "type": "integer",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "overall_similarity",
+          "type": "double precision",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "internet_similarity",
+          "type": "double precision",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "academic_similarity",
+          "type": "double precision",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "student_paper_similarity",
+          "type": "double precision",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "match_groups",
+          "type": "jsonb",
+          "default": "'{\"cited\": 0, \"quoted\": 0, \"referenced\": 0, \"not_cited_or_quoted\": 0}'::jsonb",
+          "not_null": false
+        },
+        {
+          "name": "nerd_originality_score",
+          "type": "double precision",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "nerd_compliant",
+          "type": "boolean",
+          "default": "false",
+          "not_null": false
+        },
+        {
+          "name": "nerd_submission_id",
+          "type": "character varying(100)",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "status",
+          "type": "character varying(50)",
+          "default": "'pending'::character varying",
+          "not_null": false
+        },
+        {
+          "name": "checked_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        },
+        {
+          "name": "verification_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "evidence_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "engine_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "policy_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "canonicalization_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "config_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "result_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "terminal_state",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "default": null,
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "plagiarism_corrections",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "check_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "original_text",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "suggestion_text",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "suggestion_type",
+          "type": "character varying(50)",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "source_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "suggested_citation",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "applied",
+          "type": "boolean",
+          "default": "false",
+          "not_null": false
+        },
+        {
+          "name": "applied_at",
+          "type": "timestamp with time zone",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "plagiarism_matches",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "check_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "source_type",
+          "type": "character varying(50)",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "source_title",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "source_authors",
+          "type": "text[]",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "source_year",
+          "type": "integer",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "source_publisher",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "matched_text",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "matched_length",
+          "type": "integer",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "similarity",
+          "type": "double precision",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "start_position",
+          "type": "integer",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "end_position",
+          "type": "integer",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "match_category",
+          "type": "character varying(50)",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "plagiarism_reports",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "submission_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "similarity_score",
+          "type": "numeric(5,2)",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "flagged_passages",
+          "type": "jsonb",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "sources_checked",
+          "type": "text[]",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "report_url",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "checked_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "price_versions",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "service_version_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "version",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "amount",
+          "type": "numeric(14,2)",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "currency",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "default": "'draft'::text",
+          "not_null": true
+        },
+        {
+          "name": "effective_from",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": true
+        },
+        {
+          "name": "effective_to",
+          "type": "timestamp with time zone",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": true
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "public_verification_records",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "verification_id",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "document_hash",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "evidence_hash",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "engine_version",
+          "type": "text",
+          "default": "'G5-DETERMINISTIC-v1'::text",
+          "not_null": true
+        },
+        {
+          "name": "policy_version",
+          "type": "text",
+          "default": "'G3-POLICY-v1'::text",
+          "not_null": true
+        },
+        {
+          "name": "overall_similarity",
+          "type": "numeric",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "total_sources_found",
+          "type": "integer",
+          "default": "0",
+          "not_null": true
+        },
+        {
+          "name": "evidence_envelope",
+          "type": "jsonb",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": true
+        },
+        {
+          "name": "verification_run_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "result_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "manifest_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "public_schema_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "service_versions",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "service_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "version",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "engine_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "policy_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "canonicalization_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "default": "'draft'::text",
+          "not_null": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": true
+        },
+        {
+          "name": "activated_at",
+          "type": "timestamp with time zone",
+          "default": null,
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "services",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "code",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "default": "'active'::text",
+          "not_null": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": true
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "tenant_identity_map",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "institution_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "school_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": false
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    },
+    {
+      "name": "verification_runs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "default": "gen_random_uuid()",
+          "not_null": true
+        },
+        {
+          "name": "institution_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "school_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "service_version_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": true
+        },
+        {
+          "name": "billable_event_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "verification_id",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "source_submission_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "document_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "canonical_document_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "evidence_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "manifest_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "result_hash",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "engine_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "policy_version",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "default": "'queued'::text",
+          "not_null": true
+        },
+        {
+          "name": "attempt",
+          "type": "integer",
+          "default": "1",
+          "not_null": true
+        },
+        {
+          "name": "parent_run_id",
+          "type": "uuid",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "result",
+          "type": "jsonb",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "error_code",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "error_message",
+          "type": "text",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "default": null,
+          "not_null": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "default": "now()",
+          "not_null": true
+        }
+      ],
+      "rls_forced": false,
+      "rls_enabled": true
+    }
+  ]
+}
