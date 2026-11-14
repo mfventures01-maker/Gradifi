@@ -94,6 +94,7 @@ export const GradifiVerifyDemoPage: React.FC = () => {
   const [progressMsg, setProgressMsg] = useState('');
   const [extractedDoc, setExtractedDoc] = useState<ExtractedDocument | null>(null);
   const [documentText, setDocumentText] = useState('');
+  const [revisionText, setRevisionText] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Canonical document & Normalization state
@@ -153,6 +154,10 @@ export const GradifiVerifyDemoPage: React.FC = () => {
       setQrSvgHtml('');
     }
   }, [verificationId]);
+
+  useEffect(() => {
+    if (!result) setRevisionText(documentText);
+  }, [documentText, result]);
 
   // Sample document text for quick demo loading
   const SAMPLE_ACADEMIC_TEXT = `Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks
@@ -247,12 +252,17 @@ Distributed machine learning frameworks require mathematical determinism to guar
   };
 
   // Execute the authoritative server-side verification run.
-  const handleExecuteVerification = async () => {
-    if (!documentText.trim()) {
+  const handleExecuteVerification = async (documentTextOverride?: string) => {
+    const submittedText = typeof documentTextOverride === 'string'
+      ? documentTextOverride
+      : documentText;
+
+    if (!submittedText.trim()) {
       setUploadError('Please select or enter document text to verify.');
       return;
     }
 
+    setDocumentText(submittedText);
     setVerifying(true);
     setCurrentStep('federation');
     setUploadError(null);
@@ -264,7 +274,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
       const response = await fetch('/api/verify/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ documentText })
+        body: JSON.stringify({ documentText: submittedText })
       });
 
       const payload = await response.json().catch(() => ({}));
@@ -515,7 +525,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                       <Check className="w-3.5 h-3.5 text-emerald-400" /> Cryptographically Grounded Receipt
                     </div>
                     <div className="text-[11px] text-slate-400">
-                      Independent parties can verify this identity against the immutable system of record.
+                      Independent parties can resolve this receipt and check its document and evidence hash linkage.
                     </div>
                     <div className="text-[10px] font-mono text-slate-500 break-all">
                       {window.location.origin}/verify/{rec.verification_id}
@@ -1106,6 +1116,42 @@ Distributed machine learning frameworks require mathematical determinism to guar
                     // optional: wire to existing scroll behaviour
                   }}
                 />
+
+                <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
+                    <div>
+                      <h3 className="text-base font-bold text-white">Revise and Re-check</h3>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Edit your document and run the server-side verification again. Each successful run creates a new result; previous receipts are not overwritten.
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-blue-500/10 border border-blue-500/30 rounded-full px-3 py-1">
+                      Student correction workflow
+                    </span>
+                  </div>
+                  <textarea
+                    value={revisionText}
+                    onChange={(event) => setRevisionText(event.target.value)}
+                    rows={9}
+                    spellCheck={false}
+                    aria-label="Revised document text"
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950/70 p-4 text-xs leading-relaxed text-slate-200 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    placeholder="Edit the extracted document text here, then run a fresh verification."
+                  />
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <p className="text-[11px] text-slate-500">
+                      The next run uses the server-side G5 engine. The original uploaded file remains unchanged.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleExecuteVerification(revisionText)}
+                      disabled={verifying || !revisionText.trim() || revisionText === documentText}
+                      className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition-colors"
+                    >
+                      {verifying ? 'Re-checking…' : 'Run verification on revised text'}
+                    </button>
+                  </div>
+                </div>
 
                 {/* Source Attribution & Citation Hub (P5) */}
                 {publicResult && (
