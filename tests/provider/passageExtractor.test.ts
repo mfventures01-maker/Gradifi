@@ -31,10 +31,10 @@ Experimental results show low latency and stable thermal readings.`;
 
 // Test 1: exact substring match returns the passage
 runTest('Test 1 — exact substring match returns the passage', () => {
-  const snippet = 'design of a digital thermometer with high accuracy';
+  const snippet = 'This project presents the design of a digital thermometer with high accuracy temperature sensor. The system utilizes an LM35 temperature sensor coupled with an analog-to-digital converter.';
   const result = extractStudentPassage(SAMPLE_DOC, snippet);
   assert.ok(result, 'Result must not be null');
-  assert.strictEqual(result.text, 'design of a digital thermometer with high accuracy');
+  assert.strictEqual(result.text, snippet);
   assert.strictEqual(SAMPLE_DOC.slice(result.start, result.end), result.text);
 });
 
