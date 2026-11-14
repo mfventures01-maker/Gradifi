@@ -119,3 +119,12 @@ The G0 baseline job completed successfully:
 The first browser job in that run failed before Playwright execution because it checked out the workflow event SHA, which predated the lockfile commit, and `npm ci` correctly rejected the package/lock mismatch. The workflow has since been corrected to check out the latest sprint branch head for browser validation. The browser job is being expanded to cover both DOCX and PDF and can use only explicitly named isolated Supabase secrets. It refuses the known production project ref `ehkmfnaqkdgkjmdxxbwj`.
 
 No production Supabase request, write, migration, deployment or secret access was performed.
+
+## 9. Source remediation status on sprint branch
+
+- **P0-A — client-authored persistence:** repaired in source. `/api/verify/persist` returns HTTP 410; the Vite dev middleware also returns 410. The replacement `/api/verify/run` accepts document text and executes the real Verify engine server-side. Client-supplied result objects, scores and hashes are ignored. A Vitest negative-control test supplies a forged result and asserts the server-computed result is what reaches persistence.
+- **P0-B — anonymous persistence fallback:** repaired in source. Trusted persistence requires `SUPABASE_SERVICE_ROLE_KEY`; the legacy persistence service refuses browser-side writes and refuses anonymous-key fallback in Node. Negative-control tests cover both persistence boundaries.
+- **P0-C — public receipt privacy and assurance:** new receipts use a metadata-only envelope. Submitted text, canonical raw text and matched student passages are excluded. Public wording now claims hash linkage only, not an immutable or independently recomputed certificate. A digital signature and independent public evidence recomputation remain outside this MVP.
+- **Correction workflow:** editable extracted text and a fresh server-side re-verification action are implemented. The DOCX browser gate checks that the document hash changes on re-run.
+- **G1/G5 runtime:** browser execution is pending in the corrected workflow. The workflow supports optional `VERIFY_ISOLATED_SUPABASE_*` secrets for positive receipt tests and blocks the known production project ref. With no isolated secrets, the expected behavior is a real server result with `NO PUBLIC RECEIPT`.
+- **Production:** no production Supabase requests, writes, migration execution, deployments or secret access have been performed.
