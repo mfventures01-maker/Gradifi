@@ -58,6 +58,7 @@ export interface HumanAIAgreementProps {
 
 export interface ExamTimerProps {
   duration: number; // in minutes
+  deadlineAt?: string;
   onTimeUp?: () => void;
   onTick?: (remaining: number) => void;
   autoSubmit?: boolean;

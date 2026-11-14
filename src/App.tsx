@@ -18,7 +18,11 @@ import { GradingReview } from './pages/grading/GradingReview';
 import { CBTExamBuilder } from './pages/cbt/CBTExamBuilder';
 import { CBTExamRunner } from './pages/cbt/CBTExamRunner';
 import { CBTExamManager } from './pages/cbt/CBTExamManager';
+import { CBTCandidateExamListPage } from './pages/cbt/CBTCandidateExamListPage';
 import { CBTResultsViewer } from './pages/cbt/CBTResultsViewer';
+import { PublicCbtMarketplacePage } from './pages/cbt/PublicCbtMarketplacePage';
+import { PublicCbtAuthPage } from './pages/cbt/PublicCbtAuthPage';
+import { PublicCbtPaymentReturnPage } from './pages/cbt/PublicCbtPaymentReturnPage';
 
 // Phase 5: Writing Tools
 import { WritingToolsHubPage } from './pages/writing/WritingToolsHubPage';
@@ -72,7 +76,12 @@ function App() {
           <Route path="review/:scriptId" element={<GradingReview />} />
         </Route>
         
+        <Route path="/cbt/public" element={<PublicCbtMarketplacePage />} />
+        <Route path="/cbt/public/auth" element={<PublicCbtAuthPage />} />
+        <Route path="/cbt/public/payment-return" element={<AuthGuard><PublicCbtPaymentReturnPage /></AuthGuard>} />
+
         <Route path="/cbt" element={<AuthGuard />}>
+          <Route index element={<CBTCandidateExamListPage />} />
           <Route path="builder" element={<CBTExamBuilder />} />
           <Route path="builder/:examId" element={<CBTExamBuilder />} />
           <Route path="runner/:examId" element={<CBTExamRunner />} />
