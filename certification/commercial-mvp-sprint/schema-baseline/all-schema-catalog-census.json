@@ -1,0 +1,68 @@
+{
+  "baseline": {
+    "project_ref": "ehkmfnaqkdgkjmdxxbwj",
+    "database_version": "17.6.1.063",
+    "region": "eu-west-1",
+    "captured_at": "2026-11-14",
+    "method": "read-only PostgreSQL catalog queries through the connected Supabase project",
+    "scope": "All visible non-system schemas; no DDL, data writes, grants, policies, migrations, or deployments performed"
+  },
+  "schemas": [
+    {"name":"auth","owner":"supabase_admin","relations":27,"columns":271,"routines":4,"policies":0,"sequences":1,"relations_list":["audit_log_entries","custom_oauth_providers","flow_state","identities","instances","mfa_amr_claims","mfa_challenges","mfa_factors","mfa_recovery_code_sets","mfa_recovery_codes","oauth_authorizations","oauth_client_states","oauth_clients","oauth_consents","one_time_tokens","refresh_tokens","saml_providers","saml_relay_states","schema_migrations","scim_tokens","scim_users","sessions","sso_domains","sso_providers","users","webauthn_challenges","webauthn_credentials"],"purpose":"Supabase Auth managed schema; do not treat as application-owned"},
+    {"name":"extensions","owner":"postgres","relations":2,"columns":51,"routines":55,"policies":0,"relations_list":["pg_stat_statements","pg_stat_statements_info"],"purpose":"Installed extension support views and routines"},
+    {"name":"graphql","owner":"supabase_admin","relations":0,"columns":0,"routines":6,"policies":0,"sequences":1,"purpose":"pg_graphql internal schema"},
+    {"name":"graphql_public","owner":"supabase_admin","relations":0,"columns":0,"routines":1,"policies":0,"purpose":"GraphQL API function schema"},
+    {"name":"public","owner":"pg_database_owner","relations":130,"columns":1305,"routines":124,"policies":47,"sequences":3,"triggers":24,"purpose":"Application schema; detailed table, column, constraint, index, routine, trigger and policy exports remain in schema-baseline/catalog-*.json"},
+    {"name":"realtime","owner":"supabase_admin","relations":3,"columns":22,"routines":19,"policies":0,"sequences":1,"triggers":1,"relations_list":["messages","schema_migrations","subscription"],"purpose":"Supabase Realtime managed schema"},
+    {"name":"storage","owner":"supabase_admin","relations":10,"columns":91,"routines":24,"policies":2,"triggers":11,"relations_list":["bucket_lifecycle_states","buckets","buckets_analytics","buckets_vectors","lifecycle_abandoned_artifacts","migrations","objects","s3_multipart_uploads","s3_multipart_uploads_parts","vector_indexes"],"purpose":"Supabase Storage managed schema"},
+    {"name":"supabase_migrations","owner":"postgres","relations":1,"columns":6,"routines":0,"policies":0,"relations_list":["schema_migrations"],"purpose":"Supabase migration bookkeeping; separate from public application migration ledger"},
+    {"name":"vault","owner":"supabase_admin","relations":2,"columns":17,"routines":5,"policies":0,"relations_list":["decrypted_secrets","secrets"],"purpose":"Supabase Vault managed schema; secrets must not be exposed through application APIs"}
+  ],
+  "totals": {
+    "schemas": 9,
+    "relations": 175,
+    "relation_columns": 1763,
+    "constraints": 650,
+    "indexes": 433,
+    "routines": 238,
+    "rls_policies": 49,
+    "non_internal_triggers": 36,
+    "sequences": 6,
+    "enum_types": 13,
+    "installed_extensions": 6,
+    "default_acl_entries": 24
+  },
+  "storage": {
+    "buckets": [
+      {"id":"answer-scripts","public":false,"file_size_limit_bytes":10485760,"allowed_mime_types":["image/jpeg","image/png","image/jpg","application/pdf"]}
+    ],
+    "policies": [
+      {"table":"storage.objects","name":"Teachers can upload scripts","command":"INSERT","role":"authenticated","scope":"bucket_id = answer-scripts and auth.uid() belongs to teachers"},
+      {"table":"storage.objects","name":"Teachers can view scripts","command":"SELECT","role":"authenticated","scope":"bucket_id = answer-scripts and auth.uid() belongs to teachers"}
+    ],
+    "verify_usage":"No Verify upload-to-Storage call was found in the inspected Verify page and service call paths; current document extraction is performed in the browser and documentText is posted to /api/verify/run."
+  },
+  "extension_installations": [
+    {"name":"pgcrypto","schema":"extensions","version":"1.3"},
+    {"name":"pg_stat_statements","schema":"extensions","version":"1.11"},
+    {"name":"supabase_vault","schema":"vault","version":"0.3.1"},
+    {"name":"pg_graphql","schema":"graphql","version":"1.5.11"},
+    {"name":"uuid-ossp","schema":"extensions","version":"1.1"},
+    {"name":"plpgsql","schema":"pg_catalog","version":"1.0"}
+  ],
+  "qualifications": [
+    "This is a catalog census of all nine visible non-system schemas. It is not a byte-for-byte dump of every managed Supabase object definition.",
+    "The pre-existing public-schema exports provide the detailed public application catalog. Managed schemas are inventoried here by relation names and schema-level object counts; their internal definitions are owned by Supabase and are not proposed for modification.",
+    "The 130 public relations comprise 114 tables/partitioned tables, 13 views and 3 materialized views.",
+    "The 36 trigger count is non-internal triggers; internal PostgreSQL triggers are excluded.",
+    "No application table rows were read as part of this catalog census. Schema and permission metadata only.",
+    "The public schema's existing detailed baseline files are the authoritative detailed public-schema export for this sprint."
+  ],
+  "related_existing_exports": [
+    "schema-baseline/catalog-tables.json",
+    "schema-baseline/catalog-routines-views-triggers.json",
+    "schema-baseline/security-grants-policies.json",
+    "schema-baseline/verify-access-review.json",
+    "schema-baseline/migration-reconciliation.json"
+  ]
+}
