@@ -31,6 +31,14 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Capture dependency audit
+        run: |
+          mkdir -p test-results
+          npm audit --json > test-results/npm-audit.json || true
+
+      - name: Build server runtime imports
+        run: npm run build:server
+
       - name: Client and server typecheck
         run: npm run typecheck
 
