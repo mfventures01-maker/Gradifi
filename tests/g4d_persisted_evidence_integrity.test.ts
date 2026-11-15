@@ -137,8 +137,8 @@ describe('G4-D persisted evidence and retrieval integrity', () => {
     process.env.VITE_SUPABASE_URL = '';
     process.env.SUPABASE_SERVICE_ROLE_KEY = '';
     try {
-      await expect(handlePersistenceServerRequest(payload))
-        .rejects.toThrow(/trusted persistence configuration unavailable/);
+      await expect(handlePersistenceServerRequest(payload, 'valid-test-token'))
+        .rejects.toThrow(/Trusted persistence is not configured on the server/);
     } finally {
       if (previousUrl === undefined) delete process.env.VITE_SUPABASE_URL;
       else process.env.VITE_SUPABASE_URL = previousUrl;
@@ -149,7 +149,7 @@ describe('G4-D persisted evidence and retrieval integrity', () => {
     await expect(handlePersistenceServerRequest({
       result: payload.result,
       envelope: { ...payload.envelope, deterministicResult: undefined }
-    } as any)).rejects.toThrow(/must include an embedded deterministic result/);
+    } as any, 'valid-test-token')).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('fails closed when the browser result has no canonical text or deterministic findings', () => {
