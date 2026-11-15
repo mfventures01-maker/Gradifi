@@ -31,7 +31,7 @@ jobs:
         run: npm run typecheck
       - name: Persistence authentication and tamper tests
         run: npx vitest run tests/verifyPersistenceAuthorization.test.ts --reporter=verbose
-      - name: Existing persistence contract tests
-        run: npx vitest run tests/verificationPersistence.test.ts tests/g4d_persisted_evidence_integrity.test.ts --reporter=verbose
+      - name: Existing persistence and public receipt privacy tests
+        run: npx vitest run tests/verificationPersistence.test.ts tests/g4d_persisted_evidence_integrity.test.ts tests/publicReceiptPrivacy.test.ts --reporter=verbose
       - name: Production build
         run: npm run build
