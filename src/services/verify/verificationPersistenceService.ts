@@ -34,6 +34,31 @@ export class VerificationValidationError extends Error {
   }
 }
 
+/**
+ * Public receipt projection. Canonical submitted text and verbatim match
+ * excerpts are private evidence and must never be stored in the publicly
+ * readable receipt table. Server-side validation runs against the original
+ * request before this projection is built.
+ */
+function buildPublicEvidenceEnvelope(envelope: G4DPersistenceEnvelope): G4DPersistenceEnvelope {
+  const deterministicResult = envelope.deterministicResult;
+  const findings = deterministicResult.similarityAnalysis.findings.map((finding) => {
+    const { sourceSegment: _sourceSegment, matchedSegment: _matchedSegment, ...metadata } = finding as any;
+    return metadata;
+  });
+  return {
+    ...envelope,
+    canonicalDocument: undefined as any,
+    deterministicResult: {
+      ...deterministicResult,
+      similarityAnalysis: {
+        ...deterministicResult.similarityAnalysis,
+        findings
+      }
+    }
+  };
+}
+
 export class VerificationPersistenceService {
   /**
    * Generates the deterministic canonical verification ID from document and evidence hashes.
@@ -109,7 +134,7 @@ export class VerificationPersistenceService {
       policy_version: result.policyVersion || 'G3-POLICY-v1',
       overall_similarity: result.overallSimilarity,
       total_sources_found: result.totalSourcesFound || 0,
-      evidence_envelope: envelope,
+      evidence_envelope: buildPublicEvidenceEnvelope(envelope),
     };
 
     const integrity = validatePersistedVerificationRecord(record);
