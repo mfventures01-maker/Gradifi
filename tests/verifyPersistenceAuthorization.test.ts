@@ -85,7 +85,13 @@ describe('POST /api/verify/persist authorization boundary', () => {
     });
   });
 
-  it('rejects a missing or invalid Supabase session before privileged client creation', async () => {
+  it('rejects a missing bearer token before creating any Supabase client', async () => {
+    await expect(handlePersistenceServerRequest(payload as any, ''))
+      .rejects.toMatchObject({ statusCode: 401 });
+    expect(createClientMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects an invalid Supabase session before privileged client creation', async () => {
     authClient.auth.getUser.mockResolvedValue({
       data: { user: null },
       error: new Error('invalid token')
