@@ -24,7 +24,7 @@ const sourceEnd = sourceStart + sourceSegment.length;
 function fixture() {
   const result = {
     documentHash: computeHash(rawText),
-    evidenceHash: 'a1b2c3d4e5f60718293a',
+    evidenceHash: computeHash(`${computeHash(rawText)}::0:G5-DETERMINISTIC-v1:G3-POLICY-v1`),
     engineVersion: 'G5-DETERMINISTIC-v1',
     policyVersion: 'G3-POLICY-v1',
     overallSimilarity: 33.3,
