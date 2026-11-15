@@ -347,7 +347,7 @@ export function generateDeterministicPlagiarismReport(
     `Engine Version:       ${aggregation.engineVersion}`,
     `Normalization Ver:    ${aggregation.normalizationVersion}`,
     `Evidence Hash:        ${aggregation.evidenceHash}`,
-    `Analysis Timestamp:   ${new Date().toISOString()}`,
+    'Analysis Timestamp:   NOT RECORDED (deterministic engine output)',
     '',
     'OVERALL SUMMARY',
     '--------------------------------------------------------------------------------',
@@ -717,12 +717,96 @@ export function analyzeDocumentEvidence(input: DeterministicAnalysisInput): Dete
  * Internal engine implementation exposing already-computed aggregation without changing scoring or normalization.
  * HOEOS G5-M05A Standard.
  */
+/**
+ * Produces a format-independent evidence text view.
+ *
+ * Extractors legitimately preserve different paragraph and line-break layouts.
+ * Those layout differences must not alter sentence segmentation or finding IDs
+ * once canonical normalized identity has already converged. Whitespace is
+ * therefore collapsed while punctuation and token order are preserved.
+ *
+ * All sourceStart/sourceEnd values emitted by this comparison are offsets in
+ * this canonical evidence text view, not byte offsets or offsets into the
+ * original container file.
+ */
+export function toCanonicalEvidenceText(text: string): string {
+  return (text || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]*\n[ \t]*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Locate the strongest contiguous phrase evidence in the comparison document.
+ * Phrase offsets produced by detectPhraseMatches are offsets in normalizeText(),
+ * so they are deliberately NOT copied into canonical-document coordinates.
+ * This helper re-aligns normalized phrase tokens against canonical source tokens
+ * and returns a verified half-open UTF-16 range in canonicalSourceText.
+ */
+function locateCanonicalMatchedPassage(
+  sentenceEvidence: SentenceMatchEvidence,
+  canonicalSourceText: string
+): { text: string; start: number; end: number } | undefined {
+  type TokenSpan = { token: string; start: number; end: number };
+  const sourceTokens: TokenSpan[] = [];
+  const tokenPattern = /[\p{L}\p{N}_]+/gu;
+  let match: RegExpExecArray | null;
+  while ((match = tokenPattern.exec(canonicalSourceText)) !== null) {
+    const normalized = normalizeText(match[0]);
+    if (normalized) sourceTokens.push({ token: normalized, start: match.index, end: match.index + match[0].length });
+  }
+
+  // Prefer the complete sentence when it is present verbatim after
+  // normalization. This preserves the most useful source highlight for exact
+  // matches instead of returning only one of its shorter phrase windows.
+  const sentenceTokens = tokenize(sentenceEvidence.studentText);
+  if (sentenceTokens.length >= 3) {
+    for (let i = 0; i <= sourceTokens.length - sentenceTokens.length; i++) {
+      if (sentenceTokens.every((token, j) => sourceTokens[i + j].token === token)) {
+        const start = sourceTokens[i].start;
+        const end = sourceTokens[i + sentenceTokens.length - 1].end;
+        const text = canonicalSourceText.slice(start, end);
+        if (normalizeText(text) === sentenceTokens.join(' ')) return { text, start, end };
+      }
+    }
+  }
+
+  const candidates = sentenceEvidence.matchedPhrases
+    .map(phrase => normalizeText(phrase.normalizedPhrase || phrase.submittedPhrase).split(' ').filter(Boolean))
+    .filter(tokens => tokens.length > 0)
+    .sort((a, b) => b.length - a.length || a.join(' ').localeCompare(b.join(' ')));
+
+  for (const phraseTokens of candidates) {
+    for (let i = 0; i <= sourceTokens.length - phraseTokens.length; i++) {
+      let matches = true;
+      for (let j = 0; j < phraseTokens.length; j++) {
+        if (sourceTokens[i + j].token !== phraseTokens[j]) {
+          matches = false;
+          break;
+        }
+      }
+      if (!matches) continue;
+
+      const start = sourceTokens[i].start;
+      const end = sourceTokens[i + phraseTokens.length - 1].end;
+      const text = canonicalSourceText.slice(start, end);
+      if (text && normalizeText(text) === phraseTokens.join(' ')) {
+        return { text, start, end };
+      }
+    }
+  }
+
+  return undefined;
+}
+
 export function evaluateDocumentSimilarityInternal(
   sourceDoc: CanonicalAnalysisDocument,
   comparisonDoc: CanonicalAnalysisDocument
 ): GranularSimilarityResult {
-  const sourceText = sourceDoc.rawText || '';
-  const compText = comparisonDoc.rawText || '';
+  const sourceText = toCanonicalEvidenceText(sourceDoc.rawText || sourceDoc.normalizedText || '');
+  const compText = toCanonicalEvidenceText(comparisonDoc.rawText || comparisonDoc.normalizedText || '');
   const findings: SimilarityFinding[] = [];
   const warnings: string[] = [];
 
@@ -772,19 +856,27 @@ export function evaluateDocumentSimilarityInternal(
     policyVersion: POLICY_VERSION
   });
 
-  // Convert sentence & phrase flags into explainable SimilarityFinding items
+  // Convert sentence evidence into findings with independently verified
+  // canonical ranges in BOTH documents. Never use a source-document prefix.
   for (const s of engineOutput.aggregation.sentenceFlags) {
+    const matched = locateCanonicalMatchedPassage(s, compText);
     const findingId = computeHash(`${sourceDoc.documentId}:${comparisonDoc.documentId}:SEN:${s.documentUnitId}:${s.similarityPercentage}`);
+    if (!matched) {
+      warnings.push(`Source passage alignment unavailable for finding ${findingId}; source-side highlighting is withheld.`);
+    }
     findings.push({
       findingId,
       sourceDocumentId: sourceDoc.documentId,
       matchedDocumentId: comparisonDoc.documentId,
       sourceSegment: s.studentText,
-      matchedSegment: s.sourceText.slice(0, 200),
+      matchedSegment: matched?.text || '',
       similarityScore: s.similarityPercentage,
       matchMethod: s.matchType === 'exact_match' ? 'EXACT_PHRASE' : (s.matchType === 'ngram_overlap' ? 'NGRAM' : 'TOKEN_OVERLAP'),
       sourceStart: s.documentLocation.startChar,
       sourceEnd: s.documentLocation.endChar,
+      matchedStart: matched?.start,
+      matchedEnd: matched?.end,
+      offsetBasis: 'CANONICAL_EVIDENCE_TEXT_UTF16',
       provenance: 'DETERMINISTIC'
     });
   }
@@ -852,6 +944,35 @@ function isRejectableFinding(
   const tokenCount = seg.trim().split(/\s+/).filter(Boolean).length;
   return tokenCount < 4;
 }
+/**
+ * Align a provider snippet to the submitted document's canonical evidence text.
+ * Token spans retain UTF-16 positions so returned coordinates are safe for slice().
+ */
+function locateCanonicalTextPassage(
+  candidateText: string,
+  canonicalText: string
+): { text: string; start: number; end: number } | undefined {
+  const candidateTokens = normalizeText(candidateText).split(' ').filter(Boolean);
+  if (candidateTokens.length === 0) return undefined;
+
+  const sourceTokens: Array<{ token: string; start: number; end: number }> = [];
+  const pattern = /[\p{L}\p{N}_]+/gu;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(canonicalText)) !== null) {
+    const token = normalizeText(match[0]);
+    if (token) sourceTokens.push({ token, start: match.index, end: match.index + match[0].length });
+  }
+
+  for (let i = 0; i <= sourceTokens.length - candidateTokens.length; i++) {
+    if (!candidateTokens.every((token, j) => sourceTokens[i + j].token === token)) continue;
+    const start = sourceTokens[i].start;
+    const end = sourceTokens[i + candidateTokens.length - 1].end;
+    const text = canonicalText.slice(start, end);
+    if (normalizeText(text) === candidateTokens.join(' ')) return { text, start, end };
+  }
+  return undefined;
+}
+
 export function extractSimilarityFindingsFromEvidenceMatches(
   documentText: string,
   documentHash: string,
@@ -874,16 +995,29 @@ export function extractSimilarityFindingsFromEvidenceMatches(
         `${documentHash}:${s.sourceId}:${s.documentUnitId}:${s.similarityPercentage}`
       );
 
+      const canonicalDocumentText = toCanonicalEvidenceText(documentText);
+      const submittedAlignment = locateCanonicalTextPassage(s.studentText, canonicalDocumentText);
+      const matched = locateCanonicalMatchedPassage(s, toCanonicalEvidenceText(s.sourceText || ''));
+      if (!submittedAlignment && Array.isArray(warningsOut)) {
+        warningsOut.push(`Submitted passage alignment unavailable for finding ${findingId}; submitted-side highlighting is withheld.`);
+      }
+      if (!matched && Array.isArray(warningsOut)) {
+        warningsOut.push(`Source passage alignment unavailable for finding ${findingId}; source-side highlighting is withheld because only a provider snippet is available.`);
+      }
       findings.push({
         findingId,
         sourceDocumentId: documentHash,
         matchedDocumentId: s.sourceId,
-        sourceSegment: s.studentText,
-        matchedSegment: s.sourceText.slice(0, 200),
+        sourceSegment: submittedAlignment?.text || s.studentText,
+        matchedSegment: matched?.text || '',
         similarityScore: s.similarityPercentage,
         matchMethod,
-        sourceStart: s.documentLocation.startChar,
-        sourceEnd: s.documentLocation.endChar,
+        sourceStart: submittedAlignment?.start,
+        sourceEnd: submittedAlignment?.end,
+        // Provider evidence contains a snippet, not the full canonical source
+        // document. A snippet-relative location must not be misrepresented as
+        // a document-level matchedStart/matchedEnd range.
+        offsetBasis: 'CANONICAL_EVIDENCE_TEXT_UTF16',
         provenance: 'DETERMINISTIC'
       });
     }
@@ -912,40 +1046,29 @@ export function extractSimilarityFindingsFromEvidenceMatches(
     const lookupSnippet = match.matchedText || match.originalSnippet || match.title;
     if (!lookupSnippet) continue;
 
-    const normDoc = normalizeText(documentText);
+    const canonicalDocumentText = toCanonicalEvidenceText(documentText);
     const normSnippet = normalizeText(lookupSnippet);
     if (!normSnippet) continue;
 
-    let srcIdx = normDoc.indexOf(normSnippet);
+    let aligned = locateCanonicalTextPassage(lookupSnippet, canonicalDocumentText);
     let matchedPassageText = lookupSnippet;
-    let sourceSegmentText = '';
-    let matchMethod: SimilarityMatchMethod = 'TOKEN_OVERLAP';
+    let matchMethod: SimilarityMatchMethod = match.matchType === 'exact' ? 'EXACT_PHRASE' : 'TOKEN_OVERLAP';
 
-    if (srcIdx !== -1) {
-      sourceSegmentText = lookupSnippet;
-      if (match.matchType === 'exact' || (normSnippet.length >= 12 && normDoc.includes(normSnippet))) {
-        matchMethod = 'EXACT_PHRASE';
-      } else {
-        matchMethod = 'NGRAM';
-      }
-    } else {
+    if (!aligned) {
       const sentences = segmentSentences(lookupSnippet);
-      for (const sent of sentences) {
-        const normSent = normalizeText(sent);
-        if (normSent.length >= 12) {
-          const idx = normDoc.indexOf(normSent);
-          if (idx !== -1) {
-            srcIdx = idx;
-            matchedPassageText = sent;
-            sourceSegmentText = sent;
-            matchMethod = 'NGRAM';
-            break;
-          }
+      for (const sentence of sentences) {
+        if (normalizeText(sentence).length < 12) continue;
+        const candidate = locateCanonicalTextPassage(sentence, canonicalDocumentText);
+        if (candidate) {
+          aligned = candidate;
+          matchedPassageText = sentence;
+          matchMethod = 'NGRAM';
+          break;
         }
       }
     }
 
-    if (srcIdx === -1) {
+    if (!aligned) {
       // Match could not be located in the canonical document. Record the
       // suppression in the caller's warnings array so the analysis result
       // does not silently drop evidence.
@@ -966,12 +1089,15 @@ export function extractSimilarityFindingsFromEvidenceMatches(
       findingId,
       sourceDocumentId: documentHash,
       matchedDocumentId: match.sourceId,
-      sourceSegment: sourceSegmentText || matchedPassageText,
-      matchedSegment: lookupSnippet.slice(0, 150),
+      sourceSegment: aligned.text,
+      // The provider returned a snippet, not its complete canonical document.
+      // Preserve the excerpt, but do not claim document-level source coordinates.
+      matchedSegment: matchedPassageText,
       similarityScore: match.matchPercentage,
       matchMethod,
-      sourceStart: srcIdx,
-      sourceEnd: srcIdx + lookupSnippet.length,
+      sourceStart: aligned.start,
+      sourceEnd: aligned.end,
+      offsetBasis: 'CANONICAL_EVIDENCE_TEXT_UTF16',
       provenance: 'DETERMINISTIC'
     });
   }

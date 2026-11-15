@@ -7,6 +7,7 @@ import { CanonicalAnalysisDocument } from './types.js';
 import { buildCanonicalAnalysisDocument } from './documentNormalizer.js';
 import { extractPdfAdapter } from './ingestionAdapters/pdfAdapter.js';
 import { extractTextAdapter } from './ingestionAdapters/textAdapter.js';
+import { extractImageAdapter } from './ingestionAdapters/imageAdapter.js';
 import { extractHtmlAdapter } from './ingestionAdapters/htmlAdapter.js';
 import { extractRtfAdapter } from './ingestionAdapters/rtfAdapter.js';
 import { extractCsvAdapter, extractJsonAdapter, extractXmlAdapter } from './ingestionAdapters/structuredAdapter.js';
@@ -17,6 +18,9 @@ import { MAX_FILE_SIZE_BYTES } from '../../utils/pdfExtractor.js';
 
 export type SupportedFormat =
   | 'pdf'
+  | 'jpg'
+  | 'jpeg'
+  | 'png'
   | 'doc'
   | 'docx'
   | 'rtf'
@@ -72,6 +76,9 @@ export function detectFileFormat(filename: string, mimeType?: string): Supported
 
   const formatMap: Record<string, SupportedFormat> = {
     pdf: 'pdf',
+    jpg: 'jpg',
+    jpeg: 'jpeg',
+    png: 'png',
     doc: 'doc',
     docx: 'docx',
     rtf: 'rtf',
@@ -97,6 +104,8 @@ export function detectFileFormat(filename: string, mimeType?: string): Supported
 
   if (mimeType) {
     if (mimeType.includes('pdf')) return 'pdf';
+    if (mimeType === 'image/jpeg') return 'jpg';
+    if (mimeType === 'image/png') return 'png';
     if (mimeType.includes('wordprocessingml')) return 'docx';
     if (mimeType.includes('msword')) return 'doc';
     if (mimeType.includes('rtf')) return 'rtf';
@@ -117,6 +126,19 @@ export function detectFileFormat(filename: string, mimeType?: string): Supported
 /**
  * Normalizes input payload into string or ArrayBuffer for parsing.
  */
+function inferMimeType(filename: string): string {
+  const ext = filename.split('.').pop()?.toLowerCase();
+  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';
+  if (ext === 'png') return 'image/png';
+  if (ext === 'pdf') return 'application/pdf';
+  if (ext === 'txt') return 'text/plain';
+  if (ext === 'html' || ext === 'htm') return 'text/html';
+  if (ext === 'csv') return 'text/csv';
+  if (ext === 'json') return 'application/json';
+  if (ext === 'xml') return 'application/xml';
+  return 'application/octet-stream';
+}
+
 export async function getFilePayload(
   fileOrInput: File | { name: string; text?: string; buffer?: ArrayBuffer; mimeType?: string }
 ): Promise<{ filename: string; mimeType: string; size: number; text?: string; buffer?: ArrayBuffer }> {
@@ -126,7 +148,7 @@ export async function getFilePayload(
     const file = fileOrInput as File;
     return {
       filename: file.name,
-      mimeType: file.type || 'application/octet-stream',
+      mimeType: file.type || inferMimeType(file.name),
       size: file.size,
       text: file.type.includes('text') || file.name.endsWith('.txt') || file.name.endsWith('.md') || file.name.endsWith('.html') || file.name.endsWith('.csv') || file.name.endsWith('.json') || file.name.endsWith('.xml') || file.name.endsWith('.rtf')
         ? await file.text()
@@ -139,7 +161,7 @@ export async function getFilePayload(
   const buf = obj.buffer || (obj.text ? new TextEncoder().encode(obj.text).buffer : new ArrayBuffer(0));
   return {
     filename: obj.name,
-    mimeType: obj.mimeType || 'application/octet-stream',
+    mimeType: obj.mimeType || inferMimeType(obj.name),
     size: buf.byteLength,
     text: obj.text,
     buffer: buf
@@ -208,7 +230,11 @@ export async function ingestDocument(
   // Format Adapters Dispatch
   let adapterResult: any;
 
-  switch (format) {
+  if (format === 'jpg' || format === 'jpeg' || format === 'png') {
+    adapterResult = await extractImageAdapter(payload.filename, payload.buffer || new ArrayBuffer(0));
+  }
+
+  if (!adapterResult) switch (format) {
     case 'pdf': {
       if (typeof File !== 'undefined' && fileOrInput instanceof File) {
         adapterResult = await extractPdfAdapter(fileOrInput as File);
@@ -339,7 +365,8 @@ export async function ingestDocument(
       rawText: adapterResult.text,
       filename: payload.filename,
       fileSizeBytes: payload.size,
-      extractionMethod: adapterResult.extractionMethod as any
+      extractionMethod: adapterResult.extractionMethod as any,
+      mimeType: payload.mimeType
     });
     canonicalReady = true;
   }

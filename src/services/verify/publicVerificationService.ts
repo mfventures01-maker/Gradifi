@@ -5,6 +5,7 @@
 
 import { supabase } from '../../lib/supabase.js';
 import { PublicVerificationRecord, VerificationPersistenceService } from './verificationPersistenceService.js';
+import { validatePersistedVerificationRecord } from './verificationPersistenceIntegrity.js';
 
 export type PublicResolutionStatus =
   | 'VALID'
@@ -105,6 +106,15 @@ export class PublicVerificationService {
           status: 'MALFORMED_RECORD',
           verificationId: cleanId,
           errorMessage: 'Verification record is missing required evidence_hash or evidence_envelope.',
+        };
+      }
+
+      const integrity = validatePersistedVerificationRecord(data);
+      if (integrity.status !== 'VALID') {
+        return {
+          status: integrity.status,
+          verificationId: cleanId,
+          errorMessage: integrity.reason || 'Persisted verification integrity validation failed.',
         };
       }
 

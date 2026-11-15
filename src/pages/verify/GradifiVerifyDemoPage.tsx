@@ -35,6 +35,7 @@ import {
 import { verifyCoreService } from '../../services/verify/verifyCoreService';
 import { verificationPersistenceService } from '../../services/verify/verificationPersistenceService';
 import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument } from '../../services/verify/types';
+import { buildG4DPersistencePayload } from '../../services/verify/g4dPersistencePayload';
 import { toPublicVerificationResult, PublicVerificationResult } from '../../services/verify/publicVerificationResult';
 import { ingestDocument } from '../../services/verify/universalIngestionService';
 import { resolveMatchedEvidenceSpans } from '../../services/verify/matchedTextHighlightingService';
@@ -258,28 +259,11 @@ Distributed machine learning frameworks require mathematical determinism to guar
     try {
       const res = await verifyCoreService.executeVerifyRun(documentText);
 
-      // Slim persistence payload — stays under Vercel's 4.5 MB function body limit.
-      const persistResult = {
-        documentHash: res.documentHash,
-        evidenceHash: res.evidenceHash,
-        engineVersion: res.engineVersion,
-        policyVersion: res.policyVersion,
-        overallSimilarity: res.overallSimilarity,
-        totalSourcesFound: res.totalSourcesFound
-      };
-
-      const persistEnvelope = {
-        findingCount: res.findings?.length ?? 0,
-        sourceCount: res.verifiedSources?.length ?? 0,
-        firstSourceIds: (res.verifiedSources ?? []).slice(0, 10).map(s => s.sourceId),
-        uniqueMatchedCoverage: res.uniqueMatchedCoverage ?? res.overallSimilarity,
-        highestSourceMatch: res.highestSourceMatch ?? 0,
-        timestamp: res.timestamp ?? new Date().toISOString()
-      };
+      const { result: persistResult, envelope: persistEnvelope } = buildG4DPersistencePayload(res);
 
       const { record } = await verificationPersistenceService.persistVerificationRecord(
-        persistResult as any,
-        persistEnvelope as any
+        persistResult,
+        persistEnvelope
       );
 
       if (!record?.verification_id) {

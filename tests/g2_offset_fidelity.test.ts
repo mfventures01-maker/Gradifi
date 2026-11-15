@@ -1,5 +1,5 @@
 import { buildCanonicalAnalysisDocument } from '../src/services/verify/documentNormalizer';
-import { evaluateDocumentSimilarity } from '../src/services/verify/deterministicEngine';
+import { evaluateDocumentSimilarity, toCanonicalEvidenceText } from '../src/services/verify/deterministicEngine';
 
 const SAMPLE_TEXT_A = "Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks\nBy Dr. Aris Thorne, Prof. Elena Rostova, and Dr. Marcus Vance (2024)\nJournal of Advanced Computer Science & Quantum Information Systems, Vol. 14, DOI: 10.1038/s41586-023-00001-x.\n\nAbstract:\nFederated learning across decoupled edge networks faces significant communication latency and security challenges. In this paper, we propose a novel quantum-inspired architectural paradigm for high-order evidence-oriented systems. By utilizing deterministic hashing and provenance verification, our model achieves 99.4% accuracy across distributed node topology while preserving complete privacy.";
 
@@ -15,6 +15,7 @@ async function run() {
 
   const result: any = evaluateDocumentSimilarity(docA, docB);
   const findings = result.findings || [];
+  const canonicalEvidenceText = toCanonicalEvidenceText(docA.rawText);
 
   console.log('FINDINGS_COUNT:', findings.length);
   if (findings.length === 0) {
@@ -28,7 +29,7 @@ async function run() {
       console.log('SKIP', f.findingId, '(no source offsets)');
       continue;
     }
-    const slice = (docA.rawText || '').slice(f.sourceStart, f.sourceEnd);
+    const slice = canonicalEvidenceText.slice(f.sourceStart, f.sourceEnd);
     const expected = f.sourceSegment;
     console.log('FINDING', f.findingId, 'start', f.sourceStart, 'end', f.sourceEnd, 'SLICE_EQ_SEGMENT:', slice === expected);
     if (slice !== expected) {
@@ -44,6 +45,7 @@ async function run() {
     console.error('FAIL: no findings had offsets to verify');
     if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
   }
+  console.log('OFFSET_COORDINATE_SPACE: canonical whitespace-normalized evidence text');
   console.log('G2-4 OFFSET FIDELITY: PASS');
   if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(0);
 }
