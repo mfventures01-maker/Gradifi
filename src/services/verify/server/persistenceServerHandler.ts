@@ -105,6 +105,14 @@ export async function handlePersistenceServerRequest(
   payload: PersistenceServerRequestPayload,
   accessToken: string
 ): Promise<{ record: SafeReceipt; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
+  if (!accessToken || typeof accessToken !== 'string') {
+    throw new PersistenceRequestError(401, 'Authentication required.');
+  }
+
+  // Reject malformed or tampered payloads before creating any Supabase client.
+  // This is local deterministic validation only; it grants no database access.
+  validatePayload(payload);
+
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -132,9 +140,7 @@ export async function handlePersistenceServerRequest(
     throw new PersistenceRequestError(403, 'An active authorized identity is required to persist verification records.');
   }
 
-  // Validate all client-controlled evidence before constructing privileged client.
-  validatePayload(payload);
-
+  // The request is now authenticated, authorized, and independently validated.
   const serverSupabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
