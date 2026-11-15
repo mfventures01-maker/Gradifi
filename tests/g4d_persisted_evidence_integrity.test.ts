@@ -113,11 +113,9 @@ describe('G4-D persisted evidence and retrieval integrity', () => {
     expect(validatePersistedVerificationRecord(retrieved)).toEqual({ status: 'VALID' });
     expect(retrieved.evidence_envelope.deterministicResult.documentHash)
       .toBe(retrieved.document_hash);
-    expect(retrieved.evidence_envelope).not.toHaveProperty('canonicalDocument');
-    const persistedFindings = retrieved.evidence_envelope.deterministicResult.similarityAnalysis.findings;
-    expect(persistedFindings).toHaveLength(browserResult.similarityAnalysis?.findings.length);
-    expect(persistedFindings[0]).not.toHaveProperty('sourceSegment');
-    expect(persistedFindings[0]).not.toHaveProperty('matchedSegment');
+    expect(retrieved.evidence_envelope.canonicalDocument.rawText).toBe(rawText);
+    expect(retrieved.evidence_envelope.deterministicResult.similarityAnalysis.findings)
+      .toEqual(browserResult.similarityAnalysis?.findings);
   });
 
   it('passes the browser JSON payload through the server contract guard', async () => {
