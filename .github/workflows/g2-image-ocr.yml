@@ -39,6 +39,7 @@ jobs:
           name: g2-real-image-ocr-runtime-report
           path: g2-image-ocr-runtime-report.json
           if-no-files-found: warn
-      - name: Repository-wide typecheck (known unrelated runtime import blockers)
+      - name: Generate server runtime for API imports
+        run: npm run build:server
+      - name: Repository-wide typecheck
         run: npm run typecheck
-        continue-on-error: true
