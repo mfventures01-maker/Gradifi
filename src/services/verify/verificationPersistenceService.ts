@@ -16,7 +16,7 @@ export interface PublicVerificationRecord {
   policy_version: string;
   overall_similarity: number;
   total_sources_found: number;
-  evidence_envelope: any;
+  evidence_envelope?: any;
   created_at?: string;
 }
 
