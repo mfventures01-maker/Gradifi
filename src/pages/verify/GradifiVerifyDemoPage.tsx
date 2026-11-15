@@ -399,7 +399,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                       PUBLIC VERIFICATION RECEIPT
                     </h1>
                     <p className="text-xs text-slate-400">
-                      Authoritative Certificate Retrieved from Public System of Record
+                      Public receipt metadata retrieved from the system of record
                     </p>
                   </div>
                 </div>
@@ -409,7 +409,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black tracking-wide bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  INTEGRITY: VALID
+                  RECEIPT METADATA: VALID
                 </span>
               </div>
             </div>
@@ -492,10 +492,10 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   )}
                   <div className="space-y-1">
                     <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-emerald-400" /> Cryptographically Grounded Receipt
+                      <Check className="w-3.5 h-3.5 text-emerald-400" /> Privacy-Safe Verification Receipt
                     </div>
                     <div className="text-[11px] text-slate-400">
-                      Independent parties can verify this identity against the immutable system of record.
+                      Independent parties can confirm the receipt ID and published hashes. Detailed submitted evidence remains private.
                     </div>
                     <div className="text-[10px] font-mono text-slate-500 break-all">
                       {window.location.origin}/verify/{rec.verification_id}
