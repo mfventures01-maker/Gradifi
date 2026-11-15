@@ -133,9 +133,20 @@ export class VerificationPersistenceService {
 
     // Browser context: Delegate to trusted server endpoint /api/verify/persist
     if (typeof window !== 'undefined') {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        throw new Error('Unable to resolve the current Supabase session for trusted persistence.');
+      }
+      if (!session?.access_token) {
+        throw new Error('Authentication required before a verification record can be persisted.');
+      }
+
       const response = await fetch('/api/verify/persist', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
         body: JSON.stringify({ result, envelope })
       });
 
