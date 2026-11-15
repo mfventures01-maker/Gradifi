@@ -129,6 +129,6 @@ describe('POST /api/verify/persist authorization boundary', () => {
 
     await expect(handlePersistenceServerRequest(tampered as any, 'valid-token'))
       .rejects.toMatchObject({ statusCode: 400 });
-    expect(createClientMock).toHaveBeenCalledTimes(1);
+    expect(createClientMock).not.toHaveBeenCalled();
   });
 });
