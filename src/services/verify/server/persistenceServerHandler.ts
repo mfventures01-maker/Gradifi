@@ -177,7 +177,8 @@ export async function handlePersistenceServerRequest(
     if (integrity.status !== 'VALID') {
       throw new PersistenceRequestError(409, 'Existing verification record failed integrity validation.');
     }
-    if (existing.document_hash !== recordPayload.document_hash || existing.evidence_hash !== recordPayload.evidence_hash ||\n      (existing.correction_of_verification_id ?? null) !== (recordPayload.correction_of_verification_id ?? null)) {
+    if (existing.document_hash !== recordPayload.document_hash || existing.evidence_hash !== recordPayload.evidence_hash ||
+      (existing.correction_of_verification_id ?? null) !== (recordPayload.correction_of_verification_id ?? null)) {
       throw new PersistenceRequestError(409, 'Conflicting verification record exists for this identifier.');
     }
     return { record: safeReceipt(existing as PublicVerificationRecord), status: 'IDEMPOTENT_EXISTS' };
@@ -197,7 +198,8 @@ export async function handlePersistenceServerRequest(
         .maybeSingle();
       if (raced &&
           raced.document_hash === recordPayload.document_hash &&
-          raced.evidence_hash === recordPayload.evidence_hash &&\n          (raced.correction_of_verification_id ?? null) === (recordPayload.correction_of_verification_id ?? null) &&
+          raced.evidence_hash === recordPayload.evidence_hash &&
+          (raced.correction_of_verification_id ?? null) === (recordPayload.correction_of_verification_id ?? null) &&
           VerificationPersistenceService.validatePersistedRecord(raced).status === 'VALID') {
         return { record: safeReceipt(raced as PublicVerificationRecord), status: 'IDEMPOTENT_EXISTS' };
       }
