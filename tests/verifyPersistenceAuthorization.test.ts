@@ -69,7 +69,15 @@ describe('POST /api/verify/persist authorization boundary', () => {
     });
     authClient.from.mockReturnValue(queryChain({ data: { id: 'actor-1' }, error: null }));
 
-    const record = VerificationPersistenceService.buildPersistenceRecord(result as any, envelope as any);
+    const record = {
+      ...VerificationPersistenceService.buildPersistenceRecord(result as any, envelope as any),
+      id: 'internal-row-id',
+      verification_run_id: 'internal-run-id',
+      result_hash: 'internal-result-hash',
+      manifest_hash: 'internal-manifest-hash',
+      status: 'internal-status',
+      public_schema_version: 'internal-schema-version'
+    };
     const existingChain = queryChain({ data: null, error: null });
     const insertChain = queryChain({ data: record, error: null });
     serviceClient.from.mockImplementation(() => {
@@ -123,6 +131,23 @@ describe('POST /api/verify/persist authorization boundary', () => {
       VerificationPersistenceService.deriveVerificationId(documentHash, evidenceHash)
     );
     expect(response.record).not.toHaveProperty('evidence_envelope');
+    expect(Object.keys(response.record).sort()).toEqual([
+      'created_at',
+      'correction_of_verification_id',
+      'document_hash',
+      'engine_version',
+      'evidence_hash',
+      'overall_similarity',
+      'policy_version',
+      'total_sources_found',
+      'verification_id'
+    ]);
+    expect(response.record).not.toHaveProperty('id');
+    expect(response.record).not.toHaveProperty('verification_run_id');
+    expect(response.record).not.toHaveProperty('result_hash');
+    expect(response.record).not.toHaveProperty('manifest_hash');
+    expect(response.record).not.toHaveProperty('status');
+    expect(response.record).not.toHaveProperty('public_schema_version');
     expect(createClientMock).toHaveBeenCalledTimes(2);
     expect(serviceClient.from).toHaveBeenCalledWith('public_verification_records');
   });
