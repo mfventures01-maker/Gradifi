@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { actorOnboardingService } from '../../services/actorOnboardingService';
 import { 
   Users, 
   Mail, 
@@ -31,12 +32,6 @@ interface Student {
   class_name: string;
 }
 
-const DEFAULT_STUDENTS: Student[] = [
-  { id: 'std_demo_01', first_name: 'Chidi', last_name: 'Okeke', student_number: 'GRD/2026/1001', class_name: 'JSS 1' },
-  { id: 'std_demo_02', first_name: 'Zainab', last_name: 'Bello', student_number: 'GRD/2026/1002', class_name: 'JSS 1' },
-  { id: 'std_demo_03', first_name: 'Adebayo', last_name: 'Ogun', student_number: 'GRD/2026/1003', class_name: 'SS 1' },
-];
-
 export const CreateParent: React.FC<CreateParentProps> = ({
   schoolId = '',
   institutionId = '',
@@ -44,7 +39,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
   onSuccess
 }) => {
   const navigate = useNavigate();
-  const [students, setStudents] = useState<Student[]>(DEFAULT_STUDENTS);
+  const [students, setStudents] = useState<Student[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState(preSelectedStudentId);
   const [parentName, setParentName] = useState('');
   const [parentPhone, setParentPhone] = useState('');
@@ -55,6 +50,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{
     parent_name: string;
+    login_id: string;
     phone: string;
     student_name: string;
     pin: string;
@@ -113,41 +109,28 @@ export const CreateParent: React.FC<CreateParentProps> = ({
     try {
       if (!selectedStudentId) throw new Error('Please select a student');
       if (!parentName.trim()) throw new Error('Parent name is required');
-      if (!parentPhone.trim()) throw new Error('Phone number is required');
 
-      let rpcData: any = null;
-      try {
-        const { data, error } = await supabase.rpc('create_parent' as any, {
-          p_student_id: selectedStudentId,
-          p_parent_name: parentName.trim(),
-          p_parent_phone: parentPhone.trim(),
-          p_parent_email: parentEmail.trim() || null,
-          p_relationship: relationship,
-          p_is_primary: isPrimary
-        });
-        if (error || !data) throw error || new Error('RPC error');
-        rpcData = data;
-      } catch (rpcErr) {
-        console.warn('RPC create_parent fallback execution:', rpcErr);
-        rpcData = {
-          success: true,
-          parent_name: parentName.trim(),
-          phone: parentPhone.trim(),
-          pin: String(1000 + Math.floor(Math.random() * 9000)),
-          is_existing: false
-        };
-      }
-
-      if (!rpcData.success) throw new Error(rpcData.error || 'Failed to create parent');
+      const rpcData = await actorOnboardingService.create({
+        actor_type: 'parent',
+        institution_id: institutionId,
+        school_id: schoolId,
+        student_id: selectedStudentId,
+        full_name: parentName.trim(),
+        phone: parentPhone.trim(),
+        email: parentEmail.trim() || null,
+        relationship,
+        is_primary: isPrimary,
+      });
 
       const student = students.find(s => s.id === selectedStudentId);
 
       setSuccess({
-        parent_name: rpcData.parent_name,
-        phone: rpcData.phone,
+        parent_name: parentName.trim(),
+        login_id: rpcData.login_id,
+        phone: parentPhone.trim(),
         student_name: student ? `${student.first_name} ${student.last_name}` : 'Student',
         pin: rpcData.pin,
-        is_existing: rpcData.is_existing || false
+        is_existing: false
       });
 
       if (onSuccess) onSuccess();
@@ -195,6 +178,10 @@ export const CreateParent: React.FC<CreateParentProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500">Phone</span>
             <span className="font-semibold text-slate-700">{success.phone}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-slate-500">Generated Login ID</span>
+            <span className="font-mono font-bold text-blue-700">{success.login_id}</span>
           </div>
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
             <span className="text-xs font-medium text-slate-500">Student</span>
@@ -324,13 +311,12 @@ export const CreateParent: React.FC<CreateParentProps> = ({
             onChange={(e) => setParentName(e.target.value)}
             placeholder="e.g. Mrs. Funke Adebayo"
             className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
-            required
-          />
+           required/>
         </div>
 
         <div>
           <label className="block text-xs font-medium text-slate-700 mb-1">
-            Phone Number <span className="text-rose-500">*</span>
+            Phone Number <span className="text-slate-400">(optional)</span>
           </label>
           <input
             type="tel"
@@ -338,9 +324,8 @@ export const CreateParent: React.FC<CreateParentProps> = ({
             onChange={(e) => setParentPhone(e.target.value)}
             placeholder="e.g. 08012345678"
             className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
-            required
           />
-          <p className="text-[10px] text-slate-400 mt-1">This will be used for PIN login.</p>
+          <p className="text-[10px] text-slate-400 mt-1">Optional contact number. Login uses the generated account ID.</p>
         </div>
 
         <div>

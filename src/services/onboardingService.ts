@@ -9,13 +9,13 @@ import { ReconcileAndLaunchParams, ReconciliationReport } from '../contracts/rpc
 
 export interface CreateInstitutionFormInput {
   institution_name: string;
-  institution_type: 'secondary' | 'primary' | 'k12' | 'tertiary' | 'group_of_schools';
+  institution_type: 'secondary' | 'primary' | 'k12' | 'group_of_schools';
   registration_number: string;
+  principal_password: string;
   address: string;
   state: string;
   lga: string;
   phone: string;
-  email: string;
   website?: string;
   principal_name: string;
   principal_phone: string;
@@ -30,8 +30,25 @@ export interface CreateInstitutionAccountResponse {
   name: string;
   type: string;
   country: string;
-  created_at: string;
+  created_at?: string;
   success: boolean;
+  requires_email_confirmation?: boolean;
+  url_slug?: string;
+  institution_path?: string;
+}
+
+export interface HigherInstitutionFormInput {
+  institution_name: string;
+  institution_type: 'university' | 'polytechnic' | 'college_of_education';
+  registration_number: string;
+  country?: string;
+  address: string;
+  phone: string;
+  website?: string;
+  dean_name: string;
+  dean_email: string;
+  dean_phone: string;
+  dean_password: string;
 }
 
 export interface InitializeClassesResponse {
@@ -50,6 +67,9 @@ export interface CreateTeacherInput {
 }
 
 export interface CreateTeacherResponse {
+  login_id?: string;
+  pin?: string;
+  user_id?: string;
   teacher_id: string;
   name: string;
   email: string;
@@ -70,6 +90,9 @@ export interface EnrollStudentInput {
 }
 
 export interface EnrollStudentResponse {
+  login_id?: string;
+  pin?: string;
+  user_id?: string;
   student_id: string;
   student_number: string;
   class_id: string;
@@ -79,72 +102,117 @@ export interface EnrollStudentResponse {
 
 export const onboardingService = {
   /**
-   * 1. The Atomic Onboarding RPC: create_institution_account
-   * Accepts the 14 verified fields, creates the institution and default root campus.
+   * Root registration always starts with a real Supabase Auth identity.
+   * The verified user then asks the Edge Function to atomically create the
+   * institution, campus, root profile and canonical actor.
    */
   async createInstitutionAccount(input: CreateInstitutionFormInput): Promise<CreateInstitutionAccountResponse> {
-    try {
-      const { data, error } = await supabase.rpc('create_institution_account', {
-        name: input.institution_name,
-        type: input.institution_type,
-        country: input.country || 'Nigeria',
-        institution_name: input.institution_name,
-        institution_type: input.institution_type,
-        registration_number: input.registration_number,
-        address: input.address,
-        state: input.state,
-        lga: input.lga,
-        phone: input.phone,
-        email: input.email,
-        website: input.website || '',
-        principal_name: input.principal_name,
-        principal_phone: input.principal_phone,
-        principal_email: input.principal_email,
-        p_name: input.institution_name,
-        p_type: input.institution_type,
-        p_country: input.country || 'Nigeria',
-      });
+    return this.registerRootInstitution('bootstrap_school_institution', {
+      institution_name: input.institution_name,
+      institution_type: input.institution_type,
+      registration_number: input.registration_number,
+      country: input.country || 'Nigeria',
+      address: input.address,
+      state: input.state,
+      lga: input.lga,
+      phone: input.phone,
+      website: input.website || '',
+      principal_name: input.principal_name,
+      principal_email: input.principal_email,
+      principal_phone: input.principal_phone,
+    }, input.principal_email, input.principal_password, input.principal_name);
+  },
 
-      let instData = data;
-      if (error || !instData) {
-        console.warn('RPC create_institution_account returned error, using fallback:', error?.message);
-        instData = {
-          institution_id: `inst_${Date.now()}`,
-          school_id: `sch_${Date.now()}`,
-          name: input.institution_name,
-          type: input.institution_type,
-          country: input.country || 'Nigeria',
-          created_at: new Date().toISOString(),
-        };
-      }
+  async createHigherInstitutionAccount(input: HigherInstitutionFormInput): Promise<CreateInstitutionAccountResponse> {
+    return this.registerRootInstitution('bootstrap_higher_institution', {
+      institution_name: input.institution_name,
+      institution_type: input.institution_type,
+      registration_number: input.registration_number,
+      country: input.country || 'Nigeria',
+      address: input.address,
+      phone: input.phone,
+      website: input.website || '',
+      dean_name: input.dean_name,
+      dean_email: input.dean_email,
+      dean_phone: input.dean_phone,
+    }, input.dean_email, input.dean_password, input.dean_name);
+  },
 
-      const institutionId = instData.institution_id || `inst_${Date.now()}`;
-      const schoolId = instData.school_id || `sch_${Date.now()}`;
-
-      // Update onboarding record if available
-      try {
-        await supabase.from('institution_onboarding').upsert({
-          institution_id: institutionId,
-          current_step: 2,
-          is_completed: false,
-        } as any);
-      } catch (onboardingErr) {
-        console.warn('Non-blocking onboarding state update notice:', onboardingErr);
-      }
-
-      return {
-        institution_id: institutionId,
-        school_id: schoolId,
-        name: data.name || input.institution_name,
-        type: data.type || input.institution_type,
-        country: data.country || input.country || 'Nigeria',
-        created_at: data.created_at || new Date().toISOString(),
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.createInstitutionAccount catch block:', err);
-      throw new Error(err.message || 'Institution creation failed. Please check your network connection.');
+  async registerRootInstitution(
+    action: 'bootstrap_school_institution' | 'bootstrap_higher_institution',
+    payload: Record<string, string>,
+    email: string,
+    password: string,
+    fullName: string,
+  ): Promise<CreateInstitutionAccountResponse> {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || password.length < 10 || !fullName.trim()) {
+      throw new Error('ROOT_EMAIL_NAME_AND_PASSWORD_REQUIRED');
     }
+
+    const pending = { action, payload, email: normalizedEmail };
+    localStorage.setItem('sefaes.pending-root-onboarding', JSON.stringify(pending));
+
+    const { data: signup, error: signupError } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}${action === 'bootstrap_higher_institution' ? '/onboarding/higher-education/register' : '/onboarding'}`,
+        data: { full_name: fullName.trim(), requested_root_action: action },
+      },
+    });
+    if (signupError) {
+      localStorage.removeItem('sefaes.pending-root-onboarding');
+      throw new Error(`ROOT_AUTH_SIGNUP_FAILED: ${signupError.message}`);
+    }
+
+    if (!signup.session) {
+      return {
+        institution_id: '',
+        school_id: '',
+        name: String(payload.institution_name || ''),
+        type: String(payload.institution_type || ''),
+        country: String(payload.country || 'Nigeria'),
+        success: true,
+        requires_email_confirmation: true,
+      };
+    }
+
+    return this.completePendingRootRegistration();
+  },
+
+  async completePendingRootRegistration(): Promise<CreateInstitutionAccountResponse> {
+    const raw = localStorage.getItem('sefaes.pending-root-onboarding');
+    if (!raw) throw new Error('NO_PENDING_ROOT_REGISTRATION');
+    const pending = JSON.parse(raw) as {
+      action: 'bootstrap_school_institution' | 'bootstrap_higher_institution';
+      payload: Record<string, string>;
+      email: string;
+    };
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !sessionData.session?.user) throw new Error('VERIFIED_ROOT_SESSION_REQUIRED');
+    if (sessionData.session.user.email?.toLowerCase() !== pending.email) {
+      throw new Error('ROOT_SESSION_EMAIL_MISMATCH');
+    }
+
+    const { data, error } = await supabase.functions.invoke('actor-onboarding', {
+      body: { action: pending.action, ...pending.payload },
+    });
+    if (error || !data?.success || !data.institution_id || !data.school_id || !data.url_slug) {
+      throw new Error(`ROOT_INSTITUTION_BOOTSTRAP_FAILED: ${error?.message || data?.error || 'INVALID_DATABASE_RECEIPT'}`);
+    }
+
+    localStorage.removeItem('sefaes.pending-root-onboarding');
+    return {
+      institution_id: data.institution_id,
+      school_id: data.school_id,
+      name: data.institution_name,
+      type: String(pending.payload.institution_type || ''),
+      country: String(pending.payload.country || 'Nigeria'),
+      success: true,
+      url_slug: data.url_slug,
+      institution_path: data.institution_path,
+    };
   },
 
   /**
@@ -158,32 +226,13 @@ export const onboardingService = {
         school_id: schoolId,
       });
 
-      if (error) {
-        console.warn('RPC initialize_secondary_classes returned error, attempting fallback insert:', error.message);
-        
-        // Fallback: direct class check/insert for resilience
-        const initialClassNames = ['JSS 1', 'JSS 2', 'JSS 3', 'SS 1', 'SS 2', 'SS 3'];
-        const classInserts = initialClassNames.map(name => ({
-          school_id: schoolId,
-          name,
-          arm: 'Gold',
-        }));
-
-        const { data: insertedClasses } = await supabase
-          .from('classes')
-          .insert(classInserts as any)
-          .select('id, name');
-
-        return {
-          classes_created: insertedClasses?.length || 6,
-          classes: insertedClasses || initialClassNames.map((name, i) => ({ id: `cls_${i + 1}`, name })),
-          success: true,
-        };
+      if (error) throw new Error(`SECONDARY_CLASS_INITIALIZATION_FAILED: ${error.message}`);
+      if (!data || !Array.isArray(data.classes) || typeof data.classes_created !== 'number') {
+        throw new Error('SECONDARY_CLASS_INITIALIZATION_INVALID_RECEIPT');
       }
-
       return {
-        classes_created: data?.classes_created || 6,
-        classes: data?.classes || [],
+        classes_created: data.classes_created,
+        classes: data.classes,
         success: true,
       };
     } catch (err: any) {
@@ -197,160 +246,50 @@ export const onboardingService = {
    * Registers a certified teacher with an optional class_subject assignment.
    */
   async createTeacher(input: CreateTeacherInput): Promise<CreateTeacherResponse> {
-    try {
-      let data: any = null;
-      let error: any = null;
-      try {
-        const res = await supabase.rpc('create_teacher', {
-          p_name: input.name,
-          p_email: input.email,
-          p_phone: input.phone,
-          p_school_id: input.school_id,
-          p_class_subject_id: input.class_subject_id || undefined,
-          institution_id: input.institution_id,
-          school_id: input.school_id,
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          class_subject_ids: input.class_subject_id ? [input.class_subject_id] : [],
-        });
-        data = res.data;
-        error = res.error;
-      } catch (rpcErr) {
-        error = rpcErr;
-      }
-
-      if (error || !data) {
-        console.warn('RPC create_teacher error or unavailable, using fallback response:', error?.message || error);
-        
-        let teacherId = `tch_${Date.now()}`;
-        try {
-          const { data: directTeacher } = await supabase
-            .from('teachers')
-            .insert({
-              school_id: input.school_id,
-              institution_id: input.institution_id || 'inst_default',
-              name: input.name,
-              email: input.email,
-              phone: input.phone,
-            } as any)
-            .select()
-            .single();
-          if (directTeacher?.id) teacherId = directTeacher.id;
-        } catch (dbErr) {
-          console.warn('Direct insert notice:', dbErr);
-        }
-
-        return {
-          teacher_id: teacherId,
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          school_id: input.school_id,
-          institution_id: input.institution_id,
-          success: true,
-        };
-      }
-
-      return {
-        teacher_id: data?.teacher_id || `tch_${Date.now()}`,
-        name: data?.name || input.name,
-        email: data?.email || input.email,
-        phone: data?.phone || input.phone,
-        school_id: data?.school_id || input.school_id,
-        institution_id: data?.institution_id || input.institution_id,
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.createTeacher error:', err);
-      return {
-        teacher_id: `tch_${Date.now()}`,
-        name: input.name,
-        email: input.email,
-        phone: input.phone,
-        school_id: input.school_id,
-        institution_id: input.institution_id,
-        success: true,
-      };
-    }
+    const { actorOnboardingService } = await import("./actorOnboardingService");
+    const result = await actorOnboardingService.create({
+      actor_type: "teacher",
+      institution_id: input.institution_id || "",
+      school_id: input.school_id,
+      full_name: input.name,
+      email: input.email || null,
+      phone: input.phone || null,
+      class_subject_id: input.class_subject_id || null,
+    });
+    return {
+      teacher_id: result.login_id,
+      user_id: result.user_id,
+      login_id: result.login_id,
+      pin: result.pin,
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      school_id: input.school_id,
+      institution_id: input.institution_id,
+      success: true,
+    } as CreateTeacherResponse;
   },
 
-  /**
-   * 4. Enroll Student RPC: enroll_student
-   * Registers a student and generates an authoritative student_number.
-   */
   async enrollStudent(input: EnrollStudentInput): Promise<EnrollStudentResponse> {
-    try {
-      let data: any = null;
-      let error: any = null;
-      try {
-        const res = await supabase.rpc('enroll_student', {
-          p_first_name: input.first_name,
-          p_last_name: input.last_name,
-          p_class_id: input.class_id,
-          p_school_id: input.school_id,
-          p_gender: input.gender,
-          p_date_of_birth: input.date_of_birth || undefined,
-          institution_id: input.institution_id,
-          school_id: input.school_id,
-          class_id: input.class_id,
-          first_name: input.first_name,
-          last_name: input.last_name,
-          gender: input.gender,
-          date_of_birth: input.date_of_birth,
-        });
-        data = res.data;
-        error = res.error;
-      } catch (rpcErr) {
-        error = rpcErr;
-      }
-
-      if (error || !data) {
-        console.warn('RPC enroll_student error or unavailable, using fallback response:', error?.message || error);
-        
-        const autoStudentNumber = `GRD/${new Date().getFullYear()}/${Math.floor(10000 + Math.random() * 90000)}`;
-        let studentId = `std_${Date.now()}`;
-
-        try {
-          const { data: directStudent } = await supabase
-            .from('students')
-            .insert({
-              school_id: input.school_id,
-              institution_id: input.institution_id || 'inst_default',
-              class_id: input.class_id,
-              student_number: autoStudentNumber,
-              first_name: input.first_name,
-              last_name: input.last_name,
-              gender: input.gender,
-              date_of_birth: input.date_of_birth || null,
-            } as any)
-            .select()
-            .single();
-          if (directStudent?.id) studentId = directStudent.id;
-        } catch (dbErr) {
-          console.warn('Direct student insert notice:', dbErr);
-        }
-
-        return {
-          student_id: studentId,
-          student_number: autoStudentNumber,
-          class_id: input.class_id,
-          enrolled_at: new Date().toISOString(),
-          success: true,
-        };
-      }
-
-      return {
-        student_id: data?.student_id || `std_${Date.now()}`,
-        student_number: data?.student_number || `GRD/${new Date().getFullYear()}/${Math.floor(100 + Math.random() * 900)}`,
-        class_id: data?.class_id || input.class_id,
-        enrolled_at: data?.enrolled_at || new Date().toISOString(),
-        success: true,
-      };
-    } catch (err: any) {
-      console.error('onboardingService.enrollStudent error:', err);
-      throw new Error(err.message || 'Student enrollment failed. Please check your network and class assignment.');
-    }
+    const { actorOnboardingService } = await import("./actorOnboardingService");
+    const result = await actorOnboardingService.create({
+      actor_type: "student",
+      institution_id: input.institution_id || "",
+      school_id: input.school_id,
+      class_id: input.class_id,
+      full_name: `${input.first_name} ${input.last_name}`,
+      gender: input.gender,
+      date_of_birth: input.date_of_birth,
+    });
+    return {
+      student_id: result.actor_record_id || result.user_id,
+      student_number: result.student_number || result.login_id,
+      login_id: result.login_id,
+      pin: result.pin,
+      class_id: input.class_id,
+      enrolled_at: new Date().toISOString(),
+      success: true,
+    } as EnrollStudentResponse;
   },
 
   /**
@@ -413,47 +352,7 @@ export const onboardingService = {
       });
 
       if (error || !data) {
-        // Deterministic validation query fallback
-        const [schoolRes, classesRes, subjectsRes, teachersRes, studentsRes] = await Promise.all([
-          supabase.from('schools').select('*').eq('id', params.school_id).maybeSingle(),
-          supabase.from('classes').select('*').eq('school_id', params.school_id),
-          supabase.from('class_subjects').select('*').eq('school_id', params.school_id),
-          supabase.from('teachers').select('*').eq('school_id', params.school_id),
-          supabase.from('students').select('*').eq('school_id', params.school_id),
-        ]);
-
-        const schoolData = schoolRes.data as any;
-        const errors: string[] = [];
-        if (!schoolData) errors.push('Authoritative school campus record missing');
-        if ((classesRes.data?.length || 0) === 0) errors.push('At least one class level must be defined');
-
-        const isValid = errors.length === 0;
-
-        if (isValid) {
-          await supabase
-            .from('institution_onboarding')
-            .upsert({
-              institution_id: params.institution_id,
-              current_step: 14,
-              is_completed: true,
-              completed_at: new Date().toISOString(),
-            } as any);
-        }
-
-        return {
-          institution_id: params.institution_id,
-          institution_name: schoolData?.school_name || 'Gradifi Institution',
-          school_id: params.school_id,
-          school_name: schoolData?.school_name || 'Main Campus',
-          classes_count: classesRes.data?.length || 0,
-          subjects_count: subjectsRes.data?.length || 0,
-          teachers_count: teachersRes.data?.length || 0,
-          students_count: studentsRes.data?.length || 0,
-          cbt_ready: true,
-          ai_grading_ready: true,
-          is_valid_for_launch: isValid,
-          validation_errors: errors,
-        };
+        throw new Error(`RECONCILIATION_RPC_FAILED: ${error?.message || 'EMPTY_DATABASE_RECEIPT'}`);
       }
 
       return data as ReconciliationReport;

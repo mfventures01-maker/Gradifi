@@ -25,24 +25,17 @@ interface CreateStudentProps {
   onNavigateToDashboard?: () => void;
 }
 
-const DEFAULT_CLASSES: ClassEntity[] = [
-  { id: 'cls_jss1', school_id: 'sch_demo_01', name: 'JSS 1', arm: 'Gold', created_at: '' },
-  { id: 'cls_jss2', school_id: 'sch_demo_01', name: 'JSS 2', arm: 'Gold', created_at: '' },
-  { id: 'cls_jss3', school_id: 'sch_demo_01', name: 'JSS 3', arm: 'Gold', created_at: '' },
-  { id: 'cls_ss1', school_id: 'sch_demo_01', name: 'SS 1', arm: 'Science', created_at: '' },
-  { id: 'cls_ss2', school_id: 'sch_demo_01', name: 'SS 2', arm: 'Science', created_at: '' },
-  { id: 'cls_ss3', school_id: 'sch_demo_01', name: 'SS 3', arm: 'Science', created_at: '' },
-];
+const DEFAULT_CLASSES: ClassEntity[] = [];
 
 export const CreateStudent: React.FC<CreateStudentProps> = ({
-  schoolId = 'sch_demo_01',
-  institutionId = 'inst_demo_01',
+  schoolId = '',
+  institutionId = '',
   onSuccess,
   onNavigateToDashboard,
 }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [classId, setClassId] = useState('cls_jss1');
+  const [classId, setClassId] = useState('');
   const [gender, setGender] = useState<'male' | 'female'>('male');
   const [dateOfBirth, setDateOfBirth] = useState('2012-05-15');
 
@@ -63,29 +56,13 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
           setClasses(data);
           setClassId(data[0].id);
         } else {
-          const defaultClasses: ClassEntity[] = [
-            { id: 'cls_jss1', school_id: schoolId, name: 'JSS 1', arm: 'Gold', created_at: '' },
-            { id: 'cls_jss2', school_id: schoolId, name: 'JSS 2', arm: 'Gold', created_at: '' },
-            { id: 'cls_jss3', school_id: schoolId, name: 'JSS 3', arm: 'Gold', created_at: '' },
-            { id: 'cls_ss1', school_id: schoolId, name: 'SS 1', arm: 'Science', created_at: '' },
-            { id: 'cls_ss2', school_id: schoolId, name: 'SS 2', arm: 'Science', created_at: '' },
-            { id: 'cls_ss3', school_id: schoolId, name: 'SS 3', arm: 'Science', created_at: '' },
-          ];
-          setClasses(defaultClasses);
-          setClassId(defaultClasses[0].id);
+          setClasses([]);
+          setClassId('');
         }
       } catch (err) {
-        console.warn('Class list fetch fallback:', err);
-        const defaultClasses: ClassEntity[] = [
-          { id: 'cls_jss1', school_id: schoolId || 'sch_demo_01', name: 'JSS 1', arm: 'Gold', created_at: '' },
-          { id: 'cls_jss2', school_id: schoolId || 'sch_demo_01', name: 'JSS 2', arm: 'Gold', created_at: '' },
-          { id: 'cls_jss3', school_id: schoolId || 'sch_demo_01', name: 'JSS 3', arm: 'Gold', created_at: '' },
-          { id: 'cls_ss1', school_id: schoolId || 'sch_demo_01', name: 'SS 1', arm: 'Science', created_at: '' },
-          { id: 'cls_ss2', school_id: schoolId || 'sch_demo_01', name: 'SS 2', arm: 'Science', created_at: '' },
-          { id: 'cls_ss3', school_id: schoolId || 'sch_demo_01', name: 'SS 3', arm: 'Science', created_at: '' },
-        ];
-        setClasses(defaultClasses);
-        setClassId(defaultClasses[0].id);
+        setClasses([]);
+        setClassId('');
+        setError('Could not load real school classes. Student provisioning is blocked until the school class list is available.');
       } finally {
         setLoadingClasses(false);
       }
@@ -202,7 +179,7 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
             Student Enrollment Flashcard
           </h2>
           <p className="text-slate-600 text-sm mt-1 max-w-md mx-auto">
-            Matriculation record sealed in Supabase PostgreSQL students registry.
+            Student identity and matriculation record created in the authoritative database.
           </p>
 
           {/* Flashcard Box */}
@@ -211,10 +188,12 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
               <div>
                 <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Matric / Student #</p>
                 <p className="font-mono text-base font-bold text-emerald-700">{enrolledStudent.student_number}</p>
+                <p className="text-xs text-slate-500 mt-2">System Login ID: <span className="font-mono font-bold">{enrolledStudent.login_id}</span></p>
+                <p className="text-xs text-slate-500">Temporary PIN: <span className="font-mono font-bold">{enrolledStudent.pin}</span></p>
               </div>
               <button
                 type="button"
-                onClick={() => handleCopyNumber(enrolledStudent.student_number)}
+                onClick={() => handleCopyNumber(enrolledStudent.login_id || enrolledStudent.student_number)}
                 className="p-2 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
                 title="Copy Student Number"
               >
