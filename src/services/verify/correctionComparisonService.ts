@@ -32,7 +32,12 @@ export interface CorrectionComparison {
   findings: CorrectionFindingDelta[];
 }
 
-export interface CorrectionComparisonResolution {\n  status: 'VALID';\n  comparison: CorrectionComparison;\n}\n\nexport class CorrectionComparisonError extends Error {
+export interface CorrectionComparisonResolution {
+  status: 'VALID';
+  comparison: CorrectionComparison;
+}
+
+export class CorrectionComparisonError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'CorrectionComparisonError';
