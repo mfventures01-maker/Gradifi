@@ -319,7 +319,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                 <>
                   <div>
                     <label htmlFor="faculty" className="block text-sm font-semibold text-slate-800">Faculty</label>
-                    <select id="faculty" value={facultyId} onChange={event => setFacultyId(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                    <select id="faculty" value={facultyId} onChange={event => { setFacultyId(event.target.value); setDepartmentId(""); }} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
                       <option value="">Select faculty (optional)</option>
                       {nucFaculties.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                     </select>
