@@ -30,9 +30,10 @@ const errorMessage = (error: unknown) => {
 export const HigherEducationOnboarding: React.FC = () => {
   const [institutionId, setInstitutionId] = useState("");
   const [bootstrapCampus, setBootstrapCampus] = useState<Option | null>(null);
-  const [faculties, setFaculties] = useState<Option[]>([]);
-  const [nucDepartments, setNucDepartments] = useState<Option[]>([]);
-  const [adviserDepartments, setAdviserDepartments] = useState<Option[]>([]);
+  const [nucFaculties, setNucFaculties] = useState<Option[]>([]);
+  const [academicFaculties, setAcademicFaculties] = useState<Option[]>([]);
+  const [nucDepartments, setNucDepartments] = useState<(Option & { faculty_id: string })[]>([]);
+  const [adviserDepartments, setAdviserDepartments] = useState<(Option & { faculty_id: string })[]>([]);
   const [classes, setClasses] = useState<Option[]>([]);
   const [role, setRole] = useState<AcademicRole>("hod");
   const [fullName, setFullName] = useState("");
@@ -69,17 +70,19 @@ export const HigherEducationOnboarding: React.FC = () => {
           throw new Error("DEAN_ROOT_AUTHORITY_LINK_REQUIRED");
         }
         const db = supabase as any;
-        const [schoolRes, facultyRes, nucDepartmentRes, adviserDepartmentRes] = await Promise.all([
+        const [schoolRes, nucFacultyRes, academicFacultyRes, nucDepartmentRes, adviserDepartmentRes] = await Promise.all([
           db.from("schools")
             .select("id,school_name,school_type,created_at")
             .eq("institution_id", identity.institutionId)
             .order("created_at", { ascending: true }),
-          db.from("nuc_faculties").select("id,name").eq("institution_id", identity.institutionId).order("name"),
-          db.from("nuc_departments").select("id,name").eq("institution_id", identity.institutionId).order("name"),
-          db.from("departments").select("id,name").eq("institution_id", identity.institutionId).order("name"),
+          db.from("nuc_faculties").select("id,name").eq("institution_id", identity.institutionId).order("code"),
+          db.from("faculties").select("id,name").eq("institution_id", identity.institutionId).order("code"),
+          db.from("nuc_departments").select("id,name,faculty_id").eq("institution_id", identity.institutionId).order("code"),
+          db.from("departments").select("id,name,faculty_id").eq("institution_id", identity.institutionId).order("code"),
         ]);
         if (schoolRes.error) throw schoolRes.error;
-        if (facultyRes.error) throw facultyRes.error;
+        if (nucFacultyRes.error) throw nucFacultyRes.error;
+        if (academicFacultyRes.error) throw academicFacultyRes.error;
         if (nucDepartmentRes.error) throw nucDepartmentRes.error;
         if (adviserDepartmentRes.error) throw adviserDepartmentRes.error;
         const schoolRows = schoolRes.data || [];
@@ -90,9 +93,10 @@ export const HigherEducationOnboarding: React.FC = () => {
         if (!active) return;
         setInstitutionId(identity.institutionId);
         setBootstrapCampus({ id: campusRow.id, name: campusRow.school_name });
-        setFaculties((facultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name })));
-        setNucDepartments((nucDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name })));
-        setAdviserDepartments((adviserDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name })));
+        setNucFaculties((nucFacultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name })));
+        setAcademicFaculties((academicFacultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name })));
+        setNucDepartments((nucDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name, faculty_id: row.faculty_id })));
+        setAdviserDepartments((adviserDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name, faculty_id: row.faculty_id })));
         const classRes = await db.from("classes").select("id,name")
           .eq("school_id", campusRow.id).order("name");
         if (classRes.error) throw classRes.error;
@@ -106,9 +110,11 @@ export const HigherEducationOnboarding: React.FC = () => {
     return () => { active = false; };
   }, []);
 
+  const departmentFacultyOptions = role === "adviser" ? academicFaculties : nucFaculties;
+  const departmentSource = role === "adviser" ? adviserDepartments : nucDepartments;
   const departments = useMemo(
-    () => role === "adviser" ? adviserDepartments : nucDepartments,
-    [role, adviserDepartments, nucDepartments]
+    () => departmentSource.filter(item => item.faculty_id === facultyId),
+    [departmentSource, facultyId]
   );
 
   const resetForm = () => {
@@ -152,8 +158,11 @@ export const HigherEducationOnboarding: React.FC = () => {
       throw new Error("Enter the person's first name and surname.");
     }
     if (!institutionId || !bootstrapCampus?.id) throw new Error("Institution and bootstrap campus context are required.");
+    if ((role === "hod" || role === "adviser") && !facultyId) {
+      throw new Error(role === "hod" ? "Select the NUC faculty before choosing its department." : "Select the faculty before choosing its department.");
+    }
     if ((role === "hod" || role === "adviser") && !departmentId) {
-      throw new Error(role === "hod" ? "Select the department this HOD will lead." : "Select the adviser's department.");
+      throw new Error(role === "hod" ? "Select a department belonging to the selected NUC faculty." : "Select a department belonging to the selected faculty.");
     }
     if (role === "lecturer" && !email.trim()) throw new Error("An official email address is required for a lecturer.");
     if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
@@ -278,15 +287,28 @@ export const HigherEducationOnboarding: React.FC = () => {
                 </div>
               </div>
 
+              {(role === "hod" || role === "adviser") && (
+                <div>
+                  <label htmlFor="department-faculty" className="block text-sm font-semibold text-slate-800">Faculty <span className="text-rose-600">*</span></label>
+                  <select id="department-faculty" required value={facultyId} onChange={event => { setFacultyId(event.target.value); setDepartmentId(""); }} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                    <option value="">Select {role === "hod" ? "NUC faculty" : "faculty"}</option>
+                    {departmentFacultyOptions.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                  </select>
+                  {departmentFacultyOptions.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">No faculty records exist for this institution in the {role === "hod" ? "NUC faculty" : "academic faculty"} register. Department selection is unavailable until the institution's faculty structure is configured.</p>}
+                </div>
+              )}
+
               {(role === "hod" || role === "adviser" || role === "lecturer") && (
                 <div>
                   <label htmlFor="department" className="block text-sm font-semibold text-slate-800">Department {(role === "hod" || role === "adviser") && <span className="text-rose-600">*</span>}</label>
-                  <select id="department" required={role === "hod" || role === "adviser"} value={departmentId} onChange={event => setDepartmentId(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
-                    <option value="">Select department</option>
+                  <select id="department" required={role === "hod" || role === "adviser"} value={departmentId} onChange={event => setDepartmentId(event.target.value)} disabled={(role === "hod" || role === "adviser") && (!facultyId || departments.length === 0)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-slate-100">
+                    <option value="">{role === "hod" || role === "adviser" ? (facultyId ? "Select department in selected faculty" : "Select a faculty first") : "Select department (optional)"}</option>
                     {departments.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                    {role === "lecturer" && nucDepartments.filter(item => !facultyId || item.faculty_id === facultyId).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                   </select>
-                  <p className="mt-1 text-xs text-slate-500">{role === "adviser" ? "Uses the institution's academic departments register." : "Uses the institution's NUC department register."}</p>
-                  {departments.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">{role === "hod" ? "No NUC departments are loaded for this institution. An institution-owned nuc_departments record is required before an HOD can be appointed." : role === "adviser" ? "No academic departments are loaded for this institution. An institution-owned departments record is required before a Course Adviser can be appointed." : "No NUC departments are loaded. A department assignment can be added later."}</p>}
+                  <p className="mt-1 text-xs text-slate-500">{role === "adviser" ? "Departments are filtered by the selected academic faculty." : "Departments are filtered by the selected NUC faculty."}</p>
+                  {(role === "hod" || role === "adviser") && facultyId && departments.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">The selected faculty has no departments in this institution's {role === "hod" ? "NUC department" : "academic department"} register. Choose another faculty or configure its departments first.</p>}
+                  {role === "lecturer" && nucDepartments.length === 0 && <p className="mt-2 text-xs text-slate-500">No NUC departments are configured yet. A department can be assigned later.</p>}
                 </div>
               )}
 
@@ -296,7 +318,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                     <label htmlFor="faculty" className="block text-sm font-semibold text-slate-800">Faculty</label>
                     <select id="faculty" value={facultyId} onChange={event => setFacultyId(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
                       <option value="">Select faculty (optional)</option>
-                      {faculties.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                      {nucFaculties.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                     </select>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
