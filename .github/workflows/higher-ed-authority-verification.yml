@@ -1,0 +1,30 @@
+name: Higher-ed VC/Rector authority contract
+
+on:
+  push:
+    branches:
+      - feat/higher-ed-vc-rector-authority-2026-11-16
+  pull_request:
+    branches:
+      - feat/canonical-actor-onboarding
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Client TypeScript
+        run: npm run typecheck:client
+      - name: Production build
+        run: npm run build
+      - name: Unit tests
+        run: npm test
