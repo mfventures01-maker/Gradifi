@@ -9,7 +9,7 @@ function receipt(options: {
   evidenceHash: string;
   similarity: number;
   findings: Array<{ matchedDocumentId: string; matchedSegment: string; matchMethod: string; similarityScore: number }>;
-  correctionLineage?: { relation: 'CORRECTED_FROM'; originalVerificationId: string; correctedAt: string };
+  correctionOfVerificationId?: string | null;
 }): PublicVerificationRecord {
   const documentHash = computeHash(options.rawText);
   const result = {
@@ -34,7 +34,8 @@ function receipt(options: {
     policy_version: result.policyVersion,
     overall_similarity: options.similarity,
     total_sources_found: result.totalSourcesFound,
-    evidence_envelope: evidenceEnvelope
+    evidence_envelope: evidenceEnvelope,
+    correction_of_verification_id: options.correctionOfVerificationId ?? null
   };
 }
 
@@ -58,11 +59,7 @@ describe('G6 correction receipt comparison', () => {
       evidenceHash: '2222' + 'b'.repeat(60),
       similarity: 12.5,
       findings: [],
-      correctionLineage: {
-        relation: 'CORRECTED_FROM',
-        originalVerificationId: original.verification_id,
-        correctedAt: '2026-11-16T10:00:00.000Z'
-      }
+      correctionOfVerificationId: original.verification_id
     });
 
     const comparison = compareCorrectionReceipts(original, corrected);
@@ -98,7 +95,7 @@ describe('G6 correction receipt comparison', () => {
       findings: []
     });
     expect(() => compareCorrectionReceipts(original, corrected))
-      .toThrow(/lineage/);
+      .toThrow(/correction_of_verification_id/);
   });
 
   it('rejects a receipt whose persisted score conflicts with its embedded result', () => {
@@ -113,11 +110,7 @@ describe('G6 correction receipt comparison', () => {
       evidenceHash: '7777' + '0'.repeat(60),
       similarity: 10,
       findings: [],
-      correctionLineage: {
-        relation: 'CORRECTED_FROM',
-        originalVerificationId: original.verification_id,
-        correctedAt: '2026-11-16T10:00:00.000Z'
-      }
+      correctionOfVerificationId: original.verification_id
     });
     corrected.overall_similarity = 11;
     expect(() => compareCorrectionReceipts(original, corrected))
