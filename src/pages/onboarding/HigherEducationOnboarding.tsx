@@ -286,7 +286,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                     {departments.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                   </select>
                   <p className="mt-1 text-xs text-slate-500">{role === "adviser" ? "Uses the institution's academic departments register." : "Uses the institution's NUC department register."}</p>
-                  {departments.length === 0 && <p className="mt-2 text-xs text-amber-700">No departments are available for this role yet. Add the institution's department records before provisioning.</p>}
+                  {departments.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">{role === "hod" ? "No NUC departments are loaded for this institution. An institution-owned nuc_departments record is required before an HOD can be appointed." : role === "adviser" ? "No academic departments are loaded for this institution. An institution-owned departments record is required before a Course Adviser can be appointed." : "No NUC departments are loaded. A department assignment can be added later."}</p>}
                 </div>
               )}
 
@@ -346,7 +346,7 @@ export const HigherEducationOnboarding: React.FC = () => {
               )}
 
               <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row">
-                <button type="submit" disabled={loading || !ready} className="flex-1 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" disabled={loading || !ready || ((role === "hod" || role === "adviser") && departments.length === 0)} className="flex-1 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
                   {loading ? "Creating secure account…" : "Create " + roleLabels[role] + " account"}
                 </button>
                 <button type="button" onClick={resetForm} disabled={loading} className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">Clear form</button>
