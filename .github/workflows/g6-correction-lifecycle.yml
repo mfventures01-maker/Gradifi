@@ -22,6 +22,8 @@ jobs:
       - run: npm ci
       - name: Targeted G6 correction receipt tests
         run: npx vitest run tests/correctionComparisonService.test.ts tests/verificationPersistence.test.ts
+      - name: Build server runtime dependencies
+        run: npm run build:server
       - name: Client typecheck
         run: npm run typecheck:client
       - name: Server typecheck
