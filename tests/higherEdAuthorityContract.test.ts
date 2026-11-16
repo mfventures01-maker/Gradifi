@@ -8,6 +8,7 @@ const registration = read("../src/pages/onboarding/HigherInstitutionRegistration
 const higherEdAdmin = read("../src/pages/onboarding/HigherEducationOnboarding.tsx");
 const higherEdStudentMigration = read("../supabase/migrations/20261116160000_higher_ed_student_class_optional.sql");
 const higherEdDashboard = read("../src/pages/higher-education/HigherEducationDashboard.tsx");
+const authGuard = read("../src/components/AuthGuard.tsx");
 const login = read("../src/pages/auth/LoginPage.tsx");
 
 describe("higher-education VC/Rector authority contract", () => {
@@ -67,6 +68,10 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(higherEdAdmin).toContain("Accounts created this session");
     expect(higherEdAdmin).toContain("navigator.clipboard.writeText(value)");
     expect(higherEdAdmin).toContain("must replace the temporary PIN at first sign-in.");
+  });
+
+  it("allows VC and Rector identities through the higher-education portal guard", () => {
+    expect(authGuard).toContain("'/portal/higher-education': ['vice_chancellor', 'rector', 'dean', 'hod', 'adviser', 'lecturer']");
   });
 
   it("gives the Dean a direct route into academic account administration", () => {
