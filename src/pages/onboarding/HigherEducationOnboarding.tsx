@@ -11,7 +11,8 @@ export const HigherEducationOnboarding: React.FC = () => {
   const [schoolId, setSchoolId] = useState("");
   const [schools, setSchools] = useState<Option[]>([]);
   const [faculties, setFaculties] = useState<Option[]>([]);
-  const [departments, setDepartments] = useState<Option[]>([]);
+  const [nucDepartments, setNucDepartments] = useState<Option[]>([]);
+  const [adviserDepartments, setAdviserDepartments] = useState<Option[]>([]);
   const [classes, setClasses] = useState<Option[]>([]);
   const [classId, setClassId] = useState("");
   const [role, setRole] = useState<AcademicRole>("lecturer");
@@ -42,18 +43,21 @@ export const HigherEducationOnboarding: React.FC = () => {
         if (!authorityUserId) throw new Error("DEAN_ROOT_AUTHORITY_LINK_REQUIRED: ask the institution's VC/Rector to restore the Dean authority link.");
         setRole("hod");
         const db = supabase as any;
-        const [schoolRes, facultyRes, departmentRes] = await Promise.all([
+        const [schoolRes, facultyRes, departmentRes, adviserDepartmentRes] = await Promise.all([
           db.from("schools").select("id,school_name").eq("institution_id", identity.institutionId).order("school_name"),
           db.from("nuc_faculties").select("id,name").eq("institution_id", identity.institutionId).order("name"),
           db.from("nuc_departments").select("id,name").eq("institution_id", identity.institutionId).order("name"),
+          db.from("departments").select("id,name").eq("institution_id", identity.institutionId).order("name"),
         ]);
         if (schoolRes.error) throw schoolRes.error;
         if (facultyRes.error) throw facultyRes.error;
         if (departmentRes.error) throw departmentRes.error;
+        if (adviserDepartmentRes.error) throw adviserDepartmentRes.error;
         if (!active) return;
         setSchools((schoolRes.data || []).map((x: any) => ({ id: x.id, name: x.school_name })));
         setFaculties(facultyRes.data || []);
-        setDepartments(departmentRes.data || []);
+        setNucDepartments(departmentRes.data || []);
+        setAdviserDepartments(adviserDepartmentRes.data || []);
         if (schoolRes.data?.[0]) {
           const rootCampusId = schoolRes.data[0].id;
           setSchoolId(rootCampusId);
@@ -135,13 +139,13 @@ export const HigherEducationOnboarding: React.FC = () => {
         <select value={facultyId} onChange={e=>setFacultyId(e.target.value)} className="mt-1 w-full rounded-lg border p-2"><option value="">Select faculty</option>{faculties.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
       </label>}
       {["vice_principal", "bursar", "teacher", "student", "parent", "lecturer"].includes(role) && <label className="block text-sm font-medium">School / Campus
-        <select value={schoolId} onChange={e=>{setSchoolId(e.target.value);setClassId("");setStudentId("");}} required className="mt-1 w-full rounded-lg border p-2"><option value="">Select school or campus</option>{schools.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
+        <select value={schoolId} onChange={e=>{setSchoolId(e.target.value);setClassId("");}} required className="mt-1 w-full rounded-lg border p-2"><option value="">Select school or campus</option>{schools.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
       </label>}
       {role === "student" && <label className="block text-sm font-medium">Class
         <select value={classId} onChange={e=>setClassId(e.target.value)} required className="mt-1 w-full rounded-lg border p-2"><option value="">Select class</option>{classes.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
       </label>}
       {(role==="hod" || role==="adviser" || role==="lecturer") && <label className="block text-sm font-medium">Department
-        <select value={departmentId} onChange={e=>setDepartmentId(e.target.value)} className="mt-1 w-full rounded-lg border p-2"><option value="">Select department</option>{departments.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
+        <select value={departmentId} onChange={e=>setDepartmentId(e.target.value)} className="mt-1 w-full rounded-lg border p-2"><option value="">Select department</option>{(role === "adviser" ? adviserDepartments : nucDepartments).map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
       </label>}
       {role==="lecturer" && <>
         <div className="grid gap-4 sm:grid-cols-2">
