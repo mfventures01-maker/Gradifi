@@ -16,6 +16,8 @@ const roleLabels: Record<AcademicRole, string> = {
 
 const errorMessage = (error: unknown) => {
   const message = error instanceof Error ? error.message : "Account provisioning failed.";
+  if (message.includes("NUC_DEPARTMENT_NOT_IN_SELECTED_FACULTY")) return "The selected HOD department does not belong to the selected NUC faculty. Re-select the faculty and department.";
+  if (message.includes("DEPARTMENT_NOT_IN_SELECTED_FACULTY")) return "The selected Adviser department does not belong to the selected faculty. Re-select the faculty and department.";
   if (message.includes("NUC_DEPARTMENT_NOT_IN_INSTITUTION")) return "That department is not registered under this institution. Refresh the department list and try again.";
   if (message.includes("DEPARTMENT_NOT_IN_INSTITUTION")) return "That adviser department is not registered under this institution. Refresh the department list and try again.";
   if (message.includes("ACTOR_SCHOOL_REQUIRED")) return "The institution's bootstrap campus could not be resolved. Contact the institution administrator.";
