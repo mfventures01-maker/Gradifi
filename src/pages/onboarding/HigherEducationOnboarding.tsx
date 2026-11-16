@@ -80,7 +80,7 @@ export const HigherEducationOnboarding: React.FC = () => {
           db.from("nuc_faculties").select("id,name,code").eq("institution_id", identity.institutionId).order("code"),
           db.from("faculties").select("id,name,code").eq("institution_id", identity.institutionId).order("code"),
           db.from("nuc_departments").select("id,name,code,faculty_id").eq("institution_id", identity.institutionId).order("code"),
-          db.from("departments").select("id,name,faculty_id").eq("institution_id", identity.institutionId).order("code"),
+          db.from("departments").select("id,name,code,faculty_id").eq("institution_id", identity.institutionId).order("code"),
         ]);
         if (schoolRes.error) throw schoolRes.error;
         if (nucFacultyRes.error) throw nucFacultyRes.error;
@@ -96,9 +96,9 @@ export const HigherEducationOnboarding: React.FC = () => {
         setInstitutionId(identity.institutionId);
         setBootstrapCampus({ id: campusRow.id, name: campusRow.school_name });
         setNucFaculties((nucFacultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name, code: row.code })));
-        setAcademicFaculties((academicFacultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name })));
+        setAcademicFaculties((academicFacultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name, code: row.code })));
         setNucDepartments((nucDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name, code: row.code, faculty_id: row.faculty_id })));
-        setAdviserDepartments((adviserDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name, faculty_id: row.faculty_id })));
+        setAdviserDepartments((adviserDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name, code: row.code, faculty_id: row.faculty_id })));
         const classRes = await db.from("classes").select("id,name")
           .eq("school_id", campusRow.id).order("name");
         if (classRes.error) throw classRes.error;
@@ -307,7 +307,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                   <label htmlFor="department" className="block text-sm font-semibold text-slate-800">Department {(role === "hod" || role === "adviser") && <span className="text-rose-600">*</span>}</label>
                   <select id="department" required={role === "hod" || role === "adviser"} value={departmentId} onChange={event => setDepartmentId(event.target.value)} disabled={(role === "hod" || role === "adviser") && (!facultyId || departments.length === 0)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-slate-100">
                     <option value="">{role === "hod" || role === "adviser" ? (facultyId ? "Select department in selected faculty" : "Select a faculty first") : "Select department (optional)"}</option>
-                    {departments.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                    {departments.map(item => <option key={item.id} value={item.id}>{item.code ? `${item.code} · ` : ""}{item.name}</option>)}
                   </select>
                   <p className="mt-1 text-xs text-slate-500">{role === "adviser" ? "Departments are filtered by the selected academic faculty." : "Departments are filtered by the selected NUC faculty."}</p>
                   {(role === "hod" || role === "adviser") && facultyId && departments.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">The selected faculty has no departments in this institution's {role === "hod" ? "NUC department" : "academic department"} register. Choose another faculty or configure its departments first.</p>}
@@ -321,7 +321,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                     <label htmlFor="faculty" className="block text-sm font-semibold text-slate-800">Faculty</label>
                     <select id="faculty" value={facultyId} onChange={event => { setFacultyId(event.target.value); setDepartmentId(""); }} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
                       <option value="">Select faculty (optional)</option>
-                      {nucFaculties.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                      {nucFaculties.map(item => <option key={item.id} value={item.id}>{item.code ? `${item.code} · ` : ""}{item.name}</option>)}
                     </select>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
