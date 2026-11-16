@@ -4,7 +4,7 @@ import { authService } from "../../services/authService";
 import { actorOnboardingService, ActorType, CreateActorResult } from "../../services/actorOnboardingService";
 
 type AcademicRole = Extract<ActorType, "student" | "hod" | "adviser" | "lecturer">;
-type Option = { id: string; name: string };
+type Option = { id: string; name: string; code?: string };
 type AccountSummary = CreateActorResult & { createdAt: string };
 
 const roleLabels: Record<AcademicRole, string> = {
@@ -77,9 +77,9 @@ export const HigherEducationOnboarding: React.FC = () => {
             .select("id,school_name,school_type,created_at")
             .eq("institution_id", identity.institutionId)
             .order("created_at", { ascending: true }),
-          db.from("nuc_faculties").select("id,name").eq("institution_id", identity.institutionId).order("code"),
-          db.from("faculties").select("id,name").eq("institution_id", identity.institutionId).order("code"),
-          db.from("nuc_departments").select("id,name,faculty_id").eq("institution_id", identity.institutionId).order("code"),
+          db.from("nuc_faculties").select("id,name,code").eq("institution_id", identity.institutionId).order("code"),
+          db.from("faculties").select("id,name,code").eq("institution_id", identity.institutionId).order("code"),
+          db.from("nuc_departments").select("id,name,code,faculty_id").eq("institution_id", identity.institutionId).order("code"),
           db.from("departments").select("id,name,faculty_id").eq("institution_id", identity.institutionId).order("code"),
         ]);
         if (schoolRes.error) throw schoolRes.error;
@@ -95,9 +95,9 @@ export const HigherEducationOnboarding: React.FC = () => {
         if (!active) return;
         setInstitutionId(identity.institutionId);
         setBootstrapCampus({ id: campusRow.id, name: campusRow.school_name });
-        setNucFaculties((nucFacultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name })));
+        setNucFaculties((nucFacultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name, code: row.code })));
         setAcademicFaculties((academicFacultyRes.data || []).map((row: any) => ({ id: row.id, name: row.name })));
-        setNucDepartments((nucDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name, faculty_id: row.faculty_id })));
+        setNucDepartments((nucDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name, code: row.code, faculty_id: row.faculty_id })));
         setAdviserDepartments((adviserDepartmentRes.data || []).map((row: any) => ({ id: row.id, name: row.name, faculty_id: row.faculty_id })));
         const classRes = await db.from("classes").select("id,name")
           .eq("school_id", campusRow.id).order("name");
@@ -296,7 +296,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                   <label htmlFor="department-faculty" className="block text-sm font-semibold text-slate-800">Faculty <span className="text-rose-600">*</span></label>
                   <select id="department-faculty" required value={facultyId} onChange={event => { setFacultyId(event.target.value); setDepartmentId(""); }} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
                     <option value="">Select {role === "hod" ? "NUC faculty" : "faculty"}</option>
-                    {departmentFacultyOptions.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                    {departmentFacultyOptions.map(item => <option key={item.id} value={item.id}>{item.code ? `${item.code} · ` : ""}{item.name}</option>)}
                   </select>
                   {departmentFacultyOptions.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">No faculty records exist for this institution in the {role === "hod" ? "NUC faculty" : "academic faculty"} register. Department selection is unavailable until the institution's faculty structure is configured.</p>}
                 </div>
