@@ -4,7 +4,7 @@ import { authService, AuthSessionState } from '../services/authService';
 
 interface AuthGuardProps {
   children?: React.ReactNode;
-  allowedRoles?: Array<'admin' | 'principal' | 'principal_admin' | 'teacher' | 'student' | 'parent' | 'bursar' | 'vp' | 'vice_principal' | 'dean' | 'hod' | 'adviser' | 'lecturer'>;
+  allowedRoles?: Array<'admin' | 'principal' | 'principal_admin' | 'teacher' | 'student' | 'parent' | 'bursar' | 'vp' | 'vice_principal' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'individual'>;
   fallback?: React.ReactNode;
   onSessionResolved?: (session: AuthSessionState) => void;
 }
@@ -76,6 +76,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     '/portal/student': ['student'],
     '/portal/parent': ['parent'],
     '/portal/higher-education': ['vice_chancellor', 'rector', 'dean', 'hod', 'adviser', 'lecturer'],
+    '/portal/individual': ['individual'],
     '/grading': ['teacher', 'principal_admin', 'admin', 'dean', 'hod', 'adviser', 'lecturer'],
   };
   const routeRequiredRoles = routeRoleMap[location.pathname] ??
