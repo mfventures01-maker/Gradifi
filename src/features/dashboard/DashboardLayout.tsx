@@ -78,8 +78,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   // CBT Exam State
   const [activeExam, setActiveExam] = useState<any | null>(null);
-  const [cbtStudentName, setCbtStudentName] = useState('Kelechi Nwosu');
-  const [cbtStudentNumber, setCbtStudentNumber] = useState('GRD/2026/104');
+  const [cbtStudentName, setCbtStudentName] = useState('');
+  const [cbtStudentNumber, setCbtStudentNumber] = useState('');
   const [cbtAnswers, setCbtAnswers] = useState<Record<string, string>>({});
   const [cbtSubmittedResult, setCbtSubmittedResult] = useState<any | null>(null);
   const [isSubmittingCbt, setIsSubmittingCbt] = useState(false);
@@ -175,30 +175,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   };
 
   const handleApproveGrading = async () => {
-    if (!selectedSchool || !institution || !activeGradingResult) return;
-    try {
-      await apiClient.submitGrading({
-        school_id: selectedSchool.id,
-        institution_id: institution.id,
-        student_name: 'David Eze',
-        student_number: 'GRD/2026/101',
-        subject_name: gradingSubject,
-        assignment_title: assignmentTitle,
-        student_work: studentSubmissionText,
-        rubric: { title: "WAEC Standard Secondary Rubric", total_score: 20, criteria: [] },
-        ai_score: activeGradingResult.overall_score,
-        ai_feedback: activeGradingResult.overall_feedback,
-        criteria_scores: activeGradingResult.criteria_scores,
-        status: 'approved',
-        teacher_notes: teacherReviewNote || 'Approved by Subject Teacher.',
-      });
-
-      const updated = await apiClient.getGradingSubmissions(selectedSchool.id);
-      setGradingSubmissions(updated);
-      setGradingSuccessMsg("✓ Grading approved and recorded in authoritative student ledger!");
-    } catch (e) {
-      console.error(e);
-    }
+    setGradingSuccessMsg('Persistence is disabled in this restored legacy dashboard until a real student-selection and teacher-authorization contract is wired.');
   };
 
   // Start CBT Exam Mode
@@ -214,28 +191,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     }
   };
 
-  // Submit CBT Exam
+  // CBT attempts must be submitted from an authenticated student session.
   const handleSubmitCbt = async () => {
-    if (!activeExam) return;
-    setIsSubmittingCbt(true);
-    try {
-      const res = await apiClient.submitCbtExam(activeExam.id, {
-        student_id: 'std_demo_101',
-        student_name: cbtStudentName,
-        student_number: cbtStudentNumber,
-        answers: cbtAnswers,
-      });
-      setCbtSubmittedResult(res);
-      // Refresh exams list
-      if (selectedSchool) {
-        const exams = await apiClient.getCbtExams(selectedSchool.id);
-        setCbtExams(exams);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsSubmittingCbt(false);
-    }
+    setCbtSubmittedResult(null);
+    console.warn('CBT submission is disabled in the school administrator dashboard. Use an authenticated student session.');
   };
 
   // Quick Enrol Student
@@ -306,8 +265,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* School Context Card */}
         <div className="p-4 border-b border-slate-800 bg-slate-950/40">
           <div className="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Institution Context</div>
-          <div className="text-sm font-bold text-white truncate mt-0.5">{institution?.name || 'Kingsway Premier Academy'}</div>
-          <div className="text-xs text-slate-400 truncate mt-0.5">{selectedSchool?.school_name || 'Main Campus'}</div>
+          <div className="text-sm font-bold text-white truncate mt-0.5">{institution?.name || 'Institution not loaded'}</div>
+          <div className="text-xs text-slate-400 truncate mt-0.5">{selectedSchool?.school_name || 'Campus not loaded'}</div>
         </div>
 
         {/* Navigation Items */}
@@ -425,7 +384,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               {activeTab.replace('_', ' ')}
             </h1>
             <span className="text-xs px-2.5 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded-full border border-emerald-200">
-              Verified SSOT
+              Live school workspace
             </span>
           </div>
 
@@ -746,11 +705,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             </div>
 
                             <button
-                              onClick={() => handleStartExam(exam.id)}
-                              className="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow"
+                              disabled
+                              className="w-full cursor-not-allowed rounded-xl bg-slate-200 py-2.5 text-xs font-bold text-slate-500 flex items-center justify-center gap-1.5"
                             >
                               <Play className="w-4 h-4" />
-                              <span>Launch Student CBT Simulator</span>
+                              <span>Student session required to launch</span>
                             </button>
                           </div>
                         ))}
