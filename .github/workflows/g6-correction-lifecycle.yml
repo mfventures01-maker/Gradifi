@@ -1,0 +1,29 @@
+name: G6 correction lifecycle
+
+on:
+  push:
+    branches:
+      - repair/g6-before-after-g7-public-receipt-2026-11-16
+  pull_request:
+    branches:
+      - clean-deploy
+      - repair/g6-before-after-g7-public-receipt-2026-11-16
+
+jobs:
+  g6-correction:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Targeted G6 correction receipt tests
+        run: npx vitest run tests/correctionComparisonService.test.ts tests/verificationPersistence.test.ts
+      - name: Client typecheck
+        run: npm run typecheck:client
+      - name: Server typecheck
+        run: npm run typecheck:server
+      - name: Production build
+        run: npm run build
