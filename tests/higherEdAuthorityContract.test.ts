@@ -7,6 +7,7 @@ const edge = read("../supabase/functions/actor-onboarding/index.ts");
 const registration = read("../src/pages/onboarding/HigherInstitutionRegistration.tsx");
 const higherEdAdmin = read("../src/pages/onboarding/HigherEducationOnboarding.tsx");
 const higherEdStudentMigration = read("../supabase/migrations/20261116160000_higher_ed_student_class_optional.sql");
+const deterministicDepartmentsMigration = read("../supabase/migrations/20261116170000_deterministic_hod_adviser_departments.sql");
 const higherEdDashboard = read("../src/pages/higher-education/HigherEducationDashboard.tsx");
 const authGuard = read("../src/components/AuthGuard.tsx");
 const actorService = read("../src/services/actorOnboardingService.ts");
@@ -48,6 +49,19 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(higherEdAdmin).not.toContain("setStudentId(");
     expect(higherEdAdmin).toContain('db.from("departments")');
     expect(higherEdAdmin).toContain('role === "adviser" ? adviserDepartments : nucDepartments');
+  });
+
+  it("makes HOD and Adviser department choice deterministic through faculty selection", () => {
+    expect(higherEdAdmin).toContain('db.from("nuc_faculties")');
+    expect(higherEdAdmin).toContain('db.from("faculties")');
+    expect(higherEdAdmin).toContain('select("id,name,faculty_id")');
+    expect(higherEdAdmin).toContain('id="department-faculty"');
+    expect(higherEdAdmin).toContain('item.faculty_id === facultyId');
+    expect(higherEdAdmin).toContain('setFacultyId(event.target.value); setDepartmentId("");');
+    expect(deterministicDepartmentsMigration).toContain("nd.faculty_id = p_faculty_id");
+    expect(deterministicDepartmentsMigration).toContain("d.faculty_id = p_faculty_id");
+    expect(deterministicDepartmentsMigration).toContain("NUC_DEPARTMENT_NOT_IN_SELECTED_FACULTY");
+    expect(deterministicDepartmentsMigration).toContain("DEPARTMENT_NOT_IN_SELECTED_FACULTY");
   });
 
   it("uses the institution bootstrap Main Campus for lecturer and student records", () => {
