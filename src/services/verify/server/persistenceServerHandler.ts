@@ -7,10 +7,14 @@
 import { createClient } from '@supabase/supabase-js';
 import { VerificationPersistenceService, PublicVerificationRecord } from '../verificationPersistenceService.js';
 import { G4DPersistenceEnvelope, PersistableEvidenceResult } from '../types.js';
+import { PublicVerificationService } from '../publicVerificationService.js';
+
+const PublicVerificationIdIsValid = PublicVerificationService.validateVerificationIdFormat;
 
 export interface PersistenceServerRequestPayload {
   result: PersistableEvidenceResult;
   envelope: G4DPersistenceEnvelope;
+  correctionOfVerificationId?: string | null;
 }
 
 export async function handlePersistenceServerRequest(
@@ -42,7 +46,30 @@ export async function handlePersistenceServerRequest(
     auth: { persistSession: false, autoRefreshToken: false }
   });
 
-  const recordPayload = VerificationPersistenceService.buildPersistenceRecord(payload.result, payload.envelope);
+  const correctionParentId = payload.correctionOfVerificationId ?? null;
+  if (correctionParentId !== null) {
+    if (!PublicVerificationIdIsValid(correctionParentId)) {
+      throw new Error('Invalid correction parent verification ID.');
+    }
+    const { data: parent, error: parentError } = await serverSupabase
+      .from('public_verification_records')
+      .select('*')
+      .eq('verification_id', correctionParentId)
+      .maybeSingle();
+    if (parentError || !parent) {
+      throw new Error('Correction parent receipt could not be independently retrieved.');
+    }
+    const parentIntegrity = VerificationPersistenceService.validatePersistedRecord(parent);
+    if (parentIntegrity.status !== 'VALID') {
+      throw new Error('Correction parent receipt failed integrity validation.');
+    }
+  }
+
+  const recordPayload = VerificationPersistenceService.buildPersistenceRecord(
+    payload.result,
+    payload.envelope,
+    correctionParentId
+  );
 
   // 1. Check for existing record by verification_id
   const { data: existing, error: fetchError } = await serverSupabase
@@ -62,7 +89,8 @@ export async function handlePersistenceServerRequest(
     }
     if (
       existing.document_hash !== recordPayload.document_hash ||
-      existing.evidence_hash !== recordPayload.evidence_hash
+      existing.evidence_hash !== recordPayload.evidence_hash ||
+      (existing.correction_of_verification_id ?? null) !== (recordPayload.correction_of_verification_id ?? null)
     ) {
       throw new Error(
         `Conflicting verification record exists for ID '${recordPayload.verification_id}'.`
@@ -99,7 +127,8 @@ export async function handlePersistenceServerRequest(
       if (
         reFetched &&
         reFetched.document_hash === recordPayload.document_hash &&
-        reFetched.evidence_hash === recordPayload.evidence_hash
+        reFetched.evidence_hash === recordPayload.evidence_hash &&
+        (reFetched.correction_of_verification_id ?? null) === (recordPayload.correction_of_verification_id ?? null)
       ) {
         return {
           record: reFetched as PublicVerificationRecord,
