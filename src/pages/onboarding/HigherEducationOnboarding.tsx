@@ -159,11 +159,6 @@ export const HigherEducationOnboarding: React.FC = () => {
     if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       throw new Error("Enter a valid email address.");
     }
-    if (role === "student" && !classId) {
-      throw new Error(classes.length
-        ? "Select the student's class."
-        : "No classes are configured for the bootstrap campus yet. Student provisioning needs a class record under the current database contract.");
-    }
     if (supervisor && (!maxStudents || !Number.isInteger(Number(maxStudents)) || Number(maxStudents) < 1)) {
       throw new Error("Enter a whole number of at least 1 for maximum supervisees.");
     }
@@ -341,17 +336,17 @@ export const HigherEducationOnboarding: React.FC = () => {
 
               {role === "student" && (
                 <div>
-                  <label htmlFor="student-class" className="block text-sm font-semibold text-slate-800">Class / academic cohort <span className="text-rose-600">*</span></label>
-                  <select id="student-class" required value={classId} onChange={event => setClassId(event.target.value)} disabled={classes.length === 0} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-slate-100">
-                    <option value="">{classes.length ? "Select class or cohort" : "No classes configured for this campus"}</option>
+                  <label htmlFor="student-class" className="block text-sm font-semibold text-slate-800">Class / academic cohort <span className="text-xs font-normal text-slate-500">(optional)</span></label>
+                  <select id="student-class" value={classId} onChange={event => setClassId(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                    <option value="">{classes.length ? "Assign a class or leave unassigned" : "No class records yet · continue without assignment"}</option>
                     {classes.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                   </select>
-                  {classes.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">Student provisioning is currently blocked because the deployed database contract requires a class record. This new institution has only the bootstrap campus. We need to make class assignment optional for higher-education students while keeping the existing school student requirement unchanged.</p>}
+                  <p className="mt-1 text-xs text-slate-500">Higher-education students can be created before class or cohort structures are configured. You can assign a class later.</p>
                 </div>
               )}
 
               <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row">
-                <button type="submit" disabled={loading || !ready || (role === "student" && classes.length === 0)} className="flex-1 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" disabled={loading || !ready} className="flex-1 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
                   {loading ? "Creating secure account…" : "Create " + roleLabels[role] + " account"}
                 </button>
                 <button type="button" onClick={resetForm} disabled={loading} className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">Clear form</button>
