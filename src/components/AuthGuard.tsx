@@ -75,7 +75,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     '/portal/teacher': ['teacher'],
     '/portal/student': ['student'],
     '/portal/parent': ['parent'],
-    '/portal/higher-education': ['dean', 'hod', 'adviser', 'lecturer'],
+    '/portal/higher-education': ['vice_chancellor', 'rector', 'dean', 'hod', 'adviser', 'lecturer'],
     '/grading': ['teacher', 'principal_admin', 'admin', 'dean', 'hod', 'adviser', 'lecturer'],
   };
   const routeRequiredRoles = routeRoleMap[location.pathname] ??
