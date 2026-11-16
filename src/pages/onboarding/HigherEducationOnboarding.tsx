@@ -37,7 +37,9 @@ export const HigherEducationOnboarding: React.FC = () => {
         if (!identity.isAuthenticated || !identity.institutionId) throw new Error("Sign in with an institution administrator account first.");
         if (!active) return;
         setInstitutionId(identity.institutionId);
-        if (identity.role !== "dean") throw new Error("Only the institution's Dean can provision higher-education subaccounts.");
+        if (identity.role !== "dean") throw new Error("Only the institution's Dean can perform higher-education administration.");
+        const authorityUserId = (identity.actor as any)?.authority_user_id;
+        if (!authorityUserId) throw new Error("DEAN_ROOT_AUTHORITY_LINK_REQUIRED: ask the institution's VC/Rector to restore the Dean authority link.");
         setRole("hod");
         const db = supabase as any;
         const [schoolRes, facultyRes, departmentRes] = await Promise.all([
@@ -116,7 +118,7 @@ export const HigherEducationOnboarding: React.FC = () => {
 
   return <main className="mx-auto max-w-2xl p-6"><section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
     <h1 className="text-2xl font-bold text-slate-900">Higher Institution Staff Onboarding</h1>
-    <p className="mt-1 text-sm text-slate-600">The Dean is the institution's root Auth authority. Create HOD, Adviser, Lecturer and Student subaccounts within this institution.</p>
+    <p className="mt-1 text-sm text-slate-600">Create HOD, Course Adviser, Lecturer and Student PIN accounts. Every account remains linked to the institution's VC/Rector authority; your Dean identity provides the operational administration permission.</p>
     {error && <p role="alert" className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
     <form onSubmit={submit} className="mt-6 space-y-4">
       <label className="block text-sm font-medium">Academic role
