@@ -41,6 +41,7 @@ $old$;
           and d.faculty_id = p_faculty_id
           and f.id = p_faculty_id
       ) then raise exception 'DEPARTMENT_NOT_IN_SELECTED_FACULTY'; end if;
+    end if;
 $new$;
 begin
   select pg_get_functiondef(v_function) into v_definition;
