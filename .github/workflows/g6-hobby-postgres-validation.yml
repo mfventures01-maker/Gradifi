@@ -1,0 +1,153 @@
+name: G6 Hobby Plan PostgreSQL Migration Validation
+
+on:
+  pull_request:
+    branches:
+      - fix/verify-persistence-auth-validation
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/verification/**'
+      - '.github/workflows/g6-hobby-postgres-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  postgres-migration-validation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: g6_validation
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d g6_validation"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      - name: Reproduce inspected production grant state
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: g6_validation
+        run: psql -v ON_ERROR_STOP=1 -f supabase/verification/g6_hobby_plan_baseline.sql
+      - name: Apply privacy repair before lineage
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: g6_validation
+        run: psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261116150000_verify_receipt_evidence_privacy_repair.sql
+      - name: Apply G6 correction lineage
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: g6_validation
+        run: psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261116160000_g6_correction_lineage_metadata.sql
+      - name: Assert privacy, metadata, lineage and immutability
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: g6_validation
+        run: |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          begin
+            if has_column_privilege('anon','public.public_verification_records','evidence_envelope','SELECT') then
+              raise exception 'anon can still read evidence_envelope';
+            end if;
+            if has_column_privilege('authenticated','public.public_verification_records','evidence_envelope','SELECT') then
+              raise exception 'authenticated can still read evidence_envelope';
+            end if;
+            if not has_column_privilege('service_role','public.public_verification_records','evidence_envelope','SELECT') then
+              raise exception 'service_role lost evidence_envelope access';
+            end if;
+            if not has_column_privilege('anon','public.public_verification_records','verification_id','SELECT') then
+              raise exception 'anon lost approved receipt metadata';
+            end if;
+            if not has_column_privilege('authenticated','public.public_verification_records','correction_of_verification_id','SELECT') then
+              raise exception 'authenticated cannot read correction pointer';
+            end if;
+            if (select count(*) from public.public_verification_records) <> 1 then
+              raise exception 'baseline fixture row was not preserved';
+            end if;
+          end $$;
+
+          insert into public.public_verification_records
+            (verification_id, document_hash, evidence_hash, engine_version, policy_version,
+             overall_similarity, total_sources_found, evidence_envelope, correction_of_verification_id)
+          values
+            ('fixture-corrected', repeat('c',64), repeat('d',64), 'G5-DETERMINISTIC-v1',
+             'G3-POLICY-v1', 4.0, 1, '{"private":"corrected-synthetic"}'::jsonb, 'fixture-original');
+
+          do $$
+          begin
+            if not exists (
+              select 1 from public.public_verification_records
+              where verification_id='fixture-corrected'
+                and correction_of_verification_id='fixture-original'
+            ) then raise exception 'correction lineage readback failed'; end if;
+            if (select document_hash from public.public_verification_records where verification_id='fixture-original') <> repeat('a',64) then
+              raise exception 'original receipt was modified';
+            end if;
+          end $$;
+
+          -- Invalid self-reference and nonexistent parent must fail.
+          do $$
+          begin
+            begin
+              insert into public.public_verification_records
+                (verification_id, document_hash, evidence_hash, overall_similarity,
+                 evidence_envelope, correction_of_verification_id)
+              values ('fixture-self', repeat('e',64), repeat('f',64), 1, '{}'::jsonb, 'fixture-self');
+              raise exception 'self-reference unexpectedly accepted';
+            exception when check_violation then null;
+            end;
+            begin
+              insert into public.public_verification_records
+                (verification_id, document_hash, evidence_hash, overall_similarity,
+                 evidence_envelope, correction_of_verification_id)
+              values ('fixture-orphan', repeat('1',64), repeat('2',64), 1, '{}'::jsonb, 'missing-parent');
+              raise exception 'missing parent unexpectedly accepted';
+            exception when foreign_key_violation then null;
+            end;
+          end $$;
+          SQL
+      - name: Verify public role cannot SELECT private evidence
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: g6_validation
+        run: |
+          if psql -v ON_ERROR_STOP=1 -c "set role anon; select evidence_envelope from public.public_verification_records limit 1;"; then
+            echo "FAIL: anon unexpectedly selected evidence_envelope"
+            exit 1
+          else
+            echo "PASS: anon evidence_envelope SELECT denied"
+          fi
+          if psql -v ON_ERROR_STOP=1 -c "set role authenticated; select evidence_envelope from public.public_verification_records limit 1;"; then
+            echo "FAIL: authenticated unexpectedly selected evidence_envelope"
+            exit 1
+          else
+            echo "PASS: authenticated evidence_envelope SELECT denied"
+          fi
