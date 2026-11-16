@@ -77,7 +77,9 @@ export const HigherEducationOnboarding: React.FC = () => {
             .select("id,school_name,school_type,created_at")
             .eq("institution_id", identity.institutionId)
             .order("created_at", { ascending: true }),
-          db.from("nuc_faculties").select("id,name,code").eq("institution_id", identity.institutionId).order("code"),
+          db.from("nuc_faculties").select("id,name,code,institution_id")
+            .or(`institution_id.eq.${identity.institutionId},institution_id.is.null`)
+            .order("code"),
           db.from("faculties").select("id,name,code").eq("institution_id", identity.institutionId).order("code"),
           db.from("nuc_departments").select("id,name,code,faculty_id").eq("institution_id", identity.institutionId).order("code"),
           db.from("departments").select("id,name,code,faculty_id").eq("institution_id", identity.institutionId).order("code"),
