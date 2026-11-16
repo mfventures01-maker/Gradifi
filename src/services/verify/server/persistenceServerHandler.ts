@@ -22,7 +22,18 @@ export class PersistenceRequestError extends Error {
   }
 }
 
-type SafeReceipt = Omit<PublicVerificationRecord, 'evidence_envelope'>;
+type SafeReceipt = Pick<
+  PublicVerificationRecord,
+  | 'verification_id'
+  | 'document_hash'
+  | 'evidence_hash'
+  | 'engine_version'
+  | 'policy_version'
+  | 'overall_similarity'
+  | 'total_sources_found'
+  | 'correction_of_verification_id'
+  | 'created_at'
+>;
 
 function validatePayload(payload: PersistenceServerRequestPayload): void {
   if (!payload || typeof payload !== 'object' || !payload.result || !payload.envelope) {
@@ -98,8 +109,20 @@ function validatePayload(payload: PersistenceServerRequestPayload): void {
 }
 
 function safeReceipt(record: PublicVerificationRecord): SafeReceipt {
-  const { evidence_envelope: _privateEvidence, ...receipt } = record;
-  return receipt;
+  // Explicit allowlist: never serialize database columns merely because they
+  // are absent from the current TypeScript interface. This protects the API
+  // response if the table gains internal or sensitive columns in the future.
+  return {
+    verification_id: record.verification_id,
+    document_hash: record.document_hash,
+    evidence_hash: record.evidence_hash,
+    engine_version: record.engine_version,
+    policy_version: record.policy_version,
+    overall_similarity: record.overall_similarity,
+    total_sources_found: record.total_sources_found,
+    correction_of_verification_id: record.correction_of_verification_id ?? null,
+    created_at: record.created_at
+  };
 }
 
 export async function handlePersistenceServerRequest(
