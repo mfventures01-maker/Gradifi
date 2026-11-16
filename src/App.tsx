@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HomePage } from './features/home/HomePage';
-import { OnboardingWizard } from './features/onboarding/OnboardingWizard';
+import { OnboardingWizard } from './pages/onboarding/OnboardingWizard';
 import { DashboardLayout } from './features/dashboard/DashboardLayout';
 import { CreateInstitution } from './pages/onboarding/CreateInstitution';
 import { CreateTeacher } from './pages/onboarding/CreateTeacher';
