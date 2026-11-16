@@ -28,5 +28,5 @@ jobs:
         run: npm run typecheck:client
       - name: Production build
         run: npm run build
-      - name: Unit tests
-        run: npm test
+      - name: Higher-ed authority contract tests
+        run: npx vitest run tests/higherEdAuthorityContract.test.ts
