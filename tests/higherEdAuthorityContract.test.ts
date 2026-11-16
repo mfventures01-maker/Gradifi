@@ -61,7 +61,7 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(higherEdAdmin).toContain('setFacultyId(event.target.value); setDepartmentId("");');
     expect(deterministicDepartmentsMigration).toContain("nd.faculty_id = p_faculty_id");
     expect(deterministicDepartmentsMigration).toContain("d.faculty_id = p_faculty_id");
-    expect(deterministicDepartmentsMigration).toContain("nf.institution_id = p_institution_id");
+    expect(deterministicDepartmentsMigration).toContain("nf.institution_id is null or nf.institution_id = p_institution_id");
     expect(deterministicDepartmentsMigration).toContain("f.institution_id = p_institution_id");
     expect(deterministicDepartmentsMigration).toContain("NUC_DEPARTMENT_NOT_IN_SELECTED_FACULTY");
     expect(deterministicDepartmentsMigration).toContain("DEPARTMENT_NOT_IN_SELECTED_FACULTY");
