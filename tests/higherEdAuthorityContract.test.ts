@@ -48,9 +48,9 @@ describe("higher-education VC/Rector authority contract", () => {
   });
 
   it("uses the institution bootstrap Main Campus for lecturer and student records", () => {
-    expect(higherEdAdmin).toContain(/school_type === "tertiary" && \/ main campus\$\/i/);
+    expect(higherEdAdmin).toContain('school_type === "tertiary" && / main campus$/i');
     expect(higherEdAdmin).toContain('school_id: ["student", "lecturer"].includes(role) ? bootstrapCampus!.id : null');
-    expect(higherEdAdmin).toContain("The campus record created by VC/Rector institution registration");
+    expect(higherEdAdmin).toContain("This is the campus record created by VC/Rector institution registration.");
   });
 
   it("keeps higher-ed student class assignment optional without relaxing school onboarding", () => {
@@ -65,7 +65,7 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(higherEdAdmin).toContain("Temporary {latestAccount.actor_type === \"student\" ? \"4\" : \"6\"}-digit PIN");
     expect(higherEdAdmin).toContain("Accounts created this session");
     expect(higherEdAdmin).toContain("navigator.clipboard.writeText(value)");
-    expect(higherEdAdmin).toContain("pin_requires_change");
+    expect(higherEdAdmin).toContain("must replace the temporary PIN at first sign-in.");
   });
 
   it("routes VC and Rector email identities to the higher-education portal", () => {
