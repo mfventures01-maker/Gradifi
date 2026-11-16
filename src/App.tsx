@@ -103,7 +103,7 @@ export default function App() {
     if (!identity.schoolId) {
       return <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-900">This school actor has no active campus/school scope. School dashboard access is withheld.</div>;
     }
-    return <DashboardLayout institutionId={identity.institutionId} initialTab={schoolActorTabs[actorType]} onLogout={() => { setIdentity(null); navigateTo('home'); }} />;
+    return <DashboardLayout institutionId={identity.institutionId} schoolId={identity.schoolId} initialTab={schoolActorTabs[actorType]} onLogout={() => { setIdentity(null); navigateTo('home'); }} />;
   };
 
   return (
