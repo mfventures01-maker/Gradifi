@@ -9,6 +9,7 @@ const higherEdAdmin = read("../src/pages/onboarding/HigherEducationOnboarding.ts
 const higherEdStudentMigration = read("../supabase/migrations/20261116160000_higher_ed_student_class_optional.sql");
 const higherEdDashboard = read("../src/pages/higher-education/HigherEducationDashboard.tsx");
 const authGuard = read("../src/components/AuthGuard.tsx");
+const actorService = read("../src/services/actorOnboardingService.ts");
 const login = read("../src/pages/auth/LoginPage.tsx");
 
 describe("higher-education VC/Rector authority contract", () => {
@@ -62,10 +63,18 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(higherEdAdmin).not.toContain('role === "student" && !classId');
   });
 
+  it("surfaces structured Edge Function errors to the Dean form", () => {
+    expect(actorService).toContain("response.clone().json()");
+    expect(actorService).toContain("payload?.error");
+    expect(actorService).toContain("body: { ...input }");
+  });
+
   it("shows generated credentials and a session account summary after provisioning", () => {
     expect(higherEdAdmin).toContain("Generated Login ID");
     expect(higherEdAdmin).toContain("Temporary {latestAccount.actor_type === \"student\" ? \"4\" : \"6\"}-digit PIN");
     expect(higherEdAdmin).toContain("Accounts created this session");
+    expect(higherEdAdmin).toContain("View credentials");
+    expect(higherEdAdmin).toContain("account provisioned successfully.");
     expect(higherEdAdmin).toContain("navigator.clipboard.writeText(value)");
     expect(higherEdAdmin).toContain("must replace the temporary PIN at first sign-in.");
   });
