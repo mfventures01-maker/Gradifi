@@ -115,17 +115,19 @@ jobs:
           begin
             begin
               insert into public.public_verification_records
-                (verification_id, document_hash, evidence_hash, overall_similarity,
-                 evidence_envelope, correction_of_verification_id)
-              values ('fixture-self', repeat('e',64), repeat('f',64), 1, '{}'::jsonb, 'fixture-self');
+                (verification_id, document_hash, evidence_hash, engine_version, policy_version,
+                 overall_similarity, evidence_envelope, correction_of_verification_id)
+              values ('fixture-self', repeat('e',64), repeat('f',64), 'G5-DETERMINISTIC-v1',
+                      'G3-POLICY-v1', 1, '{}'::jsonb, 'fixture-self');
               raise exception 'self-reference unexpectedly accepted';
             exception when check_violation then null;
             end;
             begin
               insert into public.public_verification_records
-                (verification_id, document_hash, evidence_hash, overall_similarity,
-                 evidence_envelope, correction_of_verification_id)
-              values ('fixture-orphan', repeat('1',64), repeat('2',64), 1, '{}'::jsonb, 'missing-parent');
+                (verification_id, document_hash, evidence_hash, engine_version, policy_version,
+                 overall_similarity, evidence_envelope, correction_of_verification_id)
+              values ('fixture-orphan', repeat('1',64), repeat('2',64), 'G5-DETERMINISTIC-v1',
+                      'G3-POLICY-v1', 1, '{}'::jsonb, 'missing-parent');
               raise exception 'missing parent unexpectedly accepted';
             exception when foreign_key_violation then null;
             end;
