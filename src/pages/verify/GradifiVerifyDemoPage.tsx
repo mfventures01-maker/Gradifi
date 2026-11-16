@@ -48,6 +48,7 @@ import { generateQRCodeSVG } from '../../utils/qrGenerator';
 import { generateVerificationReportPDF } from '../../utils/pdfReportGenerator';
 import { jsPDF } from 'jspdf';
 import { buildCanonicalAnalysisDocument } from '../../services/verify/documentNormalizer';
+import { requestCorrectionComparison, CorrectionComparison } from '../../services/verify/correctionComparisonClient';
 
 const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
   core: 'CORE',
@@ -112,6 +113,10 @@ export const GradifiVerifyDemoPage: React.FC = () => {
   const [resolvingPublic, setResolvingPublic] = useState(false);
   const [publicResolution, setPublicResolution] = useState<PublicVerificationResolution | null>(null);
   const [selectedSourceId, setSelectedSourceId] = useState<string | undefined>(undefined);
+  const [correctionText, setCorrectionText] = useState('');
+  const [correcting, setCorrecting] = useState(false);
+  const [correctionError, setCorrectionError] = useState<string | null>(null);
+  const [correctionComparison, setCorrectionComparison] = useState<CorrectionComparison | null>(null);
 
   // Canonical Public Result Boundary (Presentation Firewall)
   const publicResult: PublicVerificationResult | null = result
@@ -283,6 +288,38 @@ Distributed machine learning frameworks require mathematical determinism to guar
       setResult(null);
     } finally {
       setVerifying(false);
+    }
+  };
+
+  const handleSubmitCorrection = async () => {
+    if (!verificationId || !result) {
+      setCorrectionError('An original persisted receipt is required before submitting a correction.');
+      return;
+    }
+    if (!correctionText.trim()) {
+      setCorrectionError('Enter the corrected document text before re-verification.');
+      return;
+    }
+    setCorrecting(true);
+    setCorrectionError(null);
+    setCorrectionComparison(null);
+    try {
+      const correctedResult = await verifyCoreService.executeVerifyRun(correctionText);
+      const { result: persistResult, envelope: persistEnvelope } = buildG4DPersistencePayload(correctedResult);
+      const { record: correctedReceipt } = await verificationPersistenceService.persistVerificationRecord(
+        persistResult, persistEnvelope, verificationId
+      );
+      if (!correctedReceipt?.verification_id ||
+          correctedReceipt.verification_id === verificationId ||
+          correctedReceipt.correction_of_verification_id !== verificationId) {
+        throw new Error('Corrected receipt readback did not confirm a distinct child receipt.');
+      }
+      const comparison = await requestCorrectionComparison(verificationId, correctedReceipt.verification_id);
+      setCorrectionComparison(comparison);
+    } catch (error: any) {
+      setCorrectionError(error?.message || 'Correction verification could not be persisted and compared.');
+    } finally {
+      setCorrecting(false);
     }
   };
 
@@ -1086,6 +1123,45 @@ Distributed machine learning frameworks require mathematical determinism to guar
                     // optional: wire to existing scroll behaviour
                   }}
                 />
+
+                <section className="rounded-2xl border border-cyan-800/50 bg-slate-900/90 p-6 space-y-4">
+                  <div>
+                    <h3 className="text-base font-bold text-white">Submit a corrected version</h3>
+                    <p className="mt-1 text-xs text-slate-400">
+                      Re-runs the existing G5 pipeline. The corrected run is stored as a new immutable receipt.
+                      Comparison is performed by the authenticated server and returns metadata only.
+                    </p>
+                  </div>
+                  <textarea
+                    value={correctionText}
+                    onChange={event => setCorrectionText(event.target.value)}
+                    rows={8}
+                    placeholder="Paste the complete corrected document text..."
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-100 outline-none focus:border-cyan-500"
+                    disabled={correcting}
+                  />
+                  {correctionError && <p role="alert" className="text-sm text-rose-400">{correctionError}</p>}
+                  <button type="button" onClick={handleSubmitCorrection}
+                    disabled={correcting || !correctionText.trim()}
+                    className="rounded-xl bg-cyan-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">
+                    {correcting ? 'Re-verifying and comparing...' : 'Re-verify corrected document'}
+                  </button>
+                  {correctionComparison && (
+                    <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/20 p-4 space-y-3">
+                      <h4 className="font-bold text-emerald-300">Trusted before / after comparison</h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div><span className="text-slate-400">Original similarity</span><p className="font-bold text-white">{correctionComparison.originalSimilarity.toFixed(1)}%</p></div>
+                        <div><span className="text-slate-400">Corrected similarity</span><p className="font-bold text-white">{correctionComparison.correctedSimilarity.toFixed(1)}%</p></div>
+                        <div><span className="text-slate-400">Resolved findings</span><p className="font-bold text-white">{correctionComparison.resolvedFindingCount}</p></div>
+                        <div><span className="text-slate-400">Remaining findings</span><p className="font-bold text-white">{correctionComparison.remainingFindingCount}</p></div>
+                        <div><span className="text-slate-400">New findings</span><p className="font-bold text-white">{correctionComparison.newFindingCount}</p></div>
+                        <div><span className="text-slate-400">Similarity change</span><p className="font-bold text-white">{correctionComparison.similarityDelta > 0 ? '+' : ''}{correctionComparison.similarityDelta.toFixed(1)} pp</p></div>
+                      </div>
+                      <p className="break-all text-xs text-slate-400">Original receipt: {correctionComparison.originalVerificationId}</p>
+                      <p className="break-all text-xs text-slate-400">Corrected receipt: {correctionComparison.correctedVerificationId}</p>
+                    </div>
+                  )}
+                </section>
 
                 {/* Source Attribution & Citation Hub (P5) */}
                 {publicResult && (
