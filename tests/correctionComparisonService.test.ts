@@ -25,7 +25,6 @@ function receipt(options: {
     deterministicResult: result,
     canonicalDocument: { rawText: options.rawText }
   };
-  if (options.correctionLineage) evidenceEnvelope.correctionLineage = options.correctionLineage;
   return {
     verification_id: VerificationPersistenceService.deriveVerificationId(documentHash, options.evidenceHash),
     document_hash: documentHash,
