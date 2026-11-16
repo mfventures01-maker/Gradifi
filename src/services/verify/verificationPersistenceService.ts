@@ -17,6 +17,7 @@ export interface PublicVerificationRecord {
   overall_similarity: number;
   total_sources_found: number;
   evidence_envelope: any;
+  correction_of_verification_id?: string | null;
   created_at?: string;
 }
 
@@ -97,7 +98,8 @@ export class VerificationPersistenceService {
    */
   static buildPersistenceRecord(
     result: PersistableEvidenceResult,
-    envelope: G4DPersistenceEnvelope
+    envelope: G4DPersistenceEnvelope,
+    correctionOfVerificationId?: string | null
   ): PublicVerificationRecord {
     const verificationId = this.validateResultIntegrity(result);
 
@@ -110,6 +112,7 @@ export class VerificationPersistenceService {
       overall_similarity: result.overallSimilarity,
       total_sources_found: result.totalSourcesFound || 0,
       evidence_envelope: envelope,
+      correction_of_verification_id: correctionOfVerificationId ?? null,
     };
 
     const integrity = validatePersistedVerificationRecord(record);
@@ -127,16 +130,17 @@ export class VerificationPersistenceService {
    */
   async persistVerificationRecord(
     result: PersistableEvidenceResult,
-    envelope: G4DPersistenceEnvelope
+    envelope: G4DPersistenceEnvelope,
+    correctionOfVerificationId?: string | null
   ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
-    const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope);
+    const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope, correctionOfVerificationId);
 
     // Browser context: Delegate to trusted server endpoint /api/verify/persist
     if (typeof window !== 'undefined') {
       const response = await fetch('/api/verify/persist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ result, envelope })
+        body: JSON.stringify({ result, envelope, correctionOfVerificationId: correctionOfVerificationId ?? null })
       });
 
       if (!response.ok) {
@@ -187,7 +191,8 @@ export class VerificationPersistenceService {
       // 2. Conflict Check: Verify hash immutability
       if (
         existing.document_hash !== recordPayload.document_hash ||
-        existing.evidence_hash !== recordPayload.evidence_hash
+        existing.evidence_hash !== recordPayload.evidence_hash ||
+        (existing.correction_of_verification_id ?? null) !== (recordPayload.correction_of_verification_id ?? null)
       ) {
         throw new VerificationConflictError(
           `Conflicting verification record exists for ID '${recordPayload.verification_id}'. Existing documentHash: '${existing.document_hash}', New: '${recordPayload.document_hash}'`
@@ -226,7 +231,8 @@ export class VerificationPersistenceService {
         if (
           reFetched &&
           reFetched.document_hash === recordPayload.document_hash &&
-          reFetched.evidence_hash === recordPayload.evidence_hash
+          reFetched.evidence_hash === recordPayload.evidence_hash &&
+          (reFetched.correction_of_verification_id ?? null) === (recordPayload.correction_of_verification_id ?? null)
         ) {
           return {
             record: reFetched as PublicVerificationRecord,
