@@ -45,7 +45,7 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(higherEdAdmin).toContain("identity.role !== \"dean\"");
     expect(higherEdAdmin).not.toContain("setStudentId(");
     expect(higherEdAdmin).toContain('db.from("departments")');
-    expect(higherEdAdmin).toContain('(role === "adviser" ? adviserDepartments : nucDepartments)');
+    expect(higherEdAdmin).toContain('role === "adviser" ? adviserDepartments : nucDepartments');
   });
 
   it("uses the institution bootstrap Main Campus for lecturer and student records", () => {
