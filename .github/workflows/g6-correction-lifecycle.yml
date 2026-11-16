@@ -1,4 +1,4 @@
-name: G6 correction lifecycle checks
+name: G6 correction lifecycle CI
 
 on:
   push:
