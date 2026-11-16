@@ -8,12 +8,12 @@ declare
     'public.complete_actor_onboarding(uuid,uuid,text,text,uuid,uuid,text,text,text,text,uuid,uuid,uuid[],text,date,text,boolean,uuid,uuid,text,text,text,boolean,integer)'::regprocedure;
   v_definition text;
   v_old text := $old$
-if p_class_id is null or not exists (
+    if p_class_id is null or not exists (
       select 1 from public.classes c where c.id = p_class_id and c.school_id = p_school_id
     ) then raise exception 'CLASS_NOT_IN_SCHOOL'; end if;
 $old$;
   v_new text := $new$
-if p_expected_authority_role = 'principal_admin' then
+    if p_expected_authority_role = 'principal_admin' then
       if p_class_id is null or not exists (
         select 1 from public.classes c where c.id = p_class_id and c.school_id = p_school_id
       ) then raise exception 'CLASS_NOT_IN_SCHOOL'; end if;
