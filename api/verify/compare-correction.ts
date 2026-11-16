@@ -11,7 +11,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const authorization = req.headers.authorization;
   const match = typeof authorization === 'string'
-    ? authorization.match(/^Bearer\\s+([^\\s]+)$/i)
+    ? authorization.match(/^Bearer\s+([^\s]+)$/i)
     : null;
   if (!match) return res.status(401).json({ error: 'Authentication required' });
 
