@@ -71,6 +71,9 @@ serve(async (req) => {
         .select("auth_user_id").eq("auth_user_id", rootUser.id).maybeSingle();
       if (existingProfile || existingActor) return json({ error: "ROOT_AUTH_IDENTITY_ALREADY_PROVISIONED" }, 409);
 
+      if (action === "bootstrap_higher_institution" && !String(body.dean_name || "").trim()) {
+        return json({ error: "INITIAL_DEAN_NAME_REQUIRED" }, 400);
+      }
       const suppliedEmail = String(action === "bootstrap_school_institution" ? body.principal_email || "" : body.authority_email || "")
         .trim().toLowerCase();
       if (suppliedEmail !== rootUser.email.toLowerCase()) {
@@ -111,7 +114,6 @@ serve(async (req) => {
       }
       if (action === "bootstrap_higher_institution") {
         const deanName = String(body.dean_name || "").trim();
-        if (!deanName) return json({ error: "INITIAL_DEAN_NAME_REQUIRED" }, 400);
         const pin = String((crypto.getRandomValues(new Uint32Array(1))[0] % 900000) + 100000);
         const internalEmail = `${crypto.randomUUID()}@accounts.sefaes.invalid`;
         const randomPassword = Array.from(crypto.getRandomValues(new Uint8Array(48)),
