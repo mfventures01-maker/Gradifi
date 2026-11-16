@@ -7,6 +7,7 @@
  */
 import type { PublicVerificationRecord } from './verificationPersistenceService.js';
 import { validatePersistedVerificationRecord } from './verificationPersistenceIntegrity.js';
+import { publicVerificationService } from './publicVerificationService.js';
 
 export interface CorrectionLineage {
   relation: 'CORRECTED_FROM';
@@ -37,7 +38,7 @@ export interface CorrectionComparison {
   findings: CorrectionFindingDelta[];
 }
 
-export class CorrectionComparisonError extends Error {
+export interface CorrectionComparisonResolution {\n  status: 'VALID';\n  comparison: CorrectionComparison;\n}\n\nexport class CorrectionComparisonError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'CorrectionComparisonError';
@@ -172,5 +173,41 @@ export function compareCorrectionReceipts(
     resolvedFindingCount,
     remainingFindingCount: deltas.length - resolvedFindingCount,
     findings: deltas
+  };
+}
+
+
+/**
+ * Resolve each immutable receipt in its own authoritative lookup before
+ * comparing them. No receipt data is accepted from caller/browser state.
+ */
+export async function resolveCorrectionComparison(
+  originalVerificationId: string,
+  correctedVerificationId: string
+): Promise<CorrectionComparisonResolution> {
+  if (!originalVerificationId || !correctedVerificationId) {
+    throw new CorrectionComparisonError('Both original and corrected verification IDs are required.');
+  }
+  if (originalVerificationId === correctedVerificationId) {
+    throw new CorrectionComparisonError('Original and corrected verification IDs must be distinct.');
+  }
+
+  const originalResolution = await publicVerificationService.resolveVerification(originalVerificationId);
+  if (originalResolution.status !== 'VALID' || !originalResolution.record) {
+    throw new CorrectionComparisonError(
+      `Original receipt could not be independently resolved: ${originalResolution.status}.`
+    );
+  }
+
+  const correctedResolution = await publicVerificationService.resolveVerification(correctedVerificationId);
+  if (correctedResolution.status !== 'VALID' || !correctedResolution.record) {
+    throw new CorrectionComparisonError(
+      `Corrected receipt could not be independently resolved: ${correctedResolution.status}.`
+    );
+  }
+
+  return {
+    status: 'VALID',
+    comparison: compareCorrectionReceipts(originalResolution.record, correctedResolution.record)
   };
 }
