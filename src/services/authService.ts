@@ -14,7 +14,8 @@ export interface AuthSessionState {
   actor: IdentityActor | null;
   institutionId: string | null;
   schoolId: string | null;
-  role: 'admin' | 'principal' | 'teacher' | 'student' | 'parent' | null;
+  role: string | null;
+  actorType: string | null;
 }
 
 export const authService = {
@@ -42,6 +43,7 @@ export const authService = {
         institutionId: null,
         schoolId: null,
         role: null,
+        actorType: null,
       };
     }
 
@@ -53,18 +55,20 @@ export const authService = {
       .maybeSingle();
 
     // 2. Fetch Identity Actor (authoritative scoping)
-    const { data: actor } = await supabase
+    const { data: actor, error: actorError } = await supabase
       .from('identity_actors')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('auth_user_id', user.id)
       .eq('status', 'active')
       .maybeSingle();
+    if (actorError) throw actorError;
 
     const p = profile as any;
     const a = actor as any;
     const institutionId = a?.institution_id || p?.institution_id || null;
     const schoolId = a?.school_id || null;
-    const role = (a?.role || p?.role || null) as AuthSessionState['role'];
+    const actorType = a?.actor_type || null;
+    const role = (actorType || p?.role || null) as AuthSessionState['role'];
 
     return {
       isAuthenticated: true,
@@ -74,6 +78,7 @@ export const authService = {
       institutionId,
       schoolId,
       role,
+      actorType,
     };
   },
 
@@ -105,36 +110,28 @@ export const authService = {
    * Edge Function Bridge: Exchanges PIN & identifier for an authentic Supabase session
    */
   async exchangePinForSession(pin: string, identifier?: string) {
-    try {
-      // 1. Attempt invoking the official Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('pin-login', {
-        body: { pin, identifier: identifier || '' },
-      });
+    const { data, error } = await supabase.functions.invoke('pin-login', {
+      body: { pin, identifier: identifier || '' },
+    });
 
-      if (!error && data && data.success) {
-        if (data.access_token && data.refresh_token && !data.access_token.startsWith('http')) {
-          await supabase.auth.setSession({
-            access_token: data.access_token,
-            refresh_token: data.refresh_token,
-          });
-        }
-        return data;
-      }
-    } catch (edgeErr) {
-      console.warn('Edge function invoke fallback to direct RPC:', edgeErr);
+    if (error) throw error;
+    if (!data?.success) {
+      throw new Error(data?.error || 'PIN authentication was not accepted.');
+    }
+    if (!data.access_token || !data.refresh_token) {
+      throw new Error('PIN login did not return a valid Supabase session. Direct-RPC token fallback is disabled.');
     }
 
-    // 2. Direct RPC fallback
-    const rpcData = await this.signInWithPin(pin, identifier);
-    return {
-      success: true,
-      access_token: rpcData?.token || `token_${Date.now()}`,
-      refresh_token: rpcData?.token || `ref_${Date.now()}`,
-      role: rpcData?.role || 'student',
-      institution_id: rpcData?.institution_id,
-      profile_id: rpcData?.profile_id,
-      user_id: rpcData?.user_id,
-    };
+    const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    });
+    if (sessionError) throw sessionError;
+    if (!sessionData.session?.user) {
+      throw new Error('Supabase did not establish an authenticated user session.');
+    }
+    return { ...data, success: true };
+
   },
 
   /**
