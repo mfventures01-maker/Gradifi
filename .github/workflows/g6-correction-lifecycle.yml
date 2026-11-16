@@ -1,4 +1,4 @@
-name: G6 correction lifecycle
+name: G6 correction lifecycle validation
 
 on:
   push:
