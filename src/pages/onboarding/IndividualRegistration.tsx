@@ -15,9 +15,9 @@ export const IndividualRegistration: React.FC = () => {
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
 
-  const completeRegistration = async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData.session?.user;
+  const completeRegistration = async (sessionUser?: { email?: string | null; user_metadata?: Record<string, any> }) => {
+    const { data: sessionData } = sessionUser ? { data: { session: null } } : await supabase.auth.getSession();
+    const user = sessionUser || sessionData.session?.user;
     if (!user) return;
 
     let pending: any = null;
@@ -67,7 +67,11 @@ export const IndividualRegistration: React.FC = () => {
       }
     };
     void finish();
-    const { data } = supabase.auth.onAuthStateChange(() => { void finish(); });
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) queueMicrotask(() => {
+        if (active) void completeRegistration(session.user);
+      });
+    });
     return () => {
       active = false;
       data.subscription.unsubscribe();
