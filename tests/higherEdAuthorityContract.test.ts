@@ -54,9 +54,10 @@ describe("higher-education VC/Rector authority contract", () => {
   it("makes HOD and Adviser department choice deterministic through faculty selection", () => {
     expect(higherEdAdmin).toContain('db.from("nuc_faculties")');
     expect(higherEdAdmin).toContain('db.from("faculties")');
-    expect(higherEdAdmin).toContain('select("id,name,faculty_id")');
+    expect(higherEdAdmin).toContain('select("id,name,code,faculty_id")');
     expect(higherEdAdmin).toContain('id="department-faculty"');
     expect(higherEdAdmin).toContain('item.faculty_id === facultyId');
+    expect(higherEdAdmin).toContain('item.code ? `${item.code} · ` : ""');
     expect(higherEdAdmin).toContain('setFacultyId(event.target.value); setDepartmentId("");');
     expect(deterministicDepartmentsMigration).toContain("nd.faculty_id = p_faculty_id");
     expect(deterministicDepartmentsMigration).toContain("d.faculty_id = p_faculty_id");
