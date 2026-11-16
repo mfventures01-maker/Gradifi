@@ -114,8 +114,8 @@ alter table public.identity_actors
       and school_id is null
       and authority_user_id is null
       and auth_method = 'email')
-    or
-    (actor_type <> 'individual' and institution_id is not null)
+    or (actor_type = 'superadmin' and institution_id is null)
+    or (actor_type not in ('individual','superadmin') and institution_id is not null)
   );
 
 alter table public.profiles add column if not exists account_type text;
@@ -168,7 +168,7 @@ declare
 begin
   if v_user_id is null then raise exception 'AUTH_REQUIRED'; end if;
   if nullif(trim(p_full_name), '') is null then raise exception 'FULL_NAME_REQUIRED'; end if;
-  if p_account_type not in (
+  if p_account_type is null or p_account_type not in (
     'freelancer','independent_student','independent_professional','other_individual'
   ) then raise exception 'INVALID_PUBLIC_ACCOUNT_TYPE'; end if;
 
@@ -312,16 +312,6 @@ end;
 $function$;
 
 -- 7. Institution-scoped read paths needed by the Dean workspace.
-drop policy if exists dean_read_own_institution_profiles on public.profiles;
-create policy dean_read_own_institution_profiles on public.profiles
-for select to authenticated
-using (exists (
-  select 1 from public.profiles p
-  where p.user_id = (select auth.uid())
-    and p.role = 'dean'
-    and p.institution_id = profiles.institution_id
-));
-
 drop policy if exists dean_read_own_institution_actors on public.identity_actors;
 create policy dean_read_own_institution_actors on public.identity_actors
 for select to authenticated
