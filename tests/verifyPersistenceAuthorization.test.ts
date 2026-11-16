@@ -132,8 +132,8 @@ describe('POST /api/verify/persist authorization boundary', () => {
     );
     expect(response.record).not.toHaveProperty('evidence_envelope');
     expect(Object.keys(response.record).sort()).toEqual([
-      'created_at',
       'correction_of_verification_id',
+      'created_at',
       'document_hash',
       'engine_version',
       'evidence_hash',
