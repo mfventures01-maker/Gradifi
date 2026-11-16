@@ -41,6 +41,9 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(edge).toContain('permittedActorTypes = ["dean"]');
     expect(edge).toContain('permittedActorTypes = ["hod", "adviser", "lecturer", "student"]');
     expect(higherEdAdmin).toContain("identity.role !== \"dean\"");
+    expect(higherEdAdmin).not.toContain("setStudentId(");
+    expect(higherEdAdmin).toContain('db.from("departments")');
+    expect(higherEdAdmin).toContain('(role === "adviser" ? adviserDepartments : nucDepartments)');
   });
 
   it("routes VC and Rector email identities to the higher-education portal", () => {
