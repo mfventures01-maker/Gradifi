@@ -23,7 +23,7 @@ $old$;
         from public.nuc_departments nd
         join public.nuc_faculties nf
           on nf.id = nd.faculty_id
-         and nf.institution_id = p_institution_id
+         and (nf.institution_id is null or nf.institution_id = p_institution_id)
         where nd.id = p_department_id
           and nd.institution_id = p_institution_id
           and nd.faculty_id = p_faculty_id
