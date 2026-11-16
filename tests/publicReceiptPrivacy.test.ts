@@ -44,7 +44,7 @@ describe('public receipt privacy boundary', () => {
 
     expect(result.status).toBe('VALID');
     expect(selectMock).toHaveBeenCalledWith(
-      'verification_id,document_hash,evidence_hash,engine_version,policy_version,overall_similarity,total_sources_found,created_at'
+      'verification_id,document_hash,evidence_hash,engine_version,policy_version,overall_similarity,total_sources_found,correction_of_verification_id,created_at'
     );
     expect(result.record).not.toHaveProperty('evidence_envelope');
   });
