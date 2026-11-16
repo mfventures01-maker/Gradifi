@@ -3,6 +3,9 @@ import { HomePage } from './pages/home/HomePage';
 import { OnboardingWizard } from './pages/onboarding/OnboardingWizard';
 import { HigherEducationOnboarding } from './pages/onboarding/HigherEducationOnboarding';
 import { HigherInstitutionRegistration } from './pages/onboarding/HigherInstitutionRegistration';
+import { OnboardingStart } from './pages/onboarding/OnboardingStart';
+import { IndividualRegistration } from './pages/onboarding/IndividualRegistration';
+import { IndividualDashboard } from './pages/individual/IndividualDashboard';
 import { HigherEducationDashboard } from './pages/higher-education/HigherEducationDashboard';
 import { LoginPage } from './pages/auth/LoginPage';
 import { AuthGuard } from './components/AuthGuard';
@@ -52,6 +55,8 @@ function App() {
         <Route path="/test-grading.html" element={<GradingEngineTestPage />} />
         
         {/* Phase 2: Onboarding (No Auth Required) */}
+        <Route path="/onboarding/start" element={<OnboardingStart />} />
+        <Route path="/onboarding/individual/register" element={<IndividualRegistration />} />
         <Route path="/onboarding" element={<OnboardingWizard />} />
          <Route path="/onboarding/higher-education/register" element={<HigherInstitutionRegistration />} />
         <Route path="/onboarding/higher-education" element={<AuthGuard allowedRoles={['dean']}><HigherEducationOnboarding /></AuthGuard>} />
@@ -68,6 +73,7 @@ function App() {
           <Route path="bursar" element={<BursarDashboard />} />
           <Route path="vp" element={<VPDashboard />} />
           <Route path="higher-education" element={<HigherEducationDashboard />} />
+          <Route path="individual" element={<IndividualDashboard />} />
         </Route>
 
         <Route path="/dashboard" element={<AuthGuard allowedRoles={['principal_admin', 'admin']}><PrincipalDashboard /></AuthGuard>} />
