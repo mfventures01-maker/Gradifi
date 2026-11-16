@@ -31,6 +31,11 @@ alter table public.public_verification_records
     or correction_of_verification_id <> verification_id
   );
 
+-- Expose only the lineage pointer as an additional receipt metadata column.
+grant select (correction_of_verification_id)
+  on table public.public_verification_records
+  to anon, authenticated;
+
 create index if not exists public_verification_records_correction_parent_idx
   on public.public_verification_records (correction_of_verification_id)
   where correction_of_verification_id is not null;
