@@ -300,7 +300,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                     <option value="">Select {role === "hod" ? "NUC faculty" : "faculty"}</option>
                     {departmentFacultyOptions.map(item => <option key={item.id} value={item.id}>{item.code ? `${item.code} · ` : ""}{item.name}</option>)}
                   </select>
-                  {departmentFacultyOptions.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">No faculty records exist for this institution in the {role === "hod" ? "NUC faculty" : "academic faculty"} register. Department selection is unavailable until the institution's faculty structure is configured.</p>}
+                  {departmentFacultyOptions.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">No records are available in the {role === "hod" ? "shared NUC faculty catalogue" : "institution academic faculty"} register. Department selection is unavailable until the institution's faculty structure is configured.</p>}
                 </div>
               )}
 
