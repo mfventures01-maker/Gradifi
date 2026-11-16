@@ -6,6 +6,7 @@ const migration = read("../supabase/migrations/20261116120000_vc_rector_higher_e
 const edge = read("../supabase/functions/actor-onboarding/index.ts");
 const registration = read("../src/pages/onboarding/HigherInstitutionRegistration.tsx");
 const higherEdAdmin = read("../src/pages/onboarding/HigherEducationOnboarding.tsx");
+const higherEdStudentMigration = read("../supabase/migrations/20261116160000_higher_ed_student_class_optional.sql");
 const login = read("../src/pages/auth/LoginPage.tsx");
 
 describe("higher-education VC/Rector authority contract", () => {
@@ -44,6 +45,27 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(higherEdAdmin).not.toContain("setStudentId(");
     expect(higherEdAdmin).toContain('db.from("departments")');
     expect(higherEdAdmin).toContain('(role === "adviser" ? adviserDepartments : nucDepartments)');
+  });
+
+  it("uses the institution bootstrap Main Campus for lecturer and student records", () => {
+    expect(higherEdAdmin).toContain(/school_type === "tertiary" && \/ main campus\$\/i/);
+    expect(higherEdAdmin).toContain('school_id: ["student", "lecturer"].includes(role) ? bootstrapCampus!.id : null');
+    expect(higherEdAdmin).toContain("The campus record created by VC/Rector institution registration");
+  });
+
+  it("keeps higher-ed student class assignment optional without relaxing school onboarding", () => {
+    expect(higherEdStudentMigration).toContain("p_expected_authority_role = 'principal_admin'");
+    expect(higherEdStudentMigration).toContain("elsif p_class_id is not null and not exists");
+    expect(higherEdAdmin).toContain('Class / academic cohort');
+    expect(higherEdAdmin).not.toContain('role === "student" && !classId');
+  });
+
+  it("shows generated credentials and a session account summary after provisioning", () => {
+    expect(higherEdAdmin).toContain("Generated Login ID");
+    expect(higherEdAdmin).toContain("Temporary {latestAccount.actor_type === \"student\" ? \"4\" : \"6\"}-digit PIN");
+    expect(higherEdAdmin).toContain("Accounts created this session");
+    expect(higherEdAdmin).toContain("navigator.clipboard.writeText(value)");
+    expect(higherEdAdmin).toContain("pin_requires_change");
   });
 
   it("routes VC and Rector email identities to the higher-education portal", () => {
