@@ -35,6 +35,9 @@ export interface CreateInstitutionAccountResponse {
   requires_email_confirmation?: boolean;
   url_slug?: string;
   institution_path?: string;
+  authority_role?: "vice_chancellor" | "rector";
+  authority_title?: "Vice-Chancellor" | "Rector";
+  initial_admin?: { login_id: string; pin: string; full_name: string; actor_type: "dean" };
 }
 
 export interface HigherInstitutionFormInput {
@@ -45,10 +48,12 @@ export interface HigherInstitutionFormInput {
   address: string;
   phone: string;
   website?: string;
+  authority_name: string;
+  authority_email: string;
+  authority_phone: string;
+  authority_password: string;
   dean_name: string;
-  dean_email: string;
   dean_phone: string;
-  dean_password: string;
 }
 
 export interface InitializeClassesResponse {
@@ -132,10 +137,12 @@ export const onboardingService = {
       address: input.address,
       phone: input.phone,
       website: input.website || '',
+      authority_name: input.authority_name,
+      authority_email: input.authority_email,
+      authority_phone: input.authority_phone,
       dean_name: input.dean_name,
-      dean_email: input.dean_email,
       dean_phone: input.dean_phone,
-    }, input.dean_email, input.dean_password, input.dean_name);
+    }, input.authority_email, input.authority_password, input.authority_name);
   },
 
   async registerRootInstitution(
@@ -212,6 +219,14 @@ export const onboardingService = {
       success: true,
       url_slug: data.url_slug,
       institution_path: data.institution_path,
+      authority_role: data.authority_role,
+      authority_title: data.authority_title,
+      initial_admin: data.initial_admin ? {
+        login_id: data.initial_admin.login_id,
+        pin: data.initial_admin.pin,
+        full_name: data.initial_admin.full_name,
+        actor_type: "dean",
+      } : undefined,
     };
   },
 
