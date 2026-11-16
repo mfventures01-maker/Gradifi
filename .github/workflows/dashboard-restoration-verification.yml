@@ -6,7 +6,7 @@ on:
       - fix/restore-authenticated-school-and-higher-ed-dashboards-2026-11-16
   pull_request:
     branches:
-      - main
+      - fix/wp0-rector-onboarding-contract-baseline-2026-11-16
 
 permissions:
   contents: read
