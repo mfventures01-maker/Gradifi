@@ -106,11 +106,8 @@ export function compareCorrectionReceipts(
     throw new CorrectionComparisonError('Corrected receipt must represent a different canonical document hash.');
   }
 
-  const lineage = corrected.evidence_envelope?.correctionLineage as CorrectionLineage | undefined;
-  if (!lineage || lineage.relation !== 'CORRECTED_FROM' ||
-      lineage.originalVerificationId !== original.verification_id ||
-      !lineage.correctedAt || Number.isNaN(Date.parse(lineage.correctedAt))) {
-    throw new CorrectionComparisonError('Corrected receipt does not contain valid lineage to the original receipt.');
+  if ((corrected.correction_of_verification_id ?? null) !== original.verification_id) {
+    throw new CorrectionComparisonError('Corrected receipt does not contain a valid correction_of_verification_id relationship to the original receipt.');
   }
 
   const originalFindings = receiptFindings(original);
