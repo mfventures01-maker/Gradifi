@@ -19,17 +19,27 @@ $old$;
   v_new text := $new$
     elsif p_actor_type = 'hod' then
       if p_department_id is null or p_faculty_id is null or not exists (
-        select 1 from public.nuc_departments nd
+        select 1
+        from public.nuc_departments nd
+        join public.nuc_faculties nf
+          on nf.id = nd.faculty_id
+         and nf.institution_id = p_institution_id
         where nd.id = p_department_id
           and nd.institution_id = p_institution_id
           and nd.faculty_id = p_faculty_id
+          and nf.id = p_faculty_id
       ) then raise exception 'NUC_DEPARTMENT_NOT_IN_SELECTED_FACULTY'; end if;
     elsif p_actor_type = 'adviser' then
       if p_department_id is null or p_faculty_id is null or not exists (
-        select 1 from public.departments d
+        select 1
+        from public.departments d
+        join public.faculties f
+          on f.id = d.faculty_id
+         and f.institution_id = p_institution_id
         where d.id = p_department_id
           and d.institution_id = p_institution_id
           and d.faculty_id = p_faculty_id
+          and f.id = p_faculty_id
       ) then raise exception 'DEPARTMENT_NOT_IN_SELECTED_FACULTY'; end if;
 $new$;
 begin
