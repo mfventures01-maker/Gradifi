@@ -87,7 +87,7 @@ export async function handleCorrectionComparisonRequest(
   };
   const keyOf = (f: any) => [
     String(f.matchedDocumentId ?? ''),
-    String(f.matchedSegment ?? '').normalize('NFKC').toLowerCase().replace(/\\s+/g, ' ').trim(),
+    String(f.matchedSegment ?? '').normalize('NFKC').toLowerCase().replace(/\s+/g, ' ').trim(),
     String(f.matchMethod ?? f.evidenceType ?? '')
   ].join('::');
 
