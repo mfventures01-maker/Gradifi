@@ -52,6 +52,16 @@ export function validatePersistedVerificationRecord(
     return { status: 'MALFORMED_RECORD', reason: 'evidence_envelope is missing or malformed.' };
   }
 
+  const correctionParent = record.correction_of_verification_id ?? null;
+  if (correctionParent !== null) {
+    if (typeof correctionParent !== 'string' || !/^VRF-[0-9A-F]{12}$/i.test(correctionParent)) {
+      return { status: 'MALFORMED_RECORD', reason: 'correction_of_verification_id is malformed.' };
+    }
+    if (correctionParent.toUpperCase() === String(record.verification_id).toUpperCase()) {
+      return { status: 'INTEGRITY_FAILED', reason: 'A receipt cannot be its own correction parent.' };
+    }
+  }
+
   const expectedId = `VRF-${record.document_hash.slice(0, 8)}${record.evidence_hash.slice(0, 4)}`.toUpperCase();
   if (record.verification_id.toUpperCase() !== expectedId) {
     return { status: 'INTEGRITY_FAILED', reason: 'verification_id does not match document_hash and evidence_hash.' };
