@@ -192,8 +192,8 @@ export const HigherEducationOnboarding: React.FC = () => {
       const account: AccountSummary = { ...result, createdAt: new Date().toISOString() };
       setAccounts(current => [account, ...current]);
       setLatestAccount(account);
-      setNotice(roleLabels[role] + " account provisioned successfully.");
       resetForm();
+      setNotice(roleLabels[role] + " account provisioned successfully.");
     } catch (caught) {
       setError(errorMessage(caught));
     } finally {
@@ -389,7 +389,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                     <li key={account.user_id} className="py-3 first:pt-0 last:pb-0">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-900">{account.full_name}</p><p className="mt-0.5 text-xs text-slate-500">{roleLabels[account.actor_type as AcademicRole] || account.actor_type} · {account.login_id}</p></div>
-                        <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">Created</span>
+                        <button type="button" onClick={() => setLatestAccount(account)} className="shrink-0 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">View credentials</button>
                       </div>
                     </li>
                   ))}
