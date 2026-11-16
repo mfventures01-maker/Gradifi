@@ -9,12 +9,6 @@ import type { PublicVerificationRecord } from './verificationPersistenceService.
 import { validatePersistedVerificationRecord } from './verificationPersistenceIntegrity.js';
 import { publicVerificationService } from './publicVerificationService.js';
 
-export interface CorrectionLineage {
-  relation: 'CORRECTED_FROM';
-  originalVerificationId: string;
-  correctedAt: string;
-}
-
 export interface CorrectionFindingDelta {
   key: string;
   sourceId: string;
@@ -90,7 +84,7 @@ function assertValidReceipt(record: PublicVerificationRecord, label: string): vo
 
 /**
  * Compare two independently retrieved immutable receipts. The corrected
- * receipt must carry its lineage in the persisted evidence envelope.
+ * receipt must carry its dedicated correction parent column.
  */
 export function compareCorrectionReceipts(
   original: PublicVerificationRecord,
