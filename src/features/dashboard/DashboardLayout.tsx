@@ -643,15 +643,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                               />
                               <button
                                 onClick={handleApproveGrading}
-                                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs flex items-center justify-center gap-1.5 shadow"
+                                className="w-full py-2.5 bg-amber-100 text-amber-900 font-bold rounded-lg text-xs flex items-center justify-center gap-1.5"
                               >
                                 <Check className="w-4 h-4" />
-                                <span>Approve & Persist Grade to Student Ledger</span>
+                                <span>Check persistence readiness</span>
                               </button>
                             </div>
 
                             {gradingSuccessMsg && (
-                              <div className="p-3 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg text-center">
+                              <div className="p-3 bg-amber-100 text-amber-900 text-xs font-bold rounded-lg text-center">
                                 {gradingSuccessMsg}
                               </div>
                             )}
