@@ -113,8 +113,10 @@ export const HigherEducationOnboarding: React.FC = () => {
   const departmentFacultyOptions = role === "adviser" ? academicFaculties : nucFaculties;
   const departmentSource = role === "adviser" ? adviserDepartments : nucDepartments;
   const departments = useMemo(
-    () => departmentSource.filter(item => item.faculty_id === facultyId),
-    [departmentSource, facultyId]
+    () => role === "lecturer" && !facultyId
+      ? nucDepartments
+      : departmentSource.filter(item => item.faculty_id === facultyId),
+    [role, departmentSource, facultyId, nucDepartments]
   );
 
   const resetForm = () => {
@@ -304,7 +306,6 @@ export const HigherEducationOnboarding: React.FC = () => {
                   <select id="department" required={role === "hod" || role === "adviser"} value={departmentId} onChange={event => setDepartmentId(event.target.value)} disabled={(role === "hod" || role === "adviser") && (!facultyId || departments.length === 0)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-slate-100">
                     <option value="">{role === "hod" || role === "adviser" ? (facultyId ? "Select department in selected faculty" : "Select a faculty first") : "Select department (optional)"}</option>
                     {departments.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
-                    {role === "lecturer" && nucDepartments.filter(item => !facultyId || item.faculty_id === facultyId).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                   </select>
                   <p className="mt-1 text-xs text-slate-500">{role === "adviser" ? "Departments are filtered by the selected academic faculty." : "Departments are filtered by the selected NUC faculty."}</p>
                   {(role === "hod" || role === "adviser") && facultyId && departments.length === 0 && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">The selected faculty has no departments in this institution's {role === "hod" ? "NUC department" : "academic department"} register. Choose another faculty or configure its departments first.</p>}
