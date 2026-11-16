@@ -13,7 +13,7 @@ The deleted implementations were inspected from Git history at commit `4a86942`:
 - `src/features/home/HomePage.tsx`
 - `src/features/dashboard/DashboardLayout.tsx`
 
-The school dashboard implementation was restored from that historical version and adapted to accept an explicit `institutionId` and `initialTab`.
+The school dashboard implementation was restored from that historical version and adapted to accept explicit authenticated `institutionId`, `schoolId`, and `initialTab` context. Legacy demo student identities and the fake CBT submission identity were removed. CBT launch is gated on a real student session, and grade persistence is disabled until a real student-selection and teacher-authorization contract is wired. The old `Verified SSOT` label and demo institution/campus fallbacks were removed.
 
 The public landing page was reimplemented as a smaller, current landing surface rather than restoring its original demo-login behaviour. Its sign-in actions now route into the guarded dashboard.
 
@@ -21,7 +21,7 @@ The public landing page was reimplemented as a smaller, current landing surface 
 
 The generated live database types define `identity_actors.auth_user_id`, `actor_type`, `institution_id`, `school_id`, and `status`. Identity resolution now queries the active actor by `auth_user_id = auth.users.id`. The profile lookup remains scoped by `profiles.user_id`.
 
-School dashboard routing requires an active actor, institution scope, and school scope. Higher-institution routing is separate and currently recognises `dean` and `rector` actor types. The deployed higher-institution bootstrap evidence establishes `dean`; a live Rector bootstrap/actor contract has not been independently verified.
+School dashboard routing requires an active actor, institution scope, and school scope. The school dashboard now selects only the actor's `school_id`, rather than silently falling back to the first campus. Logout terminates the Supabase Auth session. Higher-institution routing is separate and currently recognises `dean` and `rector` actor types. The deployed higher-institution bootstrap evidence establishes `dean`; a live Rector bootstrap/actor contract has not been independently verified.
 
 ## PIN authentication blocker
 
