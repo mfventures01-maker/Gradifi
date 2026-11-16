@@ -42,12 +42,14 @@ import {
 
 interface DashboardLayoutProps {
   institutionId: string;
+  schoolId: string;
   initialTab?: string;
   onLogout: () => void;
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   institutionId,
+  schoolId,
   initialTab = 'overview',
   onLogout,
 }) => {
@@ -104,7 +106,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       // Load schools
       const schList = await apiClient.getSchools(institutionId);
       setSchools(schList);
-      const activeSch = schList[0] || null;
+      const activeSch = schList.find((school) => school.id === schoolId) || null;
       setSelectedSchool(activeSch);
 
       if (institutionId) {
@@ -138,7 +140,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   useEffect(() => {
     loadData();
-  }, [institutionId]);
+  }, [institutionId, schoolId]);
 
   useEffect(() => {
     setActiveTab(initialTab);
