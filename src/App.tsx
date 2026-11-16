@@ -8,7 +8,7 @@ import { CreateInstitution } from './pages/onboarding/CreateInstitution';
 import { CreateTeacher } from './pages/onboarding/CreateTeacher';
 import { CreateStudent } from './pages/onboarding/CreateStudent';
 import { AuthGuard } from './components/AuthGuard';
-import type { AuthSessionState } from './services/authService';
+import { authService, type AuthSessionState } from './services/authService';
 
 export type AppView =
   | 'home'
@@ -67,6 +67,16 @@ export default function App() {
     window.history.pushState({}, '', url.toString());
   };
 
+  const handleLogout = async () => {
+    try {
+      await authService.signOut();
+      setIdentity(null);
+      navigateTo('home');
+    } catch (error) {
+      console.error('Supabase sign-out failed:', error);
+    }
+  };
+
   const renderAuthenticatedDashboard = () => {
     if (!identity?.isAuthenticated || !identity.actorType || !identity.institutionId) {
       return (
@@ -79,7 +89,7 @@ export default function App() {
 
     const actorType = identity.actorType.toLowerCase();
     if (actorType === 'dean' || actorType === 'rector') {
-      return <RectorDeanDashboard identity={identity} onLogout={() => { setIdentity(null); navigateTo('home'); }} />;
+      return <RectorDeanDashboard identity={identity} onLogout={() => { void handleLogout(); }} />;
     }
 
     const schoolActorTabs: Record<string, string> = {
