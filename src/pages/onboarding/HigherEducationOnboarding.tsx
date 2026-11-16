@@ -401,7 +401,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                     <div><p className="text-xs text-slate-500">Temporary {latestAccount.actor_type === "student" ? "4" : "6"}-digit PIN</p><p className="font-mono text-2xl font-bold tracking-widest text-slate-950">{latestAccount.pin}</p></div>
                     <button type="button" onClick={() => copyValue("pin", latestAccount.pin)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700">{copiedField === "pin" ? "Copied" : "Copy PIN"}</button>
                   </div>
-                  {latestAccount.student_number && <div><p className="text-xs text-slate-500">Student number</p><p className="font-mono font-semibold text-slate-900">{latestAccount.student_number}</p></div>}
+                  {latestAccount.student_number && <div><p className="text-xs text-slate-500">Matriculation number</p><p className="font-mono font-semibold text-slate-900">{latestAccount.student_number}</p></div>}
                 </div>
                 <p className="mt-3 text-xs text-amber-700">Security note: deliver the Login ID and PIN privately. Do not post credentials in a group chat.</p>
                 <button type="button" onClick={() => setLatestAccount(null)} className="mt-4 text-sm font-semibold text-indigo-700 hover:text-indigo-900">Dismiss credentials</button>
