@@ -195,6 +195,13 @@ begin
         and ia.status = 'active'
     ) then raise exception 'ACTIVE_PRINCIPAL_ACTOR_REQUIRED'; end if;
   elsif p_expected_authority_role in ('vice_chancellor','rector') then
+    if not exists (
+      select 1 from public.identity_actors ia
+      where ia.auth_user_id = p_authority_user_id
+        and ia.actor_type = p_expected_authority_role
+        and ia.auth_method = 'email'
+        and ia.status = 'active'
+    ) then raise exception 'ACTIVE_VC_RECTOR_AUTHORITY_REQUIRED'; end if;
     v_expected_actor_roles := array['dean','student','hod','adviser','lecturer'];
   else
     raise exception 'UNSUPPORTED_AUTHORITY_ROLE';
