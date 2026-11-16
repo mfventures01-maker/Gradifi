@@ -128,6 +128,7 @@ serve(async (req) => {
         const { data: deanResult, error: deanError } = await admin.rpc("complete_actor_onboarding", {
           p_auth_user_id: deanAuth.user.id,
           p_authority_user_id: rootUser.id,
+          p_provisioned_by_user_id: rootUser.id,
           p_expected_authority_role: bootstrapResult.authority_role,
           p_actor_type: "dean",
           p_school_id: null,
@@ -234,6 +235,7 @@ serve(async (req) => {
     const { data: result, error: provisionError } = await admin.rpc("complete_actor_onboarding", {
       p_auth_user_id: created.user.id,
       p_authority_user_id: rootAuthorityUserId,
+      p_provisioned_by_user_id: callerData.user.id,
       p_expected_authority_role: expectedAuthorityRole,
       p_actor_type: actorType,
       p_school_id: schoolId,
