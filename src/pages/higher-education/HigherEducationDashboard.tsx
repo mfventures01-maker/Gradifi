@@ -7,9 +7,15 @@ export const HigherEducationDashboard: React.FC = () => {
   return <main className="min-h-screen bg-slate-50 p-6">
     <section className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
       <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">SEFAES • Higher Education</p>
-      <h1 className="mt-2 text-2xl font-bold text-slate-900">{identity?.profile?.full_name || "Academic Staff Portal"}</h1>
+      <h1 className="mt-2 text-2xl font-bold text-slate-900">{identity?.profile?.full_name || "Higher Education Portal"}</h1>
       <p className="mt-2 text-sm text-slate-600">Authenticated role: <strong>{identity?.role || "Resolving identity..."}</strong></p>
-      <p className="mt-5 rounded-xl bg-blue-50 p-4 text-sm text-blue-900">Your generated account is authenticated. Academic permissions and role-specific workflows remain governed by institution, faculty and department assignments.</p>
+      {identity?.role === "vice_chancellor" || identity?.role === "rector" ? (
+        <p className="mt-5 rounded-xl bg-blue-50 p-4 text-sm text-blue-900">Executive institutional authority workspace. Your account is for oversight, approvals and institutional accountability. Routine administration and actor provisioning are assigned to the Dean.</p>
+      ) : identity?.role === "dean" ? (
+        <p className="mt-5 rounded-xl bg-blue-50 p-4 text-sm text-blue-900">Operational administration workspace. Your generated-ID/PIN identity is linked to the institution's Vice-Chancellor or Rector authority.</p>
+      ) : (
+        <p className="mt-5 rounded-xl bg-blue-50 p-4 text-sm text-blue-900">Academic access is governed by your institutional authority, faculty and department assignments.</p>
+      )}
     </section>
   </main>;
 };
