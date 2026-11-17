@@ -212,6 +212,7 @@ export async function provisionInitialDean(admin: any, rootUser: User, body: Rec
       }
     }
   }
+  if (!institution) throw new Error("ROOT_INSTITUTION_NOT_FOUND");
   if (institution.authority_role !== expectedRole) throw new Error("ROOT_AUTHORITY_ROLE_MISMATCH");
 
   const job = await getOrCreateJob(admin, rootUser, institution, request, fingerprint, idempotencyKey);
