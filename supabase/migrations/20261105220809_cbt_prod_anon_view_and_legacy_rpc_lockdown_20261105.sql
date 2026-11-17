@@ -1,3 +1,4 @@
+
 -- Narrow production security pass: remove anonymous CBT access and retire obsolete RPC.
 -- Authenticated session/snapshot DML is intentionally preserved until the RPC-backed
 -- client is confirmed deployed, to avoid breaking the live examination pathway.
