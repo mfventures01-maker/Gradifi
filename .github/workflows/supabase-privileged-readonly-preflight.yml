@@ -1,0 +1,21 @@
+name: Supabase privileged read-only preflight
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  privileged-readonly-preflight:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run PostgREST and Auth Admin read-only probes
+        shell: pwsh
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          ./scripts/gradifi-supabase-readonly-preflight.ps1 -EnvFile ".env.local"
