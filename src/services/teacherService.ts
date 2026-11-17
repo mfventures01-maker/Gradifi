@@ -74,16 +74,17 @@ export const teacherService = {
       phone: string;
     };
 
-    return {
-      id: res.teacher_id,
-      profile_id: null,
-      school_id: res.school_id,
-      institution_id: res.institution_id,
-      name: res.name,
-      email: res.email,
-      phone: res.phone || null,
-      created_at: new Date().toISOString(),
-    };
+    const { data: persistedTeacher, error: readbackError } = await supabase
+      .from('teachers')
+      .select('*')
+      .eq('id', res.teacher_id)
+      .single();
+
+    if (readbackError || !persistedTeacher) {
+      throw readbackError || new Error('TEACHER_CREATE_READBACK_FAILED: the RPC returned an ID but the persisted teacher row could not be loaded.');
+    }
+
+    return persistedTeacher as Teacher;
   },
 
   /**
