@@ -1,4 +1,3 @@
--- Bind legacy teacher-subject assignment RPC to the authenticated Principal's school.
 begin;
 
 create or replace function public.assign_teacher_to_subject(
