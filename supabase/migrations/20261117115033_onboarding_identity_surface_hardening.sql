@@ -1,9 +1,6 @@
 -- Close onboarding identity leaks and make the school onboarding RPC authority-bound.
 begin;
 
--- identity_actors contains PIN hashes and lockout counters. A Dean needs no
--- institution-wide read of this credential table; clients resolve only their own
--- actor and only through a non-secret column allowlist.
 drop policy if exists dean_read_own_institution_actors on public.identity_actors;
 revoke all on table public.identity_actors from public, anon, authenticated;
 grant select (
@@ -12,8 +9,6 @@ grant select (
   created_at, updated_at, last_login_at
 ) on table public.identity_actors to authenticated;
 
--- A profile owner may edit ordinary profile details, but must not be able to
--- alter their own authentication material, PIN lifecycle, lockout state or role.
 create or replace function public.gradifi_guard_profile_authority_fields()
 returns trigger
 language plpgsql
@@ -43,9 +38,6 @@ begin
 end;
 $function$;
 
--- The old function was SECURITY DEFINER and executable by anon. It accepted
--- any school UUID and inserted classes without checking the caller's authority.
--- It now permits only the authenticated Principal assigned to that school.
 create or replace function public.initialize_secondary_classes(p_school_id uuid)
 returns jsonb
 language plpgsql
@@ -115,7 +107,6 @@ $function$;
 revoke all on function public.initialize_secondary_classes(uuid) from public, anon;
 grant execute on function public.initialize_secondary_classes(uuid) to authenticated, service_role;
 
--- This helper returns only a boolean, but it is not a public capability oracle.
 create or replace function public.can_manage_secondary_users(p_institution_id uuid)
 returns boolean
 language sql
@@ -135,7 +126,6 @@ $function$;
 revoke all on function public.can_manage_secondary_users(uuid) from public, anon;
 grant execute on function public.can_manage_secondary_users(uuid) to authenticated, service_role;
 
--- Align the persisted onboarding progress model with the client contract.
 alter table public.institution_onboarding
   add column if not exists current_step integer not null default 1,
   add column if not exists completed_at timestamptz;
@@ -197,8 +187,6 @@ with check (
   )
 );
 
--- Remove anonymous access to private onboarding state. Authenticated access is
--- limited by the institution-scoped policies above.
 revoke all on table public.institution_onboarding from anon;
 revoke all on table public.profiles from anon;
 
