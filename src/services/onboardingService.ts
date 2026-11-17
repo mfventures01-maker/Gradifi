@@ -165,7 +165,11 @@ export const onboardingService = {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}${action === 'bootstrap_higher_institution' ? '/onboarding/higher-education/register' : '/onboarding'}`,
-        data: { full_name: fullName.trim(), requested_root_action: action },
+        data: {
+          full_name: fullName.trim(),
+          requested_root_action: action,
+          pending_root_payload: payload,
+        },
       },
     });
     if (signupError) {
@@ -189,16 +193,45 @@ export const onboardingService = {
   },
 
   async completePendingRootRegistration(): Promise<CreateInstitutionAccountResponse> {
-    const raw = localStorage.getItem('sefaes.pending-root-onboarding');
-    if (!raw) throw new Error('NO_PENDING_ROOT_REGISTRATION');
-    const pending = JSON.parse(raw) as {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !sessionData.session?.user) throw new Error('VERIFIED_ROOT_SESSION_REQUIRED');
+
+    const sessionUser = sessionData.session.user;
+    let pending: {
       action: 'bootstrap_school_institution' | 'bootstrap_higher_institution';
       payload: Record<string, string>;
       email: string;
-    };
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !sessionData.session?.user) throw new Error('VERIFIED_ROOT_SESSION_REQUIRED');
-    if (sessionData.session.user.email?.toLowerCase() !== pending.email) {
+    } | null = null;
+
+    const raw = localStorage.getItem('sefaes.pending-root-onboarding');
+    if (raw) {
+      try {
+        pending = JSON.parse(raw);
+      } catch {
+        localStorage.removeItem('sefaes.pending-root-onboarding');
+      }
+    }
+
+    // Email confirmation may open on another device/browser. Recover only the
+    // user-supplied institution form payload from this verified Auth identity.
+    if (!pending) {
+      const metadata = sessionUser.user_metadata || {};
+      const action = metadata.requested_root_action;
+      const payload = metadata.pending_root_payload;
+      if (
+        (action !== 'bootstrap_school_institution' && action !== 'bootstrap_higher_institution') ||
+        !payload || typeof payload !== 'object' || Array.isArray(payload)
+      ) {
+        throw new Error('NO_PENDING_ROOT_REGISTRATION');
+      }
+      pending = {
+        action,
+        payload: payload as Record<string, string>,
+        email: String(sessionUser.email || '').toLowerCase(),
+      };
+    }
+
+    if (sessionUser.email?.toLowerCase() !== pending.email) {
       throw new Error('ROOT_SESSION_EMAIL_MISMATCH');
     }
 
