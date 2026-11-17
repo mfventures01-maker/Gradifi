@@ -6,7 +6,7 @@ on:
       - repair/dean-recovery-engine-2026-11-17
   pull_request:
     branches:
-      - repair/oir01-identity-recovery-phase1
+      - repair/oir01-identity-recovery-phase1-2026-11-17
 
 permissions:
   contents: read
