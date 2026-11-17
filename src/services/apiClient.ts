@@ -135,7 +135,7 @@ export const apiClient = {
       teachers_count: teachersCount,
       students_count: studentsCount,
       onboarding,
-      earliest_incomplete_step: onboarding?.current_step || calculatedStep,
+      earliest_incomplete_step: calculatedStep,
     };
   },
 
