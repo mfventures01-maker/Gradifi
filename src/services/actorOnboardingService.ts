@@ -46,9 +46,21 @@ export interface CreateActorResult {
 export const actorOnboardingService = {
   async create(input: CreateActorInput): Promise<CreateActorResult> {
     const { data, error } = await supabase.functions.invoke("actor-onboarding", {
-      body: { action: "create", ...input },
+      body: { ...input },
     });
-    if (error) throw new Error(error.message || "Actor onboarding failed");
+    if (error) {
+      let message = error.message || "Actor onboarding failed";
+      const response = (error as any).context;
+      if (response && typeof response.clone === "function") {
+        try {
+          const payload = await response.clone().json();
+          if (typeof payload?.error === "string" && payload.error) message = payload.error;
+        } catch {
+          // Preserve the original Supabase error when the response is not JSON.
+        }
+      }
+      throw new Error(message);
+    }
     if (!data?.success || !data.login_id || !data.user_id || !data.pin) {
       throw new Error(data?.error || "Onboarding returned an incomplete identity");
     }

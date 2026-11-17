@@ -46,7 +46,8 @@ export const LoginPage: React.FC = () => {
     else if (role === 'student') navigate('/portal/student');
     else if (role === 'parent') navigate('/portal/parent');
     else if (role === 'teacher') navigate('/portal/teacher');
-    else if (['dean', 'hod', 'adviser', 'lecturer'].includes(role)) navigate('/portal/higher-education');
+    else if (role === 'individual') navigate('/portal/individual');
+    else if (['vice_chancellor', 'rector', 'dean', 'hod', 'adviser', 'lecturer'].includes(role)) navigate('/portal/higher-education');
     else if (['principal_admin', 'principal', 'admin'].includes(role)) navigate('/portal/principal');
     else throw new Error('NO_AUTHORIZED_DASHBOARD_FOR_ROLE');
   };

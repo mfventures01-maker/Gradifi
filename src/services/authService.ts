@@ -1,4 +1,4 @@
-/**
+/** 
  * GRADIFI x SEFAES - AUTHENTICATION & IDENTITY SERVICE
  * SSoT: Supabase Auth, profiles, and identity_actors.
  * Zero custom local auth, zero fake tokens, zero client-side role forgery.
@@ -14,54 +14,33 @@ export interface AuthSessionState {
   actor: IdentityActor | null;
   institutionId: string | null;
   schoolId: string | null;
-  role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | null;
+  role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual' | null;
 }
 
 export const authService = {
-  /**
-   * Get current Supabase session
-   */
   async getSession() {
     const { data, error } = await supabase.auth.getSession();
     if (error) throw error;
     return data.session;
   },
 
-  /**
-   * Alias for signInWithPassword
-   */
   async signIn(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
   },
 
-  /**
-   * Standard Email/Password login
-   */
   async signInWithPassword(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
   },
 
-  /**
-   * Sign out current user session
-   */
   async signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   },
 
-  /**
-   * Get current user
-   */
   async getCurrentUser() {
     const { data, error } = await supabase.auth.getUser();
     if (error) throw error;
@@ -69,11 +48,12 @@ export const authService = {
   },
 
   /**
-   * Resolve profile and identity actor for the authenticated user
+   * Resolve the current identity without selecting credential hashes or lockout
+   * counters. The database exposes only this non-secret actor projection to clients.
    */
   async resolveCurrentIdentity(): Promise<AuthSessionState> {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
       return {
         isAuthenticated: false,
@@ -86,21 +66,25 @@ export const authService = {
       };
     }
 
-    // 1. Fetch Profile
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle();
 
-    // 2. Fetch the authoritative identity actor by its Supabase Auth UID.
-    const { data: actor } = await supabase
+    const { data: actorData, error: actorError } = await supabase
       .from('identity_actors')
-      .select('*')
+      .select('id,auth_user_id,institution_id,school_id,actor_type,actor_record_id,login_identifier,auth_method,status,pin_changed_at,authority_user_id,created_at,updated_at,last_login_at')
       .eq('auth_user_id', user.id)
       .eq('status', 'active')
       .maybeSingle();
 
+    if (actorError) {
+      throw actorError;
+    }
+
+    // The query intentionally omits pin_hash, failed_attempts and locked_until.
+    const actor = actorData as unknown as IdentityActor | null;
     const institutionId = actor?.institution_id || profile?.institution_id || null;
     const schoolId = actor?.school_id || null;
     const role = (actor?.actor_type || profile?.role || null) as AuthSessionState['role'];
@@ -109,17 +93,13 @@ export const authService = {
       isAuthenticated: true,
       userId: user.id,
       profile: profile || null,
-      actor: actor || null,
+      actor,
       institutionId,
       schoolId,
       role,
     };
   },
 
-  /**
-   * PIN login is exchanged for a real Supabase Auth session by the trusted Edge Function.
-   * The database verifies the generated login ID + PIN; the browser never fabricates tokens.
-   */
   async signInWithPhoneAndPin(loginId: string, pin: string) {
     return this.exchangePinForSession(pin, loginId);
   },
@@ -161,9 +141,6 @@ export const authService = {
     return data;
   },
 
-  /**
-   * Listen to auth state changes
-   */
   onAuthStateChange(callback: (event: string, session: any) => void) {
     return supabase.auth.onAuthStateChange(callback);
   },

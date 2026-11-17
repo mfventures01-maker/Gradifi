@@ -35,6 +35,9 @@ export interface CreateInstitutionAccountResponse {
   requires_email_confirmation?: boolean;
   url_slug?: string;
   institution_path?: string;
+  authority_role?: "vice_chancellor" | "rector";
+  authority_title?: "Vice-Chancellor" | "Rector";
+  initial_admin?: { login_id: string; pin: string; full_name: string; actor_type: "dean" };
 }
 
 export interface HigherInstitutionFormInput {
@@ -45,10 +48,12 @@ export interface HigherInstitutionFormInput {
   address: string;
   phone: string;
   website?: string;
+  authority_name: string;
+  authority_email: string;
+  authority_phone: string;
+  authority_password: string;
   dean_name: string;
-  dean_email: string;
   dean_phone: string;
-  dean_password: string;
 }
 
 export interface InitializeClassesResponse {
@@ -132,10 +137,12 @@ export const onboardingService = {
       address: input.address,
       phone: input.phone,
       website: input.website || '',
+      authority_name: input.authority_name,
+      authority_email: input.authority_email,
+      authority_phone: input.authority_phone,
       dean_name: input.dean_name,
-      dean_email: input.dean_email,
       dean_phone: input.dean_phone,
-    }, input.dean_email, input.dean_password, input.dean_name);
+    }, input.authority_email, input.authority_password, input.authority_name);
   },
 
   async registerRootInstitution(
@@ -158,7 +165,11 @@ export const onboardingService = {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}${action === 'bootstrap_higher_institution' ? '/onboarding/higher-education/register' : '/onboarding'}`,
-        data: { full_name: fullName.trim(), requested_root_action: action },
+        data: {
+          full_name: fullName.trim(),
+          requested_root_action: action,
+          pending_root_payload: payload,
+        },
       },
     });
     if (signupError) {
@@ -182,16 +193,45 @@ export const onboardingService = {
   },
 
   async completePendingRootRegistration(): Promise<CreateInstitutionAccountResponse> {
-    const raw = localStorage.getItem('sefaes.pending-root-onboarding');
-    if (!raw) throw new Error('NO_PENDING_ROOT_REGISTRATION');
-    const pending = JSON.parse(raw) as {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !sessionData.session?.user) throw new Error('VERIFIED_ROOT_SESSION_REQUIRED');
+
+    const sessionUser = sessionData.session.user;
+    let pending: {
       action: 'bootstrap_school_institution' | 'bootstrap_higher_institution';
       payload: Record<string, string>;
       email: string;
-    };
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !sessionData.session?.user) throw new Error('VERIFIED_ROOT_SESSION_REQUIRED');
-    if (sessionData.session.user.email?.toLowerCase() !== pending.email) {
+    } | null = null;
+
+    const raw = localStorage.getItem('sefaes.pending-root-onboarding');
+    if (raw) {
+      try {
+        pending = JSON.parse(raw);
+      } catch {
+        localStorage.removeItem('sefaes.pending-root-onboarding');
+      }
+    }
+
+    // Email confirmation may open on another device/browser. Recover only the
+    // user-supplied institution form payload from this verified Auth identity.
+    if (!pending) {
+      const metadata = sessionUser.user_metadata || {};
+      const action = metadata.requested_root_action;
+      const payload = metadata.pending_root_payload;
+      if (
+        (action !== 'bootstrap_school_institution' && action !== 'bootstrap_higher_institution') ||
+        !payload || typeof payload !== 'object' || Array.isArray(payload)
+      ) {
+        throw new Error('NO_PENDING_ROOT_REGISTRATION');
+      }
+      pending = {
+        action,
+        payload: payload as Record<string, string>,
+        email: String(sessionUser.email || '').toLowerCase(),
+      };
+    }
+
+    if (sessionUser.email?.toLowerCase() !== pending.email) {
       throw new Error('ROOT_SESSION_EMAIL_MISMATCH');
     }
 
@@ -203,6 +243,14 @@ export const onboardingService = {
     }
 
     localStorage.removeItem('sefaes.pending-root-onboarding');
+    // Clear the one-time recovery payload so a later visit cannot replay setup.
+    try {
+      await supabase.auth.updateUser({
+        data: { requested_root_action: null, pending_root_payload: null },
+      });
+    } catch {
+      // Registration is already complete; metadata cleanup is best-effort only.
+    }
     return {
       institution_id: data.institution_id,
       school_id: data.school_id,
@@ -212,6 +260,14 @@ export const onboardingService = {
       success: true,
       url_slug: data.url_slug,
       institution_path: data.institution_path,
+      authority_role: data.authority_role,
+      authority_title: data.authority_title,
+      initial_admin: data.initial_admin ? {
+        login_id: data.initial_admin.login_id,
+        pin: data.initial_admin.pin,
+        full_name: data.initial_admin.full_name,
+        actor_type: "dean",
+      } : undefined,
     };
   },
 
@@ -223,7 +279,6 @@ export const onboardingService = {
     try {
       const { data, error } = await supabase.rpc('initialize_secondary_classes', {
         p_school_id: schoolId,
-        school_id: schoolId,
       });
 
       if (error) throw new Error(`SECONDARY_CLASS_INITIALIZATION_FAILED: ${error.message}`);
@@ -324,9 +379,10 @@ export const onboardingService = {
         .upsert({
           institution_id: institutionId,
           current_step: currentStep,
-          is_completed: isCompleted,
+          completed: isCompleted,
           completed_at: isCompleted ? new Date().toISOString() : null,
-        } as any)
+          updated_at: new Date().toISOString(),
+        } as any, { onConflict: 'institution_id' })
         .select()
         .single();
 
