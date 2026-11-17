@@ -12,6 +12,7 @@ import type { G4DPersistenceEnvelope, PersistableEvidenceResult } from '../types
 export interface PersistenceServerRequestPayload {
   result: PersistableEvidenceResult;
   envelope: G4DPersistenceEnvelope;
+  correctionOfVerificationId?: string | null;
 }
 
 export class PersistenceRequestError extends Error {
@@ -165,7 +166,24 @@ export async function handlePersistenceServerRequest(
   const serverSupabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
-  const recordPayload = VerificationPersistenceService.buildPersistenceRecord(payload.result, payload.envelope);
+  const correctionParentId = payload.correctionOfVerificationId ?? null;
+  if (correctionParentId !== null) {
+    if (!/^VRF-[0-9A-F]{12}$/i.test(correctionParentId)) {
+      throw new PersistenceRequestError(400, 'Invalid correction parent verification ID.');
+    }
+    const { data: parent, error: parentError } = await serverSupabase
+      .from('public_verification_records')
+      .select('*')
+      .eq('verification_id', correctionParentId)
+      .maybeSingle();
+    if (parentError || !parent) throw new PersistenceRequestError(409, 'Correction parent receipt was not found.');
+    if (VerificationPersistenceService.validatePersistedRecord(parent).status !== 'VALID') {
+      throw new PersistenceRequestError(409, 'Correction parent receipt failed integrity validation.');
+    }
+  }
+  const recordPayload = VerificationPersistenceService.buildPersistenceRecord(
+    payload.result, payload.envelope, correctionParentId
+  );
   const { data: existing, error: fetchError } = await serverSupabase
     .from('public_verification_records')
     .select('*')
@@ -180,7 +198,8 @@ export async function handlePersistenceServerRequest(
     if (integrity.status !== 'VALID') {
       throw new PersistenceRequestError(409, 'Existing verification record failed integrity validation.');
     }
-    if (existing.document_hash !== recordPayload.document_hash || existing.evidence_hash !== recordPayload.evidence_hash) {
+    if (existing.document_hash !== recordPayload.document_hash || existing.evidence_hash !== recordPayload.evidence_hash ||
+      (existing.correction_of_verification_id ?? null) !== (recordPayload.correction_of_verification_id ?? null)) {
       throw new PersistenceRequestError(409, 'Conflicting verification record exists for this identifier.');
     }
     return { record: safeReceipt(existing as PublicVerificationRecord), status: 'IDEMPOTENT_EXISTS' };
@@ -201,6 +220,7 @@ export async function handlePersistenceServerRequest(
       if (raced &&
           raced.document_hash === recordPayload.document_hash &&
           raced.evidence_hash === recordPayload.evidence_hash &&
+          (raced.correction_of_verification_id ?? null) === (recordPayload.correction_of_verification_id ?? null) &&
           VerificationPersistenceService.validatePersistedRecord(raced).status === 'VALID') {
         return { record: safeReceipt(raced as PublicVerificationRecord), status: 'IDEMPOTENT_EXISTS' };
       }
