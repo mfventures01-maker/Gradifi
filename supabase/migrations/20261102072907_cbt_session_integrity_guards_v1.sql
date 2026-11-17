@@ -1,3 +1,4 @@
+
 create or replace function public.cbt_guard_session_update()
 returns trigger
 language plpgsql
