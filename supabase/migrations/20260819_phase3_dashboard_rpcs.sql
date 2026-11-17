@@ -44,8 +44,7 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     RETURN jsonb_build_object('error', SQLERRM);
 END;
-$$;
-
+$$
 -- 2. get_principal_dashboard_stats
 CREATE OR REPLACE FUNCTION public.get_principal_dashboard_stats(
     p_school_id UUID DEFAULT NULL
@@ -81,8 +80,7 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     RETURN jsonb_build_object('error', SQLERRM);
 END;
-$$;
-
+$$
 -- 3. get_student_dashboard_stats
 CREATE OR REPLACE FUNCTION public.get_student_dashboard_stats(
     p_student_id UUID DEFAULT NULL
@@ -115,8 +113,7 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     RETURN jsonb_build_object('error', SQLERRM);
 END;
-$$;
-
+$$
 -- 4. get_parent_dashboard_stats
 CREATE OR REPLACE FUNCTION public.get_parent_dashboard_stats(
     p_parent_id UUID DEFAULT NULL
@@ -155,8 +152,7 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     RETURN jsonb_build_object('error', SQLERRM);
 END;
-$$;
-
+$$
 -- 5. get_bursar_dashboard_stats
 CREATE OR REPLACE FUNCTION public.get_bursar_dashboard_stats(
     p_school_id UUID DEFAULT NULL
@@ -187,8 +183,7 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     RETURN jsonb_build_object('error', SQLERRM);
 END;
-$$;
-
+$$
 -- 6. get_pending_grades
 CREATE OR REPLACE FUNCTION public.get_pending_grades(
     p_school_id UUID DEFAULT NULL
@@ -219,8 +214,7 @@ BEGIN
     WHERE a.status = 'pending_review'
     ORDER BY a.created_at DESC;
 END;
-$$;
-
+$$
 -- 7. get_teacher_activity
 CREATE OR REPLACE FUNCTION public.get_teacher_activity(
     p_school_id UUID DEFAULT NULL
@@ -235,8 +229,7 @@ BEGIN
         jsonb_build_object('id', 'act_102', 'type', 'exam', 'title', 'Mr. Chukwu', 'description', 'Created Physics CBT Mock Test', 'timestamp', '1 hour ago', 'status', 'completed')
     );
 END;
-$$;
-
+$$
 -- 8. get_class_performance
 CREATE OR REPLACE FUNCTION public.get_class_performance(
     p_class_id UUID DEFAULT NULL
@@ -252,8 +245,7 @@ BEGIN
         jsonb_build_object('subject', 'Basic Science', 'avg_score', 88.0, 'highest_score', 100, 'lowest_score', 68)
     );
 END;
-$$;
-
+$$
 -- 9. get_student_results
 CREATE OR REPLACE FUNCTION public.get_student_results(
     p_student_id UUID DEFAULT NULL
@@ -276,8 +268,7 @@ BEGIN
         )
     );
 END;
-$$;
-
+$$
 -- 10. get_attendance_summary
 CREATE OR REPLACE FUNCTION public.get_attendance_summary(
     p_school_id UUID DEFAULT NULL
@@ -301,4 +292,4 @@ BEGIN
         )
     );
 END;
-$$;
+$$
