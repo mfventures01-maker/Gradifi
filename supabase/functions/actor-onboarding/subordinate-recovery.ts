@@ -151,6 +151,16 @@ const finishJob = async (admin: any, jobId: string, actorId: string) => {
   if (error) throw new Error("ACTOR_RECOVERY_COMPLETION_PERSIST_FAILED");
 };
 
+const markRecoveryRequired = async (admin: any, jobId: string, errorCode: string) => {
+  const { error } = await admin.from("actor_provisioning_jobs").update({
+    status: "recovery_required",
+    stage: "authority",
+    last_error_code: errorCode,
+    updated_at: new Date().toISOString(),
+  }).eq("id", jobId);
+  if (error) throw new Error("ACTOR_RECOVERY_LEDGER_UPDATE_FAILED");
+};
+
 const buildRpcArgs = (input: ProvisionInput, payload: any, authUserId: string, pin: string) => ({
   p_auth_user_id: authUserId,
   p_authority_user_id: input.rootAuthorityUserId,
@@ -243,7 +253,12 @@ export async function provisionSubordinateActor(admin: any, input: ProvisionInpu
 
   const before = await readIdentity(admin, authUser.id);
   if (before.profile || before.actor) {
-    if (!assertIdentity(before, job, payload, input)) throw new Error("ACTOR_IDENTITY_CONFLICT");
+    try {
+      if (!assertIdentity(before, job, payload, input)) throw new Error("ACTOR_IDENTITY_CONFLICT");
+    } catch (error) {
+      await markRecoveryRequired(admin, job.id, "ACTOR_IDENTITY_CONFLICT");
+      throw error;
+    }
     await finishJob(admin, job.id, before.actor.id);
     return {
       success: true,
@@ -277,7 +292,13 @@ export async function provisionSubordinateActor(admin: any, input: ProvisionInpu
 
   const after = await readIdentity(admin, authUser.id);
   if (provisionError || !result?.success) {
-    if (after.profile && after.actor && assertIdentity(after, job, payload, input)) {
+    if (after.profile && after.actor) {
+      try {
+        assertIdentity(after, job, payload, input);
+      } catch (identityError) {
+        await markRecoveryRequired(admin, job.id, "ACTOR_IDENTITY_CONFLICT");
+        throw identityError;
+      }
       await finishJob(admin, job.id, after.actor.id);
       return {
         success: true,
@@ -301,14 +322,15 @@ export async function provisionSubordinateActor(admin: any, input: ProvisionInpu
     throw new Error(provisionError?.message || "ACTOR_PROVISIONING_FAILED");
   }
 
-  if (!after.profile || !after.actor || !assertIdentity(after, job, payload, input)) {
-    await admin.from("actor_provisioning_jobs").update({
-      status: "recovery_required",
-      stage: "authority",
-      last_error_code: "ACTOR_POST_PROVISION_VERIFICATION_FAILED",
-      updated_at: new Date().toISOString(),
-    }).eq("id", job.id);
+  if (!after.profile || !after.actor) {
+    await markRecoveryRequired(admin, job.id, "ACTOR_POST_PROVISION_VERIFICATION_FAILED");
     throw new Error("ACTOR_POST_PROVISION_VERIFICATION_FAILED");
+  }
+  try {
+    assertIdentity(after, job, payload, input);
+  } catch (identityError) {
+    await markRecoveryRequired(admin, job.id, "ACTOR_IDENTITY_CONFLICT");
+    throw identityError;
   }
 
   await finishJob(admin, job.id, after.actor.id);
