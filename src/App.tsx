@@ -88,7 +88,7 @@ export default function App() {
     }
 
     const actorType = identity.actorType.toLowerCase();
-    if (actorType === 'dean' || actorType === 'rector') {
+    if (actorType === 'vice_chancellor' || actorType === 'dean' || actorType === 'rector') {
       return <RectorDeanDashboard identity={identity} onLogout={() => { void handleLogout(); }} />;
     }
 
