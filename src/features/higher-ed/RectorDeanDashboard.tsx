@@ -13,7 +13,7 @@ interface RectorDeanDashboardProps {
  * Higher-ed operational modules are added only when their backend contracts exist.
  */
 export const RectorDeanDashboard: React.FC<RectorDeanDashboardProps> = ({ identity, onLogout }) => {
-  const actorLabel = identity.actorType === 'rector' ? 'Rector' : 'Dean';
+  const actorLabel = identity.actorType === 'vice_chancellor' ? 'Vice-Chancellor' : identity.actorType === 'rector' ? 'Rector' : 'Dean';
   const fullName = identity.profile?.full_name || 'Authenticated institutional leader';
 
   return (
@@ -56,7 +56,7 @@ export const RectorDeanDashboard: React.FC<RectorDeanDashboardProps> = ({ identi
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700"><Users className="h-5 w-5" /></div>
             <h2 className="mt-5 font-bold">Academic leadership</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">The higher-ed actor model is separate from the school Principal, teacher and student dashboard.</p>
-            <p className="mt-4 text-xs text-slate-500">Dean / Rector access boundary</p>
+            <p className="mt-4 text-xs text-slate-500">VC / Rector / Dean access boundary</p>
           </article>
         </section>
 
