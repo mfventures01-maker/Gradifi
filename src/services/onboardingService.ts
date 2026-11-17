@@ -46,7 +46,7 @@ export interface CreateInstitutionAccountResponse {
     profile_id?: string;
   };
   provisioning?: { job_id: string; status: string; recovered: boolean };
-  credential_recovery_required?: boolean;
+  pin_not_reissued?: boolean;
 }
 
 export interface HigherInstitutionFormInput {
@@ -280,7 +280,7 @@ export const onboardingService = {
         profile_id: data.initial_admin.profile_id,
       } : undefined,
       provisioning: data.provisioning,
-      credential_recovery_required: data.credential_recovery_required === true,
+      pin_not_reissued: data.pin_not_reissued === true,
     };
   },
 
