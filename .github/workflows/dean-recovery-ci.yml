@@ -1,0 +1,47 @@
+name: Dean Recovery CI
+
+on:
+  push:
+    branches:
+      - repair/dean-recovery-engine-2026-11-17
+  pull_request:
+    branches:
+      - repair/oir01-identity-recovery-phase1-2026-11-17
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dean-recovery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dean-recovery:
+    name: Dean recovery tests, typecheck and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Dean authority and recovery contract tests
+        run: >-
+          npx vitest run
+          tests/higherEdAuthorityContract.test.ts
+          tests/actorProvisioningRecoveryEngine.test.ts
+          tests/actorProvisioningRecoverySchema.test.ts
+
+      - name: Typecheck client and server
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
