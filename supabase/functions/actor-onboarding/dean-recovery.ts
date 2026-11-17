@@ -289,7 +289,7 @@ export async function provisionInitialDean(admin: any, rootUser: User, body: Rec
         pin: null,
       },
       provisioning: { job_id: job.id, status: "active", recovered: true },
-      credential_recovery_required: true,
+      pin_not_reissued: true,
     };
   }
   if (job.status === "active") throw new Error("DEAN_ACTIVE_JOB_IDENTITY_MISSING");
@@ -345,7 +345,7 @@ export async function provisionInitialDean(admin: any, rootUser: User, body: Rec
           pin: null,
         },
         provisioning: { job_id: job.id, status: "active", recovered: true },
-        credential_recovery_required: true,
+        pin_not_reissued: true,
       };
     }
     await admin.from("actor_provisioning_jobs").update({
@@ -376,6 +376,6 @@ export async function provisionInitialDean(admin: any, rootUser: User, body: Rec
     authority_title: institution.authority_title,
     initial_admin: { ...result, pin },
     provisioning: { job_id: job.id, status: "active", recovered: false },
-    credential_recovery_required: false,
+    pin_not_reissued: false,
   };
 }
