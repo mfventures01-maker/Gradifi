@@ -1,0 +1,37 @@
+name: Verify Persistence Auth and Validation
+
+on:
+  push:
+    branches:
+      - fix/verify-persistence-auth-validation
+  pull_request:
+    branches:
+      - clean-deploy
+
+permissions:
+  contents: read
+
+jobs:
+  persistence-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build server runtime required by API route imports
+        run: npm run build:server
+      - name: Server and client type checks
+        run: npm run typecheck
+      - name: Persistence authentication and tamper tests
+        run: npx vitest run tests/verifyPersistenceAuthorization.test.ts --reporter=verbose
+      - name: Existing persistence and public receipt privacy tests
+        run: npx vitest run tests/verificationPersistence.test.ts tests/g4d_persisted_evidence_integrity.test.ts tests/publicReceiptPrivacy.test.ts --reporter=verbose
+      - name: Production build
+        run: npm run build
