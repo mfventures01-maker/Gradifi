@@ -42,10 +42,8 @@ BEGIN
     AND (p_school_id IS NULL OR a.school_id = p_school_id)
     ORDER BY a.created_at DESC;
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.get_pending_review_scripts(UUID, UUID) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.get_pending_review_scripts(UUID, UUID) TO authenticated
 -- 2. approve_grading
 CREATE OR REPLACE FUNCTION public.approve_grading(
     p_script_id UUID,
@@ -83,10 +81,8 @@ BEGIN
         'final_score', p_final_score
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.approve_grading(UUID, UUID, NUMERIC, TEXT) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.approve_grading(UUID, UUID, NUMERIC, TEXT) TO authenticated
 -- 3. override_grading
 CREATE OR REPLACE FUNCTION public.override_grading(
     p_script_id UUID,
@@ -137,10 +133,8 @@ BEGIN
         'override_justification', p_override_justification
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.override_grading(UUID, UUID, NUMERIC, TEXT, TEXT) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.override_grading(UUID, UUID, NUMERIC, TEXT, TEXT) TO authenticated
 -- 4. release_grading
 CREATE OR REPLACE FUNCTION public.release_grading(
     p_script_id UUID,
@@ -173,10 +167,8 @@ BEGIN
         'released_at', NOW()
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.release_grading(UUID, UUID) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.release_grading(UUID, UUID) TO authenticated
 -- 5. get_human_ai_agreement
 CREATE OR REPLACE FUNCTION public.get_human_ai_agreement(
     p_teacher_id UUID DEFAULT NULL
@@ -222,6 +214,5 @@ BEGIN
         END
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.get_human_ai_agreement(UUID) TO authenticated;
+$$
+GRANT EXECUTE ON FUNCTION public.get_human_ai_agreement(UUID) TO authenticated
