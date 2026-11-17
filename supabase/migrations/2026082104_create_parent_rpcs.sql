@@ -178,10 +178,8 @@ BEGIN
         END
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.create_parent(UUID, TEXT, TEXT, TEXT, TEXT, BOOLEAN) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.create_parent(UUID, TEXT, TEXT, TEXT, TEXT, BOOLEAN) TO authenticated
 -- 2. get_parent_dashboard_stats RPC
 CREATE OR REPLACE FUNCTION public.get_parent_dashboard_stats(
     p_parent_id UUID DEFAULT NULL
@@ -243,10 +241,8 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     RETURN jsonb_build_object('error', SQLERRM);
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.get_parent_dashboard_stats(UUID) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.get_parent_dashboard_stats(UUID) TO authenticated
 -- 3. get_parent_children RPC
 CREATE OR REPLACE FUNCTION public.get_parent_children(
     p_parent_id UUID DEFAULT NULL
@@ -277,6 +273,5 @@ BEGIN
     WHERE spr.parent_id = p_parent_id
     ORDER BY s.first_name;
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.get_parent_children(UUID) TO authenticated;
+$$
+GRANT EXECUTE ON FUNCTION public.get_parent_children(UUID) TO authenticated
