@@ -76,19 +76,17 @@ export const studentService = {
       enrolled_at: string;
     };
 
-    return {
-      id: res.student_id,
-      school_id: params.school_id,
-      institution_id: params.institution_id,
-      class_id: res.class_id,
-      student_number: res.student_number,
-      first_name: params.first_name,
-      last_name: params.last_name,
-      gender: (params.gender as 'male' | 'female') || 'male',
-      date_of_birth: params.date_of_birth || null,
-      enrolled_at: res.enrolled_at,
-      created_at: res.enrolled_at,
-    };
+    const { data: persistedStudent, error: readbackError } = await supabase
+      .from('students')
+      .select('*')
+      .eq('id', res.student_id)
+      .single();
+
+    if (readbackError || !persistedStudent) {
+      throw readbackError || new Error('STUDENT_ENROLLMENT_READBACK_FAILED: the RPC returned an ID but the persisted student row could not be loaded.');
+    }
+
+    return persistedStudent as Student;
   },
 
   /**
