@@ -59,7 +59,9 @@ export const HigherInstitutionRegistration: React.FC = () => {
         const result = await onboardingService.completePendingRootRegistration();
         if (!active) return;
         setCreated(result);
-        setMessage("Institution authority verified and institution created. The initial Dean account has been provisioned.");
+        setMessage(result.credential_recovery_required
+          ? "Institution and Dean identity verified. The original Dean Auth identity was reused; no second Dean was created. The existing PIN was not changed."
+          : "Institution authority verified and institution created. The initial Dean account has been provisioned.");
       } catch (err) {
         if (active && err instanceof Error && err.message !== "VERIFIED_ROOT_SESSION_REQUIRED") {
           setError(err.message);
@@ -85,7 +87,9 @@ export const HigherInstitutionRegistration: React.FC = () => {
         setMessage(`A verification link has been sent to the ${authorityTitle}'s email address. Only this institutional authority email requires verification. Return here after verifying it to finish institution setup.`);
       } else {
         setCreated(result);
-        setMessage("Institution created. The initial Dean account has been provisioned.");
+        setMessage(result.credential_recovery_required
+          ? "Institution and Dean identity verified. The original Dean Auth identity was reused; no second Dean was created. The existing PIN was not changed."
+          : "Institution created. The initial Dean account has been provisioned.");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Higher-institution registration failed.");
@@ -141,11 +145,17 @@ export const HigherInstitutionRegistration: React.FC = () => {
         {created?.initial_admin && (
           <section className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
             <h2 className="font-semibold text-emerald-900">Initial Dean credentials</h2>
-            <p className="text-sm text-emerald-800">Share these credentials securely with the appointed Dean. The temporary PIN should be changed at first sign-in.</p>
+            <p className="text-sm text-emerald-800">
+              {created.initial_admin.pin
+                ? "Share these credentials securely with the appointed Dean. The temporary PIN should be changed at first sign-in."
+                : "This is a recovered provisioning receipt. The existing Auth identity and PIN are preserved; no duplicate Dean account was created."}
+            </p>
             <div className="rounded-lg bg-white p-3 text-sm">
               <p><strong>Name:</strong> {created.initial_admin.full_name}</p>
               <p><strong>Login ID:</strong> <code>{created.initial_admin.login_id}</code></p>
-              <p><strong>Temporary PIN:</strong> <code>{created.initial_admin.pin}</code></p>
+              {created.initial_admin.pin
+                ? <p><strong>Temporary PIN:</strong> <code>{created.initial_admin.pin}</code></p>
+                : <p className="text-amber-700">The Dean identity already exists. Its previously issued PIN remains unchanged and is not re-displayed on a retry.</p>}
               <p><strong>Institutional authority:</strong> {created.authority_title || authorityTitle}</p>
             </div>
             <button type="button" onClick={() => navigate("/portal/higher-education")} className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white">Continue to institutional overview</button>
