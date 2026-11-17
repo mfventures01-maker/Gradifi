@@ -10,7 +10,7 @@ const recovery = readFileSync(
   "utf8",
 );
 const ledger = readFileSync(
-  new URL("../supabase/migrations/20261117130000_oir01_actor_provisioning_recovery_ledger.sql", import.meta.url),
+  new URL("../supabase/migrations/20261117165144_oir01_actor_provisioning_recovery_ledger.sql", import.meta.url),
   "utf8",
 );
 
