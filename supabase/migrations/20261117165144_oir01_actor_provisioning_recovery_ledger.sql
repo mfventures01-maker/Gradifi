@@ -40,7 +40,6 @@ create table if not exists public.actor_provisioning_jobs (
       or (status <> 'active' and completed_at is null))
 );
 
--- The initial Dean is a single institution bootstrap identity. Retries must reuse its job.
 create unique index if not exists actor_provisioning_jobs_one_initial_dean_per_institution_idx
   on public.actor_provisioning_jobs (institution_id)
   where actor_type = 'dean';
