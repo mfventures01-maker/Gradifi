@@ -4,6 +4,8 @@ import { readFileSync } from "node:fs";
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 const migration = read("../supabase/migrations/20261116120000_vc_rector_higher_ed_authority.sql");
 const edge = read("../supabase/functions/actor-onboarding/index.ts");
+const deanRecovery = read("../supabase/functions/actor-onboarding/dean-recovery.ts");
+const provisionerMigration = read("../supabase/migrations/20261116193000_bind_actor_provisioning_to_actual_authority.sql");
 const registration = read("../src/pages/onboarding/HigherInstitutionRegistration.tsx");
 const higherEdAdmin = read("../src/pages/onboarding/HigherEducationOnboarding.tsx");
 const higherEdStudentMigration = read("../supabase/migrations/20261116160000_higher_ed_student_class_optional.sql");
@@ -29,11 +31,22 @@ describe("higher-education VC/Rector authority contract", () => {
     expect(migration).toContain("v_authority_role");
   });
 
-  it("provisions the Dean as a generated-ID PIN administrator", () => {
-    expect(edge).toContain('p_actor_type: "dean"');
-    expect(edge).toContain("p_pin: pin");
+  it("routes initial Dean provisioning through the dedicated recovery module", () => {
+    expect(edge).toContain('import { provisionInitialDean } from "./dean-recovery.ts";');
+    expect(edge).toContain("await provisionInitialDean(admin, callerData.user, body, safeOnboardingError)");
+    expect(deanRecovery).toContain('p_actor_type: "dean"');
+    expect(deanRecovery).toContain("p_pin: pin");
     expect(migration).toContain("'dean','hod','adviser','lecturer'");
     expect(migration).toContain("PIN_AUTHENTICATION_NOT_ALLOWED_FOR_ROLE");
+  });
+
+  it("binds Dean provisioning to the initiating VC/Rector and the root authority", () => {
+    expect(deanRecovery).toContain("p_provisioned_by_user_id: rootUser.id");
+    expect(provisionerMigration).toContain("p_provisioned_by_user_id uuid DEFAULT NULL::uuid");
+    expect(provisionerMigration).toContain("v_expected_actor_roles := array['dean']");
+    expect(provisionerMigration).toContain("HIGHER_ED_DEAN_PROVISIONER_REQUIRED");
+    expect(provisionerMigration).toContain("DEAN_ROOT_AUTHORITY_LINK_REQUIRED");
+    expect(provisionerMigration).toContain("ACTIVE_DEAN_ROOT_LINK_REQUIRED");
   });
 
   it("binds every higher-ed subordinate to the VC/Rector authority user", () => {
