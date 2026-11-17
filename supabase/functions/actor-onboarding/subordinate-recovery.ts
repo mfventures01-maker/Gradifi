@@ -188,6 +188,7 @@ export async function provisionSubordinateActor(admin: any, input: ProvisionInpu
     attempt_count: nextAttempt,
     status: job.target_auth_user_id ? "pending_profile" : "pending_auth",
     stage: job.target_auth_user_id ? "profile" : "auth",
+    completed_at: null,
     last_error_code: null,
     updated_at: new Date().toISOString(),
   }).eq("id", job.id);
@@ -257,7 +258,15 @@ export async function provisionSubordinateActor(admin: any, input: ProvisionInpu
       pin: null,
     };
   }
-  if (job.status === "active") throw new Error("ACTOR_ACTIVE_JOB_IDENTITY_MISSING");
+  if (job.status === "active") {
+    await admin.from("actor_provisioning_jobs").update({
+      status: "recovery_required",
+      stage: "authority",
+      last_error_code: "ACTOR_ACTIVE_JOB_IDENTITY_MISSING",
+      updated_at: new Date().toISOString(),
+    }).eq("id", job.id);
+    throw new Error("ACTOR_ACTIVE_JOB_IDENTITY_MISSING");
+  }
 
   const pinLength = ["student", "parent"].includes(input.actorType) ? 4 : 6;
   const randomValue = crypto.getRandomValues(new Uint32Array(1))[0];
@@ -295,7 +304,7 @@ export async function provisionSubordinateActor(admin: any, input: ProvisionInpu
   if (!after.profile || !after.actor || !assertIdentity(after, job, payload, input)) {
     await admin.from("actor_provisioning_jobs").update({
       status: "recovery_required",
-      stage: "verification",
+      stage: "authority",
       last_error_code: "ACTOR_POST_PROVISION_VERIFICATION_FAILED",
       updated_at: new Date().toISOString(),
     }).eq("id", job.id);
