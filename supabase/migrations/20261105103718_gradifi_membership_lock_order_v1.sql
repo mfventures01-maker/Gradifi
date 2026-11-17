@@ -1,3 +1,4 @@
+
 CREATE OR REPLACE FUNCTION public.change_school_member_role(
   p_membership_id uuid,
   p_new_role text
