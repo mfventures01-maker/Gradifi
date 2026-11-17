@@ -17,17 +17,14 @@ ADD COLUMN IF NOT EXISTS reviewed_at TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS override_justification TEXT,
 ADD COLUMN IF NOT EXISTS teacher_feedback TEXT,
 ADD COLUMN IF NOT EXISTS released_at TIMESTAMPTZ,
-ADD COLUMN IF NOT EXISTS assignment_title TEXT;
-
+ADD COLUMN IF NOT EXISTS assignment_title TEXT
 -- 2. Add status constraint
 ALTER TABLE public.answer_scripts 
-DROP CONSTRAINT IF EXISTS answer_scripts_status_check;
-
+DROP CONSTRAINT IF EXISTS answer_scripts_status_check
 ALTER TABLE public.answer_scripts 
 ADD CONSTRAINT answer_scripts_status_check 
-CHECK (status IN ('pending', 'processing', 'pending_review', 'approved', 'overridden', 'released', 'failed'));
-
+CHECK (status IN ('pending', 'processing', 'pending_review', 'approved', 'overridden', 'released', 'failed'))
 -- 3. Create indexes for performance
-CREATE INDEX IF NOT EXISTS idx_answer_scripts_status ON public.answer_scripts(status);
-CREATE INDEX IF NOT EXISTS idx_answer_scripts_teacher_id ON public.answer_scripts(teacher_id);
-CREATE INDEX IF NOT EXISTS idx_answer_scripts_student_id ON public.answer_scripts(student_id);
+CREATE INDEX IF NOT EXISTS idx_answer_scripts_status ON public.answer_scripts(status)
+CREATE INDEX IF NOT EXISTS idx_answer_scripts_teacher_id ON public.answer_scripts(teacher_id)
+CREATE INDEX IF NOT EXISTS idx_answer_scripts_student_id ON public.answer_scripts(student_id)
