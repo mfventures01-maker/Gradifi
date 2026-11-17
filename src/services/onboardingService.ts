@@ -243,6 +243,14 @@ export const onboardingService = {
     }
 
     localStorage.removeItem('sefaes.pending-root-onboarding');
+    // Clear the one-time recovery payload so a later visit cannot replay setup.
+    try {
+      await supabase.auth.updateUser({
+        data: { requested_root_action: null, pending_root_payload: null },
+      });
+    } catch {
+      // Registration is already complete; metadata cleanup is best-effort only.
+    }
     return {
       institution_id: data.institution_id,
       school_id: data.school_id,
