@@ -37,26 +37,52 @@ export const OnboardingWizard: React.FC = () => {
   });
 
   useEffect(() => {
-    const pending = localStorage.getItem('sefaes.pending-root-onboarding');
-    if (pending) {
-      const pendingAction = JSON.parse(pending).action;
+    let active = true;
+    const resumePendingRegistration = async () => {
+      let pendingAction: string | null = null;
+      const raw = localStorage.getItem('sefaes.pending-root-onboarding');
+      if (raw) {
+        try {
+          pendingAction = JSON.parse(raw).action || null;
+        } catch {
+          localStorage.removeItem('sefaes.pending-root-onboarding');
+        }
+      }
+      if (!pendingAction) {
+        try {
+          const user = await authService.getCurrentUser();
+          pendingAction = user?.user_metadata?.requested_root_action || null;
+        } catch {
+          // No active session yet. Continue to the public school registration form.
+        }
+      }
+      if (pendingAction !== 'bootstrap_school_institution' && pendingAction !== 'bootstrap_higher_institution') {
+        return;
+      }
+
       const destination = pendingAction === 'bootstrap_higher_institution'
         ? '/portal/higher-education'
         : '/portal/principal';
-      onboardingService.completePendingRootRegistration()
-        .then(() => navigate(destination, { replace: true }))
-        .catch((error) => {
-          if (error instanceof Error && error.message !== 'VERIFIED_ROOT_SESSION_REQUIRED') {
-            setErrorMessage(error.message);
-          }
-        });
-    }
+      try {
+        await onboardingService.completePendingRootRegistration();
+        if (active) navigate(destination, { replace: true });
+      } catch (error) {
+        if (active && error instanceof Error && error.message !== 'VERIFIED_ROOT_SESSION_REQUIRED') {
+          setErrorMessage(error.message);
+        }
+      }
+    };
 
+    void resumePendingRegistration();
     authService.resolveCurrentIdentity().then((identity) => {
       if (identity.schoolId) setSchoolId(identity.schoolId);
       if (identity.institutionId) setInstitutionId(identity.institutionId);
       setCallerRole(identity.role || null);
-    }).catch(() => setCallerRole(null)).finally(() => setIdentityLoading(false));
+    }).catch(() => setCallerRole(null)).finally(() => {
+      if (active) setIdentityLoading(false);
+    });
+
+    return () => { active = false; };
   }, [navigate]);
 
   // Subaccount routes are usable only by the authenticated Principal for this institution.
