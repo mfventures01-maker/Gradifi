@@ -242,20 +242,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         initial_classes: ['JSS 1', 'JSS 2', 'JSS 3', 'SS 1', 'SS 2', 'SS 3'],
       });
 
-      const schoolRecord: SchoolType = {
-        id: result.school_id,
-        institution_id: result.institution_id,
-        school_name: result.school_name,
-        school_type: schoolType,
-        email: schoolEmail,
-        phone: schoolPhone,
-        address: schoolAddress,
-        principal_name: principalName,
-        vice_principal_name: vicePrincipalName,
-        logo_url: schoolLogoUrl,
-        url_slug: schoolSlug,
-        created_at: new Date().toISOString(),
-      };
+      const createdSchools = await apiClient.getSchools(result.institution_id);
+      const schoolRecord = createdSchools.find((row) => row.id === result.school_id);
+      if (!schoolRecord) {
+        throw new Error('SCHOOL_CREATE_READBACK_FAILED: the created school was not returned by the authoritative school query.');
+      }
       setSchool(schoolRecord);
 
       // Query authoritative classes
