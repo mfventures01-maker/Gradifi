@@ -1,3 +1,4 @@
+
 -- Remove a legacy demo-results RPC that returns hard-coded student data.
 REVOKE ALL ON FUNCTION public.get_student_results(uuid) FROM PUBLIC,anon,authenticated;
 
