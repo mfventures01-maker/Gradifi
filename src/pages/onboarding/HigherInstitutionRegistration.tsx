@@ -59,7 +59,7 @@ export const HigherInstitutionRegistration: React.FC = () => {
         const result = await onboardingService.completePendingRootRegistration();
         if (!active) return;
         setCreated(result);
-        setMessage(result.credential_recovery_required
+        setMessage(result.pin_not_reissued
           ? "Institution and Dean identity verified. The original Dean Auth identity was reused; no second Dean was created. The existing PIN was not changed."
           : "Institution authority verified and institution created. The initial Dean account has been provisioned.");
       } catch (err) {
@@ -87,7 +87,7 @@ export const HigherInstitutionRegistration: React.FC = () => {
         setMessage(`A verification link has been sent to the ${authorityTitle}'s email address. Only this institutional authority email requires verification. Return here after verifying it to finish institution setup.`);
       } else {
         setCreated(result);
-        setMessage(result.credential_recovery_required
+        setMessage(result.pin_not_reissued
           ? "Institution and Dean identity verified. The original Dean Auth identity was reused; no second Dean was created. The existing PIN was not changed."
           : "Institution created. The initial Dean account has been provisioned.");
       }
