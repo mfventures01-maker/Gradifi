@@ -9,6 +9,50 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
+const SAFE_ONBOARDING_ERRORS = [
+  "ROOT_AUTH_IDENTITY_ALREADY_PROVISIONED",
+  "ROOT_EMAIL_MUST_MATCH_VERIFIED_AUTH_EMAIL",
+  "INITIAL_DEAN_NAME_REQUIRED",
+  "UNSUPPORTED_HIGHER_INSTITUTION_TYPE",
+  "UNSUPPORTED_SCHOOL_INSTITUTION_TYPE",
+  "INSTITUTION_REGISTRATION_NUMBER_EXISTS",
+  "AUTHORITY_AUTH_EMAIL_MISMATCH_OR_UNVERIFIED",
+  "ACTIVE_VC_RECTOR_AUTHORITY_REQUIRED",
+  "ACTIVE_PRINCIPAL_ACTOR_REQUIRED",
+  "PRINCIPAL_PROVISIONER_REQUIRED",
+  "PRINCIPAL_SCHOOL_AUTHORITY_REQUIRED",
+  "CROSS_INSTITUTION_AUTHORITY_DENIED",
+  "CROSS_INSTITUTION_PROVISIONER_DENIED",
+  "CROSS_SCHOOL_AUTHORITY_DENIED",
+  "ROOT_PROVISIONER_ROLE_MISMATCH",
+  "HIGHER_ED_DEAN_PROVISIONER_REQUIRED",
+  "DEAN_ROOT_AUTHORITY_LINK_REQUIRED",
+  "ACTIVE_DEAN_ROOT_LINK_REQUIRED",
+  "NUC_DEPARTMENT_NOT_IN_SELECTED_FACULTY",
+  "DEPARTMENT_NOT_IN_SELECTED_FACULTY",
+  "NUC_DEPARTMENT_NOT_IN_INSTITUTION",
+  "DEPARTMENT_NOT_IN_INSTITUTION",
+  "LECTURER_EMAIL_REQUIRED",
+  "CLASS_NOT_IN_SCHOOL",
+  "STUDENT_LAST_NAME_REQUIRED",
+  "LECTURER_LAST_NAME_REQUIRED",
+  "ACTOR_SCHOOL_REQUIRED",
+  "ACTOR_SCHOOL_OUTSIDE_INSTITUTION",
+  "CROSS_INSTITUTION_DENIED",
+  "CROSS_SCHOOL_DENIED",
+  "ACTOR_ROLE_NOT_ALLOWED_FOR_CALLER",
+  "CORRECT_INSTITUTION_AUTHORITY_REQUIRED",
+  "INVALID_INSTITUTION_ROOT_AUTHORITY",
+  "PROVISIONER_REQUIRED",
+  "PROVISIONER_PROFILE_NOT_FOUND",
+  "UNSUPPORTED_AUTHORITY_ROLE",
+] as const;
+
+const safeOnboardingError = (error: unknown, fallback: string) => {
+  const message = error instanceof Error ? error.message : String(error || "");
+  return SAFE_ONBOARDING_ERRORS.find(code => message.includes(code)) || fallback;
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "METHOD_NOT_ALLOWED" }, 405);
@@ -110,7 +154,7 @@ serve(async (req) => {
       };
       const { data: bootstrapResult, error: bootstrapError } = await admin.rpc(rpcName, rpcArgs);
       if (bootstrapError || !bootstrapResult?.success) {
-        return json({ error: bootstrapError?.message || "ROOT_INSTITUTION_BOOTSTRAP_FAILED" }, 409);
+        return json({ error: safeOnboardingError(bootstrapError, "ROOT_INSTITUTION_BOOTSTRAP_FAILED") }, 409);
       }
       if (action === "bootstrap_higher_institution") {
         const deanName = String(body.dean_name || "").trim();
@@ -123,7 +167,7 @@ serve(async (req) => {
           user_metadata: { actor_type: "dean", institution_id: bootstrapResult.institution_id },
         });
         if (deanAuthError || !deanAuth.user) {
-          return json({ error: deanAuthError?.message || "INITIAL_DEAN_AUTH_CREATE_FAILED", institution_created: true }, 409);
+          return json({ error: "INITIAL_DEAN_AUTH_CREATE_FAILED", institution_created: true }, 409);
         }
         const { data: deanResult, error: deanError } = await admin.rpc("complete_actor_onboarding", {
           p_auth_user_id: deanAuth.user.id,
@@ -154,7 +198,7 @@ serve(async (req) => {
         });
         if (deanError || !deanResult?.success) {
           await admin.auth.admin.deleteUser(deanAuth.user.id);
-          return json({ error: deanError?.message || "INITIAL_DEAN_PROVISIONING_FAILED", institution_created: true }, 409);
+          return json({ error: safeOnboardingError(deanError, "INITIAL_DEAN_PROVISIONING_FAILED"), institution_created: true }, 409);
         }
         return json({ ...bootstrapResult, initial_admin: { ...deanResult, pin } });
       }
@@ -230,7 +274,7 @@ serve(async (req) => {
       email: internalEmail, password: randomPassword, email_confirm: true,
       user_metadata: { actor_type: actorType, institution_id: institutionId, school_id: schoolId },
     });
-    if (createError || !created.user) return json({ error: createError?.message || "AUTH_USER_CREATE_FAILED" }, 400);
+    if (createError || !created.user) return json({ error: "AUTH_USER_CREATE_FAILED" }, 400);
 
     const { data: result, error: provisionError } = await admin.rpc("complete_actor_onboarding", {
       p_auth_user_id: created.user.id,
@@ -262,11 +306,11 @@ serve(async (req) => {
     });
     if (provisionError || !result?.success) {
       await admin.auth.admin.deleteUser(created.user.id);
-      return json({ error: provisionError?.message || "ACTOR_PROVISIONING_FAILED" }, 400);
+      return json({ error: safeOnboardingError(provisionError, "ACTOR_PROVISIONING_FAILED") }, 400);
     }
 
     return json({ ...result, pin: initialPin, authority_user_id: rootAuthorityUserId });
   } catch (error) {
-    return json({ error: error instanceof Error ? error.message : "INTERNAL_ERROR" }, 500);
+    return json({ error: "ONBOARDING_OPERATION_FAILED" }, 500);
   }
 });
