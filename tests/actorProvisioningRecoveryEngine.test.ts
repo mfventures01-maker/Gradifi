@@ -54,7 +54,7 @@ describe("DEAN-RECOVERY-01", () => {
   it("does not replay the Dean insert when the same Auth identity already has a verified Dean actor", () => {
     expect(recovery).toContain("readDean(admin, deanUser.id)");
     expect(recovery).toContain("assertDeanMatches(existing, job, request, rootUser)");
-    expect(recovery).toContain("credential_recovery_required: true");
+    expect(recovery).toContain("pin_not_reissued: true");
   });
 
   it("retains Auth and actor references and prevents a second initial Dean job per institution", () => {
