@@ -26,8 +26,8 @@ interface CreateStudentProps {
 }
 
 export const CreateStudent: React.FC<CreateStudentProps> = ({
-  schoolId = 'sch_demo_01',
-  institutionId = 'inst_demo_01',
+  schoolId = '',
+  institutionId = '',
   onSuccess,
   onNavigateToDashboard,
 }) => {
@@ -47,6 +47,13 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
 
   useEffect(() => {
     async function loadSchoolClasses() {
+      if (!schoolId) {
+        setClasses([]);
+        setClassId('');
+        setError('Authenticated school context is required before student enrollment.');
+        setLoadingClasses(false);
+        return;
+      }
       try {
         setLoadingClasses(true);
         const data = await classService.getClasses(schoolId);
@@ -71,6 +78,7 @@ export const CreateStudent: React.FC<CreateStudentProps> = ({
     setLoading(true);
 
     try {
+      if (!schoolId || !institutionId) throw new Error('SCHOOL_CONTEXT_REQUIRED: select an authenticated school before enrolling a student.');
       if (!firstName.trim()) throw new Error('Student first name is required');
       if (!lastName.trim()) throw new Error('Student last name is required');
       if (!classId) throw new Error('Please select an active class level');
