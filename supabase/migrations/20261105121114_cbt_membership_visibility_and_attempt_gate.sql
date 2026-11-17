@@ -1,3 +1,4 @@
+
 CREATE OR REPLACE FUNCTION public.cbt_teacher_can_access_exam(p_exam_id uuid)
 RETURNS boolean
 LANGUAGE sql
