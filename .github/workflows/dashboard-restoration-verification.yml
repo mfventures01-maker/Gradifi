@@ -1,0 +1,41 @@
+name: Dashboard restoration verification
+
+on:
+  push:
+    branches:
+      - fix/restore-authenticated-school-and-higher-ed-dashboards-2026-11-16
+  pull_request:
+    branches:
+      - fix/wp0-rector-onboarding-contract-baseline-2026-11-16
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-types:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Verify restored application modules
+        if: always()
+        run: |
+          test -f src/features/home/HomePage.tsx
+          test -f src/features/dashboard/DashboardLayout.tsx
+          test -f src/components/AuthGuard.tsx
+      - name: Lint
+        if: always()
+        run: npm run lint
+      - name: TypeScript typecheck
+        if: always()
+        run: npm run typecheck
+      - name: Production build
+        if: always()
+        run: npm run build

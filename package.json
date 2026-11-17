@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "react-example",
   "private": true,
   "version": "0.0.0",
@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

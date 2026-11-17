@@ -64,7 +64,6 @@ export const schoolService = {
       const classInserts = defaultClasses.map(name => ({
         school_id: typedSchool.id,
         name,
-        arm: 'Gold',
       }));
 
       const { data: createdClasses, error: classErr } = await supabase

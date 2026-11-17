@@ -20,6 +20,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
+import { authService } from '../../services/authService';
 import { cbtService } from '../../services/cbtService';
 import { aiGradingService } from '../../services/aiGradingService';
 import { StatsCard } from '../../components/dashboard/StatsCard';
@@ -44,6 +45,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   onNavigateTab,
 }) => {
   const [loading, setLoading] = useState(true);
+  const [activeSchoolId, setActiveSchoolId] = useState<string | undefined>(schoolId);
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState<any>({
     pending_grades_count: 0,
@@ -67,13 +69,25 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const [creatingExam, setCreatingExam] = useState(false);
   const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
 
+  useEffect(() => {
+    let active = true;
+    if (schoolId) {
+      setActiveSchoolId(schoolId);
+      return () => { active = false; };
+    }
+    authService.resolveCurrentIdentity()
+      .then(identity => { if (active) setActiveSchoolId(identity.schoolId || undefined); })
+      .catch(error => console.error('Teacher school context resolution failed:', error));
+    return () => { active = false; };
+  }, [schoolId]);
+
   const loadTeacherData = async () => {
     try {
       setLoading(true);
       const [dashStats, pending, classesRes] = await Promise.all([
-        teacherService.getDashboardStats({ teacherId, schoolId }),
-        teacherService.getPendingGrades({ teacherId, schoolId }),
-        supabase.from('classes').select('id, name, arm').limit(6),
+        teacherService.getDashboardStats({ teacherId, schoolId: activeSchoolId }),
+        teacherService.getPendingGrades({ teacherId, schoolId: activeSchoolId }),
+        supabase.from('classes').select('id, name').eq('school_id', activeSchoolId || '').limit(6),
       ]);
 
       setStats(dashStats);
@@ -101,7 +115,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
   useEffect(() => {
     loadTeacherData();
-  }, [teacherId, schoolId]);
+  }, [teacherId, activeSchoolId]);
 
   const handleCreateExam = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,9 +123,23 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
     try {
       setCreatingExam(true);
+      if (!activeSchoolId) {
+        throw new Error('TEACHER_SCHOOL_CONTEXT_REQUIRED: sign in through an assigned school before creating an exam.');
+      }
+
+      const [classResult, subjectResult] = await Promise.all([
+        supabase.from('classes').select('id').eq('school_id', activeSchoolId).eq('name', examForm.target_class).maybeSingle(),
+        supabase.from('subject_catalog').select('id').eq('name', examForm.subject).maybeSingle(),
+      ]);
+      if (classResult.error) throw classResult.error;
+      if (subjectResult.error) throw subjectResult.error;
+      if (!classResult.data) throw new Error('SELECTED_CLASS_NOT_FOUND: choose a class configured for this school.');
+      if (!subjectResult.data) throw new Error('SELECTED_SUBJECT_NOT_FOUND: choose a subject in the authoritative subject catalog.');
+
       await cbtService.createExam({
-        school_id: schoolId || 'school_demo_01',
-        institution_id: 'inst_default',
+        school_id: activeSchoolId,
+        class_id: classResult.data.id,
+        subject_id: subjectResult.data.id,
         title: examForm.title,
         duration_minutes: Number(examForm.duration_minutes),
         total_marks: Number(examForm.total_marks),

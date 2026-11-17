@@ -13,7 +13,7 @@ import {
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  allowedRoles?: Array<'admin' | 'principal' | 'teacher' | 'student' | 'parent'>;
+  allowedRoles?: string[];
   fallback?: React.ReactNode;
   onSessionResolved?: (session: AuthSessionState) => void;
 }
@@ -217,7 +217,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
               />
             </div>
             <p className="text-[11px] text-slate-400 mt-1">
-              Demo PINs: <span className="font-mono text-slate-600">8942</span> (Principal), <span className="font-mono text-slate-600">1234</span> (Teacher), <span className="font-mono text-slate-600">0000</span> (Student)
+              Enter the PIN issued by your institution.
             </p>
           </div>
 
