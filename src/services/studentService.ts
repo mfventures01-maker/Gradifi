@@ -29,65 +29,27 @@ export const studentService = {
   /**
    * Enroll a new student with backend authoritative student number generation
    */
-  async enrollStudent(params: EnrollStudentParams): Promise<Student> {
-    const { data, error } = await supabase.rpc('enroll_student', {
+  async enrollStudent(params: EnrollStudentParams): Promise<Student & { login_id: string; pin: string; user_id: string }> {
+    const { actorOnboardingService } = await import('./actorOnboardingService');
+    const result = await actorOnboardingService.create({
+      actor_type: 'student',
       institution_id: params.institution_id,
       school_id: params.school_id,
       class_id: params.class_id,
-      first_name: params.first_name,
-      last_name: params.last_name,
+      full_name: `${params.first_name} ${params.last_name}`,
       gender: params.gender,
       date_of_birth: params.date_of_birth,
     });
 
-    if (error || !data) {
-      // Direct table insert fallback with standard ID structure
-      const countRes = await supabase
-        .from('students')
-        .select('*', { count: 'exact', head: true })
-        .eq('school_id', params.school_id);
-      
-      const nextNum = (countRes.count || 0) + 101;
-      const studentNumber = `GRD/2026/${String(nextNum).padStart(3, '0')}`;
+    if (!result.actor_record_id) throw new Error('Student provisioning completed without a student registry record');
 
-      const { data: newStudent, error: insertError } = await supabase
-        .from('students')
-        .insert({
-          institution_id: params.institution_id,
-          school_id: params.school_id,
-          class_id: params.class_id,
-          student_number: studentNumber,
-          first_name: params.first_name,
-          last_name: params.last_name,
-          gender: (params.gender as 'male' | 'female') || 'male',
-          date_of_birth: params.date_of_birth || null,
-        } as any)
-        .select()
-        .single();
+    const { data: student, error } = await supabase
+      .from('students')
+      .select('*')
+      .eq('id', result.actor_record_id)
+      .single();
 
-      if (insertError || !newStudent) throw (insertError || new Error('Failed to enroll student'));
-      return newStudent as Student;
-    }
-
-    const res = data as {
-      student_id: string;
-      student_number: string;
-      class_id: string;
-      enrolled_at: string;
-    };
-
-    return {
-      id: res.student_id,
-      school_id: params.school_id,
-      institution_id: params.institution_id,
-      class_id: res.class_id,
-      student_number: res.student_number,
-      first_name: params.first_name,
-      last_name: params.last_name,
-      gender: (params.gender as 'male' | 'female') || 'male',
-      date_of_birth: params.date_of_birth || null,
-      enrolled_at: res.enrolled_at,
-      created_at: res.enrolled_at,
-    };
-  },
+    if (error || !student) throw (error || new Error('Provisioned student record could not be retrieved'));
+    return { ...student, login_id: result.login_id, pin: result.pin, user_id: result.user_id };
+  }
 };

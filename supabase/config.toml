@@ -1,0 +1,6 @@
+project_id = "ehkmfnaqkdgkjmdxxbwj"
+
+# PIN login starts without a Supabase session. The function performs its own
+# explicit JWT validation for every account-provisioning request.
+[functions.actor-onboarding]
+verify_jwt = false
