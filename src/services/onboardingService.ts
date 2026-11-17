@@ -238,7 +238,6 @@ export const onboardingService = {
     try {
       const { data, error } = await supabase.rpc('initialize_secondary_classes', {
         p_school_id: schoolId,
-        school_id: schoolId,
       });
 
       if (error) throw new Error(`SECONDARY_CLASS_INITIALIZATION_FAILED: ${error.message}`);
@@ -339,9 +338,10 @@ export const onboardingService = {
         .upsert({
           institution_id: institutionId,
           current_step: currentStep,
-          is_completed: isCompleted,
+          completed: isCompleted,
           completed_at: isCompleted ? new Date().toISOString() : null,
-        } as any)
+          updated_at: new Date().toISOString(),
+        } as any, { onConflict: 'institution_id' })
         .select()
         .single();
 
