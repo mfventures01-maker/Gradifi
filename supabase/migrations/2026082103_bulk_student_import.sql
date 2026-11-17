@@ -178,6 +178,5 @@ BEGIN
         'results', v_results
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.bulk_enroll_students(JSONB, UUID, UUID) TO authenticated;
+$$
+GRANT EXECUTE ON FUNCTION public.bulk_enroll_students(JSONB, UUID, UUID) TO authenticated
