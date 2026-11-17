@@ -133,7 +133,7 @@ serve(async (req) => {
 
     if (action === "bootstrap_higher_institution") {
       try {
-        const result = await provisionInitialDean(admin, callerData.user, body);
+        const result = await provisionInitialDean(admin, callerData.user, body, safeOnboardingError);
         return json(result);
       } catch (error) {
         return json({
