@@ -138,7 +138,6 @@ serve(async (req) => {
       } catch (error) {
         return json({
           error: safeOnboardingError(error, "INITIAL_DEAN_PROVISIONING_FAILED"),
-          institution_created: true,
           recovery_available: true,
         }, 409);
       }
