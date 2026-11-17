@@ -1,3 +1,4 @@
+
 create or replace function public.submit_cbt_answer(
   p_attempt_id uuid,
   p_question_id uuid,
