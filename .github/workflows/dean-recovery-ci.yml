@@ -40,6 +40,9 @@ jobs:
           tests/actorProvisioningRecoveryEngine.test.ts
           tests/actorProvisioningRecoverySchema.test.ts
 
+      - name: Build server runtime for API type resolution
+        run: npm run build:server
+
       - name: Typecheck client and server
         run: npm run typecheck
 
