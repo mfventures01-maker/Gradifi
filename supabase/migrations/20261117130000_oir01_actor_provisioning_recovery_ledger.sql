@@ -10,8 +10,8 @@ create table if not exists public.actor_provisioning_jobs (
   requested_by_user_id uuid not null references auth.users(id) on delete restrict,
   root_authority_user_id uuid not null references auth.users(id) on delete restrict,
   actor_type text not null,
-  target_auth_user_id uuid references auth.users(id) on delete set null,
-  identity_actor_id uuid references public.identity_actors(id) on delete set null,
+  target_auth_user_id uuid references auth.users(id) on delete restrict,
+  identity_actor_id uuid references public.identity_actors(id) on delete restrict,
   status text not null default 'pending_auth',
   stage text not null default 'auth',
   attempt_count integer not null default 0,
@@ -40,6 +40,11 @@ create table if not exists public.actor_provisioning_jobs (
       or (status <> 'active' and completed_at is null))
 );
 
+-- The initial Dean is a single institution bootstrap identity. Retries must reuse its job.
+create unique index if not exists actor_provisioning_jobs_one_initial_dean_per_institution_idx
+  on public.actor_provisioning_jobs (institution_id)
+  where actor_type = 'dean';
+
 create index if not exists actor_provisioning_jobs_institution_status_idx
   on public.actor_provisioning_jobs (institution_id, status, updated_at desc);
 create index if not exists actor_provisioning_jobs_requester_idx
@@ -52,7 +57,7 @@ create index if not exists actor_provisioning_jobs_identity_actor_idx
   where identity_actor_id is not null;
 
 comment on table public.actor_provisioning_jobs is
-  'Trusted server-only idempotency and recovery ledger for institution actor provisioning. Never stores passwords, PINs, hashes or tokens.';
+  'Trusted server-only idempotency and recovery ledger for institution actor provisioning. Never stores passwords, PINs, hashes or tokens. The Auth identity reference is retained and cannot be deleted while the recovery job exists.';
 comment on column public.actor_provisioning_jobs.request_payload is
   'Allowlisted non-secret provisioning fields required to resume the same request. Readable only by trusted server operations.';
 comment on column public.actor_provisioning_jobs.request_fingerprint is
