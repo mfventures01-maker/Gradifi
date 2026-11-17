@@ -91,10 +91,8 @@ BEGIN
         'message', 'VP created successfully. Share the PIN with the user.'
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.create_vp(UUID, UUID, TEXT, TEXT, TEXT) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.create_vp(UUID, UUID, TEXT, TEXT, TEXT) TO authenticated
 -- 2. create_bursar RPC
 CREATE OR REPLACE FUNCTION public.create_bursar(
     p_school_id UUID,
@@ -183,10 +181,8 @@ BEGIN
         'message', 'Bursar created successfully. Share the PIN with the user.'
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.create_bursar(UUID, UUID, TEXT, TEXT, TEXT) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.create_bursar(UUID, UUID, TEXT, TEXT, TEXT) TO authenticated
 -- 3. get_vp_dashboard_stats RPC
 CREATE OR REPLACE FUNCTION public.get_vp_dashboard_stats(
     p_school_id UUID DEFAULT NULL
@@ -228,10 +224,8 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     RETURN jsonb_build_object('error', SQLERRM);
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.get_vp_dashboard_stats(UUID) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.get_vp_dashboard_stats(UUID) TO authenticated
 -- 4. get_bursar_dashboard_stats RPC
 CREATE OR REPLACE FUNCTION public.get_bursar_dashboard_stats(
     p_school_id UUID DEFAULT NULL
@@ -256,6 +250,5 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     RETURN jsonb_build_object('error', SQLERRM);
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.get_bursar_dashboard_stats(UUID) TO authenticated;
+$$
+GRANT EXECUTE ON FUNCTION public.get_bursar_dashboard_stats(UUID) TO authenticated
