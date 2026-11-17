@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { onboardingService, CreateInstitutionAccountResponse } from "../../services/onboardingService";
+import { authService } from "../../services/authService";
 
 type HigherInstitutionType = "university" | "polytechnic" | "college_of_education";
 
@@ -29,25 +30,44 @@ export const HigherInstitutionRegistration: React.FC = () => {
   const authorityTitle = form.institution_type === "university" ? "Vice-Chancellor" : "Rector";
 
   useEffect(() => {
-    const pending = localStorage.getItem("sefaes.pending-root-onboarding");
-    if (!pending) return;
-    try {
-      const pendingAction = JSON.parse(pending).action;
-      if (pendingAction !== "bootstrap_higher_institution") {
+    let active = true;
+    const resumePendingRegistration = async () => {
+      let pendingAction: string | null = null;
+      const raw = localStorage.getItem("sefaes.pending-root-onboarding");
+      if (raw) {
+        try {
+          pendingAction = JSON.parse(raw).action || null;
+        } catch {
+          localStorage.removeItem("sefaes.pending-root-onboarding");
+        }
+      }
+      if (!pendingAction) {
+        try {
+          const user = await authService.getCurrentUser();
+          pendingAction = user?.user_metadata?.requested_root_action || null;
+        } catch {
+          // No active session yet. The user can return after confirming email.
+        }
+      }
+      if (pendingAction === "bootstrap_school_institution") {
         navigate("/onboarding", { replace: true });
         return;
       }
-      onboardingService.completePendingRootRegistration()
-        .then((result) => {
-          setCreated(result);
-          setMessage("Institution authority verified and institution created. The initial Dean account has been provisioned.");
-        })
-        .catch((err) => {
-          if (err instanceof Error && err.message !== "VERIFIED_ROOT_SESSION_REQUIRED") setError(err.message);
-        });
-    } catch {
-      setError("The pending higher-institution registration could not be read. Restart registration if it is no longer valid.");
-    }
+      if (pendingAction !== "bootstrap_higher_institution") return;
+
+      try {
+        const result = await onboardingService.completePendingRootRegistration();
+        if (!active) return;
+        setCreated(result);
+        setMessage("Institution authority verified and institution created. The initial Dean account has been provisioned.");
+      } catch (err) {
+        if (active && err instanceof Error && err.message !== "VERIFIED_ROOT_SESSION_REQUIRED") {
+          setError(err.message);
+        }
+      }
+    };
+    void resumePendingRegistration();
+    return () => { active = false; };
   }, [navigate]);
 
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
