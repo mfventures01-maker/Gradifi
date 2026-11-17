@@ -1,4 +1,3 @@
--- Close anonymous school class/subject provisioning and student-number sequence access.
 begin;
 
 create or replace function public.initialize_class_subjects(p_school_id uuid)
@@ -64,9 +63,6 @@ $function$;
 revoke all on function public.initialize_class_subjects(uuid) from public, anon;
 grant execute on function public.initialize_class_subjects(uuid) to authenticated, service_role;
 
--- Student-number generation mutates a per-school sequence and is an internal
--- server operation, not a public RPC. The function owner can still invoke it
--- from trusted trigger/SECURITY DEFINER code.
 revoke all on function public.generate_student_number(uuid) from public, anon, authenticated;
 grant execute on function public.generate_student_number(uuid) to service_role;
 
