@@ -2,14 +2,14 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
-const migration = read("../supabase/migrations/20261116120000_vc_rector_higher_ed_authority.sql");
+const migration = read("../supabase/migrations/20261116122851_vc_rector_higher_ed_authority.sql");
 const edge = read("../supabase/functions/actor-onboarding/index.ts");
 const deanRecovery = read("../supabase/functions/actor-onboarding/dean-recovery.ts");
-const provisionerMigration = read("../supabase/migrations/20261116193000_bind_actor_provisioning_to_actual_authority.sql");
+const provisionerMigration = read("../supabase/migrations/20261116181907_bind_actor_provisioning_to_actual_authority.sql");
 const registration = read("../src/pages/onboarding/HigherInstitutionRegistration.tsx");
 const higherEdAdmin = read("../src/pages/onboarding/HigherEducationOnboarding.tsx");
-const higherEdStudentMigration = read("../supabase/migrations/20261116160000_higher_ed_student_class_optional.sql");
-const deterministicDepartmentsMigration = read("../supabase/migrations/20261116170000_deterministic_hod_adviser_departments.sql");
+const higherEdStudentMigration = read("../supabase/migrations/20261116165356_higher_ed_student_class_optional.sql");
+const deterministicDepartmentsMigration = read("../supabase/migrations/20261116165351_deterministic_hod_adviser_departments.sql");
 const higherEdDashboard = read("../src/pages/higher-education/HigherEducationDashboard.tsx");
 const authGuard = read("../src/components/AuthGuard.tsx");
 const actorService = read("../src/services/actorOnboardingService.ts");
