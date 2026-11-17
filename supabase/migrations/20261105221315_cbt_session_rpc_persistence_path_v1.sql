@@ -1,3 +1,4 @@
+
 -- Add the RPC-backed CBT session read/persistence path without revoking
 -- authenticated table writes yet. Positive runtime validation requires a
 -- real published exam with immutable question snapshots and an active attempt.
