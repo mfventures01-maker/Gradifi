@@ -143,8 +143,10 @@ export const HigherInstitutionRegistration: React.FC = () => {
   };
 
   const submit = async () => {
-    const validation = validateStep(1) || validateStep(2);
-    if (validation) { setError(validation); setStep(validation.includes("institution") ? 1 : 2); return; }
+    const institutionValidation = validateStep(1);
+    const authorityValidation = validateStep(2);
+    if (institutionValidation) { setError(institutionValidation); setStep(1); return; }
+    if (authorityValidation) { setError(authorityValidation); setStep(2); return; }
     setLoading(true);
     setError("");
     setMessage("");
