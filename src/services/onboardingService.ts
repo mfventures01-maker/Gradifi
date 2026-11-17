@@ -37,7 +37,16 @@ export interface CreateInstitutionAccountResponse {
   institution_path?: string;
   authority_role?: "vice_chancellor" | "rector";
   authority_title?: "Vice-Chancellor" | "Rector";
-  initial_admin?: { login_id: string; pin: string; full_name: string; actor_type: "dean" };
+  initial_admin?: {
+    login_id: string;
+    pin: string | null;
+    full_name: string;
+    actor_type: "dean";
+    user_id?: string;
+    profile_id?: string;
+  };
+  provisioning?: { job_id: string; status: string; recovered: boolean };
+  credential_recovery_required?: boolean;
 }
 
 export interface HigherInstitutionFormInput {
@@ -264,10 +273,14 @@ export const onboardingService = {
       authority_title: data.authority_title,
       initial_admin: data.initial_admin ? {
         login_id: data.initial_admin.login_id,
-        pin: data.initial_admin.pin,
+        pin: data.initial_admin.pin ?? null,
         full_name: data.initial_admin.full_name,
         actor_type: "dean",
+        user_id: data.initial_admin.user_id,
+        profile_id: data.initial_admin.profile_id,
       } : undefined,
+      provisioning: data.provisioning,
+      credential_recovery_required: data.credential_recovery_required === true,
     };
   },
 
