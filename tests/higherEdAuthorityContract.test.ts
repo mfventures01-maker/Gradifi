@@ -5,6 +5,7 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf
 const migration = read("../supabase/migrations/20261116122851_vc_rector_higher_ed_authority.sql");
 const edge = read("../supabase/functions/actor-onboarding/index.ts");
 const deanRecovery = read("../supabase/functions/actor-onboarding/dean-recovery.ts");
+const subordinateRecovery = read("../supabase/functions/actor-onboarding/subordinate-recovery.ts");
 const provisionerMigration = read("../supabase/migrations/20261116181907_bind_actor_provisioning_to_actual_authority.sql");
 const registration = read("../src/pages/onboarding/HigherInstitutionRegistration.tsx");
 const higherEdAdmin = read("../src/pages/onboarding/HigherEducationOnboarding.tsx");
@@ -51,7 +52,8 @@ describe("higher-education VC/Rector authority contract", () => {
 
   it("binds every higher-ed subordinate to the VC/Rector authority user", () => {
     expect(edge).toContain("rootAuthorityUserId = deanActor.authority_user_id");
-    expect(edge).toContain("p_authority_user_id: rootAuthorityUserId");
+    expect(subordinateRecovery).toContain("p_authority_user_id: input.rootAuthorityUserId");
+    expect(edge).toContain("rootAuthorityUserId,");
     expect(migration).toContain("set authority_user_id = p_authority_user_id");
   });
 
