@@ -9,11 +9,9 @@ ALTER TABLE public.profiles
 ADD COLUMN IF NOT EXISTS pin_hash TEXT,
 ADD COLUMN IF NOT EXISTS pin_changed_at TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS pin_requires_change BOOLEAN DEFAULT false,
-ADD COLUMN IF NOT EXISTS phone TEXT;
-
+ADD COLUMN IF NOT EXISTS phone TEXT
 -- 2. Create index for phone lookups (if not exists)
-CREATE INDEX IF NOT EXISTS idx_profiles_phone ON public.profiles(phone);
-
+CREATE INDEX IF NOT EXISTS idx_profiles_phone ON public.profiles(phone)
 -- 3. Create PIN change function
 CREATE OR REPLACE FUNCTION public.set_pin(
     p_user_id UUID,
@@ -79,13 +77,10 @@ BEGIN
         'requires_change', p_force_change
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.set_pin(UUID, TEXT, BOOLEAN) TO authenticated;
-
+$$
+GRANT EXECUTE ON FUNCTION public.set_pin(UUID, TEXT, BOOLEAN) TO authenticated
 -- 4. Update auth_pin_login to use hashed PINs
-DROP FUNCTION IF EXISTS public.auth_pin_login(text, text);
-
+DROP FUNCTION IF EXISTS public.auth_pin_login(text, text)
 CREATE OR REPLACE FUNCTION public.auth_pin_login(
     p_identifier TEXT,
     p_pin TEXT
@@ -179,11 +174,9 @@ BEGIN
         'requires_change', v_profile.pin_requires_change
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.auth_pin_login(TEXT, TEXT) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.auth_pin_login(TEXT, TEXT) TO anon;
-
+$$
+GRANT EXECUTE ON FUNCTION public.auth_pin_login(TEXT, TEXT) TO authenticated
+GRANT EXECUTE ON FUNCTION public.auth_pin_login(TEXT, TEXT) TO anon
 -- 5. Create PIN reset function (for Principal/Bursar/VP)
 CREATE OR REPLACE FUNCTION public.reset_user_pin(
     p_user_id UUID,
@@ -238,6 +231,5 @@ BEGIN
         'requires_change', true
     );
 END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.reset_user_pin(UUID, UUID) TO authenticated;
+$$
+GRANT EXECUTE ON FUNCTION public.reset_user_pin(UUID, UUID) TO authenticated
