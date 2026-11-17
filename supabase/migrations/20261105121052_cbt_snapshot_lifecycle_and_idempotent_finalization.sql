@@ -1,3 +1,4 @@
+
 -- Freeze published CBT papers and route scoring/finalization through one path.
 CREATE OR REPLACE FUNCTION public.cbt_reject_published_question_mutation()
 RETURNS trigger
