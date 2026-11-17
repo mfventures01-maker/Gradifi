@@ -63,12 +63,8 @@ describe('HOEOS G5.7 retrieved content validation boundary', () => {
       contentBuffer: malformed.buffer,
       contentLength: malformed.byteLength
     }));
-    expect(['CONTENT_MALFORMED', 'CONTENT_VALID']).toContain(result.status);
-    if (result.status === 'CONTENT_VALID') {
-      expect(result.canonicalDocument?.rawText.trim().length).toBeGreaterThan(0);
-    } else {
-      expect(result.errorMessage).toBeTruthy();
-    }
+    expect(result.status).toBe('CONTENT_MALFORMED');
+    expect(result.errorMessage).toBeTruthy();
   });
 
   it('rejects unsuccessful source retrieval', async () => {
