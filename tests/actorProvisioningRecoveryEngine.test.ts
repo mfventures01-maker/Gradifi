@@ -21,7 +21,7 @@ describe("DEAN-RECOVERY-01", () => {
     expect(start).toBeGreaterThanOrEqual(0);
     expect(end).toBeGreaterThan(start);
     const handler = edge.slice(start, end);
-    expect(handler).toContain("provisionInitialDean(admin, callerData.user, body)");
+    expect(handler).toContain("provisionInitialDean(admin, callerData.user, body, safeOnboardingError)");
     expect(handler).not.toContain("deleteUser");
   });
 
