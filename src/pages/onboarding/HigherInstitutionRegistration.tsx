@@ -251,7 +251,7 @@ export const HigherInstitutionRegistration: React.FC = () => {
               <dl className="grid gap-3 rounded-xl bg-slate-50 p-4 text-sm sm:grid-cols-2">
                 {[
                   ["Institution", draft.institution_name],
-                  ["Type", draft.institution_type.replaceAll("_", " ")],
+                  ["Type", draft.institution_type.replace(/_/g, " ")],
                   ["Registration number", draft.registration_number || "Not supplied"],
                   ["Address", draft.address],
                   ["Country", draft.country || "Nigeria"],
