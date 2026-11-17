@@ -1,3 +1,4 @@
+
 revoke all on function public.cbt_prepare_attempt() from public, anon, authenticated;
 revoke all on function public.cbt_guard_session_update() from public, anon, authenticated;
 revoke all on function public.cbt_validate_session_snapshot() from public, anon, authenticated;
