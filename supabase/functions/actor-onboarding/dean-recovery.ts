@@ -161,7 +161,12 @@ const finishJob = async (admin: any, jobId: string, actorId: string) => {
   if (error) throw new Error("DEAN_RECOVERY_COMPLETION_PERSIST_FAILED");
 };
 
-export async function provisionInitialDean(admin: any, rootUser: User, body: Record<string, unknown>) {
+export async function provisionInitialDean(
+  admin: any,
+  rootUser: User,
+  body: Record<string, unknown>,
+  safeError: (error: unknown, fallback: string) => string,
+) {
   if (!rootUser.email || !rootUser.email_confirmed_at) throw new Error("VERIFIED_ROOT_EMAIL_REQUIRED");
   const request = {
     institution_name: text(body.institution_name),
@@ -204,7 +209,7 @@ export async function provisionInitialDean(admin: any, rootUser: User, body: Rec
     });
     if (bootstrapError || !bootstrapped?.success) {
       institution = await resolveRoot(admin, rootUser, request);
-      if (!institution) throw new Error("ROOT_INSTITUTION_BOOTSTRAP_FAILED");
+      if (!institution) throw new Error(safeError(bootstrapError, "ROOT_INSTITUTION_BOOTSTRAP_FAILED"));
     } else {
       institution = await resolveRoot(admin, rootUser, request);
       if (!institution || institution.institution_id !== bootstrapped.institution_id) {
@@ -353,7 +358,7 @@ export async function provisionInitialDean(admin: any, rootUser: User, body: Rec
       last_error_code: "INITIAL_DEAN_PROVISIONING_FAILED",
       updated_at: new Date().toISOString(),
     }).eq("id", job.id);
-    throw new Error("INITIAL_DEAN_PROVISIONING_FAILED");
+    throw new Error(safeError(provisionError, "INITIAL_DEAN_PROVISIONING_FAILED"));
   }
 
   if (!after.profile || !after.actor || !assertDeanMatches(after, job, request, rootUser)) {
