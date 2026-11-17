@@ -6,6 +6,12 @@
 import { supabase } from '../lib/supabase';
 import { CbtExam, CbtQuestion, CbtAttempt } from '../contracts/schema';
 
+type CbtQuestionWithAnswerKey = CbtQuestion & {
+  options?: unknown;
+  correct_option?: string | null;
+  explanation?: string | null;
+};
+
 export const cbtService = {
   /**
    * Fetch all exams for a school
@@ -108,8 +114,14 @@ export const cbtService = {
     examId: string,
     studentId: string,
     answers: Record<string, string>,
-    questions: CbtQuestion[]
+    questions: CbtQuestionWithAnswerKey[]
   ): Promise<{ attempt: CbtAttempt; detailed_results: any[] }> {
+    // The live cbt_questions table currently has no answer-key/options columns.
+    // Fail closed before any writes rather than silently awarding zero marks or inventing answers.
+    if (questions.some(q => typeof q.correct_option !== 'string' || !q.correct_option.trim())) {
+      throw new Error('CBT_ANSWER_KEY_SCHEMA_NOT_CONFIGURED: answer keys are not persisted in the current cbt_questions schema. No attempt was written.');
+    }
+
     let totalScore = 0;
     const detailedResults: any[] = [];
 
@@ -122,13 +134,13 @@ export const cbtService = {
       detailedResults.push({
         question_id: q.id,
         question_text: q.question_text,
-        options: q.options,
+        options: q.options ?? null,
         student_answer: studentAnswer,
         correct_answer: q.correct_option,
         is_correct: isCorrect,
         marks_obtained: marksObtained,
         max_marks: q.marks,
-        explanation: q.explanation,
+        explanation: q.explanation ?? null,
       });
     }
 
