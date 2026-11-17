@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { provisionInitialDean } from "./dean-recovery.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -10,6 +11,33 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
 const SAFE_ONBOARDING_ERRORS = [
+  "DEAN_AUTH_LOOKUP_FAILED",
+  "DEAN_AUTH_LOOKUP_LIMIT_REACHED",
+  "ROOT_IDENTITY_LOOKUP_FAILED",
+  "ROOT_IDENTITY_PARTIAL_STATE",
+  "ROOT_AUTHORITY_IDENTITY_CONFLICT",
+  "ROOT_INSTITUTION_NOT_FOUND",
+  "ROOT_INSTITUTION_REQUEST_MISMATCH",
+  "ROOT_INSTITUTION_CAMPUS_NOT_FOUND",
+  "DEAN_RECOVERY_LEDGER_READ_FAILED",
+  "DEAN_REQUEST_FINGERPRINT_CONFLICT",
+  "DEAN_PROVISIONING_ALREADY_CLAIMED",
+  "DEAN_RECOVERY_LEDGER_CREATE_FAILED",
+  "DEAN_IDENTITY_LOOKUP_FAILED",
+  "DEAN_IDENTITY_PARTIAL_STATE",
+  "DEAN_IDENTITY_CONFLICT",
+  "DEAN_RECOVERY_COMPLETION_PERSIST_FAILED",
+  "DEAN_AUTH_IDENTITY_MISSING",
+  "DEAN_AUTH_IDENTITY_CONFLICT",
+  "DEAN_AUTH_CREATE_FAILED",
+  "DEAN_AUTH_LINK_PERSIST_FAILED",
+  "DEAN_ACTIVE_JOB_IDENTITY_MISSING",
+  "DEAN_RECOVERY_LEDGER_UPDATE_FAILED",
+  "DEAN_POST_PROVISION_VERIFICATION_FAILED",
+  "HIGHER_INSTITUTION_REQUIRED_FIELDS_MISSING",
+  "ROOT_INSTITUTION_BOOTSTRAP_RECEIPT_MISMATCH",
+  "ROOT_AUTHORITY_ROLE_MISMATCH",
+  "DEAN_PROVISIONING_REQUIRES_ROOT_BOOTSTRAP",
   "ROOT_AUTH_IDENTITY_ALREADY_PROVISIONED",
   "ROOT_EMAIL_MUST_MATCH_VERIFIED_AUTH_EMAIL",
   "INITIAL_DEAN_NAME_REQUIRED",
@@ -102,9 +130,22 @@ serve(async (req) => {
     const { data: callerData, error: callerError } = await caller.auth.getUser();
     if (callerError || !callerData.user) return json({ error: "AUTH_REQUIRED" }, 401);
 
+    if (action === "bootstrap_higher_institution") {
+      try {
+        const result = await provisionInitialDean(admin, callerData.user, body);
+        return json(result);
+      } catch (error) {
+        return json({
+          error: safeOnboardingError(error, "INITIAL_DEAN_PROVISIONING_FAILED"),
+          institution_created: true,
+          recovery_available: true,
+        }, 409);
+      }
+    }
+
     // Root institution creation is completed by the authenticated Principal/Dean
     // after email verification. The browser never supplies an Auth UID.
-    if (action === "bootstrap_school_institution" || action === "bootstrap_higher_institution") {
+    if (action === "bootstrap_school_institution") {
       const rootUser = callerData.user;
       if (!rootUser.email || !rootUser.email_confirmed_at) {
         return json({ error: "VERIFIED_ROOT_EMAIL_REQUIRED" }, 403);
@@ -156,52 +197,6 @@ serve(async (req) => {
       if (bootstrapError || !bootstrapResult?.success) {
         return json({ error: safeOnboardingError(bootstrapError, "ROOT_INSTITUTION_BOOTSTRAP_FAILED") }, 409);
       }
-      if (action === "bootstrap_higher_institution") {
-        const deanName = String(body.dean_name || "").trim();
-        const pin = String((crypto.getRandomValues(new Uint32Array(1))[0] % 900000) + 100000);
-        const internalEmail = `${crypto.randomUUID()}@accounts.sefaes.invalid`;
-        const randomPassword = Array.from(crypto.getRandomValues(new Uint8Array(48)),
-          b => b.toString(16).padStart(2, "0")).join("");
-        const { data: deanAuth, error: deanAuthError } = await admin.auth.admin.createUser({
-          email: internalEmail, password: randomPassword, email_confirm: true,
-          user_metadata: { actor_type: "dean", institution_id: bootstrapResult.institution_id },
-        });
-        if (deanAuthError || !deanAuth.user) {
-          return json({ error: "INITIAL_DEAN_AUTH_CREATE_FAILED", institution_created: true }, 409);
-        }
-        const { data: deanResult, error: deanError } = await admin.rpc("complete_actor_onboarding", {
-          p_auth_user_id: deanAuth.user.id,
-          p_authority_user_id: rootUser.id,
-          p_provisioned_by_user_id: rootUser.id,
-          p_expected_authority_role: bootstrapResult.authority_role,
-          p_actor_type: "dean",
-          p_school_id: null,
-          p_institution_id: bootstrapResult.institution_id,
-          p_full_name: deanName,
-          p_pin: pin,
-          p_email: null,
-          p_phone: body.dean_phone ? String(body.dean_phone) : null,
-          p_student_id: null,
-          p_class_id: null,
-          p_class_subject_ids: null,
-          p_gender: null,
-          p_date_of_birth: null,
-          p_relationship: "Parent",
-          p_is_primary: true,
-          p_faculty_id: null,
-          p_department_id: null,
-          p_title: null,
-          p_rank: null,
-          p_specialization: null,
-          p_is_graduate_student_supervisor: false,
-          p_max_students: null,
-        });
-        if (deanError || !deanResult?.success) {
-          await admin.auth.admin.deleteUser(deanAuth.user.id);
-          return json({ error: safeOnboardingError(deanError, "INITIAL_DEAN_PROVISIONING_FAILED"), institution_created: true }, 409);
-        }
-        return json({ ...bootstrapResult, initial_admin: { ...deanResult, pin } });
-      }
       return json(bootstrapResult);
     }
 
@@ -211,6 +206,7 @@ serve(async (req) => {
     if (callerProfileError || !callerProfile) return json({ error: "CALLER_PROFILE_NOT_FOUND" }, 403);
 
     const actorType = String(body.actor_type || "");
+    if (actorType === "dean") return json({ error: "DEAN_PROVISIONING_REQUIRES_ROOT_BOOTSTRAP" }, 409);
     const schoolRoles = ["vice_principal", "bursar", "teacher", "student", "parent"];
     const higherEdRoles = ["dean", "hod", "adviser", "lecturer", "student"];
     if (![...schoolRoles, ...higherEdRoles].includes(actorType)) {
