@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { provisionInitialDean } from "./dean-recovery.ts";
+import { provisionSubordinateActor } from "./subordinate-recovery.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -35,6 +36,19 @@ const SAFE_ONBOARDING_ERRORS = [
   "DEAN_ACTIVE_JOB_IDENTITY_MISSING",
   "DEAN_RECOVERY_LEDGER_UPDATE_FAILED",
   "DEAN_POST_PROVISION_VERIFICATION_FAILED",
+  "ACTOR_RECOVERY_LEDGER_READ_FAILED",
+  "ACTOR_RECOVERY_LEDGER_CREATE_FAILED",
+  "ACTOR_REQUEST_FINGERPRINT_CONFLICT",
+  "ACTOR_AUTH_LOOKUP_FAILED",
+  "ACTOR_AUTH_IDENTITY_MISSING",
+  "ACTOR_AUTH_CREATE_FAILED",
+  "ACTOR_AUTH_LINK_PERSIST_FAILED",
+  "ACTOR_IDENTITY_LOOKUP_FAILED",
+  "ACTOR_IDENTITY_PARTIAL_STATE",
+  "ACTOR_IDENTITY_CONFLICT",
+  "ACTOR_ACTIVE_JOB_IDENTITY_MISSING",
+  "ACTOR_RECOVERY_COMPLETION_PERSIST_FAILED",
+  "ACTOR_POST_PROVISION_VERIFICATION_FAILED",
   "HIGHER_INSTITUTION_REQUIRED_FIELDS_MISSING",
   "ROOT_INSTITUTION_BOOTSTRAP_RECEIPT_MISMATCH",
   "ROOT_AUTHORITY_ROLE_MISMATCH",
@@ -259,53 +273,23 @@ serve(async (req) => {
       if (!campus) return json({ error: "ACTOR_SCHOOL_OUTSIDE_INSTITUTION" }, 403);
     }
 
-    const pinLength = ["student", "parent"].includes(actorType) ? 4 : 6;
-    const randomValue = crypto.getRandomValues(new Uint32Array(1))[0];
-    const initialPin = String((randomValue % (pinLength === 4 ? 9000 : 900000)) + (pinLength === 4 ? 1000 : 100000));
-    const internalEmail = `${crypto.randomUUID()}@accounts.sefaes.invalid`;
-    const randomPassword = Array.from(crypto.getRandomValues(new Uint8Array(48)),
-      b => b.toString(16).padStart(2, "0")).join("");
-
-    const { data: created, error: createError } = await admin.auth.admin.createUser({
-      email: internalEmail, password: randomPassword, email_confirm: true,
-      user_metadata: { actor_type: actorType, institution_id: institutionId, school_id: schoolId },
-    });
-    if (createError || !created.user) return json({ error: "AUTH_USER_CREATE_FAILED" }, 400);
-
-    const { data: result, error: provisionError } = await admin.rpc("complete_actor_onboarding", {
-      p_auth_user_id: created.user.id,
-      p_authority_user_id: rootAuthorityUserId,
-      p_provisioned_by_user_id: callerData.user.id,
-      p_expected_authority_role: expectedAuthorityRole,
-      p_actor_type: actorType,
-      p_school_id: schoolId,
-      p_institution_id: institutionId,
-      p_full_name: String(body.full_name || ""),
-      p_pin: initialPin,
-      p_email: body.email ? String(body.email) : null,
-      p_phone: body.phone ? String(body.phone) : null,
-      p_student_id: body.student_id || null,
-      p_class_id: body.class_id || null,
-      p_class_subject_ids: Array.isArray(body.class_subject_ids)
-        ? body.class_subject_ids : (body.class_subject_id ? [body.class_subject_id] : null),
-      p_gender: body.gender || null,
-      p_date_of_birth: body.date_of_birth || null,
-      p_relationship: body.relationship || "Parent",
-      p_is_primary: body.is_primary !== false,
-      p_faculty_id: body.faculty_id || null,
-      p_department_id: body.department_id || null,
-      p_title: body.title || null,
-      p_rank: body.rank || null,
-      p_specialization: body.specialization || null,
-      p_is_graduate_student_supervisor: body.is_graduate_student_supervisor === true,
-      p_max_students: Number.isInteger(body.max_students) ? body.max_students : null,
-    });
-    if (provisionError || !result?.success) {
-      await admin.auth.admin.deleteUser(created.user.id);
-      return json({ error: safeOnboardingError(provisionError, "ACTOR_PROVISIONING_FAILED") }, 400);
+    try {
+      const result = await provisionSubordinateActor(admin, {
+        callerUserId: callerData.user.id,
+        rootAuthorityUserId,
+        expectedAuthorityRole,
+        actorType,
+        institutionId,
+        schoolId,
+        body,
+      });
+      return json(result);
+    } catch (error) {
+      return json({
+        error: safeOnboardingError(error, "ACTOR_PROVISIONING_FAILED"),
+        recovery_available: true,
+      }, 409);
     }
-
-    return json({ ...result, pin: initialPin, authority_user_id: rootAuthorityUserId });
   } catch (error) {
     return json({ error: "ONBOARDING_OPERATION_FAILED" }, 500);
   }
