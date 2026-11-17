@@ -113,7 +113,11 @@ export async function extractPdfAdapter(
       warnings: [errorMessage],
       error: {
         code: 'TEXT_EXTRACTION_UNAVAILABLE',
-        message: errorMessage
+        message: errorMessage === 'TEXT_EXTRACTION_UNAVAILABLE'
+          ? 'Text extraction unavailable. PDF contains no legible text or OCR failed.'
+          : errorMessage === 'PDF_RASTERIZATION_FAILURE'
+            ? 'Text extraction unavailable. PDF could not be rasterized for OCR.'
+            : errorMessage
       }
     };
   }

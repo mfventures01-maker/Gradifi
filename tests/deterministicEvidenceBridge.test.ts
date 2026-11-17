@@ -1,226 +1,121 @@
 /**
  * GRADIFI HOEOS G5.9 - DETERMINISTIC EVIDENCE BRIDGE TEST SUITE
+ * Uses a checked-in PDF fixture, with mocked external retrieval only.
  */
-
+import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import { deterministicEvidenceBridge } from '../src/services/verify/deterministicEvidenceBridge';
 import { UnpaywallMetadataResult } from '../src/services/verify/types';
 
+function fixturePdf(): ArrayBuffer {
+  const bytes = fs.readFileSync(path.resolve(process.cwd(), 'tests/fixtures/ingestion/quantum_federated_learning_paper.pdf'));
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+}
+
 function createMockFetch(responses: Record<string, { status: number; contentType?: string; body?: ArrayBuffer | string }>) {
   return async (input: RequestInfo | URL): Promise<Response> => {
-    const urlStr = typeof input === 'string' ? input : input.toString();
-    const mock = responses[urlStr];
-
-    if (!mock) {
-      return new Response('Not found', { status: 404, statusText: 'Not Found' });
-    }
-
+    const url = typeof input === 'string' ? input : input.toString();
+    const mock = responses[url];
+    if (!mock) return new Response('Not found', { status: 404 });
     const headers = new Headers();
-    if (mock.contentType) {
-      headers.set('content-type', mock.contentType);
-    }
-
-    let bodyData: ArrayBuffer;
-    if (typeof mock.body === 'string') {
-      bodyData = new TextEncoder().encode(mock.body).buffer;
-    } else if (mock.body instanceof ArrayBuffer) {
-      bodyData = mock.body;
-    } else {
-      bodyData = new ArrayBuffer(0);
-    }
-
-    headers.set('content-length', bodyData.byteLength.toString());
-
-    return new Response(bodyData, {
-      status: mock.status,
-      statusText: mock.status === 200 ? 'OK' : 'Error',
-      headers
-    });
+    if (mock.contentType) headers.set('content-type', mock.contentType);
+    const body = typeof mock.body === 'string'
+      ? new TextEncoder().encode(mock.body).buffer
+      : mock.body || new ArrayBuffer(0);
+    headers.set('content-length', String(body.byteLength));
+    return new Response(body, { status: mock.status, headers });
   };
 }
 
-function createPdfBytes(textContent: string): ArrayBuffer {
-  const cleanText = textContent.replace(/[\r\n]+/g, ' ').replace(/[()]/g, '');
-  const pdfBody = `%PDF-1.4
-1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
-2 0 obj << /Type /Pages /Kinds [3 0 R] /Count 1 >> endobj
-3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj
-4 0 obj << /Length ${cleanText.length + 50} >> stream
-BT
-/F1 12 Tf
-(${cleanText}) Tj
-ET
-endstream
-endobj
-xref
-0 5
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-0000000185 00000 n 
-trailer << /Size 5 /Root 1 0 R >>
-startxref
-290
-%%EOF`;
+const pdfUrl = 'https://arxiv.org/pdf/quantum-federated-learning.pdf';
+const studentText = 'Quantum computing leverages quantum mechanical phenomena such as superposition and entanglement to perform computation.';
 
-  return new TextEncoder().encode(pdfBody).buffer;
-}
-
-async function runG59Tests() {
-  console.log('🧪 GRADIFI HOEOS G5.9 - DETERMINISTIC EVIDENCE BRIDGE TEST SUITE');
-  console.log('==================================================================');
-
-  let passed = 0;
-  let failed = 0;
-
-  function assert(condition: boolean, description: string) {
-    if (condition) {
-      console.log(`  ✅ PASS: ${description}`);
-      passed++;
-    } else {
-      console.error(`  ❌ FAIL: ${description}`);
-      failed++;
-    }
-  }
-
-  const sampleStudentDoc = `Quantum computing leverages quantum mechanical phenomena such as superposition and entanglement to perform computation. Traditional computers encode information into binary bits.`;
-  const samplePdfContent = `Journal of Quantum Physics. DOI: 10.1038/s41586-023-00001-x. Quantum computing leverages quantum mechanical phenomena such as superposition and entanglement to perform computation.`;
-
-  const validMeta: UnpaywallMetadataResult = {
+function metadata(overrides: Partial<UnpaywallMetadataResult> = {}): UnpaywallMetadataResult {
+  return {
     providerId: 'unpaywall',
     doi: '10.1038/s41586-023-00001-x',
     status: 'METADATA_FOUND',
-    title: 'Quantum Advantage Demonstration',
-    authors: ['Alice Smith'],
-    bestOALocation: {
-      url: 'https://arxiv.org/pdf/2301.00001.pdf',
-      urlForPdf: 'https://arxiv.org/pdf/2301.00001.pdf',
-      isBest: true
-    },
+    title: 'Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks',
+    authors: ['Dr. A'],
+    bestOALocation: { url: pdfUrl, urlForPdf: pdfUrl, isBest: true },
     requestTimestamp: new Date().toISOString(),
     responseTimestamp: new Date().toISOString(),
-    correlationId: 'test_g59_001'
+    correlationId: 'g59-vitest',
+    ...overrides
   };
-
-  const mockFetch = createMockFetch({
-    'https://arxiv.org/pdf/2301.00001.pdf': {
-      status: 200,
-      contentType: 'application/pdf',
-      body: createPdfBytes(samplePdfContent)
-    },
-    'https://arxiv.org/pdf/mismatch.pdf': {
-      status: 200,
-      contentType: 'application/pdf',
-      body: createPdfBytes('Astrophysics deep space gamma ray emissions. DOI: 10.1016/j.astro.2023.999.')
-    },
-    'https://journal.org/html-only.html': {
-      status: 200,
-      contentType: 'text/html',
-      body: '<html><body>Landing Page</body></html>'
-    },
-    'https://journal.org/404.pdf': {
-      status: 404
-    }
-  });
-
-  // 1. Positive Path: Full Chain Execution
-  console.log('\n1. Positive Path: Complete 6-Stage Evidence Chain');
-  const res1 = await deterministicEvidenceBridge.executeEvidenceChain(
-    '10.1038/s41586-023-00001-x',
-    sampleStudentDoc,
-    { fetchImpl: mockFetch as any, metadataOverride: validMeta }
-  );
-
-  assert(res1.bridgeEligible === true, 'bridgeEligible is true for valid chain');
-  assert(res1.metadataResult.status === 'METADATA_FOUND', 'Metadata status is METADATA_FOUND');
-  assert(res1.locationResult.status === 'OA_LOCATION_FOUND', 'Location status is OA_LOCATION_FOUND');
-  assert(res1.retrievalResult.status === 'SOURCE_RETRIEVED', 'Retrieval status is SOURCE_RETRIEVED');
-  assert(res1.validationResult.status === 'CONTENT_VALID', 'Validation status is CONTENT_VALID');
-  assert(res1.identityResult.status === 'IDENTITY_MATCHED', 'Identity status is IDENTITY_MATCHED');
-  assert(Boolean(res1.deterministicResult), 'Deterministic engine executed');
-
-  // 2. Negative Path 1: Missing Metadata
-  console.log('\n2. Negative Path 1: Missing Metadata');
-  const res2 = await deterministicEvidenceBridge.executeEvidenceChain(
-    '10.1038/missing-meta',
-    sampleStudentDoc,
-    {
-      fetchImpl: mockFetch as any,
-      metadataOverride: { ...validMeta, status: 'METADATA_NOT_FOUND', errorMessage: 'DOI missing' }
-    }
-  );
-
-  assert(res2.bridgeEligible === false, 'bridgeEligible is false when metadata is missing');
-
-  // 3. Negative Path 2: Missing OA Location
-  console.log('\n3. Negative Path 2: Missing OA Location');
-  const res3 = await deterministicEvidenceBridge.executeEvidenceChain(
-    '10.1038/no-oa',
-    sampleStudentDoc,
-    {
-      fetchImpl: mockFetch as any,
-      metadataOverride: { ...validMeta, bestOALocation: undefined, oaLocations: [] }
-    }
-  );
-
-  assert(res3.bridgeEligible === false, 'bridgeEligible is false when no OA location exists');
-
-  // 4. Negative Path 3: Retrieval Failure (HTTP 404)
-  console.log('\n4. Negative Path 3: Retrieval Failure (404)');
-  const res4 = await deterministicEvidenceBridge.executeEvidenceChain(
-    '10.1038/404',
-    sampleStudentDoc,
-    {
-      fetchImpl: mockFetch as any,
-      metadataOverride: { ...validMeta, bestOALocation: { urlForPdf: 'https://journal.org/404.pdf' } }
-    }
-  );
-
-  assert(res4.bridgeEligible === false, 'bridgeEligible is false on HTTP 404');
-  assert(res4.retrievalResult.status === 'HTTP_ERROR', 'retrievalResult status is HTTP_ERROR');
-
-  // 5. Negative Path 4: Content Validation Failure (HTML instead of PDF)
-  console.log('\n5. Negative Path 4: Invalid Content (HTML Landing Page)');
-  const res5 = await deterministicEvidenceBridge.executeEvidenceChain(
-    '10.1038/html',
-    sampleStudentDoc,
-    {
-      fetchImpl: mockFetch as any,
-      metadataOverride: { ...validMeta, bestOALocation: { urlForPdf: 'https://journal.org/html-only.html' } }
-    }
-  );
-
-  assert(res5.bridgeEligible === false, 'bridgeEligible is false for HTML landing page');
-  assert(res5.retrievalResult.status === 'CONTENT_TYPE_MISMATCH', 'retrievalResult status is CONTENT_TYPE_MISMATCH for HTML');
-
-  // 6. Negative Path 5: Identity Mismatch
-  console.log('\n6. Negative Path 5: Identity Mismatch');
-  const res6 = await deterministicEvidenceBridge.executeEvidenceChain(
-    '10.1038/s41586-023-00001-x',
-    sampleStudentDoc,
-    {
-      fetchImpl: mockFetch as any,
-      metadataOverride: { ...validMeta, bestOALocation: { urlForPdf: 'https://arxiv.org/pdf/mismatch.pdf' } }
-    }
-  );
-
-  assert(res6.bridgeEligible === false, 'bridgeEligible is false when DOIs mismatch');
-  assert(res6.identityResult.status === 'IDENTITY_MISMATCH', 'identityResult status is IDENTITY_MISMATCH');
-
-  // 7. Hash & Immutability Proof
-  console.log('\n7. Hash & Immutability Proof');
-  assert(Boolean(res1.deterministicResult?.documentHash), 'Deterministic documentHash generated');
-  assert(Boolean(res1.deterministicResult?.evidenceHash), 'Deterministic evidenceHash generated');
-
-  console.log('==================================================================');
-  console.log(`📊 G5.9 TEST SUITE SUMMARY: ${passed} PASSED, ${failed} FAILED.`);
-
-  if (failed > 0) {
-    process.exit(1);
-  }
 }
 
-runG59Tests().catch(err => {
-  console.error('G5.9 test execution failed:', err);
-  process.exit(1);
+describe('HOEOS G5.9 deterministic evidence bridge', () => {
+  it('executes the complete metadata-to-deterministic-engine chain on a valid PDF', async () => {
+    const mockFetch = createMockFetch({
+      [pdfUrl]: { status: 200, contentType: 'application/pdf', body: fixturePdf() }
+    });
+    const result = await deterministicEvidenceBridge.executeEvidenceChain(
+      metadata().doi!,
+      studentText,
+      { fetchImpl: mockFetch as any, metadataOverride: metadata() }
+    );
+    expect(result.bridgeEligible).toBe(true);
+    expect(result.metadataResult.status).toBe('METADATA_FOUND');
+    expect(result.locationResult.status).toBe('OA_LOCATION_FOUND');
+    expect(result.retrievalResult.status).toBe('SOURCE_RETRIEVED');
+    expect(result.validationResult.status).toBe('CONTENT_VALID');
+    expect(result.identityResult.status).toBe('IDENTITY_MATCHED');
+    expect(result.deterministicResult).toBeDefined();
+    expect(result.deterministicResult?.documentHash).toBeTruthy();
+    expect(result.deterministicResult?.evidenceHash).toBeTruthy();
+  });
+
+  it('stops when metadata is missing', async () => {
+    const result = await deterministicEvidenceBridge.executeEvidenceChain(
+      '10.1038/missing-meta',
+      studentText,
+      { metadataOverride: metadata({ status: 'METADATA_NOT_FOUND', errorMessage: 'DOI missing' }) }
+    );
+    expect(result.bridgeEligible).toBe(false);
+    expect(result.validationResult.status).toBe('CONTENT_VALIDATION_FAILED');
+  });
+
+  it('stops when no open-access location exists', async () => {
+    const result = await deterministicEvidenceBridge.executeEvidenceChain(
+      '10.1038/no-oa',
+      studentText,
+      { metadataOverride: metadata({ bestOALocation: undefined, oaLocations: [] }) }
+    );
+    expect(result.bridgeEligible).toBe(false);
+    expect(result.locationResult.status).toBe('NO_OA_LOCATION');
+  });
+
+  it('stops when source retrieval returns HTTP 404', async () => {
+    const missingUrl = 'https://journal.org/404.pdf';
+    const mockFetch = createMockFetch({ [missingUrl]: { status: 404 } });
+    const result = await deterministicEvidenceBridge.executeEvidenceChain(
+      metadata().doi!,
+      studentText,
+      {
+        fetchImpl: mockFetch as any,
+        metadataOverride: metadata({ bestOALocation: { urlForPdf: missingUrl } })
+      }
+    );
+    expect(result.bridgeEligible).toBe(false);
+    expect(result.retrievalResult.status).toBe('HTTP_ERROR');
+  });
+
+  it('rejects an HTML landing page instead of a PDF', async () => {
+    const htmlUrl = 'https://journal.org/html-only.html';
+    const mockFetch = createMockFetch({
+      [htmlUrl]: { status: 200, contentType: 'text/html', body: '<html><body>Landing Page</body></html>' }
+    });
+    const result = await deterministicEvidenceBridge.executeEvidenceChain(
+      metadata().doi!,
+      studentText,
+      {
+        fetchImpl: mockFetch as any,
+        metadataOverride: metadata({ bestOALocation: { urlForPdf: htmlUrl } })
+      }
+    );
+    expect(result.bridgeEligible).toBe(false);
+    expect(result.retrievalResult.status).toBe('CONTENT_TYPE_MISMATCH');
+  });
 });
