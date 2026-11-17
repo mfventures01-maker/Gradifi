@@ -1,3 +1,4 @@
+
 -- Institutional school membership administration and principal lifecycle.
 -- Existing schools remain unprovisioned unless a verified principal is bootstrapped below.
 
