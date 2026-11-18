@@ -109,7 +109,8 @@ test('real browser builds and POSTs the complete G4-D persistence payload', asyn
   expect(browserResult.response.record.verification_id).toBe('VRF-BROWSERTEST01');
   expect(capturedRequest).toBeDefined();
   expect(capturedAuthorization).toBe('Bearer browser-test-access-token');
-  expect(Object.keys(capturedRequest!).sort()).toEqual(['envelope', 'result']);
+  expect(Object.keys(capturedRequest!).sort()).toEqual(['correctionOfVerificationId', 'envelope', 'result']);
+  expect(capturedRequest!.correctionOfVerificationId).toBeNull();
 
   const { result, envelope } = capturedRequest!;
   expect(result.documentHash).toBe(browserResult.expectedDocumentHash);
