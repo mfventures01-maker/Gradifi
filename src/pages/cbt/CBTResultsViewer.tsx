@@ -1,162 +1,125 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { CBTExam, ExamResult } from '../../types/phase4.types';
-import { examAnalyticsService } from '../../services/examAnalyticsService';
-import { DataTable, Column } from '../../components/dashboard/DataTable';
-import { 
-  ArrowLeft, 
-  Share2, 
-  Download, 
-  Award, 
-  BarChart2, 
-  CheckCircle2, 
-  XCircle, 
-  Users 
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, Download, Loader2, Trophy } from 'lucide-react';
+import { cbtService, CbtExamResults } from '../../services/cbtService';
 
 export const CBTResultsViewer: React.FC = () => {
-  const { examId } = useParams<{ examId?: string }>();
   const navigate = useNavigate();
-
-  const [exam, setExam] = useState<CBTExam | null>(null);
-  const [results, setResults] = useState<ExamResult[]>([]);
-  const [summary, setSummary] = useState<any>(null);
+  const { examId = '' } = useParams<{ examId: string }>();
+  const [report, setReport] = useState<CbtExamResults | null>(null);
+  const [candidateResult, setCandidateResult] = useState<Awaited<ReturnType<typeof cbtService.getCandidateResult>> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    loadResults();
+    let alive = true;
+    (async () => {
+      try {
+        const data = await cbtService.getExamResults(examId);
+        if (alive) setReport(data);
+      } catch (teacherError) {
+        try {
+          const ownResult = await cbtService.getCandidateResult(examId);
+          if (alive) setCandidateResult(ownResult);
+        } catch (candidateError) {
+          if (alive) setError(candidateError instanceof Error ? candidateError.message : (teacherError instanceof Error ? teacherError.message : 'Unable to retrieve examination results'));
+        }
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
   }, [examId]);
 
-  async function loadResults() {
-    setLoading(true);
-    const data = await examAnalyticsService.getExamResults(examId || 'ex_101');
-    setExam(data.exam);
-    setResults(data.results);
-    setSummary(data.summary);
-    setLoading(false);
-  }
-
-  const handleShareWhatsApp = (studentName: string, score: number, grade: string) => {
-    const text = `CBT Result Notification: ${studentName} scored ${score}% (${grade}) in ${exam?.title}. SEFAES Verified.`;
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  const exportCsv = () => {
+    if (!report) return;
+    const rows = [
+      ['Position', 'Student', 'Student ID', 'Score', 'Total Marks', 'Percentage', 'Grade', 'Status', 'Submitted At'],
+      ...report.results.map(row => [
+        row.position, row.studentName, row.studentId, String(row.score), String(row.maxScore),
+        String(row.percentage), row.grade, row.status, row.submittedAt || '',
+      ]),
+    ];
+    const csv = rows.map(row => row.map(value => '"' + String(value).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'cbt-results-' + examId + '.csv';
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
-  const columns: Column<ExamResult>[] = [
-    { key: 'position', header: 'Rank', sortable: true },
-    { key: 'studentName', header: 'Student Name', sortable: true },
-    {
-      key: 'score',
-      header: 'Score',
-      render: (r) => <span className="font-mono font-bold">{r.score} / {r.maxScore} ({r.percentage}%)</span>,
-      sortable: true,
-    },
-    {
-      key: 'grade',
-      header: 'Grade',
-      render: (r) => (
-        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
-          {r.grade}
-        </span>
-      ),
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (r) => (
-        <span
-          className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
-            r.status === 'Passed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
-          }`}
-        >
-          {r.status}
-        </span>
-      ),
-    },
-    {
-      key: 'actions',
-      header: 'Actions',
-      render: (r) => (
-        <button
-          onClick={() => handleShareWhatsApp(r.studentName, r.score, r.grade)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
-        >
-          <Share2 className="w-3 h-3" />
-          <span>Notify Parent</span>
-        </button>
-      ),
-    },
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 p-4 sm:p-6 md:p-8 font-sans max-w-6xl mx-auto space-y-6">
-      {/* Top Header */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <button
-            onClick={() => navigate('/cbt/manager')}
-            className="text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 cursor-pointer font-medium"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Exam Manager
-          </button>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            📊 Exam Analytics: {exam?.title || 'Mathematics Exam'}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            {exam?.className} • {exam?.subjectName} • Administered on {exam?.examDate}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => alert('Exporting PDF Results broadsheet...')}
-            className="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer shadow-xs"
-          >
-            <Download className="w-4 h-4" />
-            <span>Export PDF</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs text-center space-y-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Class Average</span>
-          <p className="text-2xl font-extrabold text-indigo-600 font-mono">{summary?.averageScore || 72.4}%</p>
-        </div>
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs text-center space-y-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pass Rate</span>
-          <p className="text-2xl font-extrabold text-emerald-600 font-mono">{summary?.passRate || 85.7}%</p>
-        </div>
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs text-center space-y-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Top Score</span>
-          <p className="text-2xl font-extrabold text-amber-600 font-mono">{summary?.topScore || 98}%</p>
-        </div>
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs text-center space-y-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Students</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">{summary?.totalStudents || 42}</p>
-        </div>
-      </div>
-
-      {/* Grade Distribution Bar */}
-      {summary?.gradeDistribution && (
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Grade Distribution Breakdown</h3>
-          <div className="grid grid-cols-5 gap-2 text-center text-xs">
-            {Object.entries(summary.gradeDistribution).map(([grade, count]) => (
-              <div key={grade} className="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-                <span className="font-bold text-slate-900">{grade}</span>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">{count as number} Students</p>
-              </div>
-            ))}
+  if (loading) return <div className="min-h-screen grid place-items-center text-slate-500"><Loader2 className="animate-spin mr-2" /> Loading certified results…</div>;
+  if (error) return <main className="min-h-screen grid place-items-center p-5 bg-slate-50"><section className="max-w-lg w-full bg-white border border-rose-200 rounded-2xl p-6 space-y-3"><h1 className="font-bold text-xl">Results unavailable</h1><p className="text-sm text-rose-700">{error}</p><button onClick={() => navigate('/cbt/manager')} className="rounded-lg bg-slate-900 text-white px-4 py-2 text-sm">Back to manager</button></section></main>;
+  if (candidateResult) {
+    const { exam, result } = candidateResult;
+    return (
+      <main className="min-h-screen bg-slate-50 grid place-items-center p-5">
+        <section className="w-full max-w-xl bg-white rounded-2xl border border-slate-200 p-7 space-y-5 text-center">
+          <Trophy size={32} className="mx-auto text-amber-500" />
+          <div><h1 className="text-2xl font-extrabold">{exam.title}</h1><p className="text-sm text-slate-500">{exam.subjectName} · {exam.className}</p></div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-xl bg-slate-50 p-3"><div className="text-xl font-extrabold">{result.score}/{result.maxScore}</div><div className="text-xs text-slate-500">Score</div></div>
+            <div className="rounded-xl bg-slate-50 p-3"><div className="text-xl font-extrabold">{Number(result.percentage).toFixed(1)}%</div><div className="text-xs text-slate-500">Percentage</div></div>
+            <div className="rounded-xl bg-slate-50 p-3"><div className="text-xl font-extrabold">{result.grade || '—'}</div><div className="text-xs text-slate-500">Grade</div></div>
           </div>
-        </div>
-      )}
+          <span className={'inline-flex rounded-full px-4 py-2 text-sm font-bold ' + (result.status === 'Passed' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700')}>{result.status}</span>
+          <p className="text-xs text-slate-500">Submitted {result.submittedAt ? new Date(result.submittedAt).toLocaleString() : 'successfully'}</p>
+          <button onClick={() => navigate('/cbt/public')} className="rounded-lg bg-indigo-600 text-white px-5 py-3 text-sm font-bold">Return to public examinations</button>
+        </section>
+      </main>
+    );
+  }
+  if (!report) return null;
 
-      {/* Student Results Table */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-bold text-slate-900">🏆 Individual Student Results</h3>
-        <DataTable columns={columns} data={results} loading={loading} />
-      </div>
-    </div>
+  const { exam, summary, results } = report;
+  return (
+    <main className="min-h-screen bg-slate-50 text-slate-900 p-4 sm:p-7 max-w-6xl mx-auto space-y-5">
+      <header className="bg-white rounded-2xl border border-slate-200 p-5 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <button onClick={() => navigate('/cbt/manager')} className="text-xs text-slate-500 flex items-center gap-2 mb-2"><ArrowLeft size={14} /> Exam manager</button>
+          <h1 className="text-2xl font-extrabold">{exam.title}</h1>
+          <p className="text-sm text-slate-500">{exam.subjectName} · {exam.className} · {exam.totalMarks} marks</p>
+        </div>
+        <button onClick={exportCsv} className="rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm font-bold flex items-center gap-2"><Download size={15} /> Export CSV</button>
+      </header>
+
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          ['Candidates', summary.totalStudents],
+          ['Average score', summary.averageScore.toFixed(1) + '%'],
+          ['Pass rate', summary.passRate.toFixed(1) + '%'],
+          ['Highest score', summary.topScore.toFixed(1) + '%'],
+        ].map(([label, value]) => (
+          <div key={String(label)} className="bg-white rounded-xl border border-slate-200 p-4">
+            <div className="text-xs text-slate-500">{label}</div><div className="text-2xl font-extrabold mt-1">{value}</div>
+          </div>
+        ))}
+      </section>
+
+      <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="p-5 border-b border-slate-100 flex items-center gap-2"><Trophy size={18} className="text-amber-500" /><h2 className="font-bold">Candidate results</h2></div>
+        {results.length === 0 ? <div className="p-10 text-center text-sm text-slate-500">No submitted attempts have results yet.</div> :
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+                <tr><th className="text-left p-3">Position</th><th className="text-left p-3">Candidate</th><th className="text-left p-3">Score</th><th className="text-left p-3">Percentage</th><th className="text-left p-3">Grade</th><th className="text-left p-3">Status</th><th className="text-left p-3">Submitted</th></tr>
+              </thead>
+              <tbody>
+                {results.map(row => <tr key={row.id} className="border-t border-slate-100">
+                  <td className="p-3 font-bold">{row.position}</td>
+                  <td className="p-3"><div className="font-semibold">{row.studentName}</div><div className="text-[11px] text-slate-400">{row.studentId}</div></td>
+                  <td className="p-3 tabular-nums">{row.score}/{row.maxScore}</td>
+                  <td className="p-3 tabular-nums">{row.percentage.toFixed(1)}%</td>
+                  <td className="p-3 font-bold">{row.grade}</td>
+                  <td className="p-3"><span className={'rounded-full px-2 py-1 text-xs font-bold ' + (row.status === 'Passed' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700')}>{row.status}</span></td>
+                  <td className="p-3 text-xs text-slate-500">{row.submittedAt ? new Date(row.submittedAt).toLocaleString() : '—'}</td>
+                </tr>)}
+              </tbody>
+            </table>
+          </div>}
+      </section>
+    </main>
   );
 };

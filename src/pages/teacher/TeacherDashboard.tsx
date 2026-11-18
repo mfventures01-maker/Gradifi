@@ -72,7 +72,7 @@ export const TeacherDashboard: React.FC = () => {
     {
       label: 'Create Test',
       icon: FileEdit,
-      onClick: () => navigate('/cbt'),
+      onClick: () => navigate('/cbt/manager'),
       variant: 'primary' as const,
     },
     {

@@ -272,12 +272,54 @@ export const apiClient = {
     };
   },
 
-  async createCbtExam(examData: any, questions: any[]) {
-    return cbtService.createExam(examData, questions);
+  async createCbtExam(examData: any, questions: any[] = []) {
+    const created = await cbtService.createExam({
+      schoolId: examData.schoolId || examData.school_id,
+      classId: examData.classId || examData.class_id,
+      subjectId: examData.subjectId || examData.subject_id,
+      termId: examData.termId || examData.term_id || null,
+      title: examData.title,
+      description: examData.description || null,
+      durationMinutes: Number(examData.durationMinutes || examData.duration_minutes || 60),
+      passMark: Number(examData.passMark ?? examData.pass_mark ?? 0),
+      startTime: examData.startTime || examData.start_time || new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    });
+    for (let index = 0; index < questions.length; index++) {
+      const question = questions[index];
+      const options = (question.options || []).map((option: any, optionIndex: number) => ({
+        letter: option.letter || String.fromCharCode(65 + optionIndex),
+        text: option.text || option.option_text || '',
+        is_correct: option.is_correct === true || option.id === question.correctOptionId || option.id === question.correct_option,
+      }));
+      await cbtService.addQuestion({
+        examId: created.exam_id,
+        questionText: question.text || question.question_text || '',
+        marks: Number(question.marks || 1),
+        questionNumber: index + 1,
+        difficulty: String(question.difficulty || 'medium').toLowerCase() as 'easy' | 'medium' | 'hard',
+        options,
+      });
+    }
+    return created;
   },
 
-  async submitCbtExam(examId: string, payload: { student_id?: string; student_name?: string; student_number?: string; answers?: Record<string, string> }, questions: any[] = []) {
-    return cbtService.submitAttempt(examId, payload.student_id || 'std_guest', payload.answers || {}, questions);
+  async submitCbtExam(examId: string, payload: { student_id?: string; student_name?: string; student_number?: string; answers?: Record<string, string> }, _questions: any[] = []) {
+    const attempt = await cbtService.createAttempt(examId);
+    await cbtService.transitionSession(attempt.session_id, 'AUTHENTICATED');
+    await cbtService.transitionSession(attempt.session_id, 'LOADING_EXAM');
+    await cbtService.transitionSession(attempt.session_id, 'INSTRUCTIONS_VIEW');
+    await cbtService.transitionSession(attempt.session_id, 'ACTIVE_EXAM');
+    const paper = await cbtService.getPublishedQuestions(examId);
+    for (const question of paper) {
+      const selected = payload.answers?.[question.question_id];
+      if (!selected) continue;
+      const option = question.options.find(item => item.id === selected || item.letter === selected);
+      if (option) await cbtService.submitAnswer(attempt.attempt_id, question.question_id, option.id);
+    }
+    const result = await cbtService.submitAttempt(attempt.attempt_id);
+    await cbtService.transitionSession(attempt.session_id, 'SUBMITTED');
+    await cbtService.transitionSession(attempt.session_id, 'SCORED');
+    return result;
   },
 
   async getGradingSubmissions(schoolId?: string): Promise<AnswerScript[]> {
