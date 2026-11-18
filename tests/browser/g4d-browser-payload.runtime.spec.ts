@@ -2,9 +2,11 @@ import { expect, test } from '@playwright/test';
 
 test('real browser builds and POSTs the complete G4-D persistence payload', async ({ page }) => {
   let capturedRequest: Record<string, any> | undefined;
+  let capturedAuthorization: string | undefined;
 
   await page.route('**/api/verify/persist', async route => {
     capturedRequest = route.request().postDataJSON() as Record<string, any>;
+    capturedAuthorization = route.request().headers()['authorization'];
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -13,6 +15,28 @@ test('real browser builds and POSTs the complete G4-D persistence payload', asyn
         record: { verification_id: 'VRF-BROWSERTEST01' }
       })
     });
+  });
+
+  // Test-only Supabase session: the persistence service must still send a bearer token.
+  // The API route is intercepted below, so no real Supabase project or write is used.
+  await page.addInitScript(() => {
+    const now = Math.floor(Date.now() / 1000);
+    window.localStorage.setItem('gradifi-sefaes-auth-session', JSON.stringify({
+      access_token: 'browser-test-access-token',
+      token_type: 'bearer',
+      expires_in: 3600,
+      expires_at: now + 3600,
+      refresh_token: 'browser-test-refresh-token',
+      user: {
+        id: 'browser-test-user',
+        aud: 'authenticated',
+        role: 'authenticated',
+        email: 'browser-test@example.invalid',
+        app_metadata: { provider: 'email', providers: ['email'] },
+        user_metadata: {},
+        created_at: new Date().toISOString()
+      }
+    }));
   });
 
   await page.goto('/');
@@ -84,6 +108,7 @@ test('real browser builds and POSTs the complete G4-D persistence payload', asyn
   expect(browserResult.response.status).toBe('CREATED');
   expect(browserResult.response.record.verification_id).toBe('VRF-BROWSERTEST01');
   expect(capturedRequest).toBeDefined();
+  expect(capturedAuthorization).toBe('Bearer browser-test-access-token');
   expect(Object.keys(capturedRequest!).sort()).toEqual(['envelope', 'result']);
 
   const { result, envelope } = capturedRequest!;
