@@ -48,7 +48,7 @@ jobs:
       - name: Install Chromium for G4-D browser runtime
         run: npx playwright install --with-deps chromium
 
-      - name: G4-D browser-to-persistence runtime
+      - name: G4-D browser payload runtime (API endpoint intercepted)
         run: npx playwright test --config=playwright.g4d.config.ts
 
       - name: Production build
