@@ -40,7 +40,7 @@ test.describe('G1 DOCX Real Browser Ingestion Proof', () => {
     const statusBadge = page.locator('text=/STATUS:\\s*READY/');
     await expect(statusBadge).toBeVisible();
 
-    const fileInput = page.locator('input[type="file"]');
+    const fileInput = page.locator('input[type="file"]').first();
     await expect(fileInput).toBeAttached();
 
     const textarea = page.locator('textarea[placeholder*="Paste academic paper"]');
@@ -165,7 +165,7 @@ test.describe('G1 DOCX Real Browser Ingestion Proof', () => {
     await page.goto('/tools/plagiarism');
     await page.waitForLoadState('networkidle');
 
-    const fileInput = page.locator('input[type="file"]');
+    const fileInput = page.locator('input[type="file"]').first();
     await expect(fileInput).toBeAttached();
 
     // 2. Upload corrupted DOCX
