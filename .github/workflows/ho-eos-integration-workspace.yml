@@ -51,5 +51,8 @@ jobs:
       - name: G4-D browser payload runtime (API endpoint intercepted)
         run: npx playwright test --config=playwright.g4d.config.ts
 
+      - name: G1 real-browser DOCX ingestion proof
+        run: npx playwright test --config=playwright.g1.config.ts
+
       - name: Production build
         run: npm run build
