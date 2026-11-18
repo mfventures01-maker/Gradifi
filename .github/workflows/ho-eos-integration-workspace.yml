@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - integration/verify-workspace-2026-11-17
+      - reconcile/g0-g1-browser-proof-2026-11-18
   pull_request:
     branches:
       - integration/verify-workspace-2026-11-17
+      - reconcile/ho-eos-unified-integration-2026-11-18
   workflow_dispatch:
 
 permissions:
