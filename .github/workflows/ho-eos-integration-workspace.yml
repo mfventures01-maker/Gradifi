@@ -1,0 +1,55 @@
+name: HOEOS Integration Workspace Checks
+
+on:
+  push:
+    branches:
+      - integration/verify-workspace-2026-11-17
+  pull_request:
+    branches:
+      - integration/verify-workspace-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build server runtime
+        run: npm run build:server
+
+      - name: Client and server type checks
+        run: npm run typecheck
+
+      - name: G1 DOCX Vitest discovery and focused integration regressions
+        run: >-
+          npx vitest run
+          tests/g1_docx_fidelity.test.ts
+          tests/g4d_persisted_evidence_integrity.test.ts
+          tests/verifyPersistenceAuthorization.test.ts
+          tests/trustedCorrectionComparison.test.ts
+          tests/publicReceiptPrivacy.test.ts
+          --reporter=verbose
+
+      - name: Install Chromium for G4-D browser runtime
+        run: npx playwright install --with-deps chromium
+
+      - name: G4-D browser-to-persistence runtime
+        run: npx playwright test --config=playwright.g4d.config.ts
+
+      - name: Production build
+        run: npm run build
