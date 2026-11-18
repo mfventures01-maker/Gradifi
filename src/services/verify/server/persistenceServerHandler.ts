@@ -31,6 +31,7 @@ type SafeReceipt = Pick<
   | 'policy_version'
   | 'overall_similarity'
   | 'total_sources_found'
+  | 'correction_of_verification_id'
   | 'created_at'
 >;
 
@@ -119,6 +120,7 @@ function safeReceipt(record: PublicVerificationRecord): SafeReceipt {
     policy_version: record.policy_version,
     overall_similarity: record.overall_similarity,
     total_sources_found: record.total_sources_found,
+    correction_of_verification_id: record.correction_of_verification_id ?? null,
     created_at: record.created_at
   };
 }
