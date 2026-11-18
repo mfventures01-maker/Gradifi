@@ -14,12 +14,14 @@ export default defineConfig({
       '**/*.temp.test.ts',
       '**/*.bak',
 
-      // Script-style files: assertions pass when run standalone via `npx tsx`,
-      // but the file uses an IIFE instead of vitest's describe/it. Vitest
-      // reports "No test suite found" for each. Excluding them from the
-      // default run keeps their evidence available (they remain runnable
-      // individually) without making the suite result inaccurate.
-      'tests/g1_docx_fidelity.test.ts',
+      // Legacy self-running node:assert harnesses are not Vitest suites.
+      // Execute individually with tsx when their runtime prerequisites are available.
+      'tests/federation/rateLimiter.test.ts',
+      'tests/federation/requestQueue.test.ts',
+      'tests/nemotron/retry.test.ts',
+      'tests/pipeline/pipelineAudit.test.ts',
+      'tests/pipeline/pipelineAuditFailClosed.test.ts',
+
       'tests/g2_repairs_regression.test.ts',
       'tests/g4-offset-invariants.test.ts',
       'tests/correction/correctionPanel.test.ts',
