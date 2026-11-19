@@ -98,14 +98,19 @@ describe('G1 Universal Ingestion Deterministic Format Matrix', () => {
   });
 
   it('TEST 2: Text-native PDF reaches canonical text deterministically', async () => {
-    const pdfStreamText =
-      '%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kinds [3 0 R] /Count 1 >> endobj\n3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj\n4 0 obj << /Length 200 >>\nstream\nBT\n/F1 12 Tf\n(Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks) Tj\n(By Dr. Aris Thorne and Prof. Elena Rostova 2024 Journal of Advanced Computer Science) Tj\n(Federated learning across edge networks faces latency challenges. We propose quantum inspired architecture for high order evidence systems.) Tj\nET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f\ntrailer << /Size 5 /Root 1 0 R >>\nstartxref\n500\n%%EOF';
-    const pdfBytes = new TextEncoder().encode(pdfStreamText);
+    const pdfPath = path.resolve(
+      process.cwd(),
+      'tests/fixtures/ingestion/quantum_federated_learning_paper.pdf'
+    );
+    const pdfBytes = fs.readFileSync(pdfPath);
 
     const r1 = await ingestDocument({ name: 'academic_paper.pdf', buffer: pdfBytes });
     const r2 = await ingestDocument({ name: 'academic_paper.pdf', buffer: pdfBytes });
 
     expect(r1.success).toBe(true);
+    expect(r1.extractionMethod).toBe('pdf_stream_extractor');
+    expect(r1.text).toContain('Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks');
+    expect(r1.text).toContain('Federated learning across edge networks faces latency challenges');
     expect(r1.canonicalDocument).toBeDefined();
     expect(r1.canonicalDocument?.documentId).toBe(r2.canonicalDocument?.documentId);
   });

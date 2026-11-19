@@ -99,6 +99,11 @@ export async function extractPdfAdapter(
     };
   } catch (err: any) {
     const errorMessage = typeof err?.message === 'string' ? err.message : 'PDF extraction failed.';
+    // Keep the machine-readable code stable while exposing a useful, truthful
+    // message to callers. This also preserves the public G1 failure contract.
+    const publicMessage = errorMessage === 'TEXT_EXTRACTION_UNAVAILABLE'
+      ? 'Text extraction unavailable. PDF contains no legible text or OCR failed.'
+      : errorMessage;
     // Only explicit OCR runtime failures count as OCR failures. The generic
     // PDF-unavailable message may mention OCR without an OCR worker running.
     const isOcrError = ['OCR_TIMEOUT', 'OCR_NO_TEXT', 'OCR_WORKER_FAILURE'].includes(errorMessage);
@@ -113,7 +118,7 @@ export async function extractPdfAdapter(
       warnings: [errorMessage],
       error: {
         code: 'TEXT_EXTRACTION_UNAVAILABLE',
-        message: errorMessage
+        message: publicMessage
       }
     };
   }
