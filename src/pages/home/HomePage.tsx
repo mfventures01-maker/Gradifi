@@ -23,7 +23,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
   const handleRegister = () => {
     if (onStartOnboarding) onStartOnboarding();
-    else navigate('/onboarding');
+    else navigate('/onboarding/start');
   };
   const handleDashboard = () => {
     if (onOpenDashboard) onOpenDashboard();
@@ -39,7 +39,13 @@ export const HomePage: React.FC<HomePageProps> = ({
           <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-semibold">SEFAES</span>
         </div>
         <div className="flex items-center gap-4">
-          <Link 
+          <Link
+            to="/onboarding/start"
+            className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors hidden sm:inline-block"
+          >
+            Join Gradifi
+          </Link>
+          <Link
             to="/tools/plagiarism" 
             className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors hidden sm:inline-block"
           >
@@ -175,6 +181,27 @@ export const HomePage: React.FC<HomePageProps> = ({
               <p className="text-xs font-semibold text-slate-500">WAEC & NECO Aligned</p>
               <p className="text-sm font-bold text-slate-900">99.4% Accuracy</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PUBLIC AND INSTITUTION MEMBERSHIP ENTRY */}
+      <section className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-100">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Open to individuals and institutions</p>
+          <h2 className="mt-3 text-2xl md:text-3xl font-bold text-slate-900">How would you like to use Gradifi?</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-600">Join independently as a freelancer, learner or professional, or register an institution with its own authority and member structure.</p>
+        </div>
+        <div className="mt-7 grid gap-5 md:grid-cols-2">
+          <div className="rounded-2xl border border-indigo-200 bg-indigo-50/50 p-6">
+            <h3 className="text-lg font-bold text-slate-900">For individuals</h3>
+            <p className="mt-2 text-sm text-slate-600">Create a personal account without a school, university or institutional sponsor.</p>
+            <button onClick={() => navigate('/onboarding/individual/register')} className="mt-5 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white">Create individual account</button>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+            <h3 className="text-lg font-bold text-slate-900">For institutions</h3>
+            <p className="mt-2 text-sm text-slate-600">Register a school, university, polytechnic or College of Education with its designated institutional authority.</p>
+            <button onClick={() => navigate('/onboarding/start')} className="mt-5 rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700">Choose institution type</button>
           </div>
         </div>
       </section>
