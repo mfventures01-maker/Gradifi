@@ -10,6 +10,8 @@ describe("OIR-01 actor provisioning recovery schema", () => {
   it("creates a durable idempotency ledger without replacing canonical identity tables", () => {
     expect(migration).toContain("create table if not exists public.actor_provisioning_jobs");
     expect(migration).toContain("unique (idempotency_key)");
+    expect(migration).toContain("actor_provisioning_jobs_one_initial_dean_per_institution_idx");
+    expect(migration).toContain("where actor_type = 'dean'");
     expect(migration).not.toMatch(/drop table\s+public\.(profiles|identity_actors)/i);
   });
 
