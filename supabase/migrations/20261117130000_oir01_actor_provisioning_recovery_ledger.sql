@@ -40,6 +40,10 @@ create table if not exists public.actor_provisioning_jobs (
       or (status <> 'active' and completed_at is null))
 );
 
+create unique index if not exists actor_provisioning_jobs_one_initial_dean_per_institution_idx
+  on public.actor_provisioning_jobs (institution_id)
+  where actor_type = 'dean';
+
 create index if not exists actor_provisioning_jobs_institution_status_idx
   on public.actor_provisioning_jobs (institution_id, status, updated_at desc);
 create index if not exists actor_provisioning_jobs_requester_idx
