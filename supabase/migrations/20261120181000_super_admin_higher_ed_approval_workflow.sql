@@ -26,7 +26,7 @@ grant select, insert on public.institution_approval_events to service_role;
 create or replace function public.reject_institution_approval_event_mutation()
 returns trigger
 language plpgsql
-set search_path = pg_catalog, public
+set search_path = ''
 as $$
 begin
   raise exception 'INSTITUTION_APPROVAL_EVENT_APPEND_ONLY';
@@ -45,7 +45,7 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = pg_catalog, public, auth
+set search_path = ''
 as $$
   select exists (
     select 1
@@ -68,7 +68,7 @@ returns jsonb
 language sql
 stable
 security definer
-set search_path = pg_catalog, public, auth
+set search_path = ''
 as $$
   select jsonb_build_object(
     'is_superadmin',
@@ -116,7 +116,7 @@ returns table (
 language plpgsql
 stable
 security definer
-set search_path = pg_catalog, public, auth
+set search_path = ''
 as $$
 begin
   if not public.is_current_user_super_admin() then
@@ -246,7 +246,7 @@ create or replace function public.review_higher_ed_institution(
 returns jsonb
 language plpgsql
 security definer
-set search_path = pg_catalog, public, auth
+set search_path = ''
 as $$
 declare
   v_institution public.institutions%rowtype;
