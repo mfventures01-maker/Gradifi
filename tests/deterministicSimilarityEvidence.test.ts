@@ -171,15 +171,23 @@ async function runG2SimilarityTests() {
   for (const finding of resPartial.findings) {
     const canonicalSourceText = toCanonicalEvidenceText(docA.rawText);
     const canonicalComparisonText = toCanonicalEvidenceText(docAPartial.rawText);
-    const inSource = canonicalSourceText.includes(finding.sourceSegment);
-    const inComp = canonicalComparisonText.includes(finding.matchedSegment);
+    const sourceSlice = canonicalSourceText.slice(finding.sourceStart, finding.sourceEnd);
+    const matchedSlice = typeof finding.matchedStart === 'number' && typeof finding.matchedEnd === 'number'
+      ? canonicalComparisonText.slice(finding.matchedStart, finding.matchedEnd)
+      : '';
 
     assert(
-      inSource && inComp,
-      `Finding segment "${finding.sourceSegment.slice(
-        0,
-        30,
-      )}..." exists in both source & comparison text`,
+      Number.isInteger(finding.sourceStart) &&
+        Number.isInteger(finding.sourceEnd) &&
+        sourceSlice === finding.sourceSegment,
+      `Source evidence must reproduce from canonical UTF-16 offsets: ${finding.sourceSegment.slice(0, 30)}...`,
+    );
+    assert(
+      Number.isInteger(finding.matchedStart) &&
+        Number.isInteger(finding.matchedEnd) &&
+        matchedSlice === finding.matchedSegment &&
+        finding.matchedSegment.length > 0,
+      `Matched evidence must reproduce from canonical UTF-16 offsets: ${finding.matchedSegment.slice(0, 30)}...`,
     );
   }
 
