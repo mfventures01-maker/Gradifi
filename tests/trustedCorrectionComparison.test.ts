@@ -55,14 +55,16 @@ describe('G6 trusted correction comparison', () => {
     created_by_user_id: 'user-1', status: 'succeeded',
     verification_id: original.verification_id, document_hash: original.document_hash,
     evidence_hash: original.evidence_hash, result_hash: original.result_hash,
-    manifest_hash: original.manifest_hash, parent_run_id: null
+    manifest_hash: original.manifest_hash, engine_version: original.engine_version,
+    policy_version: original.policy_version, parent_run_id: null
   };
   const correctedRun = {
     id: 'run-corrected', institution_id: 'institution-1', school_id: 'school-1',
     created_by_user_id: 'user-1', status: 'succeeded',
     verification_id: corrected.verification_id, document_hash: corrected.document_hash,
     evidence_hash: corrected.evidence_hash, result_hash: corrected.result_hash,
-    manifest_hash: corrected.manifest_hash, parent_run_id: 'run-original'
+    manifest_hash: corrected.manifest_hash, engine_version: corrected.engine_version,
+    policy_version: corrected.policy_version, parent_run_id: 'run-original'
   };
 
   const authClient = {
