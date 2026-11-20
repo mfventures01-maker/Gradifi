@@ -59,7 +59,7 @@ as $$
 $$;
 
 revoke all on function public.is_current_user_super_admin() from public, anon;
-grant execute on function public.is_current_user_super_admin() to authenticated, service_role;
+grant execute on function public.is_current_user_super_admin() to authenticated;
 
 -- Retire the legacy arbitrary-user lookup. It is retained only for compatibility,
 -- but it can no longer answer questions about another user's authority.
@@ -106,6 +106,7 @@ returns table (
   dean_user_id uuid,
   dean_name text,
   dean_status text,
+  dean_membership_status text,
   dean_job_status text,
   campus_id uuid,
   campus_name text,
@@ -144,6 +145,7 @@ begin
     dean.auth_user_id,
     dean.full_name,
     dean.status,
+    dean.membership_status,
     dean_job.status,
     campus.id,
     campus.school_name,
@@ -153,6 +155,7 @@ begin
       and root.actor_status = 'active'
       and dean.auth_user_id is not null
       and dean.status = 'active'
+      and dean.membership_status = 'active'
       and dean_job.status = 'active'
       and campus.id is not null
       and campus.slug = i.slug
@@ -164,6 +167,7 @@ begin
       when root.actor_status is distinct from 'active' then 'VC/Rector identity actor is not active'
       when dean.auth_user_id is null then 'Initial Dean identity is missing'
       when dean.status is distinct from 'active' then 'Initial Dean identity is not active'
+      when dean.membership_status is distinct from 'active' then 'Initial Dean institution membership is not active'
       when dean_job.status is distinct from 'active' then 'Initial Dean provisioning job is not complete'
       when campus.id is null then 'Bootstrap campus is missing'
       when campus.slug is distinct from i.slug or campus.url_slug is distinct from i.slug then 'Campus and institution slugs do not match'
@@ -180,7 +184,7 @@ begin
       a.status as actor_status
     from public.profiles p
     left join public.institution_memberships m
-      on m.user_id = p.user_id and m.institution_id = i.id
+      on m.user_id = p.user_id and m.institution_id = i.id and m.role = p.role
     left join public.identity_actors a
       on a.auth_user_id = p.user_id
       and a.institution_id = i.id
@@ -191,12 +195,16 @@ begin
     limit 1
   ) root on true
   left join lateral (
-    select a.auth_user_id, p.full_name, a.status, a.id
+    select a.auth_user_id, p.full_name, a.status, a.id, m.status as membership_status
     from public.identity_actors a
     left join public.profiles p
       on p.user_id = a.auth_user_id
       and p.institution_id = a.institution_id
       and p.role = 'dean'
+    left join public.institution_memberships m
+      on m.user_id = a.auth_user_id
+      and m.institution_id = a.institution_id
+      and m.role = 'dean'
     where a.institution_id = i.id
       and a.actor_type = 'dean'
       and a.authority_user_id = root.user_id
@@ -227,7 +235,7 @@ end;
 $$;
 
 revoke all on function public.get_pending_higher_ed_institution_approvals() from public, anon;
-grant execute on function public.get_pending_higher_ed_institution_approvals() to authenticated, service_role;
+grant execute on function public.get_pending_higher_ed_institution_approvals() to authenticated;
 
 create or replace function public.review_higher_ed_institution(
   p_institution_id uuid,
@@ -251,7 +259,7 @@ begin
     raise exception 'SUPER_ADMIN_REQUIRED' using errcode = '42501';
   end if;
 
-  if p_decision not in ('approved', 'rejected') then
+  if p_decision is null or p_decision not in ('approved', 'rejected') then
     raise exception 'INVALID_INSTITUTION_DECISION';
   end if;
   if length(btrim(coalesce(p_reason, ''))) < 10 then
@@ -286,6 +294,7 @@ begin
       on m.user_id = p.user_id
       and m.institution_id = p.institution_id
       and m.status = 'active'
+      and m.role = p.role
     where p.institution_id = p_institution_id
       and p.role in ('vice_chancellor', 'rector')
     order by p.created_at asc
@@ -299,6 +308,11 @@ begin
     from public.identity_actors a
     join public.profiles p on p.user_id = a.auth_user_id and p.role = 'dean'
       and p.institution_id = a.institution_id
+    join public.institution_memberships dm
+      on dm.user_id = a.auth_user_id
+      and dm.institution_id = a.institution_id
+      and dm.role = 'dean'
+      and dm.status = 'active'
     join public.actor_provisioning_jobs j
       on j.institution_id = a.institution_id
       and j.actor_type = 'dean'
@@ -366,7 +380,7 @@ end;
 $$;
 
 revoke all on function public.review_higher_ed_institution(uuid, text, text) from public, anon;
-grant execute on function public.review_higher_ed_institution(uuid, text, text) to authenticated, service_role;
+grant execute on function public.review_higher_ed_institution(uuid, text, text) to authenticated;
 
 comment on table public.institution_approval_events is
   'Append-only Super Admin decisions for higher-education institution onboarding. Client roles have no direct access.';
