@@ -197,37 +197,7 @@ begin
 
   if old.status in ('succeeded', 'superseded') then
     if new.status not in (old.status, 'superseded')
-       or row(
-         new.institution_id,
-         new.school_id,
-         new.service_version_id,
-         new.verification_id,
-         new.source_submission_id,
-         new.document_hash,
-         new.canonical_document_hash,
-         new.evidence_hash,
-         new.manifest_hash,
-         new.result_hash,
-         new.engine_version,
-         new.policy_version,
-         new.parent_run_id,
-         new.result
-       ) is distinct from row(
-         old.institution_id,
-         old.school_id,
-         old.service_version_id,
-         old.verification_id,
-         old.source_submission_id,
-         old.document_hash,
-         old.canonical_document_hash,
-         old.evidence_hash,
-         old.manifest_hash,
-         old.result_hash,
-         old.engine_version,
-         old.policy_version,
-         old.parent_run_id,
-         old.result
-       ) then
+       or (to_jsonb(new) - 'status') is distinct from (to_jsonb(old) - 'status') then
       raise exception 'COMPLETED_VERIFICATION_RUN_IMMUTABLE';
     end if;
   end if;
