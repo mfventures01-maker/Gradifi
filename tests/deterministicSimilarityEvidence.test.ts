@@ -10,6 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { buildCanonicalAnalysisDocument } from '../src/services/verify/documentNormalizer';
 import { verifyCoreService } from '../src/services/verify/verifyCoreService';
 import { SimilarityAnalysisResult, SimilarityFinding } from '../src/services/verify/types';
+import { toCanonicalEvidenceText } from '../src/services/verify/deterministicEngine';
 
 const SAMPLE_TEXT_A = `Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks
 By Dr. Aris Thorne, Prof. Elena Rostova, and Dr. Marcus Vance (2024)
@@ -168,8 +169,10 @@ async function runG2SimilarityTests() {
   console.log('\n6. TEST F: Traceable Actual Text Evidence');
 
   for (const finding of resPartial.findings) {
-    const inSource = docA.rawText.includes(finding.sourceSegment);
-    const inComp = docAPartial.rawText.includes(finding.matchedSegment);
+    const canonicalSourceText = toCanonicalEvidenceText(docA.rawText);
+    const canonicalComparisonText = toCanonicalEvidenceText(docAPartial.rawText);
+    const inSource = canonicalSourceText.includes(finding.sourceSegment);
+    const inComp = canonicalComparisonText.includes(finding.matchedSegment);
 
     assert(
       inSource && inComp,
