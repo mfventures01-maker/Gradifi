@@ -120,7 +120,7 @@ The live `public.auth_pin_login(text,text)` definition matches the repository mi
 
 Production routine privileges observed: EXECUTE for `service_role` and `postgres`; no EXECUTE grant was observed for `public`, `anon`, or `authenticated`.
 
-Conclusion: implementation/body and execution boundary match the repository candidate. The filename timestamp does not match the production applied version. The source file should be reconciled to the applied version identifier `20261118120306` in the repository, after checking for duplicate versions and references. Do not replay this migration on production.
+Conclusion: implementation/body and execution boundary match the repository candidate. The filename timestamp did not match the production applied version. I corrected the auth-projection branch by adding `20261118120306_fix_pin_lockout_extension_20261118.sql` and deleting the mismatched `20261118123000_...` file. The correction is on `fix/onboarding-source-auth-projection-2026-11-18` (new-file commit `4c4e33b8d1a0eaccbf80d2d553417b944f267c4f`; deletion commit `c0f23e47a9d6a3de5afc663156e9cc5bf3404cd5`). This is a repository-only correction. Do not replay this migration on production.
 
 ## 4. G6 correction-lineage schema
 
@@ -156,7 +156,7 @@ Do not apply either candidate as-is. First settle the canonical pointer name, pu
 1. Preserve this report as the production forensic baseline.
 2. Recover any original five SQL files from local clones, deployment archives, SQL editor history, CI artifacts, or operator backups. Do not fabricate historical SQL from object names.
 3. If originals remain unavailable, author a separately named, catalog-backed *reconciliation* migration only for demonstrable drift between repository desired state and production. It must not be a pretend copy of the historical migrations.
-4. Correct the PIN migration filename/version in GitHub without running it against production.
+4. PIN migration filename/version has been corrected on the auth-projection PR branch without running it against production.
 5. Keep G6 unapplied until its public receipt privacy contract and full migration are reviewed.
 6. For every eventual production write: inspect the exact SQL, obtain explicit approval, establish a recovery point, apply one migration at a time, and verify immediately.
 
