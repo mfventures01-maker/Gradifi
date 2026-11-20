@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { authService, AuthSessionState } from "../../services/authService";
+import { supabase } from "../../lib/supabase";
 
 export const HigherEducationDashboard: React.FC = () => {
   const [identity, setIdentity] = useState<AuthSessionState | null>(null);
+  const [institutionStatus, setInstitutionStatus] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
     authService.resolveCurrentIdentity()
-      .then(value => { if (active) setIdentity(value); })
+      .then(async value => {
+        if (!active) return;
+        setIdentity(value);
+        if (value.institutionId) {
+          const { data, error } = await supabase.from("institutions")
+            .select("status")
+            .eq("id", value.institutionId)
+            .maybeSingle();
+          if (active && !error) setInstitutionStatus(data?.status || null);
+        }
+      })
       .catch(() => { if (active) setIdentity(null); });
     return () => { active = false; };
   }, []);
