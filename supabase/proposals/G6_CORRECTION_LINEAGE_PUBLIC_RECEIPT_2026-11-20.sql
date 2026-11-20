@@ -36,6 +36,33 @@ begin
   end if;
 
   if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.verification_runs'::regclass
+      and conname = 'verification_runs_parent_run_id_fkey'
+      and contype = 'f'
+  ) then
+    raise exception 'G6_PRECHECK_FAILED: verification_runs parent self-reference is missing';
+  end if;
+
+  if exists (
+    select required.column_name
+    from (values
+      ('institution_id'), ('school_id'), ('created_by_user_id'), ('status'),
+      ('verification_id'), ('document_hash'), ('evidence_hash'),
+      ('result_hash'), ('manifest_hash'), ('engine_version'), ('policy_version'),
+      ('parent_run_id')
+    ) as required(column_name)
+    where not exists (
+      select 1 from information_schema.columns c
+      where c.table_schema = 'public'
+        and c.table_name = 'verification_runs'
+        and c.column_name = required.column_name
+    )
+  ) then
+    raise exception 'G6_PRECHECK_FAILED: verification_runs does not match the required G6/G8 contract';
+  end if;
+
+  if not exists (
     select 1
     from pg_constraint
     where conrelid = 'public.public_verification_records'::regclass
