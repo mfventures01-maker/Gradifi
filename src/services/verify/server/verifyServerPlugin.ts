@@ -23,6 +23,7 @@ import { handleGeminiServerReasoning } from './geminiServerHandler.js';
 import { handleNemotronServerReasoning } from './nemotronServerHandler.js';
 import { handleGemmaServerReasoning } from './gemmaServerHandler.js';
 import { handlePersistenceServerRequest } from './persistenceServerHandler.js';
+import { handleCorrectionComparisonRequest, CorrectionComparisonRequestError } from './correctionComparisonServerHandler.js';
 
 function createSearchMiddleware(providerId: string, handler: (payload: any) => Promise<any>) {
   return async (req: any, res: any) => {
@@ -118,6 +119,47 @@ export function verifyServerPlugin(): Plugin {
             res.statusCode = typeof err?.statusCode === 'number' ? err.statusCode : 500;
             res.end(JSON.stringify({
               error: res.statusCode >= 500 ? 'Verification persistence failed' : (errMessage || 'Failed to persist verification record')
+            }));
+          }
+        });
+      });
+
+      server.middlewares.use('/api/verify/compare-correction', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.setHeader('Allow', 'POST');
+          res.statusCode = 405;
+          res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+          return;
+        }
+
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', async () => {
+          try {
+            const authorization = req.headers.authorization;
+            const tokenMatch = typeof authorization === 'string'
+              ? authorization.match(/^Bearer\\s+([^\\s]+)$/i)
+              : null;
+            if (!tokenMatch) {
+              res.statusCode = 401;
+              res.end(JSON.stringify({ error: 'Authentication required' }));
+              return;
+            }
+            const payload = body ? JSON.parse(body) : {};
+            const comparison = await handleCorrectionComparisonRequest(payload, tokenMatch[1]);
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 200;
+            res.end(JSON.stringify({ comparison }));
+          } catch (error: any) {
+            res.setHeader('Content-Type', 'application/json');
+            const statusCode = error instanceof CorrectionComparisonRequestError
+              ? error.statusCode
+              : 500;
+            res.statusCode = statusCode;
+            res.end(JSON.stringify({
+              error: statusCode >= 500
+                ? 'Trusted correction comparison failed'
+                : (error?.message || 'Correction comparison failed')
             }));
           }
         });
