@@ -186,4 +186,3 @@ grant execute on function public.start_public_trial_session(text,text) to servic
 grant execute on function public.consume_public_trial_session(text) to service_role;
 revoke all on function public.use_public_trial(text) from public,anon,authenticated;
 commit;
-;
