@@ -34,4 +34,3 @@ with check(
  and exists(select 1 from public.projects p
   where p.id=submissions.project_id and p.institution_id=submissions.institution_id)
 );
-;
