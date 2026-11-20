@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { VerificationPersistenceService } from '../verificationPersistenceService.js';
 import { PublicVerificationService } from '../publicVerificationService.js';
 
