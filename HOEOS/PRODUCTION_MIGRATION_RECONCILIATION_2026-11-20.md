@@ -145,9 +145,11 @@ Production catalog result:
 - no no-self-correction CHECK;
 - no correction-parent index.
 
-The live public receipt SELECT allowlist does not include a correction pointer. The candidate migration is therefore unapplied and G6 lineage persistence is not certified against production. The alternate older candidate `20261116120000_g6_correction_lineage.sql` is also not recorded in production migration history.
+The live public receipt SELECT allowlist does not include a correction pointer. `public_verification_records` has RLS enabled and no row policies, so direct table reads are blocked despite the authenticated column grants. The public lookup path is the security-definer `lookup_public_verification(text)` function. The candidate G6 migration grants SELECT on the new pointer column to anon and authenticated, but does not update that lookup function to return the pointer. The grant alone does not create row visibility while RLS remains policy-less, but it is a privilege expansion that must be deliberately reconciled with the public receipt design.
 
-Do not apply either candidate as-is. First settle the canonical pointer name, public visibility contract, correction-parent validation, uniqueness/immutability expectations, and the exact receipt schema. Preserve the existing rule that `evidence_envelope` is not readable by anon/authenticated.
+The candidate migration is therefore unapplied and G6 lineage persistence is not certified against production. The alternate older candidate `20261116120000_g6_correction_lineage.sql` is also not recorded in production migration history.
+
+Do not apply either candidate as-is. First settle the canonical pointer name, whether the pointer is exposed only through the public lookup RPC or also by direct table access, correction-parent validation, uniqueness/immutability expectations, and the exact receipt schema. Preserve the existing rule that `evidence_envelope` is not readable by anon/authenticated.
 
 ## 5. Reconciliation decisions
 
