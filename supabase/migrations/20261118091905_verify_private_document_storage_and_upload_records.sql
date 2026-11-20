@@ -80,4 +80,3 @@ using (
 );
 
 revoke all on storage.objects from anon;
-;
