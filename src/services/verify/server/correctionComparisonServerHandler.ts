@@ -193,7 +193,7 @@ export async function handleCorrectionComparisonRequest(
     originalFindingCount: before.length,
     correctedFindingCount: after.length,
     resolvedFindingCount: resolved,
-    remainingFindingCount: remaining + added,
+    remainingFindingCount: remaining,
     newFindingCount: added
   };
 }
