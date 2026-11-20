@@ -79,8 +79,8 @@ export class PublicVerificationService {
         created_at: typeof dto.createdAt === 'string' ? dto.createdAt : undefined,
       };
 
-      if (!/^[a-f0-9]{16}$/i.test(record.document_hash) ||
-          !/^[a-f0-9]{16}$/i.test(record.evidence_hash) || !record.engine_version ||
+      if (!/^(?:[a-f0-9]{16}|[a-f0-9]{64})$/i.test(record.document_hash) ||
+          !/^(?:[a-f0-9]{16}|[a-f0-9]{64})$/i.test(record.evidence_hash) || !record.engine_version ||
           !record.policy_version || !Number.isFinite(record.overall_similarity) ||
           record.overall_similarity < 0 || record.overall_similarity > 100 ||
           !Number.isInteger(record.total_sources_found) || record.total_sources_found < 0 ||
