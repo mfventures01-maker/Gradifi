@@ -168,11 +168,13 @@ export async function handlePersistenceServerRequest(
   // production baseline requires a verification_runs row, run/receipt hash
   // parity, status='VALID', and public_schema_version. This handler currently
   // does not create that run or compute the approved result/manifest hashes.
-  // Do not write another incomplete receipt or imply G6/G7/G8 certification.
-  throw new PersistenceRequestError(
-    503,
-    'Trusted persistence is blocked until the authoritative verification-run and receipt hash contract is complete. No receipt was written.'
-  );
+  // The flag must remain unset until that implementation and its tests land.
+  if (process.env.GRADIFI_RUN_RECEIPT_CONTRACT_READY !== 'true') {
+    throw new PersistenceRequestError(
+      503,
+      'Trusted persistence is blocked until the authoritative verification-run and receipt hash contract is complete. No receipt was written.'
+    );
+  }
 
   // The request is now authenticated, authorized, and independently validated.
   const serverSupabase = createClient(supabaseUrl, serviceRoleKey, {
