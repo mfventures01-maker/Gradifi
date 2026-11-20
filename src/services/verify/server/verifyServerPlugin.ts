@@ -84,7 +84,7 @@ export function verifyServerPlugin(): Plugin {
           try {
             const authorization = req.headers.authorization;
             const tokenMatch = typeof authorization === 'string'
-              ? authorization.match(/^Bearer\\s+([^\\s]+)$/i)
+              ? authorization.match(/^Bearer\s+([^\s]+)$/i)
               : null;
             if (!tokenMatch) {
               res.setHeader('Content-Type', 'application/json');
@@ -138,7 +138,7 @@ export function verifyServerPlugin(): Plugin {
           try {
             const authorization = req.headers.authorization;
             const tokenMatch = typeof authorization === 'string'
-              ? authorization.match(/^Bearer\\s+([^\\s]+)$/i)
+              ? authorization.match(/^Bearer\s+([^\s]+)$/i)
               : null;
             if (!tokenMatch) {
               res.statusCode = 401;
