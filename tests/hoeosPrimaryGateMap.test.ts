@@ -65,10 +65,26 @@ describe('Gradifi primary worktree integration contract', () => {
 
   it('defines one primary workflow with onboarding as a prerequisite to G1-G12', () => {
     const workflow = read('.github/workflows/gradifi-primary-g0-g12.yml');
-    expect(workflow).toContain('onboarding:');
-    for (const gate of ['g0-baseline', 'g1-ingestion', 'g2-canonical', 'g3-deterministic', 'g4-highlighting', 'g5-correction', 'g6-before-after', 'g7-public-receipt', 'g8-persistence', 'g9-federation', 'g10-security', 'g11-commercial-ux', 'g12-commercial-mvp']) {
-      expect(workflow).toContain(`${gate}:`);
-    }
+    expect(workflow).toContain('primary-g0-g12:');
+    const orderedSteps = [
+      'G0 - Freeze commit and install',
+      'Onboarding - School wizard and higher-education registration',
+      'G1 - Document ingestion',
+      'G2 - Canonical document authority',
+      'G3 - Deterministic forensic evidence',
+      'G4 - Source alignment, offsets and highlighting',
+      'G5 - Student correction and deterministic re-verification',
+      'G6 - Trusted before/after correction report',
+      'G7 - Public receipt and privacy boundary',
+      'G8 - Persistence and immutable evidence integrity',
+      'G9 - Provider federation hardening',
+      'G10 - Auth, tenant and AI authority security',
+      'G11 - Onboarding and public verification UX',
+      'G12 - Unified commercial MVP release contract',
+    ];
+    const positions = orderedSteps.map(step => workflow.indexOf(`name: ${step}`));
+    expect(positions.every(position => position >= 0)).toBe(true);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(workflow).toContain('RUNTIME_PRODUCTION_E2E_NOT_RUN');
   });
 });
