@@ -41,7 +41,8 @@ export const LoginPage: React.FC = () => {
   };
 
   const navigateByRole = (role: string) => {
-    if (role === 'vice_principal' || role === 'vp') navigate('/portal/vp');
+    if (role === 'superadmin') navigate('/super-admin/institutions');
+    else if (role === 'vice_principal' || role === 'vp') navigate('/portal/vp');
     else if (role === 'bursar') navigate('/portal/bursar');
     else if (role === 'student') navigate('/portal/student');
     else if (role === 'parent') navigate('/portal/parent');
