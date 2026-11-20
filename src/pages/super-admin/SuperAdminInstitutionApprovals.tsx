@@ -176,7 +176,7 @@ export const SuperAdminInstitutionApprovals: React.FC = () => {
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Initial Dean & campus</p>
                     <p className="mt-2 text-sm font-semibold text-slate-900">{item.dean_name || "Dean not provisioned"}</p>
-                    <p className="mt-1 text-xs text-slate-500">Dean identity: {item.dean_status || "Missing"} · Provisioning: {item.dean_job_status || "Missing"}</p>
+                    <p className="mt-1 text-xs text-slate-500">Dean identity: {item.dean_status || "Missing"} · Membership: {item.dean_membership_status || "Missing"} · Provisioning: {item.dean_job_status || "Missing"}</p>
                     <p className="mt-2 flex items-center gap-2 text-sm text-slate-700"><Building2 className="h-4 w-4" /> {item.campus_name || "Bootstrap campus missing"}</p>
                   </div>
                 </div>
