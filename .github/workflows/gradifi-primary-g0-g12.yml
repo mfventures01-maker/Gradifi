@@ -4,6 +4,10 @@ name: Gradifi Primary Onboarding + HOEOS G0-G12
   push:
     branches:
       - integration/gradifi-primary-2026-11-20
+  pull_request:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+  workflow_dispatch:
 
 permissions:
   contents: read
