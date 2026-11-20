@@ -273,3 +273,47 @@ Production has 68 legacy public receipt rows. All 68 have NULL `status`, `verifi
 The current G6 persistence handler was found to omit `verification_runs` and the run/hash/schema fields required by G7. It now fails closed with HTTP 503 before creating the service-role client or writing any receipt until the atomic run-plus-receipt contract is implemented. The application must define the deterministic result/manifest hash contract and atomically create the run and receipt before G6/G7/G8 can be certified. The SQL proposal adds the receipt pointer, run FK, run immutability guard and corrected public RPC contract, but is review-only.
 
 The CI workflow's G12 job is STATIC/STRUCTURAL only. It intentionally does not run `e2e/golden-path-demo-e2e.spec.ts`, which persists data. CI uses placeholder Supabase credentials and no production service-role secret. No production writes were performed.
+
+
+## 14. Final integration review checkpoint (2026-11-20)
+
+### Single-worktree delivery
+- The selected primary worktree branch contains the onboarding wizard, higher-education registration, canonical actor-onboarding client/backend, verification workbench, G1-G12 evidence suites, G6 trusted comparison endpoint/client, G7 public receipt RPC client, and one sequential CI workflow.
+- CI workflow: `.github/workflows/gradifi-primary-g0-g12.yml`.
+- Browser onboarding smoke: `e2e/onboarding-entrypoints.spec.ts`. Its CI setup stubs Auth/REST/Edge Function traffic and does not write to any Supabase project.
+- Same-worktree contract test: `tests/hoeosPrimaryGateMap.test.ts`.
+- G6 correction lifecycle and trusted comparison tests: `tests/studentCorrectionLifecycle.test.ts`, `tests/trustedCorrectionComparison.test.ts`, `tests/verifyPersistenceAuthorization.test.ts`.
+- G7 privacy/resolution tests: `tests/publicReceiptPrivacy.test.ts`, `tests/publicVerificationResolution.test.ts`.
+- The workflow is one sequential job: G0, onboarding, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12. A failed step stops the run.
+
+### G6 application contract finding
+- G5 deterministic re-verification produces the new result and passes only the two receipt IDs to the trusted G6 comparison endpoint.
+- G6 server comparison independently authenticates the user, checks active actor/tenant scope, validates both persisted receipts against their verification runs, checks both receipt and run parent links, and returns a bounded DTO without raw text or evidence envelope.
+- Correction receipt persistence remains deliberately disabled behind `RUN_RECEIPT_PERSISTENCE_CONTRACT_READY = false`. The handler validates the request and identity, then returns HTTP 503 before creating the service-role client or writing a receipt.
+- Reason: production's public receipt contract requires a complete `verification_runs` row plus receipt `verification_run_id`, `result_hash`, `manifest_hash`, `status='VALID'`, and `public_schema_version`. The existing application persistence service does not yet create this atomic run/receipt pair or define the deterministic result/manifest serialization.
+- G6 comparison is therefore STRUCTURALLY wired but not end-to-end functional until that persistence contract is implemented. G6/G7/G8/G12 are not runtime-certified.
+
+### Production contract recheck
+A further read-only catalog query confirmed:
+- `verification_runs.status` accepts `queued`, `running`, `succeeded`, `failed`, `superseded`, and `cancelled`.
+- `verification_runs.parent_run_id` has a self-reference FK.
+- `verification_runs` has RLS enabled and FORCE RLS enabled.
+- `service_role` has UPDATE and DELETE privileges on `verification_runs`, so completed-run immutability needs an explicit database guard if the table remains writable by that role.
+- The live `lookup_public_verification(text)` function is SECURITY DEFINER but currently filters `status='verified'`; this is incompatible with the live receipt status CHECK values (`VALID`, `REVOKED`, `EXPIRED`, `NOT_FOUND`, `UNAVAILABLE`). The review proposal changes the filter to `VALID` and cross-checks run/receipt hashes and lineage.
+- No production write was performed during this recheck.
+
+### Review package
+- G6 contract report: `HOEOS/G6_APPLICATION_CONTRACT_RECONCILIATION_2026-11-20.md`.
+- G0-G12 gate map: `HOEOS/GRADIFI_PRIMARY_G0_G12_GATE_MAP.md`.
+- Review-only migration proposal: `supabase/proposals/G6_CORRECTION_LINEAGE_PUBLIC_RECEIPT_2026-11-20.sql`. It remains outside `supabase/migrations/`.
+- Draft integration PR #35: https://github.com/mfventures01-maker/Gradifi/pull/35
+- PR #35 targets `repair/dean-recovery-engine-2026-11-17`, the selected base. It is draft and GitHub currently reports `mergeable=false`; it is not merged.
+- Compared to `main`, the integration branch is divergent (673 commits ahead, 1 behind in the compare response). Do not retarget or merge this work directly to `main` without a separate history reconciliation.
+- No new GitHub Actions run was returned for the current HEAD during this review. Workflow execution, typecheck, tests, build and browser runtime remain unverified on the final commit.
+
+### Final disposition
+**SAME-WORKTREE STRUCTURAL INTEGRATION: DONE.**  
+**G6 PRODUCTION APPLICATION CONTRACT: RECONCILED, WRITE PATH FAIL-CLOSED.**  
+**MIGRATION PROPOSAL: PREPARED FOR REVIEW, NOT APPLIED.**  
+**PRODUCTION DATABASE: UNTOUCHED.**  
+**RUNTIME/CERTIFICATION: PENDING CI and explicitly approved production E2E plan.**
