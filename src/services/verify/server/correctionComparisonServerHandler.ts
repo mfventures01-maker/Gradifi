@@ -43,6 +43,8 @@ type VerificationRun = {
   evidence_hash: string;
   result_hash: string | null;
   manifest_hash: string | null;
+  engine_version: string;
+  policy_version: string;
   parent_run_id: string | null;
 };
 
@@ -58,7 +60,7 @@ async function loadAuthorizedRun(
 
   const { data: run, error } = await trusted
     .from('verification_runs')
-    .select('id,institution_id,school_id,created_by_user_id,status,verification_id,document_hash,evidence_hash,result_hash,manifest_hash,parent_run_id')
+    .select('id,institution_id,school_id,created_by_user_id,status,verification_id,document_hash,evidence_hash,result_hash,manifest_hash,engine_version,policy_version,parent_run_id')
     .eq('id', receipt.verification_run_id)
     .maybeSingle();
 
@@ -68,7 +70,9 @@ async function loadAuthorizedRun(
       run.document_hash !== receipt.document_hash ||
       run.evidence_hash !== receipt.evidence_hash ||
       !receipt.result_hash || run.result_hash !== receipt.result_hash ||
-      !receipt.manifest_hash || run.manifest_hash !== receipt.manifest_hash) {
+      !receipt.manifest_hash || run.manifest_hash !== receipt.manifest_hash ||
+      run.engine_version !== receipt.engine_version ||
+      run.policy_version !== receipt.policy_version) {
     throw new CorrectionComparisonRequestError(409, 'Receipt and completed verification run do not match.');
   }
 
