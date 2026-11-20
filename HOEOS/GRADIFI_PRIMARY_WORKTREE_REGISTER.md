@@ -258,7 +258,7 @@ This is STATIC/STRUCTURAL reconciliation, not RUNTIME or CERTIFICATION evidence.
 - School onboarding wizard and higher-education registration routes are present in `src/App.tsx`; root registration and actor provisioning use the canonical `actor-onboarding` Edge Function.
 - Auth service now selects an explicit non-secret profile projection and resolves the active canonical actor.
 - Added browser smoke coverage at `e2e/onboarding-entrypoints.spec.ts`.
-- Added `.github/workflows/gradifi-primary-g0-g12.yml`, with onboarding as a prerequisite and sequential G1-G12 jobs.
+- Added `.github/workflows/gradifi-primary-g0-g12.yml`, a single-job sequential pipeline that runs onboarding after G0 and before G1, then G1-G12 in order on the same checked-out commit.
 - Added deterministic G5 correction lifecycle tests, trusted G6 comparison/auth tests, G7 RPC privacy/resolution tests, and a static same-worktree gate-map test.
 - G6 correction UI, trusted persistence endpoint, comparison endpoint, Vercel API route and Vite development middleware are now on this branch.
 - Public verification resolution now uses `lookup_public_verification(text)` and does not directly query `public_verification_records`.
