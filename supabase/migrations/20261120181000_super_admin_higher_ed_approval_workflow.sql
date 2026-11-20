@@ -26,7 +26,7 @@ create policy institution_approval_events_deny_client_access
   for all to anon, authenticated
   using (false)
   with check (false);
-revoke all on public.institution_approval_events from public, anon, authenticated;
+revoke all on public.institution_approval_events from public, anon, authenticated, service_role;
 grant select, insert on public.institution_approval_events to service_role;
 
 create or replace function public.reject_institution_approval_event_mutation()
