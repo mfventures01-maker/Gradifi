@@ -1,0 +1,216 @@
+name: Gradifi Primary Onboarding + HOEOS G0-G12
+
+on:
+  push:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+  pull_request:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  VITE_SUPABASE_URL: https://placeholder.supabase.co
+  VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+
+jobs:
+  g0-baseline:
+    name: G0 - Freeze, typecheck and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Verify primary branch and clean checkout
+        run: |
+          test "${GITHUB_REF_NAME}" = "integration/gradifi-primary-2026-11-20" || test "${{ github.event_name }}" = "pull_request"
+          git status --short
+          git rev-parse HEAD
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+
+  onboarding:
+    name: Onboarding wizard and higher-education registration
+    needs: g0-baseline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test e2e/onboarding-entrypoints.spec.ts
+
+  g1-ingestion:
+    name: G1 - Document ingestion
+    needs: onboarding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/g1_all_17_formats_contract.test.ts tests/g1_format_matrix.test.ts
+
+  g2-canonical:
+    name: G2 - Canonical document authority
+    needs: g1-ingestion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/canonicalTextOffsetModel.test.ts tests/g2_canonical_evidence_regression.test.ts tests/deterministicSimilarityEvidence.test.ts
+
+  g3-deterministic:
+    name: G3 - Deterministic forensic evidence
+    needs: g2-canonical
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/g3_deterministic_forensic_e2e.test.ts
+
+  g4-highlighting:
+    name: G4 - Source alignment, offsets and highlighting
+    needs: g3-deterministic
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/g4b_canonical_source_alignment.test.ts tests/g4c_production_finding_coordinate_integrity.test.ts tests/matchedTextHighlighting.test.ts
+
+  g5-correction:
+    name: G5 - Student correction and deterministic re-verification
+    needs: g4-highlighting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/studentCorrectionLifecycle.test.ts
+
+  g6-before-after:
+    name: G6 - Trusted before/after correction report
+    needs: g5-correction
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/trustedCorrectionComparison.test.ts tests/verifyPersistenceAuthorization.test.ts
+
+  g7-public-receipt:
+    name: G7 - Public receipt and privacy boundary
+    needs: g6-before-after
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/publicReceiptPrivacy.test.ts tests/publicVerificationResolution.test.ts tests/publicVerificationResultContract.test.ts
+
+  g8-persistence:
+    name: G8 - Persistence and immutable evidence integrity
+    needs: g7-public-receipt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/g4d_persisted_evidence_integrity.test.ts tests/verificationPersistence.test.ts
+
+  g9-federation:
+    name: G9 - Provider federation hardening
+    needs: g8-persistence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/federationHardening.test.ts
+
+  g10-security:
+    name: G10 - Auth, tenant and AI authority security
+    needs: g9-federation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/aiOutputFirewall.test.ts tests/actorProvisioningRecoveryEngine.test.ts tests/actorProvisioningRecoverySchema.test.ts tests/higherEdAuthorityContract.test.ts tests/verifyPersistenceAuthorization.test.ts
+
+  g11-commercial-ux:
+    name: G11 - Onboarding and public verification UX
+    needs:
+      - g10-security
+      - onboarding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test e2e/onboarding-entrypoints.spec.ts e2e/public-verification-route.spec.ts
+
+  g12-commercial-mvp:
+    name: G12 - Unified commercial MVP release contract
+    needs:
+      - g11-commercial-ux
+      - g8-persistence
+      - g6-before-after
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx vitest run tests/hoeosPrimaryGateMap.test.ts
+      - name: Production-write boundary
+        run: echo "RUNTIME_PRODUCTION_E2E_NOT_RUN: full G12 persistence/public-receipt runtime needs explicit production-write approval; this workflow uses placeholder Supabase credentials and performs no production writes."
