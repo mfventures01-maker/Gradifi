@@ -152,6 +152,43 @@ describe('POST /api/verify/persist authorization boundary', () => {
     expect(serviceClient.from).toHaveBeenCalledWith('public_verification_records');
   });
 
+  it('rejects a correction parent run outside the active actor tenant', async () => {
+    const parentRecord = {
+      ...VerificationPersistenceService.buildPersistenceRecord(result as any, envelope as any),
+      verification_run_id: 'parent-run-1'
+    };
+    const parentRun = {
+      id: 'parent-run-1',
+      institution_id: 'other-institution',
+      school_id: 'other-school',
+      created_by_user_id: 'someone-else',
+      status: 'succeeded',
+      verification_id: parentRecord.verification_id,
+      document_hash: parentRecord.document_hash,
+      evidence_hash: parentRecord.evidence_hash
+    };
+
+    authClient.from.mockReturnValue(queryChain({
+      data: { id: 'actor-1', institution_id: 'institution-1', school_id: 'school-1', actor_type: 'student' },
+      error: null
+    }));
+    serviceClient.from.mockImplementation((table: string) => {
+      const chain: any = {};
+      chain.select = vi.fn(() => chain);
+      chain.eq = vi.fn(() => chain);
+      chain.maybeSingle = vi.fn(async () => ({
+        data: table === 'public_verification_records' ? parentRecord : parentRun,
+        error: null
+      }));
+      return chain;
+    });
+
+    await expect(handlePersistenceServerRequest({
+      ...payload,
+      correctionOfVerificationId: parentRecord.verification_id
+    } as any, 'valid-token')).rejects.toMatchObject({ statusCode: 403 });
+  });
+
   it('rejects tampered canonical text before privileged client creation', async () => {
     const tampered = {
       ...payload,
