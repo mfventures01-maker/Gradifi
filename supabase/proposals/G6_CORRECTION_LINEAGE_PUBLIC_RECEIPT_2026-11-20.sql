@@ -153,6 +153,115 @@ begin
 end
 $correction_constraints$;
 
+-- A receipt may be marked VALID only when it has the complete run/hash projection
+-- required by the public receipt RPC. Existing NULL-status legacy rows remain intact.
+do $valid_receipt_ck$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.public_verification_records'::regclass
+      and conname = 'public_verification_records_valid_requires_run_hashes_ck'
+  ) then
+    alter table public.public_verification_records
+      add constraint public_verification_records_valid_requires_run_hashes_ck
+      check (
+        status is distinct from 'VALID'
+        or (
+          verification_run_id is not null
+          and nullif(btrim(result_hash), '') is not null
+          and nullif(btrim(manifest_hash), '') is not null
+          and nullif(btrim(public_schema_version), '') is not null
+        )
+      )
+      not valid;
+  end if;
+end
+$valid_receipt_ck$;
+
+-- verification_runs has service_role UPDATE/DELETE privileges in production.
+-- Preserve queued/running lifecycle updates, but freeze evidence and lineage once
+-- a run reaches succeeded/superseded. A correction creates a new child run; it
+-- never edits the original run's evidence or parent pointer.
+create or replace function public.guard_completed_verification_run_immutability()
+returns trigger
+language plpgsql
+set search_path = pg_catalog, public
+as $function$
+begin
+  if tg_op = 'DELETE' then
+    if old.status in ('succeeded', 'superseded') then
+      raise exception 'COMPLETED_VERIFICATION_RUN_IMMUTABLE';
+    end if;
+    return old;
+  end if;
+
+  if old.status in ('succeeded', 'superseded') then
+    if new.status not in (old.status, 'superseded')
+       or row(
+         new.institution_id,
+         new.school_id,
+         new.service_version_id,
+         new.verification_id,
+         new.source_submission_id,
+         new.document_hash,
+         new.canonical_document_hash,
+         new.evidence_hash,
+         new.manifest_hash,
+         new.result_hash,
+         new.engine_version,
+         new.policy_version,
+         new.parent_run_id,
+         new.result
+       ) is distinct from row(
+         old.institution_id,
+         old.school_id,
+         old.service_version_id,
+         old.verification_id,
+         old.source_submission_id,
+         old.document_hash,
+         old.canonical_document_hash,
+         old.evidence_hash,
+         old.manifest_hash,
+         old.result_hash,
+         old.engine_version,
+         old.policy_version,
+         old.parent_run_id,
+         old.result
+       ) then
+      raise exception 'COMPLETED_VERIFICATION_RUN_IMMUTABLE';
+    end if;
+  end if;
+
+  return new;
+end
+$function$;
+
+revoke all on function public.guard_completed_verification_run_immutability()
+  from public, anon, authenticated;
+
+drop trigger if exists verification_runs_completed_immutability
+  on public.verification_runs;
+
+create trigger verification_runs_completed_immutability
+before update or delete on public.verification_runs
+for each row
+execute function public.guard_completed_verification_run_immutability();
+
+-- The production preflight above guarantees existing non-null run references are
+-- valid. Validate the new constraints before committing the proposal.
+alter table public.public_verification_records
+  validate constraint public_verification_records_verification_run_id_fkey;
+alter table public.public_verification_records
+  validate constraint public_verification_records_correction_parent_fkey;
+alter table public.public_verification_records
+  validate constraint public_verification_records_correction_parent_format_ck;
+alter table public.public_verification_records
+  validate constraint public_verification_records_no_self_correction_ck;
+alter table public.public_verification_records
+  validate constraint public_verification_records_correction_requires_run_ck;
+alter table public.public_verification_records
+  validate constraint public_verification_records_valid_requires_run_hashes_ck;
+
 create index if not exists idx_pvr_correction_parent
   on public.public_verification_records(correction_of_verification_id)
   where correction_of_verification_id is not null;
@@ -201,7 +310,7 @@ as $function$
     and nullif(btrim(r.result_hash), '') is not null
     and nullif(btrim(r.manifest_hash), '') is not null
     and nullif(btrim(r.public_schema_version), '') is not null
-    and vr.status = 'succeeded'
+    and vr.status in ('succeeded', 'superseded')
     and vr.verification_id = r.verification_id
     and vr.document_hash = r.document_hash
     and vr.evidence_hash = r.evidence_hash
@@ -217,7 +326,7 @@ as $function$
         where parent.verification_id = r.correction_of_verification_id
           and parent.status = 'VALID'
           and parent.verification_run_id is not null
-          and parent_run.status = 'succeeded'
+          and parent_run.status in ('succeeded', 'superseded')
           and vr.parent_run_id = parent_run.id
       )
     )
