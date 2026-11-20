@@ -188,14 +188,18 @@ export async function handlePersistenceServerRequest(
 
     const { data: parentRun, error: parentRunError } = await serverSupabase
       .from('verification_runs')
-      .select('id,institution_id,school_id,created_by_user_id,status,verification_id,document_hash,evidence_hash')
+      .select('id,institution_id,school_id,created_by_user_id,status,verification_id,document_hash,evidence_hash,result_hash,manifest_hash,engine_version,policy_version')
       .eq('id', parent.verification_run_id)
       .maybeSingle();
     if (parentRunError || !parentRun ||
         !['succeeded', 'superseded'].includes(parentRun.status) ||
         parentRun.verification_id !== parent.verification_id ||
         parentRun.document_hash !== parent.document_hash ||
-        parentRun.evidence_hash !== parent.evidence_hash) {
+        parentRun.evidence_hash !== parent.evidence_hash ||
+        !parent.result_hash || parentRun.result_hash !== parent.result_hash ||
+        !parent.manifest_hash || parentRun.manifest_hash !== parent.manifest_hash ||
+        parentRun.engine_version !== parent.engine_version ||
+        parentRun.policy_version !== parent.policy_version) {
       throw new PersistenceRequestError(409, 'Correction parent verification run is missing or failed integrity checks.');
     }
 
