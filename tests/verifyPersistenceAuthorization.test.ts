@@ -165,7 +165,11 @@ describe('POST /api/verify/persist authorization boundary', () => {
       status: 'succeeded',
       verification_id: parentRecord.verification_id,
       document_hash: parentRecord.document_hash,
-      evidence_hash: parentRecord.evidence_hash
+      evidence_hash: parentRecord.evidence_hash,
+      result_hash: parentRecord.result_hash,
+      manifest_hash: parentRecord.manifest_hash,
+      engine_version: parentRecord.engine_version,
+      policy_version: parentRecord.policy_version
     };
 
     authClient.from.mockReturnValue(queryChain({
