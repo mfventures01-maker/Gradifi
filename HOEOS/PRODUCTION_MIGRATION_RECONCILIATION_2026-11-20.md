@@ -7,8 +7,8 @@ Status: forensic reconciliation only. No production DDL, data mutation, migratio
 
 ## Executive result
 
-- Production migration history contains all five November 18 migration versions, but their original SQL definitions were not recovered from the inspected repository branches.
-- Production catalog evidence establishes the current effective schema/security state for those five areas. It does not prove the exact historical SQL text or the precise sequence of statements that produced that state.
+- Production PostgreSQL logs yielded the original submitted SQL for all five November 18 migrations. The exact SQL bodies have been restored to the primary integration branch under their production migration versions.
+- The live catalog was independently inspected to compare the resulting effective schema/security state with those recovered statements. No migration was replayed.
 - The PIN lockout function in production matches the implementation in the repository's PIN migration file, but the migration version in production is `20261118120306` while the repository filename is `20261118123000_fix_pin_lockout_extension_20261118.sql`. This is a migration filename/version discrepancy, not an observed function-body discrepancy.
 - G6 correction lineage is not present in production. The candidate G6 migration exists in repository branches, but the live table has no correction pointer column, FK, check constraint, or supporting index.
 - No production changes are authorized or proposed by this report.
@@ -26,9 +26,15 @@ The production migration inventory reports these exact entries:
 | `20261118092019` | `tighten_verify_upload_metadata_grants` |
 | `20261118120306` | `fix_pin_lockout_extension_20261118` |
 
-The five November 18 SQL files were not found in the selected integration base, the unified integration branch, the onboarding auth branch, or the inspected G0/G1/G6/production-reconciliation branch candidates. Repository search also did not return indexed matches for the exact migration names. This is evidence of a repository source gap in the inspected branch set, not proof that no historical copy exists anywhere.
+The five November 18 files were absent from the selected integration base and the inspected repository branch candidates. Their original submitted statements were recovered from production PostgreSQL logs for project `ehkmfnaqkdgkjmdxxbwj`, with timestamps matching the production migration versions. The SQL was restored to the integration branch at:
 
-The migration history table stores version/name metadata. It does not contain the original SQL body. The current catalog can be used to document effective state, but must not be represented as an exact recovery of historical migration source.
+- `supabase/migrations/20261118085337_public_demo_security_tenant_isolation_trial_controls.sql`
+- `supabase/migrations/20261118085407_qualify_verify_tenant_ownership_policy_columns.sql`
+- `supabase/migrations/20261118085447_convert_internal_reporting_views_to_invoker_security.sql`
+- `supabase/migrations/20261118091905_verify_private_document_storage_and_upload_records.sql`
+- `supabase/migrations/20261118092019_tighten_verify_upload_metadata_grants.sql`
+
+The production log records were at 08:53:37.473, 08:54:07.168, 08:54:47.638, 09:19:05.804, and 09:20:19.873 UTC on 2026-11-18. The restored files preserve the submitted migration bodies, excluding the Supabase log wrapper and migration-history bookkeeping appended by the management API.
 
 ## 2. Effective production state for the five missing migrations
 
@@ -52,11 +58,11 @@ Observed policy expressions include explicit outer-table qualification:
 - `submissions_insert_member_owner` and `submissions_update_member_owner` validate project/institution ownership through `projects p`, with `p.id = submissions.project_id` and `p.institution_id = submissions.institution_id`.
 - Both families also bind the authenticated owner and current institution membership.
 
-Interpretation: the current catalog has qualified tenant/project ownership references in the relevant policy checks. This confirms effective expressions only; it does not establish that these were the only changes made by the missing migration.
+Important sequence finding: the first migration created the initial owner/member policies with unqualified references in the tenant/project subqueries. In those expressions, an unqualified `institution_id` can resolve to the inner relation and become a tautological self-comparison. The second migration explicitly drops and recreates the four affected INSERT/UPDATE policies using `documents.institution_id`, `documents.tenant_id`, `submissions.institution_id`, and `submissions.project_id`. The live catalog now shows the qualified expressions. This is a confirmed historical repair, not merely a cosmetic naming change.
 
 ### 2.3 `20261118085447_convert_internal_reporting_views_to_invoker_security`
 
-Every public view returned by the production catalog query has `security_invoker=true`. The observed views include:
+The recovered migration itself changes these seven views to `security_invoker=true`: `import_progress_view`, `invites_public`, `pipeline_health`, `queue_health`, `result_sheet_view`, `student_sequence_status`, and `superadmin_fsm_overview`. Every public view returned by the later production catalog query also has `security_invoker=true`. The observed catalog views include:
 
 - `pipeline_health`
 - `student_sequence_status`
@@ -74,7 +80,7 @@ Every public view returned by the production catalog query has `security_invoker
 
 There are 13 views in this observed list. Each returned `reloptions` containing `security_invoker=true`.
 
-Interpretation: the current public-view catalog reflects invoker security. The view definitions and reloptions are effective-state evidence, not the original migration text.
+Interpretation: the seven intended view changes are present, and the broader live public-view inventory is also configured for invoker security.
 
 ### 2.4 `20261118091905_verify_private_document_storage_and_upload_records`
 
@@ -120,7 +126,7 @@ The live `public.auth_pin_login(text,text)` definition matches the repository mi
 
 Production routine privileges observed: EXECUTE for `service_role` and `postgres`; no EXECUTE grant was observed for `public`, `anon`, or `authenticated`.
 
-Conclusion: implementation/body and execution boundary match the repository candidate. The filename timestamp did not match the production applied version. I corrected the auth-projection branch by adding `20261118120306_fix_pin_lockout_extension_20261118.sql` and deleting the mismatched `20261118123000_...` file. The correction is on `fix/onboarding-source-auth-projection-2026-11-18` (new-file commit `4c4e33b8d1a0eaccbf80d2d553417b944f267c4f`; deletion commit `c0f23e47a9d6a3de5afc663156e9cc5bf3404cd5`). This is a repository-only correction. Do not replay this migration on production.
+Conclusion: implementation/body and execution boundary match the repository candidate. The filename timestamp did not match the production applied version. I corrected the auth-projection branch by adding `20261118120306_fix_pin_lockout_extension_20261118.sql` and deleting the mismatched `20261118123000_...` file. The correction is on `fix/onboarding-source-auth-projection-2026-11-18` (new-file commit `4c4e33b8d1a0eaccbf80d2d553417b944f267c4f`; deletion commit `c0f23e47a9d6a3de5afc663156e9cc5bf3404cd5`). The same correctly versioned file was also added to the primary integration branch (commit `7d2c7743a0eeea5b5cd985d078ef8cb1cc54e6e6`). This is repository-only reconciliation. Do not replay this migration on production.
 
 ## 4. G6 correction-lineage schema
 
@@ -153,16 +159,15 @@ Do not apply either candidate as-is. First settle the canonical pointer name, pu
 
 ## 6. Safe next actions
 
-1. Preserve this report as the production forensic baseline.
-2. Recover any original five SQL files from local clones, deployment archives, SQL editor history, CI artifacts, or operator backups. Do not fabricate historical SQL from object names.
-3. If originals remain unavailable, author a separately named, catalog-backed *reconciliation* migration only for demonstrable drift between repository desired state and production. It must not be a pretend copy of the historical migrations.
-4. PIN migration filename/version has been corrected on the auth-projection PR branch without running it against production.
-5. Keep G6 unapplied until its public receipt privacy contract and full migration are reviewed.
-6. For every eventual production write: inspect the exact SQL, obtain explicit approval, establish a recovery point, apply one migration at a time, and verify immediately.
+1. Preserve the five restored production migration files and their log provenance on the primary integration branch.
+2. Run static migration ordering/duplicate-version checks and compare each restored migration's resulting catalog objects with the live production schema. Do not replay already-applied migrations.
+3. PIN migration filename/version has been corrected on both the auth-projection PR branch and the primary integration branch without running it against production.
+4. Keep G6 unapplied until its public receipt privacy contract and full migration are reviewed.
+5. For every eventual production write: inspect the exact SQL, obtain explicit approval, establish a recovery point, apply one migration at a time, and verify immediately.
 
 ## Evidence classification
 
-- **STATIC:** repository candidate PIN and G6 migration files; branch/tree checks; migration inventory.
-- **STRUCTURAL:** production catalog columns, constraints, policies, views, grants, bucket metadata, indexes, and function definition.
+- **STATIC:** recovered migration SQL from production logs; repository migration files; candidate PIN and G6 migrations; branch/tree checks; migration inventory.
+- **STRUCTURAL:** production catalog columns, constraints, policies, views, grants, bucket metadata, indexes, and function definition; comparison with recovered migration intent.
 - **RUNTIME:** not performed in this reconciliation.
 - **CERTIFICATION:** not claimed. This report does not certify the end-to-end upload, PIN login, trial controls, G6 correction flow, or tenant isolation at runtime.
