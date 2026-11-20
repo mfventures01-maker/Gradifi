@@ -1,11 +1,11 @@
 /**
  * GRADIFI VERIFY - PUBLIC VERIFICATION RESOLUTION SERVICE
- * HOEOS G6.3 Standard: Public Resolution, Format Validation, Hash Grounding & Integrity Checks.
+ * G7 public receipt reads are served only by lookup_public_verification().
+ * The RPC is SECURITY DEFINER and returns a bounded metadata DTO; the browser
+ * never queries public_verification_records directly or selects evidence_envelope.
  */
-
 import { supabase } from '../../lib/supabase.js';
 import { PublicVerificationRecord, VerificationPersistenceService } from './verificationPersistenceService.js';
-import { validatePersistedVerificationRecord } from './verificationPersistenceIntegrity.js';
 
 export type PublicResolutionStatus =
   | 'VALID'
@@ -23,33 +23,17 @@ export interface PublicVerificationResolution {
 }
 
 export class PublicVerificationService {
-  /**
-   * Validates the format of a public verification ID.
-   * Format: VRF- followed by 12 hex characters (e.g. VRF-8AFCFF6056B0)
-   */
   static validateVerificationIdFormat(verificationId: string): boolean {
-    if (!verificationId || typeof verificationId !== 'string') {
-      return false;
-    }
-    const cleanId = verificationId.trim().toUpperCase();
-    return /^VRF-[0-9A-F]{12}$/.test(cleanId);
+    return typeof verificationId === 'string' &&
+      /^VRF-[0-9A-F]{12}$/i.test(verificationId.trim());
   }
 
-  /**
-   * Resolves a public verification record from the authoritative public.public_verification_records table.
-   * Performs format validation, database query, and strict identity/hash integrity validation.
-   */
   async resolveVerification(verificationId: string): Promise<PublicVerificationResolution> {
     if (!verificationId || verificationId.trim().length === 0) {
-      return {
-        status: 'INVALID_FORMAT',
-        verificationId: verificationId || '',
-        errorMessage: 'Verification ID is required.',
-      };
+      return { status: 'INVALID_FORMAT', verificationId: verificationId || '', errorMessage: 'Verification ID is required.' };
     }
 
     const cleanId = verificationId.trim().toUpperCase();
-
     if (!PublicVerificationService.validateVerificationIdFormat(cleanId)) {
       return {
         status: 'INVALID_FORMAT',
@@ -59,76 +43,84 @@ export class PublicVerificationService {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('public_verification_records')
-        .select('*')
-        .eq('verification_id', cleanId)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc('lookup_public_verification', {
+        p_verification_id: cleanId,
+      });
 
-      if (error && error.code !== 'PGRST116') {
-        console.warn('Public verification query returned error:', error.message);
+      if (error) {
+        console.warn('Public verification RPC returned error:', error.message);
         return {
           status: 'RESOLUTION_ERROR',
           verificationId: cleanId,
-          errorMessage: `Database error: ${error.message}`,
+          errorMessage: 'Public verification is temporarily unavailable.',
         };
       }
 
-      if (!data) {
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
         return {
           status: 'NOT_FOUND',
           verificationId: cleanId,
-          errorMessage: `No verification record found for ID '${cleanId}'.`,
+          errorMessage: `No publicly resolvable verification receipt exists for ID '${cleanId}'.`,
         };
       }
 
-      // PHASE 3 — Integrity Validation: Check document_hash <-> verification_id correlation
-      if (!data.document_hash || typeof data.document_hash !== 'string') {
+      const dto = data as Record<string, unknown>;
+      const record: PublicVerificationRecord = {
+        verification_id: String(dto.verificationId || ''),
+        document_hash: String(dto.documentHash || ''),
+        evidence_hash: String(dto.evidenceHash || ''),
+        engine_version: String(dto.engineVersion || ''),
+        policy_version: String(dto.policyVersion || ''),
+        overall_similarity: Number(dto.overallSimilarity),
+        total_sources_found: Number(dto.sourceCount),
+        correction_of_verification_id: typeof dto.correctionOfVerificationId === 'string'
+          ? dto.correctionOfVerificationId
+          : null,
+        created_at: typeof dto.createdAt === 'string' ? dto.createdAt : undefined,
+      };
+
+      if (!record.document_hash || !record.evidence_hash || !record.engine_version ||
+          !record.policy_version || !Number.isFinite(record.overall_similarity) ||
+          record.overall_similarity < 0 || record.overall_similarity > 100 ||
+          !Number.isInteger(record.total_sources_found) || record.total_sources_found < 0 ||
+          typeof dto.resultHash !== 'string' || !dto.resultHash ||
+          typeof dto.manifestHash !== 'string' || !dto.manifestHash ||
+          typeof dto.schemaVersion !== 'string' || !dto.schemaVersion) {
         return {
           status: 'MALFORMED_RECORD',
           verificationId: cleanId,
-          errorMessage: 'Verification record is missing required document_hash.',
+          errorMessage: 'Public receipt metadata is incomplete or invalid.',
         };
       }
 
-      const expectedDerivedId = VerificationPersistenceService.deriveVerificationId(data.document_hash, data.evidence_hash);
-      if (expectedDerivedId !== cleanId) {
+      const expectedId = VerificationPersistenceService.deriveVerificationId(
+        record.document_hash,
+        record.evidence_hash,
+      );
+      if (record.verification_id !== cleanId || expectedId !== cleanId) {
         return {
           status: 'INTEGRITY_FAILED',
           verificationId: cleanId,
-          errorMessage: `Verification integrity check failed: Verification ID '${cleanId}' does not match document hash derived ID '${expectedDerivedId}'.`,
+          errorMessage: 'Public receipt identity does not match its document and evidence hashes.',
         };
       }
 
-      // Validate presence of required evidence fields
-      if (!data.evidence_hash || !data.evidence_envelope) {
+      if (record.correction_of_verification_id &&
+          !PublicVerificationService.validateVerificationIdFormat(record.correction_of_verification_id)) {
         return {
           status: 'MALFORMED_RECORD',
           verificationId: cleanId,
-          errorMessage: 'Verification record is missing required evidence_hash or evidence_envelope.',
+          errorMessage: 'Correction lineage metadata is malformed.',
         };
       }
 
-      const integrity = validatePersistedVerificationRecord(data);
-      if (integrity.status !== 'VALID') {
-        return {
-          status: integrity.status,
-          verificationId: cleanId,
-          errorMessage: integrity.reason || 'Persisted verification integrity validation failed.',
-        };
-      }
-
-      return {
-        status: 'VALID',
-        verificationId: cleanId,
-        record: data as PublicVerificationRecord,
-      };
-    } catch (err: any) {
-      console.error('Public verification resolution error:', err);
+      return { status: 'VALID', verificationId: cleanId, record };
+    } catch (error) {
+      console.error('Public verification resolution error:', error);
       return {
         status: 'RESOLUTION_ERROR',
         verificationId: cleanId,
-        errorMessage: err?.message || 'An unexpected error occurred resolving the verification record.',
+        errorMessage: 'An unexpected error occurred resolving the verification receipt.',
       };
     }
   }
