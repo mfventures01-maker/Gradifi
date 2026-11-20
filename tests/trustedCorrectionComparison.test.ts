@@ -24,16 +24,19 @@ function receipt(rawText: string, evidenceSeed: string, score: number, findings:
     engine_version: result.engineVersion, policy_version: result.policyVersion,
     overall_similarity: score, total_sources_found: 1,
     correction_of_verification_id: parent ?? null,
-    evidence_envelope: { deterministicResult: result, canonicalDocument: { rawText } }
+    evidence_envelope: { deterministicResult: result, canonicalDocument: { rawText } },
+    verification_run_id: null as string | null,
+    result_hash: 'a'.repeat(64),
+    manifest_hash: 'b'.repeat(64),
   };
 }
 
-function chain(result: any) {
-  const q: any = {};
-  q.select = vi.fn(() => q);
-  q.eq = vi.fn(() => q);
-  q.maybeSingle = vi.fn(async () => result);
-  return q;
+function queryChain(final: { data: any; error: any }) {
+  const chain: any = {};
+  chain.select = vi.fn(() => chain);
+  chain.eq = vi.fn(() => chain);
+  chain.maybeSingle = vi.fn(async () => final);
+  return chain;
 }
 
 describe('G6 trusted correction comparison', () => {
@@ -44,45 +47,77 @@ describe('G6 trusted correction comparison', () => {
   };
   const original = receipt('Original submitted document text.', 'original-evidence', 45, [originalFinding]);
   const corrected = receipt('Corrected submitted document text.', 'corrected-evidence', 12, [], original.verification_id);
+  original.verification_run_id = 'run-original';
+  corrected.verification_run_id = 'run-corrected';
+
+  const originalRun = {
+    id: 'run-original', institution_id: 'institution-1', school_id: 'school-1',
+    created_by_user_id: 'user-1', status: 'succeeded',
+    verification_id: original.verification_id, document_hash: original.document_hash,
+    evidence_hash: original.evidence_hash, result_hash: original.result_hash,
+    manifest_hash: original.manifest_hash, parent_run_id: null
+  };
+  const correctedRun = {
+    id: 'run-corrected', institution_id: 'institution-1', school_id: 'school-1',
+    created_by_user_id: 'user-1', status: 'succeeded',
+    verification_id: corrected.verification_id, document_hash: corrected.document_hash,
+    evidence_hash: corrected.evidence_hash, result_hash: corrected.result_hash,
+    manifest_hash: corrected.manifest_hash, parent_run_id: 'run-original'
+  };
+
   const authClient = {
     auth: { getUser: vi.fn(async () => ({ data: { user: { id: 'user-1' } }, error: null })) },
-    from: vi.fn(() => chain({ data: { id: 'actor-1' }, error: null }))
+    from: vi.fn(() => queryChain({ data: {
+      id: 'actor-1', institution_id: 'institution-1', school_id: 'school-1', actor_type: 'student'
+    }, error: null }))
   };
+
+  let currentReceiptId = '';
+  let currentRunId = '';
+  let originalFixture = original;
+  let correctedFixture = corrected;
+  let originalRunFixture = originalRun;
+  let correctedRunFixture = correctedRun;
+
   const trustedClient = {
     from: vi.fn((table: string) => {
-      if (table !== 'public_verification_records') throw new Error('unexpected table');
-      return chain({
-        data: currentId === original.verification_id ? original : corrected,
-        error: null
+      const q: any = {};
+      q.select = vi.fn(() => q);
+      q.eq = vi.fn((_field: string, id: string) => {
+        if (table === 'public_verification_records') currentReceiptId = id;
+        if (table === 'verification_runs') currentRunId = id;
+        return q;
       });
+      q.maybeSingle = vi.fn(async () => {
+        if (table === 'public_verification_records') {
+          return { data: currentReceiptId === original.verification_id ? originalFixture : correctedFixture, error: null };
+        }
+        if (table === 'verification_runs') {
+          return { data: currentRunId === originalRun.id ? originalRunFixture : correctedRunFixture, error: null };
+        }
+        throw new Error(`unexpected table: ${table}`);
+      });
+      return q;
     })
   };
-  let currentId = '';
 
   beforeEach(() => {
     vi.clearAllMocks();
+    originalFixture = original;
+    correctedFixture = corrected;
+    originalRunFixture = originalRun;
+    correctedRunFixture = correctedRun;
+    currentReceiptId = '';
+    currentRunId = '';
     process.env.VITE_SUPABASE_URL = 'https://project.supabase.co';
     process.env.VITE_SUPABASE_ANON_KEY = 'anon-test';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-test';
     createClientMock.mockImplementation((_url: string, key: string) =>
       key === 'anon-test' ? authClient : trustedClient
     );
-    trustedClient.from.mockImplementation(() => {
-      const q: any = {};
-      q.select = vi.fn(() => q);
-      q.eq = vi.fn((_field: string, id: string) => {
-        currentId = id;
-        return q;
-      });
-      q.maybeSingle = vi.fn(async () => ({
-        data: currentId === original.verification_id ? original : corrected,
-        error: null
-      }));
-      return q;
-    });
   });
 
-  it('returns a safe receipt-grounded DTO and never returns private evidence', async () => {
+  it('returns a safe receipt-grounded DTO after validating both tenant-scoped runs', async () => {
     const result = await handleCorrectionComparisonRequest({
       originalVerificationId: original.verification_id,
       correctedVerificationId: corrected.verification_id
@@ -97,19 +132,32 @@ describe('G6 trusted correction comparison', () => {
     expect(createClientMock).toHaveBeenCalledTimes(2);
   });
 
-  it('rejects a corrected receipt without the correct parent relationship', async () => {
-    const orphan = { ...corrected, correction_of_verification_id: null };
-    trustedClient.from.mockImplementation(() => {
-      const q: any = {};
-      q.select = vi.fn(() => q);
-      q.eq = vi.fn((_field: string, id: string) => { currentId = id; return q; });
-      q.maybeSingle = vi.fn(async () => ({ data: idFor(currentId, original, orphan), error: null }));
-      return q;
-    });
+  it('rejects a corrected receipt without the correct receipt and run parent relationships', async () => {
+    correctedFixture = { ...corrected, correction_of_verification_id: null };
+    correctedRunFixture = { ...correctedRun, parent_run_id: null };
+
     await expect(handleCorrectionComparisonRequest({
       originalVerificationId: original.verification_id,
-      correctedVerificationId: orphan.verification_id
-    }, 'valid-token')).rejects.toBeInstanceOf(CorrectionComparisonRequestError);
+      correctedVerificationId: corrected.verification_id
+    }, 'valid-token')).rejects.toMatchObject({ statusCode: 409 });
+  });
+
+  it('rejects a run belonging to another institution', async () => {
+    correctedRunFixture = { ...correctedRun, institution_id: 'other-institution' };
+
+    await expect(handleCorrectionComparisonRequest({
+      originalVerificationId: original.verification_id,
+      correctedVerificationId: corrected.verification_id
+    }, 'valid-token')).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('rejects receipts without a canonical verification run', async () => {
+    correctedFixture = { ...corrected, verification_run_id: null };
+
+    await expect(handleCorrectionComparisonRequest({
+      originalVerificationId: original.verification_id,
+      correctedVerificationId: corrected.verification_id
+    }, 'valid-token')).rejects.toMatchObject({ statusCode: 409 });
   });
 
   it('rejects missing authentication before creating Supabase clients', async () => {
@@ -117,9 +165,6 @@ describe('G6 trusted correction comparison', () => {
       originalVerificationId: original.verification_id,
       correctedVerificationId: corrected.verification_id
     }, '')).rejects.toMatchObject({ statusCode: 401 });
+    expect(createClientMock).not.toHaveBeenCalled();
   });
 });
-
-function idFor(id: string, original: any, corrected: any) {
-  return id === original.verification_id ? original : corrected;
-}
