@@ -96,3 +96,9 @@ The live database already contains P2/R1/R2/R3-01 migrations, but the inspected 
 ## Browser regression coverage
 
 The Playwright suite `e2e/super-admin-institution-approval.spec.ts` covers unauthenticated denial, an authorized approval with reason and receipt, and the disabled-approval state when Dean provisioning is incomplete. The primary G0-G12 workflow includes this spec in both the onboarding smoke step and the G11 browser regression step. These tests use mocked Auth and RPC responses; they do not certify the live database transaction or production Auth journey.
+
+## Security implementation notes
+
+- `is_current_user_super_admin()` is an invoker-scoped identity predicate. It can only confirm the caller's own active platform actor through `auth.uid()` and the existing own-actor RLS boundary.
+- The approval event table has an explicit deny-all client policy in addition to revoked `anon`/`authenticated` table privileges. Trusted server-side operations remain separate.
+- The queue and decision functions are the only client-facing paths for approval data and state transitions; both perform their own Super Admin check.
