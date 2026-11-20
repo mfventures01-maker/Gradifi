@@ -123,74 +123,20 @@ describe('POST /api/verify/persist authorization boundary', () => {
     expect(createClientMock).toHaveBeenCalledTimes(1);
   });
 
-  it('allows an authenticated active actor and returns only the safe receipt DTO', async () => {
-    const response = await handlePersistenceServerRequest(payload as any, 'valid-token');
-
-    expect(response.status).toBe('CREATED');
-    expect(response.record.verification_id).toBe(
-      VerificationPersistenceService.deriveVerificationId(documentHash, evidenceHash)
-    );
-    expect(response.record).not.toHaveProperty('evidence_envelope');
-    expect(Object.keys(response.record).sort()).toEqual([
-      'correction_of_verification_id',
-      'created_at',
-      'document_hash',
-      'engine_version',
-      'evidence_hash',
-      'overall_similarity',
-      'policy_version',
-      'total_sources_found',
-      'verification_id'
-    ]);
-    expect(response.record).not.toHaveProperty('id');
-    expect(response.record).not.toHaveProperty('verification_run_id');
-    expect(response.record).not.toHaveProperty('result_hash');
-    expect(response.record).not.toHaveProperty('manifest_hash');
-    expect(response.record).not.toHaveProperty('status');
-    expect(response.record).not.toHaveProperty('public_schema_version');
-    expect(createClientMock).toHaveBeenCalledTimes(2);
-    expect(serviceClient.from).toHaveBeenCalledWith('public_verification_records');
+  it('fails closed for an authenticated actor until atomic run-plus-receipt persistence is implemented', async () => {
+    await expect(handlePersistenceServerRequest(payload as any, 'valid-token'))
+      .rejects.toMatchObject({ statusCode: 503 });
+    expect(createClientMock).toHaveBeenCalledTimes(1);
+    expect(serviceClient.from).not.toHaveBeenCalled();
   });
 
-  it('rejects a correction parent run outside the active actor tenant', async () => {
-    const parentRecord = {
-      ...VerificationPersistenceService.buildPersistenceRecord(result as any, envelope as any),
-      verification_run_id: 'parent-run-1'
-    };
-    const parentRun = {
-      id: 'parent-run-1',
-      institution_id: 'other-institution',
-      school_id: 'other-school',
-      created_by_user_id: 'someone-else',
-      status: 'succeeded',
-      verification_id: parentRecord.verification_id,
-      document_hash: parentRecord.document_hash,
-      evidence_hash: parentRecord.evidence_hash,
-      result_hash: parentRecord.result_hash,
-      manifest_hash: parentRecord.manifest_hash,
-      engine_version: parentRecord.engine_version,
-      policy_version: parentRecord.policy_version
-    };
-
-    authClient.from.mockReturnValue(queryChain({
-      data: { id: 'actor-1', institution_id: 'institution-1', school_id: 'school-1', actor_type: 'student' },
-      error: null
-    }));
-    serviceClient.from.mockImplementation((table: string) => {
-      const chain: any = {};
-      chain.select = vi.fn(() => chain);
-      chain.eq = vi.fn(() => chain);
-      chain.maybeSingle = vi.fn(async () => ({
-        data: table === 'public_verification_records' ? parentRecord : parentRun,
-        error: null
-      }));
-      return chain;
-    });
-
+  it('does not read or write a correction parent while the canonical run projection is disabled', async () => {
     await expect(handlePersistenceServerRequest({
       ...payload,
-      correctionOfVerificationId: parentRecord.verification_id
-    } as any, 'valid-token')).rejects.toMatchObject({ statusCode: 403 });
+      correctionOfVerificationId: 'VRF-ABCDEF012345'
+    } as any, 'valid-token')).rejects.toMatchObject({ statusCode: 503 });
+    expect(createClientMock).toHaveBeenCalledTimes(1);
+    expect(serviceClient.from).not.toHaveBeenCalled();
   });
 
   it('rejects tampered canonical text before privileged client creation', async () => {
