@@ -107,6 +107,7 @@ Observed:
 - No anon table/column grant was observed.
 - The table contains 68 rows.
 - All 68 rows have NULL `status`, `verification_run_id`, `result_hash`, `manifest_hash`, and `public_schema_version`.
+- Historical hash lengths are mixed: 60 rows have 16/16-character document/evidence hashes, four have 64/64, three have 64/16, and one has 16/64. The public client therefore accepts both 16- and 64-hex legacy hash lengths while still validating the derived receipt ID. No legacy hash is rewritten or backfilled.
 
 ### 4.2 Public lookup function defect
 
