@@ -92,3 +92,7 @@ $$;
 ## Operational caveat
 
 The live database already contains P2/R1/R2/R3-01 migrations, but the inspected GitHub integration branch did not contain their corresponding migration files. Reconcile and commit that migration baseline before treating a clean-clone migration replay as certified. This workflow migration intentionally depends on those live schema objects and must not be applied to an older database snapshot that lacks them.
+
+## Browser regression coverage
+
+The Playwright suite `e2e/super-admin-institution-approval.spec.ts` covers unauthenticated denial, an authorized approval with reason and receipt, and the disabled-approval state when Dean provisioning is incomplete. The primary G0-G12 workflow includes this spec in both the onboarding smoke step and the G11 browser regression step. These tests use mocked Auth and RPC responses; they do not certify the live database transaction or production Auth journey.
