@@ -32,6 +32,7 @@ const pendingInstitution = {
   dean_user_id: "d0000000-0000-4000-8000-000000000001",
   dean_name: "Demo Dean",
   dean_status: "active",
+  dean_membership_status: "active",
   dean_job_status: "active",
   campus_id: "e0000000-0000-4000-8000-000000000001",
   campus_name: "Example Polytechnic Main Campus",
