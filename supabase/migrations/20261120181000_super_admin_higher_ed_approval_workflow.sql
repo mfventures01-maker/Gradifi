@@ -189,6 +189,7 @@ begin
       on a.auth_user_id = p.user_id
       and a.institution_id = i.id
       and a.actor_type = p.role
+      and a.auth_method = 'email'
     where p.institution_id = i.id
       and p.role in ('vice_chancellor', 'rector')
     order by p.created_at asc
@@ -197,7 +198,7 @@ begin
   left join lateral (
     select a.auth_user_id, p.full_name, a.status, a.id, m.status as membership_status
     from public.identity_actors a
-    left join public.profiles p
+    join public.profiles p
       on p.user_id = a.auth_user_id
       and p.institution_id = a.institution_id
       and p.role = 'dean'
