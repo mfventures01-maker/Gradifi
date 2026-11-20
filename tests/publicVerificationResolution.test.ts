@@ -1,98 +1,81 @@
-/**
- * GRADIFI VERIFY - HOEOS G6.3 PUBLIC VERIFICATION RESOLUTION SUITE
- * Unit & Integration Contract Tests for PublicVerificationService & Route Resolution
- */
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
+const { rpcMock } = vi.hoisted(() => ({ rpcMock: vi.fn() }));
+vi.mock('../src/lib/supabase.js', () => ({ supabase: { rpc: rpcMock } }));
 
-import {
-  PublicVerificationService,
-  publicVerificationService,
-} from '../src/services/verify/publicVerificationService';
-import { VerificationPersistenceService } from '../src/services/verify/verificationPersistenceService';
-import { EvidenceEngineResult } from '../src/services/verify/types';
+import { PublicVerificationService } from '../src/services/verify/publicVerificationService.js';
+import { VerificationPersistenceService } from '../src/services/verify/verificationPersistenceService.js';
 
-async function runPublicResolutionTests() {
-  console.log('🧪 GRADIFI VERIFY - HOEOS G6.3 PUBLIC RESOLUTION SUITE');
-  console.log('======================================================');
+describe('G7 public verification resolution contract', () => {
+  const documentHash = '8afcff6056b0d9123456789abcdef0123456789abcdef0123456789abcdef012';
+  const evidenceHash = '9b0123456789abcdef';
+  const verificationId = VerificationPersistenceService.deriveVerificationId(documentHash, evidenceHash);
+  const receipt = {
+    verificationId,
+    documentHash,
+    evidenceHash,
+    resultHash: 'a'.repeat(64),
+    manifestHash: 'b'.repeat(64),
+    engineVersion: 'G5-DETERMINISTIC-v1',
+    policyVersion: 'G3-POLICY-v1',
+    overallSimilarity: 12.5,
+    sourceCount: 2,
+    createdAt: '2026-11-20T00:00:00.000Z',
+    schemaVersion: 'PUBLIC-RECEIPT-v1',
+    correctionOfVerificationId: null,
+  };
 
-  let passed = 0;
-  let total = 0;
+  beforeEach(() => {
+    vi.clearAllMocks();
+    rpcMock.mockResolvedValue({ data: receipt, error: null });
+  });
 
-  function assert(condition: boolean, description: string) {
-    total++;
-    if (condition) {
-      console.log(`  ✅ PASS: ${description}`);
-      passed++;
-    } else {
-      console.error(`  ❌ FAIL: ${description}`);
-      throw new Error(`Test failed: ${description}`);
-    }
-  }
+  it('validates canonical receipt ID shape', () => {
+    expect(PublicVerificationService.validateVerificationIdFormat('VRF-8AFCFF609B01')).toBe(true);
+    expect(PublicVerificationService.validateVerificationIdFormat('vrf-8afcff609b01')).toBe(true);
+    expect(PublicVerificationService.validateVerificationIdFormat('VRF-SHORT')).toBe(false);
+    expect(PublicVerificationService.validateVerificationIdFormat('')).toBe(false);
+  });
 
-  // TEST 1: Verification ID Format Validation
-  console.log('\n1. Verification ID Format Validation:');
-  assert(PublicVerificationService.validateVerificationIdFormat('VRF-8AFCFF6056B0'), 'VRF-8AFCFF6056B0 is valid format');
-  assert(PublicVerificationService.validateVerificationIdFormat('vrf-8afcff6056b0'), 'Case insensitive format is valid');
-  assert(!PublicVerificationService.validateVerificationIdFormat('VRF-SHORT'), 'Short ID rejected');
-  assert(!PublicVerificationService.validateVerificationIdFormat('INVALID_PREFIX_123'), 'Invalid prefix rejected');
-  assert(!PublicVerificationService.validateVerificationIdFormat(''), 'Empty string rejected');
+  it('returns a valid receipt from the allowlisted public RPC', async () => {
+    const result = await new PublicVerificationService().resolveVerification(verificationId);
+    expect(rpcMock).toHaveBeenCalledWith('lookup_public_verification', {
+      p_verification_id: verificationId,
+    });
+    expect(result.status).toBe('VALID');
+    expect(result.record?.verification_id).toBe(verificationId);
+    expect(result.record?.document_hash).toBe(documentHash);
+  });
 
-  // TEST 2: Invalid Format Resolution Output
-  console.log('\n2. Invalid Format Resolution Handling:');
-  const invalidRes = await publicVerificationService.resolveVerification('INVALID_FORMAT_ID');
-  assert(invalidRes.status === 'INVALID_FORMAT', 'Returns INVALID_FORMAT status');
-  assert(invalidRes.record === undefined, 'No record returned for invalid format');
-  assert(invalidRes.errorMessage !== undefined, 'Contains descriptive error message');
+  it('returns NOT_FOUND for an ineligible or missing receipt', async () => {
+    rpcMock.mockResolvedValue({ data: null, error: null });
+    const result = await new PublicVerificationService().resolveVerification(verificationId);
+    expect(result.status).toBe('NOT_FOUND');
+    expect(result.record).toBeUndefined();
+  });
 
-  // TEST 3: Document Hash Integrity Grounding
-  console.log('\n3. Document Hash Integrity Grounding:');
-  const validDocHash = '8afcff6056b0d9123456789abcdef0123456789abcdef0123456789abcdef012';
-  const expectedId = VerificationPersistenceService.deriveVerificationId(validDocHash, '9b0123456789abcdef');
-  assert(expectedId === 'VRF-8AFCFF609B01', 'Derived ID matches VRF-8AFCFF609B01 (8 doc + 4 ev)');
+  it('rejects hash/ID mismatch', async () => {
+    rpcMock.mockResolvedValue({
+      data: { ...receipt, documentHash: '000000000000d9123456789abcdef0123456789abcdef0123456789abcdef012' },
+      error: null,
+    });
+    const result = await new PublicVerificationService().resolveVerification(verificationId);
+    expect(result.status).toBe('INTEGRITY_FAILED');
+  });
 
-  // TEST 4: Integrity Failure Detection
-  console.log('\n4. Integrity Failure Detection (Mismatched Document Hash):');
-  const mismatchedHash = '000000000000d9123456789abcdef0123456789abcdef0123456789abcdef012';
-  const mismatchedDerivedId = VerificationPersistenceService.deriveVerificationId(mismatchedHash);
-  assert(mismatchedDerivedId !== 'VRF-8AFCFF609B01', 'Mismatched document hash produces different derived ID');
+  it('rejects malformed public metadata', async () => {
+    rpcMock.mockResolvedValue({
+      data: { ...receipt, overallSimilarity: 101 },
+      error: null,
+    });
+    const result = await new PublicVerificationService().resolveVerification(verificationId);
+    expect(result.status).toBe('MALFORMED_RECORD');
+  });
 
-  // TEST 5: No Fabricated Results on Missing Records
-  console.log('\n5. No Fabricated Results Boundary:');
-  const missingRes = await publicVerificationService.resolveVerification('VRF-000000000000');
-  assert(missingRes.status === 'NOT_FOUND' || missingRes.status === 'RESOLUTION_ERROR', 'Does not fabricate a valid result on missing record');
-  assert(missingRes.record === undefined, 'Record remains undefined for missing ID');
-
-  // TEST 6: Public Read Boundary Specification
-  console.log('\n6. Public Read Boundary Specification:');
-  assert(true, 'Public SELECT policy permits anonymous verification resolution');
-  assert(true, 'Anonymous write permissions (INSERT/UPDATE/DELETE) strictly denied');
-
-  // TEST 7: Route Resolution Contract
-  console.log('\n7. Route Resolution Contract:');
-  assert(true, 'Route /verify/:verificationId maps to GradifiVerifyDemoPage');
-  assert(true, 'useParams() extracts verificationId parameter from URL');
-
-  // TEST 8: Live Supabase Environment Probe
-  console.log('\n8. Live Environment Status Probe:');
-  const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
-  if (!anonKey || anonKey.trim().length === 0) {
-    console.log('  ⚠️ ENVIRONMENT LIMITATION: Live Supabase anon key unavailable in local environment (.env.local missing VITE_SUPABASE_ANON_KEY). Classified as STATIC / CONTRACT VERIFIED.');
-  } else {
-    assert(true, 'Live Supabase anon key configured');
-  }
-
-  console.log('\n======================================================');
-  console.log(`📊 G6.3 PUBLIC RESOLUTION TEST SUMMARY: ${passed}/${total} checks passed.`);
-  console.log('======================================================\n');
-
-  if (passed !== total) {
-    if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
-  }
-}
-
-runPublicResolutionTests().catch(err => {
-  console.error('Fatal test runner error:', err);
-  if (typeof process !== 'undefined' && !process.env.VITEST) process.exit(1);
+  it('fails closed when the public RPC is unavailable', async () => {
+    rpcMock.mockResolvedValue({ data: null, error: new Error('private database detail') });
+    const result = await new PublicVerificationService().resolveVerification(verificationId);
+    expect(result.status).toBe('RESOLUTION_ERROR');
+    expect(result.errorMessage).not.toContain('private database detail');
+  });
 });
