@@ -70,9 +70,10 @@ export const superAdminInstitutionApprovalService = {
       p_reason: reason.trim(),
     });
     if (error) throw error;
-    if (!data?.success || data.institution_id !== institutionId || data.decision !== decision) {
+    const receipt = data as any;
+    if (!receipt?.success || receipt.institution_id !== institutionId || receipt.decision !== decision) {
       throw new Error("INSTITUTION_DECISION_RECEIPT_INVALID");
     }
-    return data as InstitutionDecisionReceipt;
+    return receipt as InstitutionDecisionReceipt;
   },
 };
