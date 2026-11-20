@@ -165,6 +165,23 @@ Do not apply either candidate as-is. First settle the canonical pointer name, pu
 4. Keep G6 unapplied until its public receipt privacy contract and full migration are reviewed.
 5. For every eventual production write: inspect the exact SQL, obtain explicit approval, establish a recovery point, apply one migration at a time, and verify immediately.
 
+## 7. GitHub restoration trace
+
+The restored SQL files and corrected PIN migration are present on `integration/gradifi-primary-2026-11-20`. Their final file commits are:
+
+| File | Commit |
+|---|---|
+| `20261118085337_public_demo_security_tenant_isolation_trial_controls.sql` | `887d8be80010c073ac8846d07f8ce613ed834759` |
+| `20261118085407_qualify_verify_tenant_ownership_policy_columns.sql` | `bd134a5cdda78571999de5c7b2b7c2653d167341` |
+| `20261118085447_convert_internal_reporting_views_to_invoker_security.sql` | `ef16a42667436c9617b0e31d95995af84a50cd0c` |
+| `20261118091905_verify_private_document_storage_and_upload_records.sql` | `61b24ef0569e95283ad1c6c716cae389e3a2ad99` |
+| `20261118092019_tighten_verify_upload_metadata_grants.sql` | `b47c5f31e71a291a91f9dc8a277cb236024cce78` |
+| `20261118120306_fix_pin_lockout_extension_20261118.sql` | `7d2c7743a0eeea5b5cd985d078ef8cb1cc54e6e6` |
+
+The auth-projection PR branch was also corrected: the new correctly versioned PIN migration was added in commit `4c4e33b8d1a0eaccbf80d2d553417b944f267c4f`, and the incorrectly versioned `20261118123000` file was deleted in commit `c0f23e47a9d6a3de5afc663156e9cc5bf3404cd5`.
+
+A final read-only comparison confirmed that all six production versioned migration files above exist on the integration branch and that production migration history still records the same six versions. No production migration was applied during this work.
+
 ## Evidence classification
 
 - **STATIC:** recovered migration SQL from production logs; repository migration files; candidate PIN and G6 migrations; branch/tree checks; migration inventory.
