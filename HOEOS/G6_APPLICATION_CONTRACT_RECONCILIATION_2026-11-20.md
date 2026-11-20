@@ -128,7 +128,7 @@ Production has:
 - active service `SIM`;
 - active service version `SIM-V1`;
 - service version ID `d7e91ded-b31f-4669-8e92-20630f289d60`;
-- a `verification_runs` table with `parent_run_id`, result/document/evidence/manifest hashes, engine/policy versions and `succeeded` status;
+- a `verification_runs` table with a self-referencing `parent_run_id` foreign key, result/document/evidence/manifest hashes, engine/policy versions and `succeeded`/`superseded` terminal statuses;
 - zero current `verification_runs` rows.
 
 The G6 application code currently writes only `public_verification_records`. It does not create a `verification_runs` row, does not populate `verification_run_id`, `result_hash`, `manifest_hash`, `status` or `public_schema_version`, and does not set `verification_runs.parent_run_id`.
