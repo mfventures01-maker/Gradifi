@@ -29,7 +29,15 @@ export function buildG4DPersistencePayload(
     overallSimilarity: verification.overallSimilarity,
     totalSourcesFound: verification.totalSourcesFound,
     similarityAnalysis: {
-      findings: verification.similarityAnalysis.findings
+      findings: verification.similarityAnalysis.findings,
+      overallSimilarity: verification.similarityAnalysis.overallSimilarity
+    },
+    evidenceHashMaterial: {
+      totalUniqueMatchedTokens: verification.aggregation?.totalUniqueMatchedTokens ?? 0,
+      sourceCoverage: (verification.aggregation?.sourceReports ?? []).map(source => ({
+        sourceId: source.sourceId,
+        documentCoverage: source.documentCoverage
+      }))
     }
   };
 
