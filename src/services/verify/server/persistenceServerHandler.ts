@@ -15,6 +15,9 @@ export interface PersistenceServerRequestPayload {
   correctionOfVerificationId?: string | null;
 }
 
+// Deliberately disabled. Re-enable only in the same change that creates and verifies the complete atomic run+receipt projection.
+let RUN_RECEIPT_PERSISTENCE_CONTRACT_READY = false;
+
 export class PersistenceRequestError extends Error {
   constructor(public readonly statusCode: 400 | 401 | 403 | 409 | 500 | 503, message: string) {
     super(message);
@@ -169,7 +172,7 @@ export async function handlePersistenceServerRequest(
   // parity, status='VALID', and public_schema_version. This handler currently
   // does not create that run or compute the approved result/manifest hashes.
   // The flag must remain unset until that implementation and its tests land.
-  if (process.env.GRADIFI_RUN_RECEIPT_CONTRACT_READY !== 'true') {
+  if (!RUN_RECEIPT_PERSISTENCE_CONTRACT_READY) {
     throw new PersistenceRequestError(
       503,
       'Trusted persistence is blocked until the authoritative verification-run and receipt hash contract is complete. No receipt was written.'
