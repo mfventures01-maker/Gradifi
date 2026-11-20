@@ -136,7 +136,7 @@ begin
     i.phone,
     i.website_url,
     i.slug,
-    i.created_at,
+    coalesce(i.created_at, now()),
     root.user_id,
     root.full_name,
     root.email,
@@ -150,7 +150,7 @@ begin
     dean_job.status,
     campus.id,
     campus.school_name,
-    (
+    coalesce((
       root.user_id is not null
       and root.membership_status = 'active'
       and root.actor_status = 'active'
@@ -161,7 +161,7 @@ begin
       and campus.id is not null
       and campus.slug = i.slug
       and campus.url_slug = i.slug
-    ) as can_approve,
+    ), false) as can_approve,
     case
       when root.user_id is null then 'Missing VC/Rector profile'
       when root.membership_status is distinct from 'active' then 'VC/Rector membership is not active'
