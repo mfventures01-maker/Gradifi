@@ -109,7 +109,7 @@ test.describe("Super Admin higher-education institution approval", () => {
 
     await page.goto("/super-admin/institutions");
     await expect(page.getByRole("heading", { name: "Institution approvals" })).toBeVisible();
-    await expect(page.getByText("Example Polytechnic")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Example Polytechnic", exact: true })).toBeVisible();
     await expect(page.getByText("Ready for approval")).toBeVisible();
 
     await page.getByRole("button", { name: "Approve", exact: true }).click();
