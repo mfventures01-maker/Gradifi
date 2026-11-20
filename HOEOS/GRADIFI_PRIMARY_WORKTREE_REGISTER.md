@@ -219,3 +219,20 @@ The same read-only permission inspection showed `anon` and `authenticated` have 
 ### Next safe action
 
 Recover the missing 20261118 SQL definitions from the authoritative deployment source, or produce a catalog-derived, reviewed baseline/reconciliation migration. Then compare each migration's resulting schema, grants, policies, indexes, triggers, and function definitions against live. Only after that should the G6 forward migration be added and tested on an isolated database branch.
+
+
+---
+
+## 11. Production-only database operating constraint (user directive, 2026-11-20)
+
+**Binding instruction:** All Gradifi database inspection and any subsequently approved database work must use the existing production Supabase project `ehkmfnaqkdgkjmdxxbwj` only. Do not create, use, or request a Supabase development/staging/preview database branch for this work.
+
+Operating rules:
+1. GitHub integration may continue on `integration/gradifi-primary-2026-11-20`; this is a source-control branch, not a database environment.
+2. Supabase access is restricted to the existing production project. Keep the environment target explicit in every database operation.
+3. Read-only production inspection is permitted for migration inventory, schema/catalog, RLS, grants, indexes, triggers, and function definitions.
+4. No production DDL, migration replay, migration repair/mark-as-applied, data mutation, function deployment, or destructive operation is authorized merely by the instruction to use production. Each such change requires a specific reviewed change plan and explicit approval.
+5. Before any approved production mutation, capture the current catalog state and backups/recovery point where available; prepare forward and rollback/recovery procedures; apply one migration at a time; verify the exact resulting schema and application path immediately.
+6. Do not suggest or create a separate Supabase database branch for this project unless the user explicitly changes this production-only directive.
+
+**Current status:** Production-only scope accepted. Production database remains unchanged by this consolidation work. Migration parity and G6 live-schema gaps remain open; resolve them with read-only evidence and reviewed, explicitly approved production changes only.
