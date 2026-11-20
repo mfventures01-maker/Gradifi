@@ -236,3 +236,17 @@ Operating rules:
 6. Do not suggest or create a separate Supabase database branch for this project unless the user explicitly changes this production-only directive.
 
 **Current status:** Production-only scope accepted. Production database remains unchanged by this consolidation work. Migration parity and G6 live-schema gaps remain open; resolve them with read-only evidence and reviewed, explicitly approved production changes only.
+
+
+## 12. Production migration reconciliation update (2026-11-20)
+
+The forensic report is recorded at `HOEOS/PRODUCTION_MIGRATION_RECONCILIATION_2026-11-20.md`.
+
+- Recovered the exact submitted SQL for production migrations `20261118085337`, `20261118085407`, `20261118085447`, `20261118091905`, and `20261118092019` from production PostgreSQL logs. Restored all five files to `supabase/migrations/` on this primary integration branch.
+- Recovered and confirmed the PIN lockout migration at production version `20261118120306`. Corrected the repository filename from `20261118123000` to `20261118120306` on both the auth-projection PR branch and this integration branch. The live function body and service-role execution boundary match the recovered SQL.
+- Confirmed the second tenant-policy migration corrects the first migration's unqualified tenant/project column references. The live policies use qualified outer-table columns.
+- Confirmed the private verification upload bucket/table, RLS and object-read policy, public receipt column allowlist, and invoker-security view state against the live catalog.
+- Confirmed G6 correction lineage remains absent from production: no `correction_of_verification_id` column, FK, no-self-correction constraint, or correction-parent index. G6 remains blocked and no candidate migration was applied.
+- Production database work remained read-only. No migration replay, DDL, data mutation, migration repair, or function deployment occurred.
+
+This is STATIC/STRUCTURAL reconciliation, not RUNTIME or CERTIFICATION evidence. The upload metadata grant still permits authenticated users who pass the row policy to read all 19 upload metadata columns; confirm this is the intended privacy contract before certifying it.
