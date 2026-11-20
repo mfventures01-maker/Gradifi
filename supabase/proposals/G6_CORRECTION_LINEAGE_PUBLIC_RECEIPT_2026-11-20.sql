@@ -323,6 +323,8 @@ as $function$
           and parent_run.manifest_hash = parent.manifest_hash
           and parent_run.engine_version = parent.engine_version
           and parent_run.policy_version = parent.policy_version
+          and parent_run.institution_id = vr.institution_id
+          and parent_run.school_id is not distinct from vr.school_id
           and vr.parent_run_id = parent_run.id
       )
     )
