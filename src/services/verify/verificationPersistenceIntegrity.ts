@@ -48,6 +48,15 @@ export function validatePersistedVerificationRecord(
       record.overall_similarity < 0 || record.overall_similarity > 100) {
     return { status: 'MALFORMED_RECORD', reason: 'overall_similarity must be a finite number from 0 to 100.' };
   }
+  const correctionParent = record.correction_of_verification_id ?? null;
+  if (correctionParent !== null &&
+      (typeof correctionParent !== 'string' || !/^VRF-[0-9A-F]{12}$/i.test(correctionParent))) {
+    return { status: 'MALFORMED_RECORD', reason: 'correction_of_verification_id is malformed.' };
+  }
+  if (correctionParent !== null && correctionParent.toUpperCase() === String(record.verification_id).toUpperCase()) {
+    return { status: 'INTEGRITY_FAILED', reason: 'A receipt cannot be its own correction parent.' };
+  }
+
   if (!isObject(record.evidence_envelope)) {
     return { status: 'MALFORMED_RECORD', reason: 'evidence_envelope is missing or malformed.' };
   }

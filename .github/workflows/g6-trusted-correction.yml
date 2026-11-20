@@ -1,0 +1,33 @@
+name: G6 trusted correction lifecycle
+
+on:
+  push:
+    branches:
+      - repair/g6-trusted-comparison-on-pr12-2026-11-16
+  pull_request:
+    branches:
+      - clean-deploy
+      - fix/verify-persistence-auth-validation
+
+permissions:
+  contents: read
+
+jobs:
+  g6-trusted-correction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Build server runtime
+        run: npm run build:server
+      - name: G6 trusted comparison and persistence regression tests
+        run: npx vitest run tests/trustedCorrectionComparison.test.ts tests/verifyPersistenceAuthorization.test.ts tests/verificationPersistence.test.ts tests/g4d_persisted_evidence_integrity.test.ts tests/publicReceiptPrivacy.test.ts --reporter=verbose
+      - name: Client and server typechecks
+        run: npm run typecheck
+      - name: Production build
+        run: npm run build

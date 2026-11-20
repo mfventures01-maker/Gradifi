@@ -5,7 +5,6 @@
 
 import { supabase } from '../../lib/supabase.js';
 import { PublicVerificationRecord, VerificationPersistenceService } from './verificationPersistenceService.js';
-import { validatePersistedVerificationRecord } from './verificationPersistenceIntegrity.js';
 
 export type PublicResolutionStatus =
   | 'VALID'
@@ -59,9 +58,12 @@ export class PublicVerificationService {
     }
 
     try {
+      // Public resolution deliberately selects receipt metadata only. The
+      // evidence_envelope column contains private submitted text and is never
+      // queried by an anonymous/public browser.
       const { data, error } = await supabase
         .from('public_verification_records')
-        .select('*')
+        .select('verification_id,document_hash,evidence_hash,engine_version,policy_version,overall_similarity,total_sources_found,correction_of_verification_id,created_at')
         .eq('verification_id', cleanId)
         .maybeSingle();
 
@@ -101,20 +103,14 @@ export class PublicVerificationService {
       }
 
       // Validate presence of required evidence fields
-      if (!data.evidence_hash || !data.evidence_envelope) {
+      if (!data.evidence_hash || !data.engine_version || !data.policy_version ||
+          typeof data.overall_similarity !== 'number' || !Number.isFinite(data.overall_similarity) ||
+          data.overall_similarity < 0 || data.overall_similarity > 100 ||
+          !Number.isInteger(data.total_sources_found) || data.total_sources_found < 0) {
         return {
           status: 'MALFORMED_RECORD',
           verificationId: cleanId,
-          errorMessage: 'Verification record is missing required evidence_hash or evidence_envelope.',
-        };
-      }
-
-      const integrity = validatePersistedVerificationRecord(data);
-      if (integrity.status !== 'VALID') {
-        return {
-          status: integrity.status,
-          verificationId: cleanId,
-          errorMessage: integrity.reason || 'Persisted verification integrity validation failed.',
+          errorMessage: 'Public receipt metadata is incomplete or invalid.',
         };
       }
 

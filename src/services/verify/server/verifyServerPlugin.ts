@@ -81,8 +81,18 @@ export function verifyServerPlugin(): Plugin {
         req.on('data', chunk => { body += chunk; });
         req.on('end', async () => {
           try {
+            const authorization = req.headers.authorization;
+            const tokenMatch = typeof authorization === 'string'
+              ? authorization.match(/^Bearer\\s+([^\\s]+)$/i)
+              : null;
+            if (!tokenMatch) {
+              res.setHeader('Content-Type', 'application/json');
+              res.statusCode = 401;
+              res.end(JSON.stringify({ error: 'Authentication required' }));
+              return;
+            }
             const payload = body ? JSON.parse(body) : {};
-            const result = await handlePersistenceServerRequest(payload);
+            const result = await handlePersistenceServerRequest(payload, tokenMatch[1]);
             res.setHeader('Content-Type', 'application/json');
             res.statusCode = 200;
             res.end(JSON.stringify(result));
@@ -105,9 +115,9 @@ export function verifyServerPlugin(): Plugin {
               return;
             }
 
-            res.statusCode = 500;
+            res.statusCode = typeof err?.statusCode === 'number' ? err.statusCode : 500;
             res.end(JSON.stringify({
-              error: errMessage || 'Failed to persist verification record'
+              error: res.statusCode >= 500 ? 'Verification persistence failed' : (errMessage || 'Failed to persist verification record')
             }));
           }
         });
