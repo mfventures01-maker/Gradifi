@@ -61,9 +61,17 @@ export const HigherEducationDashboard: React.FC = () => {
               <p className="mt-2 max-w-3xl text-sm leading-relaxed text-indigo-900">
                 Your independent Login ID and PIN identity is linked to the institution's VC/Rector. You can provision HOD, Course Adviser, Lecturer and Student accounts. Each account receives its own generated Login ID and temporary PIN.
               </p>
-              <Link to="/onboarding/higher-education" className="mt-4 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700">
-                Manage academic accounts <span aria-hidden="true" className="ml-2">→</span>
-              </Link>
+              {institutionStatus === "active" ? (
+                <Link to="/onboarding/higher-education" className="mt-4 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700">
+                  Manage academic accounts <span aria-hidden="true" className="ml-2">→</span>
+                </Link>
+              ) : (
+                <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                  {institutionStatus === "pending"
+                    ? "Your institution is awaiting Super Admin approval. Academic account management will unlock after approval."
+                    : "Your institution is not active. Academic account management is currently unavailable."}
+                </p>
+              )}
             </div>
           ) : (
             <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-5">
