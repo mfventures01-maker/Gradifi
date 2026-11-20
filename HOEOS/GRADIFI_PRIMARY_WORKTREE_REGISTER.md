@@ -174,3 +174,48 @@ The previous local production build success with missing Supabase credentials is
 - Supabase project metadata, live migration inventory, public table inventory, and schema table inventory inspected read-only on 2026-11-20.
 
 **This register is a recovery plan and evidence inventory, not a claim that the primary branch or any G1-G7 gate is certified.**
+
+
+---
+
+## 10. 2026-11-20 synchronization follow-up
+
+### Primary branch and draft PR state
+
+- Primary branch created: `integration/gradifi-primary-2026-11-20`.
+- Register committed on that branch: `f333686a667b434849c5c5880d014698e86409d9`.
+- Draft PR #33 created for the four-file onboarding auth-projection patch. GitHub reports `mergeable: false`.
+- Draft PR #34 created for G6/G7 integration from the unified verification branch. GitHub reports `mergeable: false`.
+- Both PRs remain draft and unmerged. This confirms that the source branches cannot be treated as clean fast-forward integrations.
+
+### Live G6 schema check
+
+A read-only catalog query of live `public.public_verification_records` returned these columns:
+
+`id, verification_id, document_hash, evidence_hash, engine_version, policy_version, overall_similarity, total_sources_found, evidence_envelope, created_at, verification_run_id, result_hash, manifest_hash, status, public_schema_version`.
+
+The live table does **not** contain `correction_of_verification_id`. The G6 migration candidate `20261116160000_g6_correction_lineage_metadata.sql` adds that column, a self-reference FK, a no-self-correction check, a public metadata column grant, and an index. Therefore G6 correction lineage is not yet present in the inspected live schema. Do not claim G6 persistence is live.
+
+The same read-only permission inspection showed `anon` and `authenticated` have SELECT only on the explicit public receipt metadata columns, not on `evidence_envelope`. This is consistent with the intended public/private receipt boundary; preserve it when designing G6 metadata access.
+
+### Immediate database blockers
+
+1. Five live 20261118 migration versions are not represented by exact migration files in either inspected candidate branch:
+   - `20261118085337`
+   - `20261118085407`
+   - `20261118085447`
+   - `20261118091905`
+   - `20261118092019`
+2. Live PIN lockout migration version is `20261118120306`; the auth patch branch proposes `20261118123000`. Compare SQL and catalog state; do not replay or rename blindly.
+3. Live G6 correction-lineage column is absent. The G6 migration is pending and must be validated as a forward migration.
+4. Supabase reports only the `main` database branch. No paid development branch was created.
+
+### Updated gate consequence
+
+- G6: **FAIL/BLOCKED at live-schema gate** because the correction lineage column is absent.
+- G7: **STRUCTURAL/BLOCKED**; the public receipt metadata table and privacy boundary exist, but full persisted correction-chain/public retrieval E2E is not established.
+- Supabase parity: **FAIL/BLOCKED** until the five missing live migration definitions and PIN lockout version discrepancy are reconciled with repository source.
+
+### Next safe action
+
+Recover the missing 20261118 SQL definitions from the authoritative deployment source, or produce a catalog-derived, reviewed baseline/reconciliation migration. Then compare each migration's resulting schema, grants, policies, indexes, triggers, and function definitions against live. Only after that should the G6 forward migration be added and tested on an isolated database branch.
