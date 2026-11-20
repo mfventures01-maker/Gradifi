@@ -29,7 +29,9 @@ jobs:
 
       - name: G0 - Freeze commit and install
         run: |
-          test "$GITHUB_REF_NAME" = "integration/gradifi-primary-2026-11-20"
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            test "$GITHUB_REF_NAME" = "integration/gradifi-primary-2026-11-20"
+          fi
           git rev-parse HEAD
           git status --short
           npm ci
