@@ -16,7 +16,7 @@ export interface PersistenceServerRequestPayload {
 }
 
 export class PersistenceRequestError extends Error {
-  constructor(public readonly statusCode: 400 | 401 | 403 | 409 | 500, message: string) {
+  constructor(public readonly statusCode: 400 | 401 | 403 | 409 | 500 | 503, message: string) {
     super(message);
     this.name = 'PersistenceRequestError';
   }
@@ -163,6 +163,16 @@ export async function handlePersistenceServerRequest(
   if (actorError || !actor) {
     throw new PersistenceRequestError(403, 'An active authorized identity is required to persist verification records.');
   }
+
+  // Fail closed until the canonical G8 write projection exists. The recovered
+  // production baseline requires a verification_runs row, run/receipt hash
+  // parity, status='VALID', and public_schema_version. This handler currently
+  // does not create that run or compute the approved result/manifest hashes.
+  // Do not write another incomplete receipt or imply G6/G7/G8 certification.
+  throw new PersistenceRequestError(
+    503,
+    'Trusted persistence is blocked until the authoritative verification-run and receipt hash contract is complete. No receipt was written.'
+  );
 
   // The request is now authenticated, authorized, and independently validated.
   const serverSupabase = createClient(supabaseUrl, serviceRoleKey, {
