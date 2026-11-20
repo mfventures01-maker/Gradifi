@@ -20,6 +20,12 @@ create index if not exists institution_approval_events_institution_created_idx
   on public.institution_approval_events (institution_id, created_at desc);
 
 alter table public.institution_approval_events enable row level security;
+drop policy if exists institution_approval_events_deny_client_access on public.institution_approval_events;
+create policy institution_approval_events_deny_client_access
+  on public.institution_approval_events
+  for all to anon, authenticated
+  using (false)
+  with check (false);
 revoke all on public.institution_approval_events from public, anon, authenticated;
 grant select, insert on public.institution_approval_events to service_role;
 
