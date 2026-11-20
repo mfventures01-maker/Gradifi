@@ -127,7 +127,16 @@ test.describe("Super Admin higher-education institution approval", () => {
         token_type: "bearer",
         expires_in: 3600,
         expires_at: Math.floor(Date.now() / 1000) + 3600,
-        user: authUser,
+        user: {
+          id: "a0000000-0000-4000-8000-000000000001",
+          aud: "authenticated",
+          role: "authenticated",
+          email: "platform.admin@example.test",
+          email_confirmed_at: "2026-11-20T10:00:00.000Z",
+          app_metadata: { provider: "email", providers: ["email"] },
+          user_metadata: {},
+          created_at: "2026-11-20T09:00:00.000Z",
+        },
       }));
     });
     await page.route("**/auth/v1/user", route => route.fulfill({
