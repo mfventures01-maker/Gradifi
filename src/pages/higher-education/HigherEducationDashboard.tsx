@@ -45,6 +45,7 @@ export const HigherEducationDashboard: React.FC = () => {
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-800">{roleTitle}</span>
             <span className="text-xs text-slate-500">{identity?.isAuthenticated ? "Authenticated account" : "Resolving identity…"}</span>
+            {institutionStatus && <span className={`rounded-full px-3 py-1 text-xs font-semibold ${institutionStatus === "active" ? "bg-emerald-50 text-emerald-800" : institutionStatus === "pending" ? "bg-amber-50 text-amber-800" : "bg-rose-50 text-rose-800"}`}>Institution: {institutionStatus}</span>}
           </div>
 
           {isExecutive ? (
