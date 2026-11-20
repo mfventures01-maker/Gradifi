@@ -250,3 +250,26 @@ The forensic report is recorded at `HOEOS/PRODUCTION_MIGRATION_RECONCILIATION_20
 - Production database work remained read-only. No migration replay, DDL, data mutation, migration repair, or function deployment occurred.
 
 This is STATIC/STRUCTURAL reconciliation, not RUNTIME or CERTIFICATION evidence. The upload metadata grant still permits authenticated users who pass the row policy to read all 19 upload metadata columns; confirm this is the intended privacy contract before certifying it.
+
+
+## 13. Onboarding + G0-G12 single-worktree integration (2026-11-20)
+
+- Primary branch remains `integration/gradifi-primary-2026-11-20`.
+- School onboarding wizard and higher-education registration routes are present in `src/App.tsx`; root registration and actor provisioning use the canonical `actor-onboarding` Edge Function.
+- Auth service now selects an explicit non-secret profile projection and resolves the active canonical actor.
+- Added browser smoke coverage at `e2e/onboarding-entrypoints.spec.ts`.
+- Added `.github/workflows/gradifi-primary-g0-g12.yml`, with onboarding as a prerequisite and sequential G1-G12 jobs.
+- Added deterministic G5 correction lifecycle tests, trusted G6 comparison/auth tests, G7 RPC privacy/resolution tests, and a static same-worktree gate-map test.
+- G6 correction UI, trusted persistence endpoint, comparison endpoint, Vercel API route and Vite development middleware are now on this branch.
+- Public verification resolution now uses `lookup_public_verification(text)` and does not directly query `public_verification_records`.
+- Gate map: `HOEOS/GRADIFI_PRIMARY_G0_G12_GATE_MAP.md`.
+- G6 application reconciliation: `HOEOS/G6_APPLICATION_CONTRACT_RECONCILIATION_2026-11-20.md`.
+- Review-only SQL proposal: `supabase/proposals/G6_CORRECTION_LINEAGE_PUBLIC_RECEIPT_2026-11-20.sql`. It is not in the executable migration directory.
+
+### G6/G7/G8 production blocker
+
+Production has 68 legacy public receipt rows. All 68 have NULL `status`, `verification_run_id`, `result_hash`, `manifest_hash`, and `public_schema_version`. The production public lookup function currently filters for `status='verified'`, while the live status constraint permits `VALID`, `REVOKED`, `EXPIRED`, `NOT_FOUND`, and `UNAVAILABLE`. There are zero `verification_runs` rows, although an active `SIM-V1` service version exists.
+
+The current G6 application handler persists the receipt row and correction pointer, but does not yet create a `verification_runs` row or populate the run/hash/schema fields required by G7. The application must define the deterministic result/manifest hash contract and atomically create the run and receipt before G6/G7/G8 can be certified. The SQL proposal adds the receipt pointer, run FK, run immutability guard and corrected public RPC contract, but is review-only.
+
+The CI workflow's G12 job is STATIC/STRUCTURAL only. It intentionally does not run `e2e/golden-path-demo-e2e.spec.ts`, which persists data. CI uses placeholder Supabase credentials and no production service-role secret. No production writes were performed.
