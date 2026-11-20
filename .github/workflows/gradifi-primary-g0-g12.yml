@@ -43,7 +43,7 @@ jobs:
 
       - name: Onboarding - School wizard and higher-education registration
         run: |
-          npx playwright install --with-deps chromium
+          npx playwright install chromium --only-shell
           npx playwright test e2e/onboarding-entrypoints.spec.ts
 
       - name: G1 - Document ingestion
