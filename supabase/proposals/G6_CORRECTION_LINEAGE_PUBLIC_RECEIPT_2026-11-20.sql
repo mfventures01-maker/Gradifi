@@ -64,6 +64,20 @@ begin
   ) then
     raise exception 'G6_PRECHECK_FAILED: unexpected receipt status value exists';
   end if;
+
+  if exists (
+    select 1
+    from public.public_verification_records r
+    where r.status = 'VALID'
+      and (
+        r.verification_run_id is null
+        or nullif(btrim(r.result_hash), '') is null
+        or nullif(btrim(r.manifest_hash), '') is null
+        or nullif(btrim(r.public_schema_version), '') is null
+      )
+  ) then
+    raise exception 'G6_PRECHECK_FAILED: VALID receipt rows lack run/hash/schema metadata';
+  end if;
 end
 $preflight$;
 
