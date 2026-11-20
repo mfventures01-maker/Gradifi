@@ -286,6 +286,8 @@ as $function$
     and vr.evidence_hash = r.evidence_hash
     and vr.result_hash = r.result_hash
     and vr.manifest_hash = r.manifest_hash
+    and vr.engine_version = r.engine_version
+    and vr.policy_version = r.policy_version
     and (
       r.correction_of_verification_id is null
       or exists (
@@ -296,7 +298,17 @@ as $function$
         where parent.verification_id = r.correction_of_verification_id
           and parent.status = 'VALID'
           and parent.verification_run_id is not null
+          and nullif(btrim(parent.result_hash), '') is not null
+          and nullif(btrim(parent.manifest_hash), '') is not null
+          and nullif(btrim(parent.public_schema_version), '') is not null
           and parent_run.status in ('succeeded', 'superseded')
+          and parent_run.verification_id = parent.verification_id
+          and parent_run.document_hash = parent.document_hash
+          and parent_run.evidence_hash = parent.evidence_hash
+          and parent_run.result_hash = parent.result_hash
+          and parent_run.manifest_hash = parent.manifest_hash
+          and parent_run.engine_version = parent.engine_version
+          and parent_run.policy_version = parent.policy_version
           and vr.parent_run_id = parent_run.id
       )
     )
