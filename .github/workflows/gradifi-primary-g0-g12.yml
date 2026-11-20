@@ -1,6 +1,6 @@
 name: Gradifi Primary Onboarding + HOEOS G0-G12
 
-on:
+'on':
   push:
     branches:
       - integration/gradifi-primary-2026-11-20
@@ -80,4 +80,5 @@ jobs:
           npx vitest run tests/hoeosPrimaryGateMap.test.ts
 
       - name: Production-write boundary
-        run: echo "RUNTIME_PRODUCTION_E2E_NOT_RUN: full G12 persistence/public-receipt runtime needs explicit production-write approval; CI uses placeholder Supabase credentials and performs no production writes."
+        run: |
+          echo "RUNTIME_PRODUCTION_E2E_NOT_RUN: full G12 persistence/public-receipt runtime needs explicit production-write approval; CI uses placeholder Supabase credentials and performs no production writes."
