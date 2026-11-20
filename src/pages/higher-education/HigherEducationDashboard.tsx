@@ -13,7 +13,7 @@ export const HigherEducationDashboard: React.FC = () => {
         if (!active) return;
         setIdentity(value);
         if (value.institutionId) {
-          const { data, error } = await supabase.from("institutions")
+          const { data, error } = await (supabase as any).from("institutions")
             .select("status")
             .eq("id", value.institutionId)
             .maybeSingle();
