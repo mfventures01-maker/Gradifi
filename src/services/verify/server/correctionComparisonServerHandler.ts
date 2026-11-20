@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { VerificationPersistenceService } from '../verificationPersistenceService.js';
 import { PublicVerificationService } from '../publicVerificationService.js';
 
@@ -25,7 +25,66 @@ export interface SafeCorrectionComparison {
   newFindingCount: number;
 }
 
-/** Trusted, authenticated comparison. Private envelopes never leave this module. */
+type ActiveActor = {
+  id: string;
+  institution_id: string | null;
+  school_id: string | null;
+  actor_type: string;
+};
+
+type VerificationRun = {
+  id: string;
+  institution_id: string | null;
+  school_id: string | null;
+  created_by_user_id: string | null;
+  status: string;
+  verification_id: string;
+  document_hash: string;
+  evidence_hash: string;
+  result_hash: string | null;
+  manifest_hash: string | null;
+  parent_run_id: string | null;
+};
+
+async function loadAuthorizedRun(
+  trusted: SupabaseClient,
+  receipt: any,
+  actor: ActiveActor,
+  authUserId: string,
+): Promise<VerificationRun> {
+  if (!receipt.verification_run_id) {
+    throw new CorrectionComparisonRequestError(409, 'Receipt is not linked to an authoritative verification run.');
+  }
+
+  const { data: run, error } = await trusted
+    .from('verification_runs')
+    .select('id,institution_id,school_id,created_by_user_id,status,verification_id,document_hash,evidence_hash,result_hash,manifest_hash,parent_run_id')
+    .eq('id', receipt.verification_run_id)
+    .maybeSingle();
+
+  if (error || !run ||
+      !['succeeded', 'superseded'].includes(run.status) ||
+      run.verification_id !== receipt.verification_id ||
+      run.document_hash !== receipt.document_hash ||
+      run.evidence_hash !== receipt.evidence_hash ||
+      !receipt.result_hash || run.result_hash !== receipt.result_hash ||
+      !receipt.manifest_hash || run.manifest_hash !== receipt.manifest_hash) {
+    throw new CorrectionComparisonRequestError(409, 'Receipt and completed verification run do not match.');
+  }
+
+  const actorCanAccessRun = actor.institution_id
+    ? run.institution_id === actor.institution_id &&
+      (!actor.school_id || run.school_id === actor.school_id)
+    : run.created_by_user_id === authUserId;
+
+  if (!actorCanAccessRun) {
+    throw new CorrectionComparisonRequestError(403, 'The active identity is not authorized for one of these receipts.');
+  }
+
+  return run as VerificationRun;
+}
+
+/** Trusted, tenant-scoped comparison. Private envelopes never leave this module. */
 export async function handleCorrectionComparisonRequest(
   payload: { originalVerificationId?: string; correctedVerificationId?: string },
   accessToken: string
@@ -53,7 +112,10 @@ export async function handleCorrectionComparisonRequest(
   if (authError || !authData.user) throw new CorrectionComparisonRequestError(401, 'Supabase session is invalid or expired.');
 
   const { data: actor, error: actorError } = await auth.from('identity_actors')
-    .select('id').eq('auth_user_id', authData.user.id).eq('status', 'active').maybeSingle();
+    .select('id,institution_id,school_id,actor_type')
+    .eq('auth_user_id', authData.user.id)
+    .eq('status', 'active')
+    .maybeSingle();
   if (actorError || !actor) throw new CorrectionComparisonRequestError(403, 'An active authorized identity is required.');
 
   const trusted = createClient(url, serviceKey, {
@@ -72,11 +134,19 @@ export async function handleCorrectionComparisonRequest(
   // Separate authoritative reads. Never trust browser-provided scores/findings.
   const original = await selectReceipt(originalId);
   const corrected = await selectReceipt(correctedId);
-  if (corrected.correction_of_verification_id !== original.verification_id) {
-    throw new CorrectionComparisonRequestError(409, 'Corrected receipt is not linked to the specified original receipt.');
+  const originalRun = await loadAuthorizedRun(trusted, original, actor as ActiveActor, authData.user.id);
+  const correctedRun = await loadAuthorizedRun(trusted, corrected, actor as ActiveActor, authData.user.id);
+
+  if (corrected.correction_of_verification_id !== original.verification_id ||
+      correctedRun.parent_run_id !== originalRun.id) {
+    throw new CorrectionComparisonRequestError(409, 'Corrected receipt and run are not linked to the specified original receipt and run.');
   }
   if (original.document_hash === corrected.document_hash) {
     throw new CorrectionComparisonRequestError(409, 'Correction must produce a distinct canonical document hash.');
+  }
+  if (originalRun.institution_id !== correctedRun.institution_id ||
+      originalRun.school_id !== correctedRun.school_id) {
+    throw new CorrectionComparisonRequestError(409, 'Original and corrected runs must remain within the same institution and school scope.');
   }
 
   const findingsOf = (record: any): any[] => {
@@ -105,8 +175,8 @@ export async function handleCorrectionComparisonRequest(
     throw new CorrectionComparisonRequestError(409, 'Receipt similarity values are invalid.');
   }
 
-  // The response is deliberately a minimal DTO. No envelope, raw text, matched
-  // passage, provider payload, source URL, or internal diagnostic is returned.
+  // Bounded DTO only. Envelopes, raw text, passages, provider payloads and
+  // internal diagnostics remain server-side.
   return {
     status: 'VALID',
     originalVerificationId: original.verification_id,
