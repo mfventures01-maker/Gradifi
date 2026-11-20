@@ -84,7 +84,7 @@ $$;
 - Decision: `review_higher_ed_institution(institution_id, decision, reason)`
 - Decisions: `approved` or `rejected`
 - A decision reason must contain at least 10 non-whitespace characters.
-- Approval requires an active VC/Rector profile, active identity actor, active institution membership, completed initial Dean provisioning job, active Dean actor and a bootstrap campus whose `slug` and `url_slug` match the institution slug.
+- Approval requires an active VC/Rector profile, active identity actor, active institution membership, completed initial Dean provisioning job, active Dean actor, active Dean institution membership and a bootstrap campus whose `slug` and `url_slug` match the institution slug.
 - Approval and its append-only audit event are committed in the same database transaction.
 - Approval transitions `pending -> active`; rejection transitions `pending -> rejected`. The decision RPC cannot review an institution twice.
 - The browser receives no direct write permission on `institutions.status` or `institution_approval_events`.
