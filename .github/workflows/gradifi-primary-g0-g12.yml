@@ -12,6 +12,10 @@ name: Gradifi Primary Onboarding + HOEOS G0-G12
 permissions:
   contents: read
 
+concurrency:
+  group: gradifi-primary-g0-g12-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   VITE_SUPABASE_URL: https://placeholder.supabase.co
   VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
