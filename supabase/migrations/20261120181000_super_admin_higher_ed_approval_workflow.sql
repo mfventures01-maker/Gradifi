@@ -34,6 +34,7 @@ end;
 $$;
 
 revoke all on function public.reject_institution_approval_event_mutation() from public, anon, authenticated, service_role;
+grant execute on function public.reject_institution_approval_event_mutation() to service_role;
 
 drop trigger if exists institution_approval_events_append_only on public.institution_approval_events;
 create trigger institution_approval_events_append_only
