@@ -69,9 +69,11 @@ Both Vercel API and Vite development middleware require a Bearer token. The serv
 
 - validates the canonical text/hash and deterministic evidence envelope before creating privileged access;
 - validates the Supabase Auth user;
-- requires an active `identity_actors` row;
+- requires an active `identity_actors` row and reads its institution/school scope;
 - loads and integrity-checks the correction parent using the service-role client;
-- writes the child receipt with `correction_of_verification_id`;
+- requires the parent receipt to reference a completed verification run;
+- verifies the parent run's receipt identity, hashes, completion status and institution/school or individual-owner scope;
+- rejects a cross-tenant parent before writing the child receipt with `correction_of_verification_id`;
 - rejects a conflicting or malformed idempotent record.
 
 The service-role key remains server-only.
@@ -80,7 +82,7 @@ The service-role key remains server-only.
 
 The browser sends only `originalVerificationId` and `correctedVerificationId` to `/api/verify/compare-correction`.
 
-The server re-authenticates the user and checks the active actor, loads both records using service role, validates each persisted envelope, verifies that the corrected receipt points to the specified parent, and requires distinct canonical document hashes. It calculates the before/after counts and returns a bounded comparison DTO. It does not return evidence envelopes, submitted text, matched passages, provider payloads or internal diagnostics.
+The server re-authenticates the user and checks the active actor's institution/school scope, loads both records using service role, validates each persisted envelope and completed verification run, verifies that the corrected receipt points to the specified parent and that the child run's `parent_run_id` points to the original run, and requires distinct canonical document hashes. Both runs must belong to the same institution/school scope or, for individual actors, to the authenticated user. It calculates the before/after counts and returns a bounded comparison DTO. It does not return evidence envelopes, submitted text, matched passages, provider payloads or internal diagnostics.
 
 The Vite development BFF now exposes the same comparison endpoint as the Vercel API route.
 
