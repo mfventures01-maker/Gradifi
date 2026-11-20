@@ -171,7 +171,7 @@ The server persistence contract must be extended before production approval:
 - return only the safe public receipt DTO to the browser;
 - verify parent and child run/receipt linkage, hash equality, idempotency and no direct evidence access.
 
-The current repository does not yet define the result/manifest hash algorithm or atomic run-plus-receipt write contract. This must be resolved in code and tests before the proposal is approved for production.
+The current repository does not yet define the result/manifest hash algorithm or atomic run-plus-receipt write contract. The persistence endpoint remains fail-closed until this is resolved in code and tests. This must be completed before the proposal is approved for production.
 
 ## 7. Safety and evidence classification
 
