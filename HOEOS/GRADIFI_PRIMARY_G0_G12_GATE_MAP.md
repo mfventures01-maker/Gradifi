@@ -6,9 +6,7 @@ Branch: `integration/gradifi-primary-2026-11-20`
 
 The onboarding wizard, higher-education root registration, actor onboarding backend, G1-G12 verification code/tests, G6 correction comparison, G7 public receipt client, G8 persistence tests, and the primary CI workflow are kept on this branch.
 
-The workflow is `.github/workflows/gradifi-primary-g0-g12.yml`. Its dependency chain is:
-
-`G0 baseline -> onboarding -> G1 -> G2 -> G3 -> G4 -> G5 -> G6 -> G7 -> G8 -> G9 -> G10 -> G11 -> G12`
+The workflow is `.github/workflows/gradifi-primary-g0-g12.yml`. It runs one sequential job on the same checked-out commit. The onboarding browser smoke runs immediately after G0 and before G1, followed by G1 through G12 in order. A failed gate stops the sequence.
 
 ## Gate evidence map
 
