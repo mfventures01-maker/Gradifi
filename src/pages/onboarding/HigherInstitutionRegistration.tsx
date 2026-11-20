@@ -98,7 +98,7 @@ export const HigherInstitutionRegistration: React.FC = () => {
         if (!active) return;
         setCreated(result);
         setMessage(result.pin_not_reissued
-          ? "Recovery complete. The original Dean identity was verified and reused. No duplicate account was created and the existing PIN was not changed."
+          ? "Recovery complete. The original Dean identity was verified and reused. No duplicate account was created and the existing PIN was not changed. The institution remains pending Super Admin review; Dean administration unlocks after approval."
           : "Registration and initial Dean provisioning are complete. The institution is pending Super Admin review; Dean administration unlocks after approval.");
         sessionStorage.removeItem(DRAFT_KEY);
       } catch (err) {
@@ -184,7 +184,7 @@ export const HigherInstitutionRegistration: React.FC = () => {
       setCreated(result);
       setHasPendingRoot(false);
       setMessage(result.pin_not_reissued
-        ? "Recovery complete. The original Dean identity was verified and reused. No duplicate account was created and the existing PIN was not changed."
+        ? "Recovery complete. The original Dean identity was verified and reused. No duplicate account was created and the existing PIN was not changed. The institution remains pending Super Admin review; Dean administration unlocks after approval."
         : "Registration and initial Dean provisioning are complete. The institution is pending Super Admin review; Dean administration unlocks after approval.");
       sessionStorage.removeItem(DRAFT_KEY);
     } catch (err) {
