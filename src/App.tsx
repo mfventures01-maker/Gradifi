@@ -9,6 +9,8 @@ import { IndividualDashboard } from './pages/individual/IndividualDashboard';
 import { HigherEducationDashboard } from './pages/higher-education/HigherEducationDashboard';
 import { LoginPage } from './pages/auth/LoginPage';
 import { AuthGuard } from './components/AuthGuard';
+import { SuperAdminGuard } from './components/SuperAdminGuard';
+import { SuperAdminInstitutionApprovals } from './pages/super-admin/SuperAdminInstitutionApprovals';
 
 // Phase 3: Dashboards
 import { PrincipalDashboard } from './pages/principal/PrincipalDashboard';
@@ -61,6 +63,9 @@ function App() {
          <Route path="/onboarding/higher-education/register" element={<HigherInstitutionRegistration />} />
         <Route path="/onboarding/higher-education" element={<AuthGuard allowedRoles={['dean']}><HigherEducationOnboarding /></AuthGuard>} />
         
+        {/* Platform administration: authorization is checked against the canonical superadmin actor */}
+        <Route path="/super-admin/institutions" element={<SuperAdminGuard><SuperAdminInstitutionApprovals /></SuperAdminGuard>} />
+
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
         
