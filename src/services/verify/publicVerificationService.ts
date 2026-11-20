@@ -71,15 +71,16 @@ export class PublicVerificationService {
         evidence_hash: String(dto.evidenceHash || ''),
         engine_version: String(dto.engineVersion || ''),
         policy_version: String(dto.policyVersion || ''),
-        overall_similarity: Number(dto.overallSimilarity),
-        total_sources_found: Number(dto.sourceCount),
+        overall_similarity: typeof dto.overallSimilarity === 'number' ? dto.overallSimilarity : Number.NaN,
+        total_sources_found: typeof dto.sourceCount === 'number' ? dto.sourceCount : Number.NaN,
         correction_of_verification_id: typeof dto.correctionOfVerificationId === 'string'
           ? dto.correctionOfVerificationId
           : null,
         created_at: typeof dto.createdAt === 'string' ? dto.createdAt : undefined,
       };
 
-      if (!record.document_hash || !record.evidence_hash || !record.engine_version ||
+      if (!/^[a-f0-9]{16}$/i.test(record.document_hash) ||
+          !/^[a-f0-9]{16}$/i.test(record.evidence_hash) || !record.engine_version ||
           !record.policy_version || !Number.isFinite(record.overall_similarity) ||
           record.overall_similarity < 0 || record.overall_similarity > 100 ||
           !Number.isInteger(record.total_sources_found) || record.total_sources_found < 0 ||
