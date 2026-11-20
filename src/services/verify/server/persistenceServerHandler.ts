@@ -156,7 +156,7 @@ export async function handlePersistenceServerRequest(
   }
   const { data: actor, error: actorError } = await authClient
     .from('identity_actors')
-    .select('id')
+    .select('id,institution_id,school_id,actor_type')
     .eq('auth_user_id', authData.user.id)
     .eq('status', 'active')
     .maybeSingle();
@@ -181,6 +181,30 @@ export async function handlePersistenceServerRequest(
     if (parentError || !parent) throw new PersistenceRequestError(409, 'Correction parent receipt was not found.');
     if (VerificationPersistenceService.validatePersistedRecord(parent).status !== 'VALID') {
       throw new PersistenceRequestError(409, 'Correction parent receipt failed integrity validation.');
+    }
+    if (!parent.verification_run_id) {
+      throw new PersistenceRequestError(409, 'Correction parent is not linked to an authoritative verification run.');
+    }
+
+    const { data: parentRun, error: parentRunError } = await serverSupabase
+      .from('verification_runs')
+      .select('id,institution_id,school_id,created_by_user_id,status,verification_id,document_hash,evidence_hash')
+      .eq('id', parent.verification_run_id)
+      .maybeSingle();
+    if (parentRunError || !parentRun ||
+        !['succeeded', 'superseded'].includes(parentRun.status) ||
+        parentRun.verification_id !== parent.verification_id ||
+        parentRun.document_hash !== parent.document_hash ||
+        parentRun.evidence_hash !== parent.evidence_hash) {
+      throw new PersistenceRequestError(409, 'Correction parent verification run is missing or failed integrity checks.');
+    }
+
+    const actorCanAccessParent = actor.institution_id
+      ? parentRun.institution_id === actor.institution_id &&
+        (!actor.school_id || parentRun.school_id === actor.school_id)
+      : parentRun.created_by_user_id === authData.user.id;
+    if (!actorCanAccessParent) {
+      throw new PersistenceRequestError(403, 'The active identity is not authorized for the correction parent receipt.');
     }
   }
   const recordPayload = VerificationPersistenceService.buildPersistenceRecord(
