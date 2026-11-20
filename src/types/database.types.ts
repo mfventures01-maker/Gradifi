@@ -853,6 +853,7 @@ export type Database = {
           dean_user_id: string | null;
           dean_name: string | null;
           dean_status: string | null;
+          dean_membership_status: string | null;
           dean_job_status: string | null;
           campus_id: string | null;
           campus_name: string | null;
