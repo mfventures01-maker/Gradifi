@@ -17,6 +17,18 @@ export interface PublicTrialExecution<T = unknown> {
   checksRemaining: number;
 }
 
+export class PublicTrialExecutionError extends Error {
+  readonly code: string;
+  readonly checksRemaining: number;
+
+  constructor(message: string, code: string, checksRemaining: number) {
+    super(message);
+    this.name = 'PublicTrialExecutionError';
+    this.code = code;
+    this.checksRemaining = checksRemaining;
+  }
+}
+
 function readStoredSession(): StoredTrialSession | null {
   if (typeof window === 'undefined') return null;
   try {
@@ -93,24 +105,25 @@ export async function executePublicTrialVerification<T = unknown>(
   });
 
   const payload = await response.json().catch(() => ({} as Record<string, unknown>));
+  const code = typeof payload.code === 'string' ? payload.code : 'PUBLIC_TRIAL_VERIFICATION_FAILED';
+  const exhausted = code === 'TRIAL_EXHAUSTED_OR_EXPIRED';
   const checksRemaining = Number.isInteger(payload.checksRemaining)
     ? Number(payload.checksRemaining)
-    : session.checksRemaining;
+    : exhausted ? 0 : session.checksRemaining;
 
-  if (typeof payload.code === 'string' && payload.code === 'TRIAL_EXHAUSTED_OR_EXPIRED') {
+  if (exhausted) {
     if (typeof window !== 'undefined') window.sessionStorage.removeItem(SESSION_KEY);
   } else {
     writeStoredSession({ ...session, checksRemaining });
   }
 
   if (!response.ok || payload.success !== true || !('result' in payload)) {
-    const code = typeof payload.code === 'string' ? payload.code : 'PUBLIC_TRIAL_VERIFICATION_FAILED';
     const message = typeof payload.message === 'string'
       ? payload.message
-      : code === 'TRIAL_EXHAUSTED_OR_EXPIRED'
+      : exhausted
         ? 'Your free-trial checks have been used or the trial session has expired.'
         : 'The public trial verification could not be completed.';
-    throw new Error(message);
+    throw new PublicTrialExecutionError(message, code, checksRemaining);
   }
 
   return { result: payload.result as T, checksRemaining };
