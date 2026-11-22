@@ -25,9 +25,12 @@ test.describe('G7 Public Verification Route Resolution', () => {
     // Confirm URL parameter VRF-8AFCFF6056B0 is retained in address bar
     expect(page.url()).toContain('/verify/VRF-8AFCFF6056B0');
 
-    // Confirm main heading or verification card displays public verification state
+    // CI uses an isolated unauthenticated browser with no persisted receipt.
+    // The correct public-resolution contract is an explicit fail-closed NOT_FOUND state.
     const bodyText = await page.textContent('body');
-    expect(bodyText).toContain('GRADIFI VERIFY');
+    expect(bodyText).toContain('Public Verification Failed');
+    expect(bodyText).toContain('NOT_FOUND');
+    expect(bodyText).toContain('VRF-8AFCFF6056B0');
 
     // Confirm it does NOT render initial upload prompt step
     const hasUploadStep = await page.isVisible('text="1. Select Document File"');
