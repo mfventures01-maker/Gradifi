@@ -3,7 +3,7 @@
 begin;
 do $$
 declare
-  v_a uuid; v_b uuid; v_ws_a uuid:=gen_random_uuid(); v_ws_b uuid:=gen_random_uuid();
+  v_a uuid; v_b uuid; v_ws_a uuid; v_ws_b uuid;
   v_run_a uuid:=gen_random_uuid(); v_run_b uuid:=gen_random_uuid();
   v_upload_a uuid:=gen_random_uuid(); v_upload_b uuid:=gen_random_uuid();
   v_service_version uuid;
@@ -12,10 +12,27 @@ begin
   select id into v_b from auth.users order by created_at offset 1 limit 1;
   select id into v_service_version from public.service_versions limit 1;
   if v_a is null or v_b is null or v_a=v_b then raise exception 'TWO_AUTHENTICATED_TEST_USERS_REQUIRED'; end if;
-  insert into public.workspaces(id,workspace_type,owner_user_id,display_name,status,created_by_user_id)
-  values(v_ws_a,'individual',v_a,'Isolation A','active',v_a),(v_ws_b,'individual',v_b,'Isolation B','active',v_b);
+  select id into v_ws_a from public.workspaces where workspace_type='individual' and owner_user_id=v_a limit 1;
+  select id into v_ws_b from public.workspaces where workspace_type='individual' and owner_user_id=v_b limit 1;
+  if v_ws_a is null then
+    v_ws_a:=gen_random_uuid();
+    insert into public.workspaces(id,workspace_type,owner_user_id,display_name,status,created_by_user_id)
+    values(v_ws_a,'individual',v_a,'Isolation A','active',v_a);
+  else
+    update public.workspaces set status='active' where id=v_ws_a;
+    update public.individual_accounts set account_status='active',updated_at=now() where workspace_id=v_ws_a;
+  end if;
+  if v_ws_b is null then
+    v_ws_b:=gen_random_uuid();
+    insert into public.workspaces(id,workspace_type,owner_user_id,display_name,status,created_by_user_id)
+    values(v_ws_b,'individual',v_b,'Isolation B','active',v_b);
+  else
+    update public.workspaces set status='active' where id=v_ws_b;
+    update public.individual_accounts set account_status='active',updated_at=now() where workspace_id=v_ws_b;
+  end if;
   insert into public.workspace_members(workspace_id,user_id,role,status,membership_source)
-  values(v_ws_a,v_a,'owner','active','workspace_owner'),(v_ws_b,v_b,'owner','active','workspace_owner');
+  values(v_ws_a,v_a,'owner','active','workspace_owner'),(v_ws_b,v_b,'owner','active','workspace_owner')
+  on conflict(workspace_id,user_id) do update set role='owner',status='active',membership_source='workspace_owner';
   insert into public.verify_document_uploads(id,workspace_id,institution_id,owner_user_id,bucket_id,object_path,
     original_filename,content_type,byte_size,source_file_sha256,extraction_status,canonicalization_status)
   values
