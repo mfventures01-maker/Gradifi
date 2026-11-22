@@ -7,7 +7,7 @@ const paths = [
     title: "Freelancers and independent individuals",
     description: "Create a personal Gradifi account as a freelancer, independent student, professional or another individual user. No institution is required.",
     action: "Start independent onboarding",
-    href: "/onboarding/individual/register",
+    href: "/onboarding?view=individual",
     icon: BriefcaseBusiness,
   },
   {
