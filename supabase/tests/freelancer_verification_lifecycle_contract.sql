@@ -2,7 +2,7 @@
 begin;
 do $$
 declare
-  v_user uuid; v_workspace uuid:=gen_random_uuid(); v_upload uuid:=gen_random_uuid();
+  v_user uuid; v_workspace uuid; v_upload uuid:=gen_random_uuid();
   v_root_run uuid:=gen_random_uuid(); v_session uuid:=gen_random_uuid(); v_correction_version uuid;
   v_correction_run uuid; v_order uuid:=gen_random_uuid(); v_payment uuid:=gen_random_uuid();
   v_credit_run uuid:=gen_random_uuid(); v_debit uuid; v_service_version uuid;
@@ -11,10 +11,18 @@ begin
   select id into v_user from auth.users order by created_at limit 1;
   select id into v_service_version from public.service_versions limit 1;
   if v_user is null or v_service_version is null then raise exception 'TEST_FIXTURE_MISSING'; end if;
-  insert into public.workspaces(id,workspace_type,owner_user_id,display_name,status,created_by_user_id)
-  values(v_workspace,'individual',v_user,'Freelancer lifecycle test','active',v_user);
+  select id into v_workspace from public.workspaces where workspace_type='individual' and owner_user_id=v_user limit 1;
+  if v_workspace is null then
+    v_workspace:=gen_random_uuid();
+    insert into public.workspaces(id,workspace_type,owner_user_id,display_name,status,created_by_user_id)
+    values(v_workspace,'individual',v_user,'Freelancer lifecycle test','active',v_user);
+  else
+    update public.workspaces set status='active' where id=v_workspace;
+    update public.individual_accounts set account_status='active',updated_at=now() where workspace_id=v_workspace;
+  end if;
   insert into public.workspace_members(workspace_id,user_id,role,status,membership_source)
-  values(v_workspace,v_user,'owner','active','workspace_owner');
+  values(v_workspace,v_user,'owner','active','workspace_owner')
+  on conflict(workspace_id,user_id) do update set role='owner',status='active',membership_source='workspace_owner';
   insert into public.verify_document_uploads(id,workspace_id,institution_id,owner_user_id,bucket_id,object_path,
     original_filename,content_type,byte_size,source_file_sha256,extraction_status,canonicalization_status)
   values(v_upload,v_workspace,null,v_user,'verify-private',v_workspace::text||'/'||v_user::text||'/'||v_upload::text||'/source.pdf',
