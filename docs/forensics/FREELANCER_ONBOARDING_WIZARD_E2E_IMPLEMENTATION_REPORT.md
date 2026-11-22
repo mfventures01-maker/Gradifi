@@ -47,6 +47,7 @@ If the freelancer MVP requires a workspace at registration time, a trusted serve
 
 ## 3. Implemented frontend changes
 
+- `src/pages/onboarding/OnboardingWizard.tsx`: added the public `?view=individual` branch to the existing shared onboarding wizard; the institutional and higher-education paths remain separate and unchanged.
 - `src/pages/onboarding/IndividualRegistration.tsx`: replaced the single-screen form with a three-step wizard:
   1. Account category, defaulting to Freelancer.
   2. Full name and email.
@@ -57,7 +58,7 @@ If the freelancer MVP requires a workspace at registration time, a trusted serve
 - An in-flight/completed user guard prevents duplicate bootstrap calls from the page's session hydration and auth-state listener.
 - Successful provisioning is accepted only when the RPC response matches the authenticated user, selected account type, individual role and null institution/school scope.
 - `src/services/individualOnboardingService.ts`: centralizes the exact RPC contract.
-- `src/pages/onboarding/OnboardingStart.tsx`: clarifies the freelancer/independent-user entrypoint.
+- `src/pages/onboarding/OnboardingStart.tsx`: routes the freelancer/independent-user card into `/onboarding?view=individual`.
 - `src/types/database.types.ts`: aligns the relevant profile and actor types and declares the bootstrap RPC contract.
 - `.github/workflows/gradifi-primary-g0-g12.yml`: adds the new freelancer browser spec to G11.
 
