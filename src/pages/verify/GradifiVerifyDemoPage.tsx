@@ -398,7 +398,6 @@ Distributed machine learning frameworks require mathematical determinism to guar
 
       if (session?.access_token) {
         const comparison = await verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
-        setIsTrialResult(false);
         setG5Result(comparison);
       } else {
         const { result: comparison, checksRemaining } = await executePublicTrialVerification<GranularSimilarityResult>({
@@ -407,7 +406,6 @@ Distributed machine learning frameworks require mathematical determinism to guar
           sourceText: g5SourceDoc.rawText,
         });
         setTrialChecksRemaining(checksRemaining);
-        setIsTrialResult(true);
         setG5Result(comparison);
       }
     } catch (err: any) {
