@@ -117,7 +117,7 @@ const mockAuthenticatedSupabase = async (
 test.describe("Freelancer and independent-user onboarding wizard", () => {
   test("completes the three-step freelancer wizard against the canonical bootstrap contract", async ({ page }) => {
     const supabase = await mockAuthenticatedSupabase(page);
-    await page.goto("/onboarding/individual/register");
+    await page.goto("/onboarding?view=individual");
 
     await expect(page.getByRole("heading", { name: "Create your Gradifi account" })).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Onboarding progress" })).toBeVisible();
@@ -142,7 +142,7 @@ test.describe("Freelancer and independent-user onboarding wizard", () => {
 
   test("does not provision an identity before email confirmation", async ({ page }) => {
     const supabase = await mockAuthenticatedSupabase(page, { withSession: false });
-    await page.goto("/onboarding/individual/register");
+    await page.goto("/onboarding?view=individual");
 
     await page.getByRole("button", { name: "Continue" }).click();
     await page.getByLabel("Full name").fill("Amina Okafor");
@@ -163,7 +163,7 @@ test.describe("Freelancer and independent-user onboarding wizard", () => {
       await route.fulfill({ status: 500, contentType: "application/json", body: "{}" });
     });
 
-    await page.goto("/onboarding/individual/register");
+    await page.goto("/onboarding?view=individual");
     await page.getByRole("button", { name: "Continue" }).click();
     await page.getByLabel("Full name").fill("Amina Okafor");
     await page.getByLabel("Email address").fill(EMAIL);
