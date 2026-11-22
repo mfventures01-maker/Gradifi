@@ -33,6 +33,8 @@ import {
   FileCheck
 } from 'lucide-react';
 import { verifyCoreService } from '../../services/verify/verifyCoreService';
+import { executePublicTrialVerification } from '../../services/verify/publicTrialService';
+import { supabase } from '../../lib/supabase';
 import { verificationPersistenceService } from '../../services/verify/verificationPersistenceService';
 import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument, GranularSimilarityResult } from '../../services/verify/types';
 import { applyHighlights, methodToClass } from '../../components/verify/highlightUtils';
@@ -126,6 +128,8 @@ export const GradifiVerifyDemoPage: React.FC = () => {
   const [correcting, setCorrecting] = useState(false);
   const [correctionError, setCorrectionError] = useState<string | null>(null);
   const [correctionComparison, setCorrectionComparison] = useState<CorrectionComparison | null>(null);
+  const [trialChecksRemaining, setTrialChecksRemaining] = useState<number | null>(null);
+  const [isTrialResult, setIsTrialResult] = useState(false);
 
   // Canonical Public Result Boundary (Presentation Firewall)
   const publicResult: PublicVerificationResult | null = result
@@ -261,7 +265,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
     }
   };
 
-  // Execute federated evidence run
+  // Execute verification through the authenticated path or server-enforced public trial path.
   const handleExecuteVerification = async () => {
     if (!documentText.trim()) {
       setUploadError('Please select or enter document text to verify.');
@@ -272,27 +276,35 @@ Distributed machine learning frameworks require mathematical determinism to guar
     setCurrentStep('federation');
 
     try {
-      const res = await verifyCoreService.executeVerifyRun(documentText);
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error('Unable to determine the current authentication state.');
 
-      const { result: persistResult, envelope: persistEnvelope } = buildG4DPersistencePayload(res);
-
-      const { record } = await verificationPersistenceService.persistVerificationRecord(
-        persistResult,
-        persistEnvelope
-      );
-
-      if (!record?.verification_id) {
-        throw new Error('Persistence returned no verification_id');
+      if (session?.access_token) {
+        const res = await verifyCoreService.executeVerifyRun(documentText);
+        const { result: persistResult, envelope: persistEnvelope } = buildG4DPersistencePayload(res);
+        const { record } = await verificationPersistenceService.persistVerificationRecord(persistResult, persistEnvelope);
+        if (!record?.verification_id) throw new Error('Persistence returned no verification_id');
+        setVerificationId(record.verification_id);
+        setIsTrialResult(false);
+        setTrialChecksRemaining(null);
+        setResult(res);
+      } else {
+        const { result: res, checksRemaining } = await executePublicTrialVerification<EvidenceEngineResult>({
+          mode: 'verify',
+          documentText,
+        });
+        setTrialChecksRemaining(checksRemaining);
+        setIsTrialResult(true);
+        setVerificationId('');
+        setResult(res);
       }
 
-      setVerificationId(record.verification_id);
-      setResult(res);
       setCurrentStep('result');
     } catch (err: any) {
       console.error('Verification execution error:', err);
       setUploadError(
         err?.message ||
-        'Verification completed locally but could not be committed to authoritative storage. Receipt cannot be issued.'
+        'Verification could not be completed. No authoritative receipt was issued.'
       );
       setVerificationId('');
       setResult(null);
@@ -370,10 +382,8 @@ Distributed machine learning frameworks require mathematical determinism to guar
     }
   };
 
-  // G5 direct comparison is deliberately separate from provider federation and receipt persistence.
-  // The canonical engine treats the first argument as the submitted/student document and the
-  // second argument as the comparison/source document.
-  const handleRunG5Comparison = () => {
+  // G5 direct comparison is also charged against the anonymous trial on the server.
+  const handleRunG5Comparison = async () => {
     if (!canonicalDoc?.rawText.trim()) {
       setG5Error('Upload or enter the student submission first.');
       return;
@@ -386,8 +396,23 @@ Distributed machine learning frameworks require mathematical determinism to guar
     setG5Comparing(true);
     setG5Error(null);
     try {
-      const comparison = verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
-      setG5Result(comparison);
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error('Unable to determine the current authentication state.');
+
+      if (session?.access_token) {
+        const comparison = await verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
+        setIsTrialResult(false);
+        setG5Result(comparison);
+      } else {
+        const { result: comparison, checksRemaining } = await executePublicTrialVerification<GranularSimilarityResult>({
+          mode: 'compare',
+          studentText: canonicalDoc.rawText,
+          sourceText: g5SourceDoc.rawText,
+        });
+        setTrialChecksRemaining(checksRemaining);
+        setIsTrialResult(true);
+        setG5Result(comparison);
+      }
     } catch (err: any) {
       setG5Result(null);
       setG5Error(err?.message || 'The canonical G5 comparison failed.');
@@ -425,7 +450,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
     doc.text('GRADIFI VERIFICATION REPORT', 14, 20);
 
     doc.setFontSize(11);
-    doc.text(`Verification ID: ${verificationId}`, 14, 30);
+    doc.text(verificationId ? `Verification ID: ${verificationId}` : 'Verification ID: NOT ISSUED - PUBLIC TRIAL RESULT', 14, 30);
     doc.text(`Timestamp: ${result.timestamp || new Date().toISOString()}`, 14, 36);
     doc.text(`Hash: ${result.evidenceHash || result.documentHash}`, 14, 42);
     doc.text(`Overall Similarity: ${result.overallSimilarity}%`, 14, 48);
@@ -939,6 +964,12 @@ Distributed machine learning frameworks require mathematical determinism to guar
                 />
               </div>
 
+              {trialChecksRemaining !== null && (
+                <p className="text-xs text-slate-400" role="status">
+                  Public trial checks remaining: <strong className="text-cyan-300">{trialChecksRemaining}</strong>. Trial results are not issued as persistent public receipts.
+                </p>
+              )}
+
               {/* Verify Action Button */}
               <button
                 type="button"
@@ -1319,6 +1350,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   }}
                 />
 
+                {verificationId && (
                 <section className="rounded-2xl border border-cyan-800/50 bg-slate-900/90 p-6 space-y-4">
                   <div>
                     <h3 className="text-base font-bold text-white">Submit a corrected version</h3>
@@ -1357,6 +1389,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                     </div>
                   )}
                 </section>
+                )}
 
                 {/* Source Attribution & Citation Hub (P5) */}
                 {publicResult && (
@@ -1613,38 +1646,31 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   </div>
                 </div>
 
-                {/* 8 & 9: Scannable QR Verification Receipt & Download PDF Report */}
-                <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-                  
-                  {/* Left: QR Code & Receipt Info */}
-                  <div className="flex items-center gap-5">
-                    <div
-                      className="shrink-0 p-2 bg-white rounded-xl shadow-lg"
-                      dangerouslySetInnerHTML={{
-                        __html: qrSvgHtml
-                      }}
-                    />
-                    <div className="space-y-1.5 text-xs">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-blue-400">8. Scannable QR Receipt</div>
-                      <div className="font-extrabold text-base text-white font-mono">{verificationId}</div>
-                      <div className="text-slate-400 text-[11px]">Timestamp: {new Date(result.timestamp).toUTCString()}</div>
-                      <div className="text-slate-500 font-mono text-[10px] truncate max-w-[260px]">
-                        Hash: {result.documentHash.slice(0, 16)}...
+                {/* Persisted receipts are shown only when a trusted persistence operation returned an ID. */}
+                {verificationId ? (
+                  <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-5">
+                      <div className="shrink-0 p-2 bg-white rounded-xl shadow-lg" dangerouslySetInnerHTML={{ __html: qrSvgHtml }} />
+                      <div className="space-y-1.5 text-xs">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Scannable Public Verification Receipt</div>
+                        <div className="font-extrabold text-base text-white font-mono">{verificationId}</div>
+                        <div className="text-slate-400 text-[11px]">Timestamp: {new Date(result.timestamp).toUTCString()}</div>
+                        <div className="text-slate-500 font-mono text-[10px] truncate max-w-[260px]">Hash: {result.documentHash.slice(0, 16)}...</div>
                       </div>
                     </div>
+                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                      <button onClick={handleDownloadPDF} className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 cursor-pointer transition-all active:scale-[0.98]">
+                        <Download className="w-4 h-4" /> Download PDF Verification Report
+                      </button>
+                    </div>
                   </div>
-
-                  {/* Right: PDF Download Action */}
-                  <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <button
-                      onClick={handleDownloadPDF}
-                      className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 cursor-pointer transition-all active:scale-[0.98]"
-                    >
-                      <Download className="w-4 h-4" /> Download PDF Verification Report
-                    </button>
+                ) : (
+                  <div className="rounded-2xl border border-cyan-800/50 bg-cyan-950/20 p-6 space-y-2">
+                    <div className="text-sm font-bold text-cyan-200">Public trial verification completed</div>
+                    <p className="text-xs text-slate-300">This result was executed through the server-enforced anonymous trial. It is a trial result, not a persisted verification receipt, and it has no public verification URL.</p>
+                    {trialChecksRemaining !== null && <p className="text-xs text-cyan-300">Checks remaining in this trial session: {trialChecksRemaining}</p>}
                   </div>
-
-                </div>
+                )}
 
               </>
             )}
