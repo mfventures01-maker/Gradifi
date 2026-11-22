@@ -3,7 +3,7 @@ begin;
 do $$
 declare
   v_user uuid; v_workspace uuid; v_upload uuid:=gen_random_uuid();
-  v_root_run uuid:=gen_random_uuid(); v_session uuid:=gen_random_uuid(); v_correction_version uuid;
+  v_root_run uuid:=gen_random_uuid(); v_other_run uuid:=gen_random_uuid(); v_session uuid:=gen_random_uuid(); v_correction_version uuid;
   v_correction_run uuid; v_order uuid:=gen_random_uuid(); v_payment uuid:=gen_random_uuid();
   v_credit_run uuid:=gen_random_uuid(); v_debit uuid; v_service_version uuid;
   v_result jsonb; v_rejected boolean;
@@ -30,6 +30,12 @@ begin
   insert into public.verification_runs(id,workspace_id,service_version_id,status,attempt,created_by_user_id,source_upload_id)
   values(v_root_run,v_workspace,v_service_version,'queued',1,v_user,v_upload);
   update public.verify_document_uploads set verification_run_id=v_root_run where id=v_upload;
+  insert into public.verification_runs(id,workspace_id,service_version_id,status,attempt,created_by_user_id)
+  values(v_other_run,v_workspace,v_service_version,'queued',1,v_user);
+  v_rejected:=false;
+  begin update public.verify_document_uploads set verification_run_id=v_other_run where id=v_upload;
+  exception when others then if sqlerrm like 'VERIFY_UPLOAD_RUN_LINK_IMMUTABLE%' then v_rejected:=true; else raise; end if; end;
+  if not v_rejected then raise exception 'UPLOAD_RUN_LINK_REASSIGNMENT_NOT_BLOCKED'; end if;
   update public.verification_runs set status='running',document_hash=repeat('1',64),canonical_document_hash=repeat('1',64),
     evidence_hash=repeat('2',64),manifest_hash=repeat('3',64),result_hash=repeat('4',64),
     engine_version='G5-DETERMINISTIC-v1',policy_version='G3-POLICY-v1',
