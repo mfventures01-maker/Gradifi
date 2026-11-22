@@ -61,7 +61,17 @@
         "subordinate-recovery.ts": "present in repository; not present in deployed v10 file bundle"
       },
       "status": "SOURCE_DRIFT_REQUIRES_REVIEW",
-      "note": "Deployed v10 source was preserved verbatim under _deployed-snapshots. Existing deployable repository source was not overwritten because the drift requires semantic review."
+      "note": "Deployed v10 source was preserved verbatim under _deployed-snapshots. Existing deployable repository source was not overwritten because the drift requires semantic review.",
+      "deployed_snapshot_commits": [
+        {
+          "path": "supabase/functions/_deployed-snapshots/actor-onboarding-v10/index.ts",
+          "commit": "8d8dc57adc794b731f2ab9d24b275a86ca84322c"
+        },
+        {
+          "path": "supabase/functions/_deployed-snapshots/actor-onboarding-v10/dean-recovery.ts",
+          "commit": "d06eeb55dade4e0d8cc3c9b689ef17cf0c916130"
+        }
+      ]
     }
   ],
   "notes": [
