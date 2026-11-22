@@ -1,0 +1,54 @@
+{
+  "schema": "gradifi.edge-function-provenance.v1",
+  "repository": "mfventures01-maker/Gradifi",
+  "branch": "fix/cmvp01-public-commercial-gate-2026-11-22",
+  "restoration_base_commit": "e360587c96a3df4f70638e7ab962750596675caf",
+  "supabase_project_id": "ehkmfnaqkdgkjmdxxbwj",
+  "provenance_kind": "source-recovered-from-live-deployed-edge-functions",
+  "reviewed": false,
+  "production_deployment_performed": false,
+  "functions": [
+    {
+      "slug": "trial",
+      "repository_path": "supabase/functions/trial/index.ts",
+      "entrypoint": "index.ts",
+      "deployed_version": 8,
+      "deployed_verify_jwt": false,
+      "deployed_bundle_sha256": "782781c5c426a2ada707a112547a357ca449808505760c13a69699edb56dab79",
+      "source_restoration_commit": "e3396c123606e6301df727cc10eaae86bbfda691"
+    },
+    {
+      "slug": "upload-document",
+      "repository_path": "supabase/functions/upload-document/index.ts",
+      "entrypoint": "index.ts",
+      "deployed_version": 8,
+      "deployed_verify_jwt": true,
+      "deployed_bundle_sha256": "e4c6939a796a691c1748990e85296bbec1ebde55eda9d479730ebd2274c6ffc4",
+      "source_restoration_commit": "7e1440cc159943d3441a4171a6d895b0bac79021"
+    },
+    {
+      "slug": "verify",
+      "repository_path": "supabase/functions/verify/index.ts",
+      "entrypoint": "index.ts",
+      "deployed_version": 8,
+      "deployed_verify_jwt": true,
+      "deployed_bundle_sha256": "091ad0979d26438e1400e946db54d878a19803f7021fab47bb04e84010b13f16",
+      "source_restoration_commit": "f92b0ef07ab1f117576bd8d4028700086362451c"
+    },
+    {
+      "slug": "ocr-processor",
+      "repository_path": "supabase/functions/ocr-processor/index.ts",
+      "entrypoint": "index.ts",
+      "deployed_version": 8,
+      "deployed_verify_jwt": true,
+      "deployed_bundle_sha256": "b08065a8de76c642df3e660218c74a0149472f54b105e8c12c9ece69f77afc86",
+      "source_restoration_commit": "7abb2a64ddc85cd7f6af73ebf37bdea1d73d137b"
+    }
+  ],
+  "notes": [
+    "Source snapshots are restored verbatim from the currently deployed Supabase function source.",
+    "The deployment bundle SHA-256 is the Supabase-provided ezbr_sha256 and is not represented as a standalone index.ts file hash.",
+    "Repository restoration does not establish that the source has passed review or tests.",
+    "No Edge Function was deployed or modified in Supabase."
+  ]
+}
