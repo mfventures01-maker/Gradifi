@@ -62,6 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: {
         'Content-Type': 'application/json',
         apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
       },
       body: JSON.stringify({ action: 'consume', trialToken }),
     });
