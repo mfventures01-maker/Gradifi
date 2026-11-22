@@ -83,7 +83,7 @@ export type Database = {
           authority_user_id: string | null;
           full_name: string;
           email: string | null;
-          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
+          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector';
           phone: string | null;
           pin: string | null;
           pin_hash: string | null;
@@ -104,7 +104,7 @@ export type Database = {
           authority_user_id?: string | null;
           full_name: string;
           email?: string | null;
-          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
+          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector';
           phone?: string | null;
           pin?: string | null;
           pin_hash?: string | null;
@@ -125,7 +125,7 @@ export type Database = {
           authority_user_id?: string | null;
           full_name?: string;
           email?: string | null;
-          role?: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
+          role?: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector';
           phone?: string | null;
           pin?: string | null;
           pin_hash?: string | null;
@@ -144,10 +144,10 @@ export type Database = {
         Row: {
           id: string;
           auth_user_id: string;
-          institution_id: string;
+          institution_id: string | null;
           school_id: string | null;
           authority_user_id: string | null;
-          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'hod' | 'adviser' | 'lecturer';
+          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual';
           actor_record_id: string | null;
           login_identifier: string;
           auth_method: 'email' | 'pin';
@@ -163,10 +163,10 @@ export type Database = {
         Insert: {
           id?: string;
           auth_user_id: string;
-          institution_id: string;
+          institution_id: string | null;
           school_id?: string | null;
           authority_user_id?: string | null;
-          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'hod' | 'adviser' | 'lecturer';
+          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual';
           actor_record_id?: string | null;
           login_identifier: string;
           auth_method?: 'email' | 'pin';
@@ -182,10 +182,10 @@ export type Database = {
         Update: {
           id?: string;
           auth_user_id?: string;
-          institution_id?: string;
+          institution_id?: string | null;
           school_id?: string | null;
           authority_user_id?: string | null;
-          actor_type?: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'hod' | 'adviser' | 'lecturer';
+          actor_type?: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual';
           actor_record_id?: string | null;
           login_identifier?: string;
           auth_method?: 'email' | 'pin';
