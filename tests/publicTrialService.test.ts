@@ -82,11 +82,19 @@ describe('public trial client contract', () => {
       message: 'Trial exhausted.',
     }), { status: 429 }));
 
-    await expect(executePublicTrialVerification({
-      mode: 'verify',
-      documentText: 'document',
-    })).rejects.toThrow('Trial exhausted.');
+    let failure: any;
+    try {
+      await executePublicTrialVerification({
+        mode: 'verify',
+        documentText: 'document',
+      });
+    } catch (error) {
+      failure = error;
+    }
 
+    expect(failure).toBeInstanceOf(Error);
+    expect(failure.message).toBe('Trial exhausted.');
+    expect(failure.checksRemaining).toBe(0);
     expect(storage.getItem('gradifi.public-trial.v1')).toBeNull();
   });
 });
