@@ -116,7 +116,7 @@ const getFriendlyError = (message: string) => {
   if (message.includes("INDIVIDUAL_BOOTSTRAP_CONTRACT_MISMATCH")) {
     return "Gradifi could not verify the account setup response. Please try again.";
   }
-  return message.replace(/^INDIVIDUAL_BOOTSTRAP_FAILED:\\s*/, "");
+  return message.replace(/^INDIVIDUAL_BOOTSTRAP_FAILED:\s*/, "");
 };
 
 export const IndividualRegistration: React.FC = () => {
@@ -206,7 +206,7 @@ export const IndividualRegistration: React.FC = () => {
         setError("Enter your full name.");
         return false;
       }
-      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email.trim())) {
+      if (!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email.trim())) {
         setError("Enter a valid email address.");
         return false;
       }
@@ -235,7 +235,7 @@ export const IndividualRegistration: React.FC = () => {
 
     const normalizedEmail = email.trim().toLowerCase();
     const pending: PendingRegistration = {
-      full_name: fullName.trim().replace(/\\s+/g, " "),
+      full_name: fullName.trim().replace(/\s+/g, " "),
       email: normalizedEmail,
       account_type: accountType,
     };
