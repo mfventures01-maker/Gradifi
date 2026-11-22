@@ -129,10 +129,9 @@ export const GradifiVerifyDemoPage: React.FC = () => {
   const [correctionError, setCorrectionError] = useState<string | null>(null);
   const [correctionComparison, setCorrectionComparison] = useState<CorrectionComparison | null>(null);
   const [trialChecksRemaining, setTrialChecksRemaining] = useState<number | null>(null);
-  const [isTrialResult, setIsTrialResult] = useState(false);
 
   // Canonical Public Result Boundary (Presentation Firewall)
-  const publicResult: PublicVerificationResult | null = result
+  const publicResult: PublicVerificationResult | null = result && verificationId
     ? toPublicVerificationResult(result, verificationId)
     : null;
 
@@ -285,7 +284,6 @@ Distributed machine learning frameworks require mathematical determinism to guar
         const { record } = await verificationPersistenceService.persistVerificationRecord(persistResult, persistEnvelope);
         if (!record?.verification_id) throw new Error('Persistence returned no verification_id');
         setVerificationId(record.verification_id);
-        setIsTrialResult(false);
         setTrialChecksRemaining(null);
         setResult(res);
       } else {
@@ -294,7 +292,6 @@ Distributed machine learning frameworks require mathematical determinism to guar
           documentText,
         });
         setTrialChecksRemaining(checksRemaining);
-        setIsTrialResult(true);
         setVerificationId('');
         setResult(res);
       }
