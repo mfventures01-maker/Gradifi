@@ -29,6 +29,20 @@ begin
     raise exception 'CORRECTION_APPEND_FUNCTION_PRIVILEGE_MISMATCH';
   end if;
 
+  if has_function_privilege('authenticated','private.consume_individual_credit(uuid,uuid,uuid,text)','EXECUTE')
+     or not has_function_privilege('service_role','private.consume_individual_credit(uuid,uuid,uuid,text)','EXECUTE')
+     or has_function_privilege('authenticated','private.reverse_individual_credit(uuid,text,text)','EXECUTE')
+     or not has_function_privilege('service_role','private.reverse_individual_credit(uuid,text,text)','EXECUTE') then
+    raise exception 'CREDIT_LEDGER_RPC_PRIVILEGE_MISMATCH';
+  end if;
+
+  if not exists(select 1 from pg_indexes where schemaname='public'
+    and indexname='credit_ledger_one_verification_debit_per_run_uidx')
+     or not exists(select 1 from pg_indexes where schemaname='public'
+    and indexname='credit_ledger_single_reversal_per_debit_uidx') then
+    raise exception 'CREDIT_LEDGER_IDEMPOTENCY_INDEX_MISSING';
+  end if;
+
   if not exists(select 1 from pg_trigger where tgrelid='public.credit_ledger'::regclass
     and tgname='trg_credit_ledger_immutable' and not tgisinternal and tgenabled<>'D') then
     raise exception 'CREDIT_LEDGER_IMMUTABILITY_TRIGGER_MISSING';
