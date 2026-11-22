@@ -66,9 +66,10 @@ If the freelancer MVP requires a workspace at registration time, a trusted serve
 
 File: `e2e/freelancer-onboarding.spec.ts`
 
-1. Complete the three-step freelancer wizard, verify the exact RPC payload, then verify the individual dashboard renders.
-2. Verify that an email-confirmation-required signup does not call the identity bootstrap RPC prematurely.
-3. Verify mismatched passwords are rejected before calling Supabase Auth.
+1. Verify the onboarding-start freelancer card routes into the shared wizard.
+2. Complete the three-step freelancer wizard, verify the exact RPC payload, then verify the individual dashboard renders.
+3. Verify that an email-confirmation-required signup does not call the identity bootstrap RPC prematurely.
+4. Verify mismatched passwords are rejected before calling Supabase Auth.
 
 These tests use deterministic HTTP stubs at the Supabase Auth and PostgREST boundaries. They are browser-level frontend/contract E2E tests, not a live production database execution.
 
