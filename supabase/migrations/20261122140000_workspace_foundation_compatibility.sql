@@ -92,6 +92,42 @@ create index workspace_members_user_status_idx
 create index workspace_members_workspace_status_idx
   on public.workspace_members(workspace_id,status);
 
+-- Create and maintain an institutional workspace whenever an institution is created
+-- or its display name/status changes. This keeps future legacy onboarding compatible.
+create or replace function public.ensure_institution_workspace()
+returns trigger
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $function$
+begin
+  insert into public.workspaces (
+    workspace_type, institution_id, owner_user_id,
+    display_name, status, created_at, updated_at
+  ) values (
+    'institution', new.id, null, new.name, new.status,
+    coalesce(new.created_at, now()), now()
+  )
+  on conflict (institution_id) where workspace_type = 'institution'
+  do update set
+    display_name = excluded.display_name,
+    status = excluded.status,
+    updated_at = now();
+
+  return new;
+end;
+$function$;
+
+revoke all on function public.ensure_institution_workspace()
+  from public, anon, authenticated;
+
+drop trigger if exists institutions_ensure_workspace on public.institutions;
+
+create trigger institutions_ensure_workspace
+after insert or update of name, status on public.institutions
+for each row
+execute function public.ensure_institution_workspace();
+
 -- 3. One institutional workspace per existing institution.
 -- Preserve institution identity and status, including 'rejected'.
 insert into public.workspaces (
@@ -270,6 +306,14 @@ declare
   v_workspace_type text;
   v_workspace_institution_id uuid;
 begin
+  -- If a legacy writer moves an existing row to another institution without
+  -- supplying a workspace_id, derive the matching institutional workspace.
+  if tg_op = 'UPDATE'
+     and new.institution_id is distinct from old.institution_id
+     and new.workspace_id is not distinct from old.workspace_id then
+    new.workspace_id := null;
+  end if;
+
   if new.workspace_id is null and new.institution_id is not null then
     select w.id into new.workspace_id
     from public.workspaces w
