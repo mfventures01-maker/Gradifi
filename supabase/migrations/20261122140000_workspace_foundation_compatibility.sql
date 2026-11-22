@@ -92,6 +92,12 @@ create index workspace_members_user_status_idx
 create index workspace_members_workspace_status_idx
   on public.workspace_members(workspace_id,status);
 
+-- Keep the new schema closed to direct API roles until the dedicated workspace
+-- RLS/authorization phase is reviewed and deployed.
+revoke all on table public.workspaces, public.workspace_members
+  from public, anon, authenticated;
+grant all on table public.workspaces, public.workspace_members to service_role;
+
 -- Create and maintain an institutional workspace whenever an institution is created
 -- or its display name/status changes. This keeps future legacy onboarding compatible.
 create or replace function public.ensure_institution_workspace()
