@@ -43,12 +43,32 @@
       "deployed_verify_jwt": true,
       "deployed_bundle_sha256": "b08065a8de76c642df3e660218c74a0149472f54b105e8c12c9ece69f77afc86",
       "source_restoration_commit": "7abb2a64ddc85cd7f6af73ebf37bdea1d73d137b"
+    },
+    {
+      "slug": "actor-onboarding",
+      "repository_path": "supabase/functions/actor-onboarding/",
+      "deployed_version": 10,
+      "deployed_verify_jwt": false,
+      "deployed_bundle_sha256": "f01e53686377e4ed67b6148040fb8b6773b97b78c2d584a578dbbd47595a4a20",
+      "repository_live_source_match": false,
+      "deployed_snapshot_paths": [
+        "supabase/functions/_deployed-snapshots/actor-onboarding-v10/index.ts",
+        "supabase/functions/_deployed-snapshots/actor-onboarding-v10/dean-recovery.ts"
+      ],
+      "current_repository_files": {
+        "index.ts": "0f0dfef0bdeb076cc1d24bee46a69fc052c0ed83",
+        "dean-recovery.ts": "edeed6c09464a4db1bcb83fed261a8dbdc5ba0b9",
+        "subordinate-recovery.ts": "present in repository; not present in deployed v10 file bundle"
+      },
+      "status": "SOURCE_DRIFT_REQUIRES_REVIEW",
+      "note": "Deployed v10 source was preserved verbatim under _deployed-snapshots. Existing deployable repository source was not overwritten because the drift requires semantic review."
     }
   ],
   "notes": [
     "Source snapshots are restored verbatim from the currently deployed Supabase function source.",
     "The deployment bundle SHA-256 is the Supabase-provided ezbr_sha256 and is not represented as a standalone index.ts file hash.",
     "Repository restoration does not establish that the source has passed review or tests.",
-    "No Edge Function was deployed or modified in Supabase."
+    "No Edge Function was deployed or modified in Supabase.",
+    "actor-onboarding v10 is not an exact match for the current deployable repository source; its deployed files are preserved as snapshots and require reviewed reconciliation before claiming full source-to-deployment parity."
   ]
 }
