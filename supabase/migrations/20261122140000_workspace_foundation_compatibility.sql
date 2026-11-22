@@ -193,7 +193,10 @@ declare
   v_workspace_id uuid;
 begin
   if tg_op = 'UPDATE'
-     and old.institution_id is distinct from new.institution_id then
+     and (
+       old.institution_id is distinct from new.institution_id
+       or old.user_id is distinct from new.user_id
+     ) then
     select w.id into v_workspace_id
     from public.workspaces w
     where w.workspace_type = 'institution'
@@ -268,6 +271,94 @@ after insert or update or delete on public.institution_memberships
 for each row
 execute function public.sync_institution_membership_to_workspace();
 
+-- 5A. Authenticated-user workspace authorization and personal workspace bootstrap.
+create or replace function public.is_current_user_active_workspace_member(p_workspace_id uuid)
+returns boolean language sql stable security definer
+set search_path = pg_catalog, public, auth
+as $function$
+  select auth.uid() is not null and exists (
+    select 1 from public.workspace_members wm
+    join public.workspaces w on w.id = wm.workspace_id
+    where wm.workspace_id = p_workspace_id
+      and wm.user_id = (select auth.uid())
+      and wm.status = 'active' and w.status = 'active'
+  );
+$function$;
+revoke all on function public.is_current_user_active_workspace_member(uuid) from public, anon;
+grant execute on function public.is_current_user_active_workspace_member(uuid) to authenticated, service_role;
+
+create or replace function public.ensure_personal_workspace()
+returns uuid language plpgsql security definer
+set search_path = pg_catalog, public, auth
+as $function$
+declare
+  v_user_id uuid := auth.uid();
+  v_workspace_id uuid;
+  v_workspace_status text;
+  v_member_status text;
+  v_member_role text;
+  v_membership_source text;
+  v_full_name text;
+begin
+  if v_user_id is null then
+    raise exception 'AUTHENTICATED_USER_REQUIRED' using errcode = '28000';
+  end if;
+  select nullif(btrim(p.full_name), '') into v_full_name
+  from public.profiles p where p.user_id = v_user_id
+  order by p.created_at desc nulls last limit 1;
+  insert into public.workspaces (workspace_type,institution_id,owner_user_id,display_name,status,created_by_user_id)
+  values ('individual',null,v_user_id,
+    case when v_full_name is null then 'Personal workspace'
+         else v_full_name || chr(39) || 's workspace' end,
+    'active',v_user_id)
+  on conflict (owner_user_id) where workspace_type = 'individual' do nothing
+  returning id into v_workspace_id;
+  if v_workspace_id is null then
+    select w.id,w.status into v_workspace_id,v_workspace_status
+    from public.workspaces w
+    where w.workspace_type = 'individual' and w.owner_user_id = v_user_id
+    for update;
+  else
+    select w.status into v_workspace_status from public.workspaces w where w.id = v_workspace_id;
+  end if;
+  if v_workspace_id is null then
+    raise exception 'PERSONAL_WORKSPACE_CREATION_FAILED' using errcode = '23503';
+  end if;
+  if v_workspace_status <> 'active' then
+    raise exception 'PERSONAL_WORKSPACE_NOT_ACTIVE' using errcode = '55000';
+  end if;
+  insert into public.workspace_members (workspace_id,user_id,role,status,membership_source)
+  values (v_workspace_id,v_user_id,'owner','active','workspace_owner')
+  on conflict (workspace_id,user_id) do nothing;
+  select wm.status,wm.role,wm.membership_source
+  into v_member_status,v_member_role,v_membership_source
+  from public.workspace_members wm
+  where wm.workspace_id = v_workspace_id and wm.user_id = v_user_id
+  for update;
+  if v_member_status is distinct from 'active'
+     or v_member_role is distinct from 'owner'
+     or v_membership_source is distinct from 'workspace_owner' then
+    raise exception 'PERSONAL_WORKSPACE_OWNER_MEMBERSHIP_INVALID' using errcode = '42501';
+  end if;
+  return v_workspace_id;
+end;
+$function$;
+revoke all on function public.ensure_personal_workspace() from public, anon;
+grant execute on function public.ensure_personal_workspace() to authenticated, service_role;
+comment on function public.ensure_personal_workspace() is
+  'Idempotently creates or returns the authenticated user personal workspace; owner identity is always auth.uid().';
+
+alter table public.workspaces enable row level security;
+alter table public.workspace_members enable row level security;
+revoke all on table public.workspaces, public.workspace_members from public, anon, authenticated;
+grant select on table public.workspaces, public.workspace_members to authenticated;
+grant all on table public.workspaces, public.workspace_members to service_role;
+drop policy if exists workspaces_select_active_member on public.workspaces;
+create policy workspaces_select_active_member on public.workspaces
+for select to authenticated using (public.is_current_user_active_workspace_member(id));
+drop policy if exists workspace_members_select_self on public.workspace_members;
+create policy workspace_members_select_self on public.workspace_members
+for select to authenticated using (user_id = (select auth.uid()));
 -- 6. Add nullable workspace references first, then backfill and validate.
 alter table public.verification_runs
   add column workspace_id uuid;
@@ -531,6 +622,40 @@ create index verification_runs_workspace_created_idx
 create index verify_uploads_workspace_created_idx
   on public.verify_document_uploads(workspace_id, created_at desc);
 
+-- 9. Workspace-based authorization for verification records and private document reads.
+drop policy if exists verification_runs_insert_member_creator on public.verification_runs;
+drop policy if exists verification_runs_read_member_creator on public.verification_runs;
+create policy verification_runs_insert_workspace_member_creator on public.verification_runs
+for insert to authenticated with check (
+  created_by_user_id = (select auth.uid())
+  and public.is_current_user_active_workspace_member(workspace_id)
+  and (source_submission_id is null or exists (
+    select 1 from public.submissions s
+    where s.id = verification_runs.source_submission_id
+      and s.institution_id = verification_runs.institution_id
+  ))
+);
+create policy verification_runs_read_workspace_member_creator on public.verification_runs
+for select to authenticated using (
+  created_by_user_id = (select auth.uid())
+  or public.is_current_user_active_workspace_member(workspace_id)
+);
+drop policy if exists "Verify uploads owner or institution member read" on public.verify_document_uploads;
+create policy verify_uploads_workspace_member_or_owner_read on public.verify_document_uploads
+for select to authenticated using (
+  owner_user_id = (select auth.uid())
+  or public.is_current_user_active_workspace_member(workspace_id)
+);
+drop policy if exists "Verify private objects readable by owner or institution member" on storage.objects;
+create policy verify_private_objects_workspace_member_or_owner_read on storage.objects
+for select to authenticated using (
+  bucket_id = 'verify-private' and exists (
+    select 1 from public.verify_document_uploads u
+    where u.bucket_id = objects.bucket_id and u.object_path = objects.name
+      and (u.owner_user_id = (select auth.uid())
+           or public.is_current_user_active_workspace_member(u.workspace_id))
+  )
+);
 -- Final row-count assertions: legacy source rows must still exist unchanged.
 do $f1_final_counts$
 begin
