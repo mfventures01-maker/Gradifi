@@ -206,7 +206,7 @@ export const IndividualRegistration: React.FC = () => {
         setError("Enter your full name.");
         return false;
       }
-      if (!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email.trim())) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
         setError("Enter a valid email address.");
         return false;
       }
