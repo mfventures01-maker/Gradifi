@@ -33,7 +33,7 @@ export const individualOnboardingService = {
   async completePublicIndividualRegistration(
     input: CompletePublicIndividualInput,
   ): Promise<BootstrapPublicIndividualResult> {
-    const fullName = input.fullName.trim().replace(/\\s+/g, " ");
+    const fullName = input.fullName.trim().replace(/\s+/g, " ");
 
     if (!input.authUserId || !fullName) {
       throw new Error("INDIVIDUAL_REGISTRATION_IDENTITY_REQUIRED");
