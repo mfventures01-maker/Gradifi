@@ -4,3 +4,15 @@ project_id = "ehkmfnaqkdgkjmdxxbwj"
 # explicit JWT validation for every account-provisioning request.
 [functions.actor-onboarding]
 verify_jwt = false
+
+[functions.trial]
+verify_jwt = false
+
+[functions.upload-document]
+verify_jwt = true
+
+[functions.verify]
+verify_jwt = true
+
+[functions.ocr-processor]
+verify_jwt = true
