@@ -115,6 +115,14 @@ const mockAuthenticatedSupabase = async (
 };
 
 test.describe("Freelancer and independent-user onboarding wizard", () => {
+  test("routes the freelancer entry card into the shared onboarding wizard", async ({ page }) => {
+    await page.goto("/onboarding/start");
+    await expect(page.getByRole("heading", { name: "Choose how you use Gradifi." })).toBeVisible();
+    await page.getByRole("link", { name: "Start independent onboarding" }).click();
+    await expect(page.getByRole("heading", { name: "Create your Gradifi account" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Onboarding progress" })).toBeVisible();
+  });
+
   test("completes the three-step freelancer wizard against the canonical bootstrap contract", async ({ page }) => {
     const supabase = await mockAuthenticatedSupabase(page);
     await page.goto("/onboarding?view=individual");
