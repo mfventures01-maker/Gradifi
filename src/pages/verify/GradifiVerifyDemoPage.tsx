@@ -298,6 +298,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
 
       setCurrentStep('result');
     } catch (err: any) {
+      if (typeof err?.checksRemaining === 'number') setTrialChecksRemaining(err.checksRemaining);
       console.error('Verification execution error:', err);
       setUploadError(
         err?.message ||
@@ -409,6 +410,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
         setG5Result(comparison);
       }
     } catch (err: any) {
+      if (typeof err?.checksRemaining === 'number') setTrialChecksRemaining(err.checksRemaining);
       setG5Result(null);
       setG5Error(err?.message || 'The canonical G5 comparison failed.');
     } finally {
