@@ -37,10 +37,14 @@ begin
   update public.verification_runs set status='succeeded',completed_at=now() where id=v_root_run;
   v_result:=private.publish_public_verification_receipt(v_root_run,'TEST-'||v_root_run::text,12.5,1,'SEFAES-PUBLIC-RECEIPT-v1');
   if v_result->>'status'<>'VALID' or public.lookup_public_verification('TEST-'||v_root_run::text) is null then raise exception 'RECEIPT_PUBLICATION_OR_LOOKUP_FAILED'; end if;
+  v_result:=private.publish_public_verification_receipt(v_root_run,'TEST-'||v_root_run::text,12.5,1,'SEFAES-PUBLIC-RECEIPT-v1');
+  if v_result->>'status'<>'already_published' then raise exception 'RECEIPT_PUBLISH_NOT_IDEMPOTENT'; end if;
   v_rejected:=false;
-  begin update public.public_verification_records set status='REVOKED' where verification_run_id=v_root_run;
-  exception when others then if sqlerrm like 'PUBLIC_RECEIPT_APPEND_ONLY%' then v_rejected:=true; else raise; end if; end;
-  if not v_rejected then raise exception 'PUBLIC_RECEIPT_MUTATION_NOT_BLOCKED'; end if;
+  begin update public.public_verification_records set result_hash=repeat('f',64) where verification_run_id=v_root_run;
+  exception when others then if sqlerrm like 'PUBLIC_RECEIPT_IDENTITY_IMMUTABLE%' then v_rejected:=true; else raise; end if; end;
+  if not v_rejected then raise exception 'PUBLIC_RECEIPT_HASH_MUTATION_NOT_BLOCKED'; end if;
+  update public.public_verification_records set status='REVOKED' where verification_run_id=v_root_run;
+  if public.lookup_public_verification('TEST-'||v_root_run::text) is not null then raise exception 'REVOKED_RECEIPT_STILL_LOOKUPABLE'; end if;
   insert into public.correction_sessions(id,verification_run_id,workspace_id,owner_user_id,original_evidence_hash)
   values(v_session,v_root_run,v_workspace,v_user,repeat('a',64));
   perform private.append_correction_version(v_session,v_user,'{"evidence":"original"}'::jsonb,repeat('a',64),'Original','original');
