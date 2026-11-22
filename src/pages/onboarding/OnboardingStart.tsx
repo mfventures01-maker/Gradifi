@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, BriefcaseBusiness, GraduationCap, School, University } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, School, University } from "lucide-react";
 
 const paths = [
   {
-    title: "Independent individuals",
+    title: "Freelancers and independent individuals",
     description: "Create a personal Gradifi account as a freelancer, independent student, professional or another individual user. No institution is required.",
-    action: "Create an individual account",
+    action: "Start independent onboarding",
     href: "/onboarding/individual/register",
     icon: BriefcaseBusiness,
   },
@@ -32,8 +32,8 @@ export const OnboardingStart: React.FC = () => (
       <Link to="/" className="text-sm font-semibold text-blue-700">Gradifi</Link>
       <header className="mt-8 max-w-3xl">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Choose your Gradifi path</p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">One platform. Two kinds of membership.</h1>
-        <p className="mt-4 text-base leading-7 text-slate-600">Join Gradifi independently, or create an institution-managed workspace. Your account starts in the right place and keeps the right authority boundaries.</p>
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Choose how you use Gradifi.</h1>
+        <p className="mt-4 text-base leading-7 text-slate-600">Join independently or create an institution-managed workspace. Each path uses its own identity and authority rules.</p>
       </header>
       <section className="mt-10 grid gap-5 md:grid-cols-3">
         {paths.map(({ title, description, action, href, icon: Icon }) => (
