@@ -23,12 +23,12 @@ begin
   insert into public.workspace_members(workspace_id,user_id,role,status,membership_source)
   values(v_workspace,v_user,'owner','active','workspace_owner')
   on conflict(workspace_id,user_id) do update set role='owner',status='active',membership_source='workspace_owner';
-  insert into public.verify_document_uploads(id,workspace_id,institution_id,owner_user_id,bucket_id,object_path,
+  insert into public.verify_document_uploads(id,institution_id,owner_user_id,bucket_id,object_path,
     original_filename,content_type,byte_size,source_file_sha256,extraction_status,canonicalization_status)
-  values(v_upload,v_workspace,null,v_user,'verify-private',v_workspace::text||'/'||v_user::text||'/'||v_upload::text||'/source.pdf',
+  values(v_upload,null,v_user,'verify-private',v_workspace::text||'/'||v_user::text||'/'||v_upload::text||'/source.pdf',
     'source.pdf','application/pdf',12,repeat('a',64),'uploaded','pending');
-  insert into public.verification_runs(id,workspace_id,service_version_id,status,attempt,created_by_user_id,source_upload_id)
-  values(v_root_run,v_workspace,v_service_version,'queued',1,v_user,v_upload);
+  insert into public.verification_runs(id,service_version_id,status,attempt,created_by_user_id,source_upload_id)
+  values(v_root_run,v_service_version,'queued',1,v_user,v_upload);
   update public.verify_document_uploads set verification_run_id=v_root_run where id=v_upload;
   insert into public.verification_runs(id,workspace_id,service_version_id,status,attempt,created_by_user_id)
   values(v_other_run,v_workspace,v_service_version,'queued',1,v_user);
