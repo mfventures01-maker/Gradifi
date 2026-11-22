@@ -8,7 +8,7 @@ import { VerificationPersistenceService } from '../src/services/verify/verificat
 
 describe('G7 public verification resolution contract', () => {
   const documentHash = '8afcff6056b0d9123456789abcdef0123456789abcdef0123456789abcdef012';
-  const evidenceHash = '9b0123456789abcdef';
+  const evidenceHash = '9b0123456789abcd';
   const verificationId = VerificationPersistenceService.deriveVerificationId(documentHash, evidenceHash);
   const receipt = {
     verificationId,
