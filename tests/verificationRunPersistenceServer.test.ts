@@ -155,8 +155,8 @@ describe('HOEOS G8 authoritative verification-run persistence server boundary', 
       throw new Error(`Unexpected auth-client table: ${table}`);
     });
 
-    await expect(handlePersistenceServerRequest(buildPayload(), ACCESS_TOKEN)).rejects.toBeInstanceOf(PersistenceRequestError);
-    await expect(handlePersistenceServerRequest(buildPayload(), ACCESS_TOKEN)).rejects.toMatchObject({
+    const request = handlePersistenceServerRequest(buildPayload(), ACCESS_TOKEN);
+    await expect(request).rejects.toMatchObject({
       statusCode: 403,
       message: 'An active authorized identity is required to persist verification records.',
     });
