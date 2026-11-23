@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { authService, AuthSessionState } from "../../services/authService";
+import { supabase } from "../../lib/supabase";
 
 export const HigherEducationDashboard: React.FC = () => {
   const [identity, setIdentity] = useState<AuthSessionState | null>(null);
+  const [institutionStatus, setInstitutionStatus] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
     authService.resolveCurrentIdentity()
-      .then(value => { if (active) setIdentity(value); })
+      .then(async value => {
+        if (!active) return;
+        setIdentity(value);
+        if (value.institutionId) {
+          const { data, error } = await (supabase as any).from("institutions")
+            .select("status")
+            .eq("id", value.institutionId)
+            .maybeSingle();
+          if (active && !error) setInstitutionStatus(data?.status || null);
+        }
+      })
       .catch(() => { if (active) setIdentity(null); });
     return () => { active = false; };
   }, []);
@@ -33,6 +45,7 @@ export const HigherEducationDashboard: React.FC = () => {
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-800">{roleTitle}</span>
             <span className="text-xs text-slate-500">{identity?.isAuthenticated ? "Authenticated account" : "Resolving identity…"}</span>
+            {institutionStatus && <span className={`rounded-full px-3 py-1 text-xs font-semibold ${institutionStatus === "active" ? "bg-emerald-50 text-emerald-800" : institutionStatus === "pending" ? "bg-amber-50 text-amber-800" : "bg-rose-50 text-rose-800"}`}>Institution: {institutionStatus}</span>}
           </div>
 
           {isExecutive ? (
@@ -48,9 +61,17 @@ export const HigherEducationDashboard: React.FC = () => {
               <p className="mt-2 max-w-3xl text-sm leading-relaxed text-indigo-900">
                 Your independent Login ID and PIN identity is linked to the institution's VC/Rector. You can provision HOD, Course Adviser, Lecturer and Student accounts. Each account receives its own generated Login ID and temporary PIN.
               </p>
-              <Link to="/onboarding/higher-education" className="mt-4 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700">
-                Manage academic accounts <span aria-hidden="true" className="ml-2">→</span>
-              </Link>
+              {institutionStatus === "active" ? (
+                <Link to="/onboarding/higher-education" className="mt-4 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700">
+                  Manage academic accounts <span aria-hidden="true" className="ml-2">→</span>
+                </Link>
+              ) : (
+                <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                  {institutionStatus === "pending"
+                    ? "Your institution is awaiting Super Admin approval. Academic account management will unlock after approval."
+                    : "Your institution is not active. Academic account management is currently unavailable."}
+                </p>
+              )}
             </div>
           ) : (
             <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-5">

@@ -19,7 +19,7 @@ export interface AuthSessionState {
   actor: IdentityActor | null;
   institutionId: string | null;
   schoolId: string | null;
-  role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual' | null;
+  role: 'admin' | 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual' | null;
 }
 
 export const authService = {

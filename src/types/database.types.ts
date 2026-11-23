@@ -829,6 +829,49 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      is_current_user_super_admin: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      get_pending_higher_ed_institution_approvals: {
+        Args: Record<PropertyKey, never>;
+        Returns: Array<{
+          institution_id: string;
+          institution_name: string;
+          institution_type: string;
+          institution_category: string | null;
+          registration_number: string | null;
+          country: string;
+          institution_address: string | null;
+          institution_phone: string | null;
+          website_url: string | null;
+          institution_slug: string;
+          submitted_at: string;
+          authority_user_id: string | null;
+          authority_name: string | null;
+          authority_email: string | null;
+          authority_role: string | null;
+          authority_membership_status: string | null;
+          authority_actor_status: string | null;
+          dean_user_id: string | null;
+          dean_name: string | null;
+          dean_status: string | null;
+          dean_membership_status: string | null;
+          dean_job_status: string | null;
+          campus_id: string | null;
+          campus_name: string | null;
+          can_approve: boolean;
+          readiness_reason: string;
+        }>;
+      };
+      review_higher_ed_institution: {
+        Args: {
+          p_institution_id: string;
+          p_decision: string;
+          p_reason: string;
+        };
+        Returns: Json;
+      };
       bootstrap_public_individual: {
         Args: {
           p_full_name: string;
