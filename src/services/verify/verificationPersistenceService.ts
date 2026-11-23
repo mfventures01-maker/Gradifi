@@ -18,6 +18,11 @@ export interface PublicVerificationRecord {
   total_sources_found: number;
   evidence_envelope?: any;
   correction_of_verification_id?: string | null;
+  verification_run_id?: string;
+  result_hash?: string;
+  manifest_hash?: string;
+  status?: string;
+  public_schema_version?: string;
   created_at?: string;
 }
 
@@ -167,106 +172,10 @@ export class VerificationPersistenceService {
       return resData;
     }
 
-    // Node / Server Context: Use service role client if process.env.SUPABASE_SERVICE_ROLE_KEY is present
-    const getEnvVar = (key: string) => (typeof process !== 'undefined' && process.env ? process.env[key] : undefined);
-    const serviceRoleKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY');
-    const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
-
-    if (!serviceRoleKey || !supabaseUrl) {
-      throw new Error('Trusted persistence requires VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY outside the browser.');
-    }
-    let client = supabase;
-    if (serviceRoleKey && supabaseUrl) {
-      const { createClient } = await import('@supabase/supabase-js');
-      client = createClient(supabaseUrl, serviceRoleKey, {
-        auth: { persistSession: false, autoRefreshToken: false }
-      });
-    }
-
-    // 1. Check for existing record by verification_id
-    const { data: existing, error: fetchError } = await client
-      .from('public_verification_records')
-      .select('*')
-      .eq('verification_id', recordPayload.verification_id)
-      .maybeSingle();
-
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      throw new Error(`Failed to read existing verification record before persistence: ${fetchError.message}`);
-    }
-
-    if (existing) {
-      const integrity = validatePersistedVerificationRecord(existing);
-      if (integrity.status !== 'VALID') {
-        throw new VerificationConflictError(`Existing verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
-      }
-      // 2. Conflict Check: Verify hash immutability
-      if (
-        existing.document_hash !== recordPayload.document_hash ||
-        existing.evidence_hash !== recordPayload.evidence_hash ||
-        (existing.correction_of_verification_id ?? null) !== (recordPayload.correction_of_verification_id ?? null)
-      ) {
-        throw new VerificationConflictError(
-          `Conflicting verification record exists for ID '${recordPayload.verification_id}'. Existing documentHash: '${existing.document_hash}', New: '${recordPayload.document_hash}'`
-        );
-      }
-
-      // Idempotent success: return existing record
-      return {
-        record: existing as PublicVerificationRecord,
-        status: 'IDEMPOTENT_EXISTS',
-      };
-    }
-
-    // 3. Insert new certified record with server authority
-    const { data: inserted, error: insertError } = await client
-      .from('public_verification_records')
-      .insert(recordPayload)
-      .select()
-      .single();
-
-    if (insertError) {
-      if (insertError.code === '23505') {
-        const { data: reFetched } = await client
-          .from('public_verification_records')
-          .select('*')
-          .eq('verification_id', recordPayload.verification_id)
-          .single();
-
-        if (reFetched) {
-          const integrity = validatePersistedVerificationRecord(reFetched);
-          if (integrity.status !== 'VALID') {
-            throw new VerificationConflictError(`Concurrent verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
-          }
-        }
-
-        if (
-          reFetched &&
-          reFetched.document_hash === recordPayload.document_hash &&
-          reFetched.evidence_hash === recordPayload.evidence_hash &&
-          (reFetched.correction_of_verification_id ?? null) === (recordPayload.correction_of_verification_id ?? null)
-        ) {
-          return {
-            record: reFetched as PublicVerificationRecord,
-            status: 'IDEMPOTENT_EXISTS',
-          };
-        }
-
-        throw new VerificationConflictError(
-          `Conflicting verification record created concurrently for ID '${recordPayload.verification_id}'`
-        );
-      }
-
-      throw new Error(`Failed to persist verification record: ${insertError.message}`);
-    }
-
-    const insertedIntegrity = validatePersistedVerificationRecord(inserted);
-    if (insertedIntegrity.status !== 'VALID') {
-      throw new VerificationConflictError(`Inserted verification record failed G4-D integrity validation: ${insertedIntegrity.reason || insertedIntegrity.status}`);
-    }
-    return {
-      record: inserted as PublicVerificationRecord,
-      status: 'CREATED',
-    };
+    // Server contexts must use handlePersistenceServerRequest with a verified user token.
+    // A service-role direct-write fallback would bypass actor/workspace authorization and
+    // could create a public receipt without the authoritative verification_runs projection.
+    throw new Error('Trusted persistence requires the authenticated /api/verify/persist authority.');
   }
 }
 
