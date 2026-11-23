@@ -1,11 +1,10 @@
 /**
- * GRADIFI VERIFY - AUTHENTICATED SERVER-SIDE PERSISTENCE
- * A valid Supabase session and an active identity actor are required before
- * the service-role client is constructed. The service-role key never leaves
- * this server module.
+ * HOEOS G8: authenticated, atomic verification-run and public-receipt persistence.
+ * The browser never receives service-role authority. The database calculates
+ * the authoritative SHA-256 hashes and writes run + receipt in one transaction.
  */
 import { createClient } from '@supabase/supabase-js';
-import { VerificationPersistenceService, PublicVerificationRecord } from '../verificationPersistenceService.js';
+import type { PublicVerificationRecord } from '../verificationPersistenceService.js';
 import { computeHash } from '../documentNormalizer.js';
 import type { G4DPersistenceEnvelope, PersistableEvidenceResult } from '../types.js';
 
@@ -13,10 +12,8 @@ export interface PersistenceServerRequestPayload {
   result: PersistableEvidenceResult;
   envelope: G4DPersistenceEnvelope;
   correctionOfVerificationId?: string | null;
+  sourceUploadId?: string | null;
 }
-
-// Deliberately disabled. Re-enable only in the same change that creates and verifies the complete atomic run+receipt projection.
-let RUN_RECEIPT_PERSISTENCE_CONTRACT_READY = false;
 
 export class PersistenceRequestError extends Error {
   constructor(public readonly statusCode: 400 | 401 | 403 | 409 | 500 | 503, message: string) {
@@ -27,6 +24,7 @@ export class PersistenceRequestError extends Error {
 
 type SafeReceipt = Pick<
   PublicVerificationRecord,
+  | 'id'
   | 'verification_id'
   | 'document_hash'
   | 'evidence_hash'
@@ -35,6 +33,11 @@ type SafeReceipt = Pick<
   | 'overall_similarity'
   | 'total_sources_found'
   | 'correction_of_verification_id'
+  | 'verification_run_id'
+  | 'result_hash'
+  | 'manifest_hash'
+  | 'status'
+  | 'public_schema_version'
   | 'created_at'
 >;
 
@@ -50,7 +53,7 @@ function validatePayload(payload: PersistenceServerRequestPayload): void {
   }
   if (!/^[a-f0-9]{16}$/i.test(result.documentHash || '') ||
       !/^[a-f0-9]{16}$/i.test(result.evidenceHash || '')) {
-    throw new PersistenceRequestError(400, 'Document or evidence hash has an invalid format.');
+    throw new PersistenceRequestError(400, 'The deterministic engine hashes have an invalid format.');
   }
   if (computeHash(rawText) !== result.documentHash) {
     throw new PersistenceRequestError(400, 'Canonical submitted text does not reproduce documentHash.');
@@ -78,8 +81,6 @@ function validatePayload(payload: PersistenceServerRequestPayload): void {
     throw new PersistenceRequestError(400, 'Evidence envelope does not match the submitted deterministic result.');
   }
 
-  // G5 evidence hash is independently reproducible only when the deterministic
-  // engine's exact source-coverage inputs accompany the bounded persistence DTO.
   const material = result.evidenceHashMaterial;
   if (!material || !Array.isArray(material.sourceCoverage) ||
       !Number.isInteger(material.totalUniqueMatchedTokens) || material.totalUniqueMatchedTokens < 0) {
@@ -91,6 +92,7 @@ function validatePayload(payload: PersistenceServerRequestPayload): void {
   )) {
     throw new PersistenceRequestError(400, 'Evidence-hash source coverage is invalid.');
   }
+
   const sourceKeysSorted = material.sourceCoverage
     .map(source => `${source.sourceId}:${source.documentCoverage.toFixed(1)}`)
     .sort()
@@ -109,23 +111,63 @@ function validatePayload(payload: PersistenceServerRequestPayload): void {
       result.similarityAnalysis.overallSimilarity !== result.overallSimilarity) {
     throw new PersistenceRequestError(400, 'Similarity score differs from deterministic findings.');
   }
+
+  if (payload.correctionOfVerificationId &&
+      !/^VRF-[0-9A-F]{12}$/i.test(payload.correctionOfVerificationId)) {
+    throw new PersistenceRequestError(400, 'Correction parent verification ID is malformed.');
+  }
+  if (payload.sourceUploadId && !/^[0-9a-f-]{36}$/i.test(payload.sourceUploadId)) {
+    throw new PersistenceRequestError(400, 'Source upload ID is malformed.');
+  }
 }
 
-function safeReceipt(record: PublicVerificationRecord): SafeReceipt {
-  // Explicit allowlist: never serialize database columns merely because they
-  // are absent from the current TypeScript interface. This protects the API
-  // response if the table gains internal or sensitive columns in the future.
+function safeReceipt(value: unknown): SafeReceipt {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new PersistenceRequestError(500, 'The persistence authority returned an invalid receipt.');
+  }
+  const row = value as Record<string, unknown>;
+  const requiredStrings = [
+    'id', 'verification_id', 'document_hash', 'evidence_hash', 'engine_version',
+    'policy_version', 'verification_run_id', 'result_hash', 'manifest_hash',
+    'status', 'public_schema_version', 'created_at'
+  ];
+  if (requiredStrings.some(key => typeof row[key] !== 'string' || !String(row[key]).trim()) ||
+      typeof row.overall_similarity !== 'number' ||
+      !Number.isInteger(row.total_sources_found)) {
+    throw new PersistenceRequestError(500, 'The persistence authority returned incomplete receipt metadata.');
+  }
+
   return {
-    verification_id: record.verification_id,
-    document_hash: record.document_hash,
-    evidence_hash: record.evidence_hash,
-    engine_version: record.engine_version,
-    policy_version: record.policy_version,
-    overall_similarity: record.overall_similarity,
-    total_sources_found: record.total_sources_found,
-    correction_of_verification_id: record.correction_of_verification_id ?? null,
-    created_at: record.created_at
+    id: row.id as string,
+    verification_id: row.verification_id as string,
+    document_hash: row.document_hash as string,
+    evidence_hash: row.evidence_hash as string,
+    engine_version: row.engine_version as string,
+    policy_version: row.policy_version as string,
+    overall_similarity: row.overall_similarity as number,
+    total_sources_found: row.total_sources_found as number,
+    correction_of_verification_id: typeof row.correction_of_verification_id === 'string'
+      ? row.correction_of_verification_id : null,
+    verification_run_id: row.verification_run_id as string,
+    result_hash: row.result_hash as string,
+    manifest_hash: row.manifest_hash as string,
+    status: row.status as string,
+    public_schema_version: row.public_schema_version as string,
+    created_at: row.created_at as string,
   };
+}
+
+function mapPersistenceError(message: string): PersistenceRequestError {
+  if (/WORKSPACE|MEMBERSHIP|SCOPE|SCHOOL|SOURCE_UPLOAD/i.test(message)) {
+    return new PersistenceRequestError(403, 'The authenticated identity is not authorized for this verification workspace or source upload.');
+  }
+  if (/CORRECTION|RECEIPT|COLLISION|ORPHANED|INTEGRITY/i.test(message)) {
+    return new PersistenceRequestError(409, 'The verification conflicts with existing authoritative evidence or lineage.');
+  }
+  if (/SERVICE_VERSION/i.test(message)) {
+    return new PersistenceRequestError(503, 'The active verification service version does not match this result.');
+  }
+  return new PersistenceRequestError(500, 'The authoritative verification persistence operation failed.');
 }
 
 export async function handlePersistenceServerRequest(
@@ -136,27 +178,24 @@ export async function handlePersistenceServerRequest(
     throw new PersistenceRequestError(401, 'Authentication required.');
   }
 
-  // Reject malformed or tampered payloads before creating any Supabase client.
-  // This is local deterministic validation only; it grants no database access.
   validatePayload(payload);
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !anonKey || !serviceRoleKey) {
-    throw new PersistenceRequestError(500, 'Trusted persistence is not configured on the server.');
+    throw new PersistenceRequestError(503, 'Trusted persistence is not configured on the server.');
   }
 
-  // Authenticate the bearer token with Supabase Auth, then authorize the
-  // authenticated identity against the authoritative active actor registry.
   const authClient = createClient(supabaseUrl, anonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { Authorization: `Bearer ${accessToken}` } }
+    global: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
   const { data: authData, error: authError } = await authClient.auth.getUser(accessToken);
   if (authError || !authData.user) {
     throw new PersistenceRequestError(401, 'Supabase session is invalid or expired.');
   }
+
   const { data: actor, error: actorError } = await authClient
     .from('identity_actors')
     .select('id,institution_id,school_id,actor_type')
@@ -167,115 +206,86 @@ export async function handlePersistenceServerRequest(
     throw new PersistenceRequestError(403, 'An active authorized identity is required to persist verification records.');
   }
 
-  // Fail closed until the canonical G8 write projection exists. The recovered
-  // production baseline requires a verification_runs row, run/receipt hash
-  // parity, status='VALID', and public_schema_version. This handler currently
-  // does not create that run or compute the approved result/manifest hashes.
-  // The flag must remain unset until that implementation and its tests land.
-  if (!RUN_RECEIPT_PERSISTENCE_CONTRACT_READY) {
-    throw new PersistenceRequestError(
-      503,
-      'Trusted persistence is blocked until the authoritative verification-run and receipt hash contract is complete. No receipt was written.'
-    );
-  }
-
-  // The request is now authenticated, authorized, and independently validated.
-  const serverSupabase = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { persistSession: false, autoRefreshToken: false }
+  const serverClient = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
   });
-  const correctionParentId = payload.correctionOfVerificationId ?? null;
-  if (correctionParentId !== null) {
-    if (!/^VRF-[0-9A-F]{12}$/i.test(correctionParentId)) {
-      throw new PersistenceRequestError(400, 'Invalid correction parent verification ID.');
-    }
-    const { data: parent, error: parentError } = await serverSupabase
-      .from('public_verification_records')
-      .select('*')
-      .eq('verification_id', correctionParentId)
-      .maybeSingle();
-    if (parentError || !parent) throw new PersistenceRequestError(409, 'Correction parent receipt was not found.');
-    if (VerificationPersistenceService.validatePersistedRecord(parent).status !== 'VALID') {
-      throw new PersistenceRequestError(409, 'Correction parent receipt failed integrity validation.');
-    }
-    if (!parent.verification_run_id) {
-      throw new PersistenceRequestError(409, 'Correction parent is not linked to an authoritative verification run.');
-    }
 
-    const { data: parentRun, error: parentRunError } = await serverSupabase
-      .from('verification_runs')
-      .select('id,institution_id,school_id,created_by_user_id,status,verification_id,document_hash,evidence_hash,result_hash,manifest_hash,engine_version,policy_version')
-      .eq('id', parent.verification_run_id)
-      .maybeSingle();
-    if (parentRunError || !parentRun ||
-        !['succeeded', 'superseded'].includes(parentRun.status) ||
-        parentRun.verification_id !== parent.verification_id ||
-        parentRun.document_hash !== parent.document_hash ||
-        parentRun.evidence_hash !== parent.evidence_hash ||
-        !parent.result_hash || parentRun.result_hash !== parent.result_hash ||
-        !parent.manifest_hash || parentRun.manifest_hash !== parent.manifest_hash ||
-        parentRun.engine_version !== parent.engine_version ||
-        parentRun.policy_version !== parent.policy_version) {
-      throw new PersistenceRequestError(409, 'Correction parent verification run is missing or failed integrity checks.');
-    }
+  let workspaceQuery = serverClient
+    .from('workspaces')
+    .select('id,institution_id,workspace_type,owner_user_id,status')
+    .eq('status', 'active');
 
-    const actorCanAccessParent = actor.institution_id
-      ? parentRun.institution_id === actor.institution_id &&
-        (!actor.school_id || parentRun.school_id === actor.school_id)
-      : parentRun.created_by_user_id === authData.user.id;
-    if (!actorCanAccessParent) {
-      throw new PersistenceRequestError(403, 'The active identity is not authorized for the correction parent receipt.');
-    }
+  if (actor.institution_id) {
+    workspaceQuery = workspaceQuery
+      .eq('workspace_type', 'institution')
+      .eq('institution_id', actor.institution_id);
+  } else {
+    workspaceQuery = workspaceQuery
+      .eq('workspace_type', 'individual')
+      .eq('owner_user_id', authData.user.id);
   }
-  const recordPayload = VerificationPersistenceService.buildPersistenceRecord(
-    payload.result, payload.envelope, correctionParentId
-  );
-  const { data: existing, error: fetchError } = await serverSupabase
-    .from('public_verification_records')
-    .select('*')
-    .eq('verification_id', recordPayload.verification_id)
+
+  let { data: workspace, error: workspaceError } = await workspaceQuery.maybeSingle();
+
+  if (!actor.institution_id && (!workspace || workspaceError)) {
+    const { data: personalWorkspaceId, error: ensureError } =
+      await authClient.rpc('ensure_personal_workspace');
+    if (ensureError || typeof personalWorkspaceId !== 'string') {
+      throw new PersistenceRequestError(403, 'An active personal workspace and owner membership are required.');
+    }
+    const resolved = await serverClient
+      .from('workspaces')
+      .select('id,institution_id,workspace_type,owner_user_id,status')
+      .eq('id', personalWorkspaceId)
+      .eq('status', 'active')
+      .maybeSingle();
+    workspace = resolved.data;
+    workspaceError = resolved.error;
+  }
+
+  if (workspaceError || !workspace || workspace.status !== 'active') {
+    throw new PersistenceRequestError(403, 'An active authorized verification workspace is required.');
+  }
+
+  const { data: serviceVersion, error: serviceVersionError } = await serverClient
+    .from('service_versions')
+    .select('id,engine_version,policy_version')
+    .eq('status', 'active')
+    .eq('engine_version', payload.result.engineVersion)
+    .eq('policy_version', payload.result.policyVersion)
     .maybeSingle();
-
-  if (fetchError && fetchError.code !== 'PGRST116') {
-    throw new PersistenceRequestError(500, 'Unable to check existing verification record.');
-  }
-  if (existing) {
-    const integrity = VerificationPersistenceService.validatePersistedRecord(existing);
-    if (integrity.status !== 'VALID') {
-      throw new PersistenceRequestError(409, 'Existing verification record failed integrity validation.');
-    }
-    if (existing.document_hash !== recordPayload.document_hash || existing.evidence_hash !== recordPayload.evidence_hash ||
-      (existing.correction_of_verification_id ?? null) !== (recordPayload.correction_of_verification_id ?? null)) {
-      throw new PersistenceRequestError(409, 'Conflicting verification record exists for this identifier.');
-    }
-    return { record: safeReceipt(existing as PublicVerificationRecord), status: 'IDEMPOTENT_EXISTS' };
+  if (serviceVersionError || !serviceVersion) {
+    throw new PersistenceRequestError(503, 'The active verification service version does not match this result.');
   }
 
-  const { data: inserted, error: insertError } = await serverSupabase
-    .from('public_verification_records')
-    .insert(recordPayload)
-    .select('*')
-    .single();
-  if (insertError) {
-    if (insertError.code === '23505') {
-      const { data: raced } = await serverSupabase
-        .from('public_verification_records')
-        .select('*')
-        .eq('verification_id', recordPayload.verification_id)
-        .maybeSingle();
-      if (raced &&
-          raced.document_hash === recordPayload.document_hash &&
-          raced.evidence_hash === recordPayload.evidence_hash &&
-          (raced.correction_of_verification_id ?? null) === (recordPayload.correction_of_verification_id ?? null) &&
-          VerificationPersistenceService.validatePersistedRecord(raced).status === 'VALID') {
-        return { record: safeReceipt(raced as PublicVerificationRecord), status: 'IDEMPOTENT_EXISTS' };
-      }
-      throw new PersistenceRequestError(409, 'Conflicting verification record was created concurrently.');
-    }
-    throw new PersistenceRequestError(500, 'Unable to persist verification record.');
+  const { data, error: persistError } = await serverClient.rpc('persist_verification_run_and_receipt', {
+    p_workspace_id: workspace.id,
+    p_created_by_user_id: authData.user.id,
+    p_service_version_id: serviceVersion.id,
+    p_school_id: actor.school_id ?? null,
+    p_source_upload_id: payload.sourceUploadId ?? null,
+    p_correction_of_verification_id: payload.correctionOfVerificationId ?? null,
+    p_raw_text: payload.envelope.canonicalDocument.rawText,
+    p_result: payload.result,
+    p_public_schema_version: 'SEFAES-PUBLIC-RECEIPT-v1',
+  });
+
+  if (persistError) {
+    console.error('[verify/persist] Atomic run-and-receipt persistence rejected.');
+    throw mapPersistenceError(persistError.message || '');
   }
 
-  if (VerificationPersistenceService.validatePersistedRecord(inserted).status !== 'VALID') {
-    throw new PersistenceRequestError(500, 'Persisted verification record failed integrity validation.');
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    throw new PersistenceRequestError(500, 'The persistence authority returned an invalid response.');
   }
-  return { record: safeReceipt(inserted as PublicVerificationRecord), status: 'CREATED' };
+
+  const response = data as Record<string, unknown>;
+  if (response.status !== 'CREATED' && response.status !== 'IDEMPOTENT_EXISTS') {
+    throw new PersistenceRequestError(500, 'The persistence authority returned an unknown status.');
+  }
+
+  return {
+    record: safeReceipt(response.record),
+    status: response.status,
+  };
 }
