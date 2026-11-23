@@ -95,6 +95,10 @@ The following is **not yet certified**:
 
 CI deliberately uses placeholder Supabase credentials and performs no production writes. The rollback-only database canary verifies the database authority, not the full Vercel authentication boundary. Final G8 runtime certification therefore remains **CONDITIONAL / OPEN** pending one explicitly approved authenticated production golden-path write and readback.
 
+### Supabase security-advisor note
+
+The current security advisor reports GraphQL schema visibility warnings for `verification_runs` and `verify_document_uploads` to the authenticated role. Direct policy inspection confirmed RLS is enabled and forced on both tables, with workspace-member/creator-scoped SELECT policies. `public_verification_records` has RLS enabled and an explicit deny policy for `anon` and `authenticated`. These findings do not demonstrate cross-workspace row access, but the authenticated GraphQL schema visibility is a separate exposure-surface review item. No grants or RLS policies were changed during this work.
+
 ## 5. Change-control statement
 
 - No new Git branch was created.
