@@ -86,13 +86,6 @@ jobs:
       - name: Public trial token enforcement
         run: npx vitest run tests/publicTrialService.test.ts tests/publicTrialRunApi.test.ts
 
-      - name: One-time live CMVP trial Edge Function canary
-        if: github.event_name == 'pull_request' && github.event.pull_request.number == 37 && github.event.action == 'synchronize'
-        shell: pwsh
-        env:
-          SUPABASE_PUBLISHABLE_KEY: sb_publishable_qdnFzTsdMkK_SI5x8Mvbwg_BwTxlv_i
-        run: ./scripts/verify-cmvp-trial-edge.ps1
-
       - name: G12 - Unified commercial MVP release contract
         run: |
           npm run typecheck
