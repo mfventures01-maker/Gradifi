@@ -136,7 +136,7 @@ test.describe("Freelancer and independent-user onboarding wizard", () => {
     await page.getByLabel("Email address").fill(" AMINA.FREELANCER@example.test ");
     await page.getByRole("button", { name: "Continue" }).click();
 
-    await page.getByLabel("Password").fill("a-secure-test-password");
+    await page.locator("#individual-password").fill("a-secure-test-password");
     await page.getByLabel("Confirm password").fill("a-secure-test-password");
     await expect(page.getByText("Amina Okafor").last()).toBeVisible();
     await page.getByRole("button", { name: "Create independent account" }).click();
@@ -156,7 +156,7 @@ test.describe("Freelancer and independent-user onboarding wizard", () => {
     await page.getByLabel("Full name").fill("Amina Okafor");
     await page.getByLabel("Email address").fill(EMAIL);
     await page.getByRole("button", { name: "Continue" }).click();
-    await page.getByLabel("Password").fill("a-secure-test-password");
+    await page.locator("#individual-password").fill("a-secure-test-password");
     await page.getByLabel("Confirm password").fill("a-secure-test-password");
     await page.getByRole("button", { name: "Create independent account" }).click();
 
@@ -176,7 +176,7 @@ test.describe("Freelancer and independent-user onboarding wizard", () => {
     await page.getByLabel("Full name").fill("Amina Okafor");
     await page.getByLabel("Email address").fill(EMAIL);
     await page.getByRole("button", { name: "Continue" }).click();
-    await page.getByLabel("Password").fill("a-secure-test-password");
+    await page.locator("#individual-password").fill("a-secure-test-password");
     await page.getByLabel("Confirm password").fill("a-different-test-password");
 
     await page.getByRole("button", { name: "Create independent account" }).click();
