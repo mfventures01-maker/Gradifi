@@ -21,10 +21,13 @@
       "slug": "upload-document",
       "repository_path": "supabase/functions/upload-document/index.ts",
       "entrypoint": "index.ts",
-      "deployed_version": 8,
+      "deployed_version": 9,
       "deployed_verify_jwt": true,
-      "deployed_bundle_sha256": "e4c6939a796a691c1748990e85296bbec1ebde55eda9d479730ebd2274c6ffc4",
-      "source_restoration_commit": "7e1440cc159943d3441a4171a6d895b0bac79021"
+      "deployed_bundle_sha256": "da0b6b61eba4658d0b2c1179769137e91ce6ac06ef8f5653f2495e1a81de6598",
+      "source_restoration_commit": "7e1440cc159943d3441a4171a6d895b0bac79021",
+      "source_parity_verified": true,
+      "source_parity_verified_at": "2026-11-23T11:21:16Z",
+      "status": "LIVE_V9_SOURCE_EXACT_MATCH"
     },
     {
       "slug": "verify",
@@ -79,6 +82,7 @@
     "The deployment bundle SHA-256 is the Supabase-provided ezbr_sha256 and is not represented as a standalone index.ts file hash.",
     "Repository restoration does not establish that the source has passed review or tests.",
     "No Edge Function was deployed or modified in Supabase.",
-    "actor-onboarding v10 is not an exact match for the current deployable repository source; its deployed files are preserved as snapshots and require reviewed reconciliation before claiming full source-to-deployment parity."
+    "actor-onboarding v10 is not an exact match for the current deployable repository source; its deployed files are preserved as snapshots and require reviewed reconciliation before claiming full source-to-deployment parity.",
+    "upload-document v9 was fetched from the connected live Supabase project and its complete index.ts content matched the CMVP branch source byte-for-byte; the Supabase bundle SHA-256 and deployed version are recorded above."
   ]
 }
