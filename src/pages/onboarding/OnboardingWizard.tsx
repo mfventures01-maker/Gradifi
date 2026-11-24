@@ -9,6 +9,7 @@ import { CreateTeacher } from './CreateTeacher';
 import { CreateStudent } from './CreateStudent';
 import { BulkStudentImport } from './BulkStudentImport';
 import { CreateParent } from './CreateParent';
+import { IndividualRegistration } from './IndividualRegistration';
 
 export const OnboardingWizard: React.FC = () => {
   const navigate = useNavigate();
@@ -84,6 +85,9 @@ export const OnboardingWizard: React.FC = () => {
 
     return () => { active = false; };
   }, [navigate]);
+
+  // Independent registration is a public branch of the shared onboarding wizard.
+  if (view === 'individual') return <IndividualRegistration />;
 
   // Subaccount routes are usable only by the authenticated Principal for this institution.
   if (view && view !== 'create-vp' && view !== 'create-bursar' && view !== 'create-teacher' &&

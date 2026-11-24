@@ -16,6 +16,8 @@ const roleLabels: Record<AcademicRole, string> = {
 
 const errorMessage = (error: unknown) => {
   const message = error instanceof Error ? error.message : "Account provisioning failed.";
+  if (message.includes("INSTITUTION_PENDING_SUPER_ADMIN_APPROVAL")) return "Your institution registration and initial Dean account are complete. A Gradifi Super Admin must approve the institution before the Dean can manage academic accounts.";
+  if (message.includes("INSTITUTION_NOT_ACTIVE")) return "This institution is not active. Contact Gradifi platform support for its current status.";
   if (message.includes("NUC_DEPARTMENT_NOT_IN_SELECTED_FACULTY")) return "The selected HOD department does not belong to the selected NUC faculty. Re-select the faculty and department.";
   if (message.includes("DEPARTMENT_NOT_IN_SELECTED_FACULTY")) return "The selected Adviser department does not belong to the selected faculty. Re-select the faculty and department.";
   if (message.includes("NUC_DEPARTMENT_NOT_IN_INSTITUTION")) return "That department is not registered under this institution. Refresh the department list and try again.";
@@ -72,6 +74,17 @@ export const HigherEducationOnboarding: React.FC = () => {
           throw new Error("DEAN_ROOT_AUTHORITY_LINK_REQUIRED");
         }
         const db = supabase as any;
+        const { data: institutionRow, error: institutionError } = await db.from("institutions")
+          .select("id,status,name")
+          .eq("id", identity.institutionId)
+          .single();
+        if (institutionError) throw institutionError;
+        if (institutionRow?.status === "pending") {
+          throw new Error("INSTITUTION_PENDING_SUPER_ADMIN_APPROVAL");
+        }
+        if (institutionRow?.status !== "active") {
+          throw new Error("INSTITUTION_NOT_ACTIVE");
+        }
         const [schoolRes, nucFacultyRes, academicFacultyRes, nucDepartmentRes, adviserDepartmentRes] = await Promise.all([
           db.from("schools")
             .select("id,school_name,school_type,created_at")

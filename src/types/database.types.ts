@@ -83,7 +83,8 @@ export type Database = {
           authority_user_id: string | null;
           full_name: string;
           email: string | null;
-          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
+          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector';
+          account_type: 'freelancer' | 'independent_student' | 'independent_professional' | 'other_individual' | null;
           phone: string | null;
           pin: string | null;
           pin_hash: string | null;
@@ -104,7 +105,8 @@ export type Database = {
           authority_user_id?: string | null;
           full_name: string;
           email?: string | null;
-          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
+          role: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector';
+          account_type?: 'freelancer' | 'independent_student' | 'independent_professional' | 'other_individual' | null;
           phone?: string | null;
           pin?: string | null;
           pin_hash?: string | null;
@@ -125,7 +127,8 @@ export type Database = {
           authority_user_id?: string | null;
           full_name?: string;
           email?: string | null;
-          role?: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer';
+          role?: 'admin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'examiner' | 'individual' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector';
+          account_type?: 'freelancer' | 'independent_student' | 'independent_professional' | 'other_individual' | null;
           phone?: string | null;
           pin?: string | null;
           pin_hash?: string | null;
@@ -144,10 +147,10 @@ export type Database = {
         Row: {
           id: string;
           auth_user_id: string;
-          institution_id: string;
+          institution_id: string | null;
           school_id: string | null;
           authority_user_id: string | null;
-          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'hod' | 'adviser' | 'lecturer';
+          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual';
           actor_record_id: string | null;
           login_identifier: string;
           auth_method: 'email' | 'pin';
@@ -163,10 +166,10 @@ export type Database = {
         Insert: {
           id?: string;
           auth_user_id: string;
-          institution_id: string;
+          institution_id?: string | null;
           school_id?: string | null;
           authority_user_id?: string | null;
-          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'hod' | 'adviser' | 'lecturer';
+          actor_type: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual';
           actor_record_id?: string | null;
           login_identifier: string;
           auth_method?: 'email' | 'pin';
@@ -182,10 +185,10 @@ export type Database = {
         Update: {
           id?: string;
           auth_user_id?: string;
-          institution_id?: string;
+          institution_id?: string | null;
           school_id?: string | null;
           authority_user_id?: string | null;
-          actor_type?: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'hod' | 'adviser' | 'lecturer';
+          actor_type?: 'superadmin' | 'principal_admin' | 'vice_principal' | 'bursar' | 'teacher' | 'student' | 'parent' | 'dean' | 'hod' | 'adviser' | 'lecturer' | 'vice_chancellor' | 'rector' | 'individual';
           actor_record_id?: string | null;
           login_identifier?: string;
           auth_method?: 'email' | 'pin';
@@ -826,6 +829,65 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      is_current_user_super_admin: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      get_pending_higher_ed_institution_approvals: {
+        Args: Record<PropertyKey, never>;
+        Returns: Array<{
+          institution_id: string;
+          institution_name: string;
+          institution_type: string;
+          institution_category: string | null;
+          registration_number: string | null;
+          country: string;
+          institution_address: string | null;
+          institution_phone: string | null;
+          website_url: string | null;
+          institution_slug: string;
+          submitted_at: string;
+          authority_user_id: string | null;
+          authority_name: string | null;
+          authority_email: string | null;
+          authority_role: string | null;
+          authority_membership_status: string | null;
+          authority_actor_status: string | null;
+          dean_user_id: string | null;
+          dean_name: string | null;
+          dean_status: string | null;
+          dean_membership_status: string | null;
+          dean_job_status: string | null;
+          campus_id: string | null;
+          campus_name: string | null;
+          can_approve: boolean;
+          readiness_reason: string;
+        }>;
+      };
+      review_higher_ed_institution: {
+        Args: {
+          p_institution_id: string;
+          p_decision: string;
+          p_reason: string;
+        };
+        Returns: Json;
+      };
+      bootstrap_public_individual: {
+        Args: {
+          p_full_name: string;
+          p_account_type: 'freelancer' | 'independent_student' | 'independent_professional' | 'other_individual';
+        };
+        Returns: {
+          success: boolean;
+          user_id: string;
+          profile_id: string;
+          actor_id: string;
+          role: 'individual';
+          account_type: 'freelancer' | 'independent_student' | 'independent_professional' | 'other_individual';
+          institution_id: null;
+          school_id: null;
+        };
+      };
       create_institution_account: {
         Args: {
           name?: string;
