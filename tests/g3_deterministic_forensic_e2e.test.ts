@@ -7,24 +7,7 @@ import { verifyCoreService } from '../src/services/verify/verifyCoreService';
  * student submission -> G2 deterministic similarity -> G3 policy classification.
  * No provider, network, AI, clock, or random-number dependency is permitted.
  */
-const SOURCE_ID = 'SOURCE-A';
-const sourceText = [
-  'The coastal monitoring network records temperature shifts through distributed acoustic sensors and stores observations in a verified evidence ledger.',
-  'Researchers publish the calibrated observations with transparent methods and reproducible measurement records.'
-].join(' ');
-
-const studentText = [
-  'Community gardens improve access to fresh produce in dense urban neighbourhoods.',
-  'The coastal monitoring network records temperature shifts through distributed acoustic sensors and stores observations in a verified evidence ledger.',
-  'Coastal monitoring networks record temperature changes using distributed acoustic sensors and preserve observations inside a verified evidence ledger.',
-  'Local volunteers maintain planting schedules throughout the year.'
-].join(' ');
-
-const unrelatedText = [
-  'Community gardens improve access to fresh produce in dense urban neighbourhoods.',
-  'Local volunteers maintain planting schedules throughout the year.',
-  'Public parks provide recreational space for families and visitors.'
-].join(' ');
+import { SOURCE_ID, sourceText, studentText, unrelatedText } from './fixtures/g5/sourceStudentFixture';
 
 function runG3(student: string, source: string) {
   const studentDoc = buildCanonicalAnalysisDocument({
