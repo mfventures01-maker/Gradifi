@@ -1,0 +1,39 @@
+name: G5 Direct Comparison Browser Proof
+
+on:
+  push:
+    branches:
+      - integration/verify-workspace-2026-11-17
+  pull_request:
+    branches:
+      - integration/verify-workspace-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g5-direct-browser:
+    name: G5 source/student UI proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout integration verification branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run focused G5 real-browser proof
+        env:
+          CI: true
+        run: npx playwright test --config=playwright.config.ts e2e/g5-direct-comparison.spec.ts --reporter=line
