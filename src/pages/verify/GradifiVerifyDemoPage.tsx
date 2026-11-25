@@ -1096,9 +1096,9 @@ Distributed machine learning frameworks require mathematical determinism to guar
 
                 <div className="space-y-2">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Student submission with matched passages highlighted</h3>
-                  <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto">
+                  <div data-testid="g5-student-highlighted-text" className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto">
                     {g5HighlightSegments.map((segment, index) => segment.findingId ? (
-                      <mark key={`${segment.findingId}-${index}`} className={`rounded px-0.5 border ${methodToClass(segment.method)}`} title={`${segment.method || 'MATCH'} · ${segment.findingId}`}>{segment.text}</mark>
+                      <mark key={`${segment.findingId}-${index}`} data-finding-id={segment.findingId} data-start={segment.start} data-end={segment.end} className={`rounded px-0.5 border ${methodToClass(segment.method)}`} title={`${segment.method || 'MATCH'} · ${segment.findingId}`}>{segment.text}</mark>
                     ) : <span key={`plain-${index}`}>{segment.text}</span>)}
                   </div>
                 </div>
@@ -1108,14 +1108,14 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   {g5Result.findings.length === 0 ? (
                     <p className="text-xs text-slate-400 p-3 bg-slate-950 rounded-xl border border-slate-800">No deterministic matching passages were identified in this source/student pair.</p>
                   ) : g5Result.findings.slice(0, 20).map((finding, index) => (
-                    <div key={finding.findingId} className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2">
+                    <div key={finding.findingId} data-testid="g5-finding" data-finding-id={finding.findingId} data-source-document-id={finding.matchedDocumentId} className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[10px] font-mono text-slate-500">Finding {index + 1} · {finding.matchMethod}</span>
                         <span className="text-xs font-bold text-indigo-300">{finding.similarityScore.toFixed(1)}%</span>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                        <div><div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Student passage</div><p className="text-slate-200 whitespace-pre-wrap">{finding.sourceSegment}</p></div>
-                        <div><div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Source passage</div><p className="text-slate-200 whitespace-pre-wrap">{finding.matchedSegment || 'Source-side alignment unavailable for this finding.'}</p></div>
+                        <div><div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Student passage</div><p data-testid="g5-student-passage" className="text-slate-200 whitespace-pre-wrap">{finding.sourceSegment}</p></div>
+                        <div><div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Source passage</div><p data-testid="g5-source-passage" className="text-slate-200 whitespace-pre-wrap">{finding.matchedSegment || 'Source-side alignment unavailable for this finding.'}</p></div>
                       </div>
                     </div>
                   ))}
