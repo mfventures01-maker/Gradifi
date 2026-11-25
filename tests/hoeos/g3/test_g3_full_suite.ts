@@ -175,7 +175,7 @@ export async function runG3FullSuite() {
       `const input = JSON.parse(process.env.G3_CROSS_PROCESS_INPUT || 'null');`,
       'const result = analyzeDocumentEvidence(input);',
       'process.stdout.write(JSON.stringify({ documentHash: result.documentHash, evidenceHash: result.evidenceHash, overallSimilarity: result.overallSimilarity }));'
-    ].join('\\n');
+    ].join('\n');
     const childEnv = {
       ...process.env,
       G3_CROSS_PROCESS_INPUT: JSON.stringify({ documentText: normText, candidateMatches: mockMatches })
@@ -213,7 +213,7 @@ export async function runG3FullSuite() {
     status: crossProcessStatus,
     details: crossProcessDetails
   });
-  console.log(`Result: ${crossProcessStatus} | ${crossProcessDetails}\\n`);
+  console.log(`Result: ${crossProcessStatus} | ${crossProcessDetails}\n`);
 
   // ---------------------------------------------------------
   // GATE 5: G3_RANDOMNESS_AUTHORITY
