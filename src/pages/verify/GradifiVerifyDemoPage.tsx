@@ -1113,6 +1113,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                         <span className="text-[10px] font-mono text-slate-500">Finding {index + 1} · {finding.matchMethod}</span>
                         <span className="text-xs font-bold text-indigo-300">{finding.similarityScore.toFixed(1)}%</span>
                       </div>
+                      <div data-testid="g5-finding-source-id" className="text-[10px] font-mono text-slate-500">Source document: <code>{finding.matchedDocumentId}</code></div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                         <div><div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Student passage</div><p data-testid="g5-student-passage" className="text-slate-200 whitespace-pre-wrap">{finding.sourceSegment}</p></div>
                         <div><div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Source passage</div><p data-testid="g5-source-passage" className="text-slate-200 whitespace-pre-wrap">{finding.matchedSegment || 'Source-side alignment unavailable for this finding.'}</p></div>
