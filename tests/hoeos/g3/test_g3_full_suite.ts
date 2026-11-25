@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 import { createHash } from 'crypto';
 import { buildCanonicalAnalysisDocument } from '../../../src/services/verify/documentNormalizer';
 import { ingestDocument } from '../../../src/services/verify/universalIngestionService';
@@ -162,13 +164,56 @@ export async function runG3FullSuite() {
   // GATE 4: G3_CROSS_PROCESS
   // ---------------------------------------------------------
   console.log('--- GATE 4: G3_CROSS_PROCESS ---');
-  const crossProcessPass = evidenceDeterminismPass;
+  let crossProcessStatus: GateResult['status'] = 'BLOCKED';
+  let crossProcessDetails = 'Independent child-process execution did not complete';
+  try {
+    const engineModuleUrl = pathToFileURL(
+      path.join(process.cwd(), 'src', 'services', 'verify', 'deterministicEngine.ts')
+    ).href;
+    const childProgram = [
+      `const { analyzeDocumentEvidence } = await import(${JSON.stringify(engineModuleUrl)});`,
+      `const input = JSON.parse(process.env.G3_CROSS_PROCESS_INPUT || 'null');`,
+      'const result = analyzeDocumentEvidence(input);',
+      'process.stdout.write(JSON.stringify({ documentHash: result.documentHash, evidenceHash: result.evidenceHash, overallSimilarity: result.overallSimilarity }));'
+    ].join('\\n');
+    const childEnv = {
+      ...process.env,
+      G3_CROSS_PROCESS_INPUT: JSON.stringify({ documentText: normText, candidateMatches: mockMatches })
+    };
+    const runIndependentProcess = () => {
+      const output = execFileSync(
+        process.execPath,
+        ['--import', 'tsx', '--input-type=module', '-e', childProgram],
+        { cwd: process.cwd(), env: childEnv, encoding: 'utf-8' }
+      ).trim();
+      return JSON.parse(output) as {
+        documentHash: string;
+        evidenceHash: string;
+        overallSimilarity: number;
+      };
+    };
+    const processRunA = runIndependentProcess();
+    const processRunB = runIndependentProcess();
+    const matchesParent = (run: typeof processRunA) =>
+      run.documentHash === primaryDocHash &&
+      run.evidenceHash === primaryEvidenceHash &&
+      run.overallSimilarity === primarySim;
+    const crossProcessPass =
+      matchesParent(processRunA) &&
+      matchesParent(processRunB) &&
+      JSON.stringify(processRunA) === JSON.stringify(processRunB);
+    crossProcessStatus = crossProcessPass ? 'PASS' : 'FAIL';
+    crossProcessDetails =
+      `Two independent Node processes; parentMatchA=${matchesParent(processRunA)}, parentMatchB=${matchesParent(processRunB)}, evidenceHash=${processRunA.evidenceHash}`;
+  } catch (error) {
+    crossProcessDetails = `Independent process probe error: ${error instanceof Error ? error.message : String(error)}`;
+  }
   gateResults.push({
     gate: 'G3_CROSS_PROCESS',
-    status: crossProcessPass ? 'PASS' : 'FAIL',
-    details: `Verified across independent process executions (evidenceHash=${primaryEvidenceHash})`
+    status: crossProcessStatus,
+    details: crossProcessDetails
   });
-  console.log(`Result: ${crossProcessPass ? 'PASS' : 'FAIL'}\n`);
+  console.log(`Result: ${crossProcessStatus} | ${crossProcessDetails}\\n`);
 
   // ---------------------------------------------------------
   // GATE 5: G3_RANDOMNESS_AUTHORITY
