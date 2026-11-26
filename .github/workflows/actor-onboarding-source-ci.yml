@@ -11,8 +11,18 @@ on:
       - "tests/actorProvisioningRecoverySchema.test.ts"
       - "tests/higherEdAuthorityContract.test.ts"
       - "tests/actorOnboardingSourceContract.test.ts"
+      - "src/pages/onboarding/CreateBursar.tsx"
+      - "src/pages/onboarding/CreateParent.tsx"
+      - "src/pages/onboarding/CreateVP.tsx"
+      - "src/pages/onboarding/HigherEducationOnboarding.tsx"
+      - "tests/actorOnboardingScreens.contract.test.ts"
       - "tests/actorOnboardingService.contract.test.ts"
       - "src/services/actorOnboardingService.ts"
+      - "src/pages/onboarding/CreateBursar.tsx"
+      - "src/pages/onboarding/CreateParent.tsx"
+      - "src/pages/onboarding/CreateVP.tsx"
+      - "src/pages/onboarding/HigherEducationOnboarding.tsx"
+      - "tests/actorOnboardingScreens.contract.test.ts"
       - ".github/workflows/actor-onboarding-source-ci.yml"
       - "package.json"
       - "package-lock.json"
@@ -27,6 +37,11 @@ on:
       - "tests/actorProvisioningRecoverySchema.test.ts"
       - "tests/higherEdAuthorityContract.test.ts"
       - "tests/actorOnboardingSourceContract.test.ts"
+      - "src/pages/onboarding/CreateBursar.tsx"
+      - "src/pages/onboarding/CreateParent.tsx"
+      - "src/pages/onboarding/CreateVP.tsx"
+      - "src/pages/onboarding/HigherEducationOnboarding.tsx"
+      - "tests/actorOnboardingScreens.contract.test.ts"
       - ".github/workflows/actor-onboarding-source-ci.yml"
       - "package.json"
       - "package-lock.json"
@@ -63,6 +78,7 @@ jobs:
           npx vitest run
           tests/actorOnboardingSourceContract.test.ts
           tests/actorOnboardingService.contract.test.ts
+          tests/actorOnboardingScreens.contract.test.ts
           tests/higherEdAuthorityContract.test.ts
           tests/actorProvisioningRecoveryEngine.test.ts
           tests/actorProvisioningRecoverySchema.test.ts
