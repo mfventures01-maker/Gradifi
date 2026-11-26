@@ -402,7 +402,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                   {receiptState?.showPin && (
                     <div className="flex items-center justify-between gap-3">
                       <div><p className="text-xs text-slate-500">Temporary {latestAccount.actor_type === "student" ? "4" : "6"}-digit PIN</p><p className="font-mono text-2xl font-bold tracking-widest text-slate-950">{latestAccount.pin}</p></div>
-                      <button type="button" onClick={() => copyValue("pin", latestAccount.pin!)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700">{copiedField === "pin" ? "Copied" : "Copy PIN"}</button>
+                      {receiptState?.showCopyPin && <button type="button" onClick={() => copyValue("pin", latestAccount.pin!)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700">{copiedField === "pin" ? "Copied" : "Copy PIN"}</button>}
                     </div>
                   )}
                   {receiptState?.showRecoveredNotice && <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-800">This identity was recovered. For security, no PIN has been generated or reissued. The account holder must use their existing sign-in credentials.</p>}
