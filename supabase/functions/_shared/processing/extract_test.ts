@@ -23,3 +23,17 @@ Deno.test({
     }
   },
 });
+
+Deno.test({
+  name: "scanned PDF invokes the production OCR fallback",
+  timeout: 120_000,
+  fn: async () => {
+    const bytes = await Deno.readFile("tests/fixtures/ingestion/scanned_page_001.pdf");
+    const result = await (await import("./extract.ts")).extractUploadedDocument(
+      bytes, "application/pdf", "scanned_page_001.pdf",
+    );
+    if (result.method !== "pdf_ocr" || !result.ocrUsed || result.text.trim().length < 10) {
+      throw new Error("Scanned PDF did not produce OCR text");
+    }
+  },
+});
