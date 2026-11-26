@@ -311,7 +311,6 @@ Deno.serve(async (req: Request) => {
   const { data: persisted, error: persistError } = await admin.rpc("persist_verification_run_and_receipt", {
     p_workspace_id: upload.workspace_id,
     p_created_by_user_id: authData.user.id,
-    p_institution_id: upload.institution_id,
     p_school_id: null,
     p_service_version_id: serviceVersion.id,
     p_source_upload_id: upload.id,
