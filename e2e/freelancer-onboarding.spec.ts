@@ -3,6 +3,9 @@ import { expect, test } from "@playwright/test";
 const AUTH_USER_ID = "9a3c4a3e-4db6-4d6a-9a2b-3c47f39e4a11";
 const PROFILE_ID = "5e4e9e47-b4f0-43a0-a0b8-bb8a1d65e102";
 const ACTOR_ID = "d19a15a2-6d5b-4c6d-a9f0-7e9f5d8f1b21";
+const WORKSPACE_ID = "c8f6e3c8-6f44-4a89-b6b2-c5e61d1f4a22";
+const MEMBERSHIP_ID = "7f51a3f1-5c5d-4d1a-9d9a-6e2e8d1f5a33";
+const INDIVIDUAL_ACCOUNT_ID = "a4d0f5d7-3f1a-4d8b-a5c2-2e6f8b9d0c44";
 const EMAIL = "amina.freelancer@example.test";
 
 const authUser = (metadata: Record<string, unknown> = {}) => ({
@@ -62,6 +65,9 @@ const mockAuthenticatedSupabase = async (
         user_id: AUTH_USER_ID,
         profile_id: PROFILE_ID,
         actor_id: ACTOR_ID,
+        workspace_id: WORKSPACE_ID,
+        membership_id: MEMBERSHIP_ID,
+        individual_account_id: INDIVIDUAL_ACCOUNT_ID,
         role: "individual",
         account_type: "freelancer",
         institution_id: null,
