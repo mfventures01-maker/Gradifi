@@ -36,7 +36,7 @@ Deno.serve(async (req: Request) => {
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: upload, error: uploadError } = await admin.from("verify_document_uploads")
-    .select("id,workspace_id,institution_id,owner_user_id,bucket_id,object_path,content_type,byte_size,source_file_sha256,extraction_status,canonicalization_status,canonical_object_path,extracted_text_sha256,canonical_document_hash,extraction_method,ocr_used,ocr_confidence")
+    .select("id,workspace_id,institution_id,owner_user_id,bucket_id,object_path,original_filename,content_type,byte_size,source_file_sha256,extraction_status,canonicalization_status,canonical_object_path,extracted_text_sha256,canonical_document_hash,extraction_method,ocr_used,ocr_confidence")
     .eq("id", uploadId).eq("owner_user_id", authData.user.id).maybeSingle();
   if (uploadError || !upload) return reply(404, { error: "owned_upload_not_found" });
 
