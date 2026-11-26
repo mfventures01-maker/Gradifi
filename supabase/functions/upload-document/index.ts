@@ -29,7 +29,9 @@ function safeName(name: string) {
   return cleaned || "document";
 }
 async function sha256(data: Uint8Array) {
-  const copy = new Uint8Array(data.byteLength);\n  copy.set(data);\n  const digest = await crypto.subtle.digest("SHA-256", copy.buffer as ArrayBuffer);
+  const copy = new Uint8Array(data.byteLength);
+  copy.set(data);
+  const digest = await crypto.subtle.digest("SHA-256", copy.buffer as ArrayBuffer);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
