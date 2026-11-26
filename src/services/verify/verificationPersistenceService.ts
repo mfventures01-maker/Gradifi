@@ -19,6 +19,11 @@ export interface PublicVerificationRecord {
   evidence_envelope?: any;
   correction_of_verification_id?: string | null;
   created_at?: string;
+  verification_run_id?: string;
+  result_hash?: string;
+  manifest_hash?: string;
+  status?: 'VALID' | 'REVOKED' | 'EXPIRED';
+  public_schema_version?: string;
 }
 
 export class VerificationConflictError extends Error {
@@ -131,7 +136,8 @@ export class VerificationPersistenceService {
   async persistVerificationRecord(
     result: PersistableEvidenceResult,
     envelope: G4DPersistenceEnvelope,
-    correctionOfVerificationId?: string | null
+    correctionOfVerificationId?: string | null,
+    sourceUploadId?: string | null
   ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
     const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope, correctionOfVerificationId);
 
@@ -151,7 +157,12 @@ export class VerificationPersistenceService {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({ result, envelope, correctionOfVerificationId: correctionOfVerificationId ?? null })
+        body: JSON.stringify({
+          result,
+          envelope,
+          correctionOfVerificationId: correctionOfVerificationId ?? null,
+          sourceUploadId: sourceUploadId ?? null
+        })
       });
 
       if (!response.ok) {
@@ -167,106 +178,12 @@ export class VerificationPersistenceService {
       return resData;
     }
 
-    // Node / Server Context: Use service role client if process.env.SUPABASE_SERVICE_ROLE_KEY is present
-    const getEnvVar = (key: string) => (typeof process !== 'undefined' && process.env ? process.env[key] : undefined);
-    const serviceRoleKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY');
-    const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
-
-    if (!serviceRoleKey || !supabaseUrl) {
-      throw new Error('Trusted persistence requires VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY outside the browser.');
-    }
-    let client = supabase;
-    if (serviceRoleKey && supabaseUrl) {
-      const { createClient } = await import('@supabase/supabase-js');
-      client = createClient(supabaseUrl, serviceRoleKey, {
-        auth: { persistSession: false, autoRefreshToken: false }
-      });
-    }
-
-    // 1. Check for existing record by verification_id
-    const { data: existing, error: fetchError } = await client
-      .from('public_verification_records')
-      .select('*')
-      .eq('verification_id', recordPayload.verification_id)
-      .maybeSingle();
-
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      throw new Error(`Failed to read existing verification record before persistence: ${fetchError.message}`);
-    }
-
-    if (existing) {
-      const integrity = validatePersistedVerificationRecord(existing);
-      if (integrity.status !== 'VALID') {
-        throw new VerificationConflictError(`Existing verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
-      }
-      // 2. Conflict Check: Verify hash immutability
-      if (
-        existing.document_hash !== recordPayload.document_hash ||
-        existing.evidence_hash !== recordPayload.evidence_hash ||
-        (existing.correction_of_verification_id ?? null) !== (recordPayload.correction_of_verification_id ?? null)
-      ) {
-        throw new VerificationConflictError(
-          `Conflicting verification record exists for ID '${recordPayload.verification_id}'. Existing documentHash: '${existing.document_hash}', New: '${recordPayload.document_hash}'`
-        );
-      }
-
-      // Idempotent success: return existing record
-      return {
-        record: existing as PublicVerificationRecord,
-        status: 'IDEMPOTENT_EXISTS',
-      };
-    }
-
-    // 3. Insert new certified record with server authority
-    const { data: inserted, error: insertError } = await client
-      .from('public_verification_records')
-      .insert(recordPayload)
-      .select()
-      .single();
-
-    if (insertError) {
-      if (insertError.code === '23505') {
-        const { data: reFetched } = await client
-          .from('public_verification_records')
-          .select('*')
-          .eq('verification_id', recordPayload.verification_id)
-          .single();
-
-        if (reFetched) {
-          const integrity = validatePersistedVerificationRecord(reFetched);
-          if (integrity.status !== 'VALID') {
-            throw new VerificationConflictError(`Concurrent verification record failed G4-D integrity validation: ${integrity.reason || integrity.status}`);
-          }
-        }
-
-        if (
-          reFetched &&
-          reFetched.document_hash === recordPayload.document_hash &&
-          reFetched.evidence_hash === recordPayload.evidence_hash &&
-          (reFetched.correction_of_verification_id ?? null) === (recordPayload.correction_of_verification_id ?? null)
-        ) {
-          return {
-            record: reFetched as PublicVerificationRecord,
-            status: 'IDEMPOTENT_EXISTS',
-          };
-        }
-
-        throw new VerificationConflictError(
-          `Conflicting verification record created concurrently for ID '${recordPayload.verification_id}'`
-        );
-      }
-
-      throw new Error(`Failed to persist verification record: ${insertError.message}`);
-    }
-
-    const insertedIntegrity = validatePersistedVerificationRecord(inserted);
-    if (insertedIntegrity.status !== 'VALID') {
-      throw new VerificationConflictError(`Inserted verification record failed G4-D integrity validation: ${insertedIntegrity.reason || insertedIntegrity.status}`);
-    }
-    return {
-      record: inserted as PublicVerificationRecord,
-      status: 'CREATED',
-    };
+    // There is deliberately no direct server-side table-write fallback. All
+    // durable writes must pass through the authenticated API handler and the
+    // single atomic database RPC that creates both the run and receipt.
+    throw new Error(
+      'Direct server-side persistence is disabled. Use the authenticated /api/verify/persist endpoint.'
+    );
   }
 }
 
