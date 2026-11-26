@@ -132,6 +132,8 @@ export async function extractUploadedDocument(
 }
 
 export async function sha256Hex(bytes: Uint8Array): Promise<string> {
-  const copy = new Uint8Array(bytes.byteLength);\n  copy.set(bytes);\n  const digest = await crypto.subtle.digest("SHA-256", copy.buffer as ArrayBuffer);
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  const digest = await crypto.subtle.digest("SHA-256", copy.buffer as ArrayBuffer);
   return [...new Uint8Array(digest)].map(value => value.toString(16).padStart(2, "0")).join("");
 }
