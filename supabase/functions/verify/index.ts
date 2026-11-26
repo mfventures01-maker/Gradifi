@@ -324,10 +324,11 @@ Deno.serve(async (req: Request) => {
   }
 
   const record = persisted.record;
-  const { error: linkError } = await admin.from("verify_document_uploads")
-    .update({ verification_run_id: record.verification_run_id, updated_at: new Date().toISOString() })
-    .eq("id", upload.id).eq("owner_user_id", authData.user.id);
-  if (linkError) return reply(500, { error: "verification_receipt_created_but_upload_link_failed", verificationId: record.verification_id });
+  const { data: linkedUpload, error: linkReadError } = await admin.from("verify_document_uploads")
+    .select("verification_run_id").eq("id", upload.id).eq("owner_user_id", authData.user.id).maybeSingle();
+  if (linkReadError || linkedUpload?.verification_run_id !== record.verification_run_id) {
+    return reply(500, { error: "verification_receipt_created_but_upload_link_readback_failed", verificationId: record.verification_id });
+  }
 
   return reply(200, {
     success: true,
