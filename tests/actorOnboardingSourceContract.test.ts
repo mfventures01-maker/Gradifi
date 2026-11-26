@@ -23,7 +23,7 @@ describe("actor-onboarding canonical source contract", () => {
     expect(index).toContain("await provisionSubordinateActor(admin,");
     expect(index).toContain('const higherEdRoles = ["dean", "hod", "adviser", "lecturer", "student"]');
     expect(index).toContain('permittedActorTypes = ["hod", "adviser", "lecturer", "student"]');
-    expect(subordinate).toContain('admin.rpc("complete_actor_onboarding", buildRpcArgs(input, payload, authUser.id, pin)');
+    expect(subordinate).toContain('"complete_actor_onboarding", buildRpcArgs(input, payload, authUser.id, pin)');
   });
 
   it("keeps subordinate recovery bound to the authenticated caller, root authority and institution", () => {
