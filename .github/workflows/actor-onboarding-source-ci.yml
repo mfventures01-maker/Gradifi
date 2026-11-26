@@ -1,0 +1,74 @@
+name: Actor Onboarding Canonical Source CI
+
+on:
+  push:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+      - repair/actor-onboarding-source-reconciliation-2026-11-26
+    paths:
+      - "supabase/functions/actor-onboarding/**"
+      - "tests/actorProvisioningRecoveryEngine.test.ts"
+      - "tests/actorProvisioningRecoverySchema.test.ts"
+      - "tests/higherEdAuthorityContract.test.ts"
+      - "tests/actorOnboardingSourceContract.test.ts"
+      - ".github/workflows/actor-onboarding-source-ci.yml"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig*.json"
+      - "vite.config.*"
+  pull_request:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+    paths:
+      - "supabase/functions/actor-onboarding/**"
+      - "tests/actorProvisioningRecoveryEngine.test.ts"
+      - "tests/actorProvisioningRecoverySchema.test.ts"
+      - "tests/higherEdAuthorityContract.test.ts"
+      - "tests/actorOnboardingSourceContract.test.ts"
+      - ".github/workflows/actor-onboarding-source-ci.yml"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig*.json"
+      - "vite.config.*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: actor-onboarding-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actor-onboarding:
+    name: Actor onboarding contracts, typecheck and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate canonical actor-onboarding and recovery contracts
+        run: >-
+          npx vitest run
+          tests/actorOnboardingSourceContract.test.ts
+          tests/higherEdAuthorityContract.test.ts
+          tests/actorProvisioningRecoveryEngine.test.ts
+          tests/actorProvisioningRecoverySchema.test.ts
+
+      - name: Build server runtime for API type resolution
+        run: npm run build:server
+
+      - name: Typecheck client and server
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
