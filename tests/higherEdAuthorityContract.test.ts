@@ -104,11 +104,11 @@ describe("higher-education VC/Rector authority contract", () => {
   it("shows generated credentials and a session account summary after provisioning", () => {
     expect(higherEdAdmin).toContain("Generated Login ID");
     expect(higherEdAdmin).toContain("Temporary {latestAccount.actor_type === \"student\" ? \"4\" : \"6\"}-digit PIN");
-    expect(higherEdAdmin).toContain("Accounts created this session");
+    expect(higherEdAdmin).toContain("Accounts provisioned this session");
     expect(higherEdAdmin).toContain("View credentials");
     expect(higherEdAdmin).toContain("account provisioned successfully.");
     expect(higherEdAdmin).toContain("navigator.clipboard.writeText(value)");
-    expect(higherEdAdmin).toContain("must replace the temporary PIN at first sign-in.");
+    expect(higherEdAdmin).toContain("Recovered identities retain their existing PIN, which is never reissued.");
   });
 
   it("allows VC and Rector identities through the higher-education portal guard", () => {
