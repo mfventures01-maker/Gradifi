@@ -378,7 +378,7 @@ export const HigherEducationOnboarding: React.FC = () => {
                 </button>
                 <button type="button" onClick={resetForm} disabled={loading} className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">Clear form</button>
               </div>
-              <p className="text-xs leading-relaxed text-slate-500">The system generates an independent Login ID and temporary PIN. Staff receive a 6-digit PIN; students receive a 4-digit PIN. The account holder must replace the temporary PIN at first sign-in.</p>
+              <p className="text-xs leading-relaxed text-slate-500">New accounts receive an independent Login ID and temporary PIN. Staff receive a 6-digit PIN; students receive a 4-digit PIN. Recovered identities retain their existing PIN, which is never reissued.</p>
             </form>
           </section>
 
@@ -386,7 +386,7 @@ export const HigherEducationOnboarding: React.FC = () => {
             {latestAccount && (
               <section className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
                 <div className="flex items-center gap-2 text-emerald-700"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold">✓</span><h2 className="font-bold">Account created</h2></div>
-                <p className="mt-2 text-sm text-slate-600">Share these temporary credentials securely with {latestAccount.full_name}. The PIN is shown only in this session.</p>
+                <p className="mt-2 text-sm text-slate-600">{latestAccount.provisioning.recovered ? `The existing identity for ${latestAccount.full_name} was recovered. Its PIN was not reissued.` : `Share these temporary credentials securely with ${latestAccount.full_name}. The PIN is shown only in this session.`}</p>
                 <div className="mt-4 space-y-3 rounded-xl bg-slate-50 p-4">
                   <div>
                     <p className="text-xs text-slate-500">Account holder</p>
@@ -397,26 +397,29 @@ export const HigherEducationOnboarding: React.FC = () => {
                     <div><p className="text-xs text-slate-500">Generated Login ID</p><p className="font-mono text-lg font-bold text-slate-950">{latestAccount.login_id}</p></div>
                     <button type="button" onClick={() => copyValue("login", latestAccount.login_id)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700">{copiedField === "login" ? "Copied" : "Copy ID"}</button>
                   </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <div><p className="text-xs text-slate-500">Temporary {latestAccount.actor_type === "student" ? "4" : "6"}-digit PIN</p><p className="font-mono text-2xl font-bold tracking-widest text-slate-950">{latestAccount.pin}</p></div>
-                    <button type="button" onClick={() => copyValue("pin", latestAccount.pin)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700">{copiedField === "pin" ? "Copied" : "Copy PIN"}</button>
-                  </div>
+                  {latestAccount.pin && !latestAccount.provisioning.recovered && (
+                    <div className="flex items-center justify-between gap-3">
+                      <div><p className="text-xs text-slate-500">Temporary {latestAccount.actor_type === "student" ? "4" : "6"}-digit PIN</p><p className="font-mono text-2xl font-bold tracking-widest text-slate-950">{latestAccount.pin}</p></div>
+                      <button type="button" onClick={() => copyValue("pin", latestAccount.pin!)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700">{copiedField === "pin" ? "Copied" : "Copy PIN"}</button>
+                    </div>
+                  )}
+                  {latestAccount.provisioning.recovered && <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-800">This identity was recovered. For security, no PIN has been generated or reissued. The account holder must use their existing sign-in credentials.</p>}
                   {latestAccount.student_number && <div><p className="text-xs text-slate-500">Matriculation number</p><p className="font-mono font-semibold text-slate-900">{latestAccount.student_number}</p></div>}
                 </div>
-                <p className="mt-3 text-xs text-amber-700">Security note: deliver the Login ID and PIN privately. Do not post credentials in a group chat.</p>
+                {!latestAccount.provisioning.recovered && latestAccount.pin && <p className="mt-3 text-xs text-amber-700">Security note: deliver the Login ID and PIN privately. Do not post credentials in a group chat.</p>}
                 <button type="button" onClick={() => setLatestAccount(null)} className="mt-4 text-sm font-semibold text-indigo-700 hover:text-indigo-900">Dismiss credentials</button>
               </section>
             )}
 
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between gap-3"><h2 className="font-bold text-slate-950">Accounts created this session</h2><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{accounts.length}</span></div>
-              {accounts.length === 0 ? <p className="mt-4 text-sm text-slate-500">Newly provisioned accounts will appear here with their role and generated Login ID.</p> : (
+              <div className="flex items-center justify-between gap-3"><h2 className="font-bold text-slate-950">Accounts provisioned this session</h2><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{accounts.length}</span></div>
+              {accounts.length === 0 ? <p className="mt-4 text-sm text-slate-500">Newly provisioned or recovered accounts will appear here with their role and Login ID.</p> : (
                 <ul className="mt-4 divide-y divide-slate-100">
                   {accounts.map(account => (
                     <li key={account.user_id} className="py-3 first:pt-0 last:pb-0">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-900">{account.full_name}</p><p className="mt-0.5 text-xs text-slate-500">{roleLabels[account.actor_type as AcademicRole] || account.actor_type} · {account.login_id}</p></div>
-                        <button type="button" onClick={() => setLatestAccount(account)} className="shrink-0 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">View credentials</button>
+                        <button type="button" onClick={() => setLatestAccount(account)} className="shrink-0 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">{account.provisioning.recovered ? "View account" : "View credentials"}</button>
                       </div>
                     </li>
                   ))}
