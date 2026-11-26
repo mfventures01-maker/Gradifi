@@ -163,7 +163,7 @@ export const IndividualRegistration: React.FC = () => {
         localStorage.removeItem(PENDING_KEY);
       }
 
-      setNotice("Your independent Gradifi identity is ready.");
+      setNotice("Your independent Gradifi identity and personal workspace are ready.");
       navigate("/portal/individual", { replace: true });
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "Account setup failed.";
