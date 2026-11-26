@@ -28,6 +28,7 @@ describe("B05 Higher Education receipt acceptance", () => {
       valid: true,
       showLoginId: true,
       showPin: true,
+      showCopyPin: true,
       showRecoveredNotice: false,
     });
   });
@@ -37,6 +38,7 @@ describe("B05 Higher Education receipt acceptance", () => {
       valid: true,
       showLoginId: true,
       showPin: false,
+      showCopyPin: false,
       showRecoveredNotice: true,
     });
   });
@@ -48,6 +50,7 @@ describe("B05 Higher Education receipt acceptance", () => {
       valid: true,
       showLoginId: true,
       showPin: false,
+      showCopyPin: false,
       showRecoveredNotice: true,
     });
   });
@@ -62,6 +65,7 @@ describe("B05 Higher Education receipt acceptance", () => {
       valid: false,
       showLoginId: false,
       showPin: false,
+      showCopyPin: false,
       showRecoveredNotice: false,
     });
   });
