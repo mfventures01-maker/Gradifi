@@ -34,12 +34,12 @@ jobs:
           deno-version: v2.x
       - name: Typecheck deployed function entrypoints
         run: |
-          deno check \
+          deno check --config supabase/functions/deno.json \
             supabase/functions/upload-document/index.ts \
             supabase/functions/ocr-processor/index.ts \
             supabase/functions/verify/index.ts
       - name: Run extraction and G5 deterministic contract tests
         run: |
-          deno test --allow-read --allow-net \
+          deno test --config supabase/functions/deno.json --allow-read --allow-net \
             supabase/functions/_shared/processing/extract_test.ts \
             supabase/functions/_shared/verify/deterministicEngine_test.ts
