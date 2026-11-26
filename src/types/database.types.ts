@@ -839,6 +839,9 @@ export type Database = {
           user_id: string;
           profile_id: string;
           actor_id: string;
+          workspace_id: string;
+          membership_id: string;
+          individual_account_id: string;
           role: 'individual';
           account_type: 'freelancer' | 'independent_student' | 'independent_professional' | 'other_individual';
           institution_id: null;
