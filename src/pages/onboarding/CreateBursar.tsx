@@ -33,7 +33,9 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
   const [success, setSuccess] = useState<{
     profile_id: string;
     login_id: string;
-    pin: string;
+    pin: string | null;
+    recovered: boolean;
+    pin_not_reissued: boolean;
     full_name: string;
     phone: string;
   } | null>(null);
@@ -60,8 +62,10 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
         profile_id: resData.profile_id,
         login_id: resData.login_id,
         pin: resData.pin,
+        recovered: resData.provisioning.recovered,
+        pin_not_reissued: resData.pin_not_reissued,
         full_name: resData.full_name,
-        phone: resData.phone
+        phone: resData.phone ?? phone.trim()
       });
 
       if (onSuccess) onSuccess();
@@ -74,7 +78,7 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
   };
 
   const handleCopyPin = () => {
-    if (success) {
+    if (success?.pin) {
       navigator.clipboard.writeText(success.pin);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -88,8 +92,8 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
           <div className="w-16 h-16 bg-emerald-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-600/20">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900">Bursar Created! ✅</h2>
-          <p className="text-sm text-slate-500">The Bursar has been added successfully.</p>
+          <h2 className="text-2xl font-bold text-slate-900">{success.recovered ? 'Bursar Account Recovered' : 'Bursar Created! ✅'}</h2>
+          <p className="text-sm text-slate-500">{success.recovered ? 'The existing Bursar identity was recovered. Its PIN was not reissued.' : 'The Bursar has been added successfully.'}</p>
         </div>
 
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
@@ -105,24 +109,25 @@ export const CreateBursar: React.FC<CreateBursarProps> = ({
             <span className="text-xs font-medium text-slate-500">Phone</span>
             <span className="font-semibold text-slate-700">{success.phone}</span>
           </div>
-          <div className="flex items-center justify-between pt-2">
-            <span className="text-xs font-medium text-slate-500">Temporary PIN</span>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-lg font-bold text-blue-600 tracking-wider">{success.pin}</span>
-              <button
-                onClick={handleCopyPin}
-                className="p-1 hover:bg-white rounded-lg transition-colors"
-              >
-                {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-400" />}
-              </button>
+          {success.pin && !success.recovered && (
+            <div className="flex items-center justify-between pt-2">
+              <span className="text-xs font-medium text-slate-500">Temporary PIN</span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-lg font-bold text-blue-600 tracking-wider">{success.pin}</span>
+                <button onClick={handleCopyPin} className="p-1 hover:bg-white rounded-lg transition-colors">
+                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-400" />}
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700 flex items-start gap-2">
-          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          <span>Share this PIN with the Bursar. They will be prompted to change it on first login.</span>
-        </div>
+        {success.pin && !success.recovered && (
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700 flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <span>Share this PIN with the Bursar. They will be prompted to change it on first login.</span>
+          </div>
+        )}
 
         <div className="mt-6 flex gap-3">
           <button

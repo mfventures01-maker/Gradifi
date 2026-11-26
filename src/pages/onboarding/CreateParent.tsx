@@ -53,8 +53,9 @@ export const CreateParent: React.FC<CreateParentProps> = ({
     login_id: string;
     phone: string;
     student_name: string;
-    pin: string;
-    is_existing: boolean;
+    pin: string | null;
+    recovered: boolean;
+    pin_not_reissued: boolean;
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -130,7 +131,8 @@ export const CreateParent: React.FC<CreateParentProps> = ({
         phone: parentPhone.trim(),
         student_name: student ? `${student.first_name} ${student.last_name}` : 'Student',
         pin: rpcData.pin,
-        is_existing: false
+        recovered: rpcData.provisioning.recovered,
+        pin_not_reissued: rpcData.pin_not_reissued
       });
 
       if (onSuccess) onSuccess();
@@ -143,7 +145,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
   };
 
   const handleCopyPin = () => {
-    if (success) {
+    if (success?.pin) {
       navigator.clipboard.writeText(success.pin);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -155,16 +157,16 @@ export const CreateParent: React.FC<CreateParentProps> = ({
       <div className="max-w-md mx-auto p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
         <div className="text-center mb-6">
           <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ${
-            success.is_existing ? 'bg-amber-600' : 'bg-emerald-600'
+            success.recovered ? 'bg-amber-600' : 'bg-emerald-600'
           } text-white`}>
-            {success.is_existing ? <Link className="w-8 h-8" /> : <CheckCircle2 className="w-8 h-8" />}
+            {success.recovered ? <Link className="w-8 h-8" /> : <CheckCircle2 className="w-8 h-8" />}
           </div>
           <h2 className="text-2xl font-bold text-slate-900">
-            {success.is_existing ? 'Parent Linked! 🔗' : 'Parent Created! ✅'}
+            {success.recovered ? 'Parent Account Recovered' : 'Parent Created! ✅'}
           </h2>
           <p className="text-sm text-slate-500">
-            {success.is_existing 
-              ? `${success.parent_name} has been linked to ${success.student_name}`
+            {success.recovered
+              ? `${success.parent_name}'s existing account was recovered for this request. Its PIN was not reissued.`
               : `${success.parent_name} has been added successfully`
             }
           </p>
@@ -187,7 +189,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
             <span className="text-xs font-medium text-slate-500">Student</span>
             <span className="font-semibold text-slate-700">{success.student_name}</span>
           </div>
-          {!success.is_existing && (
+          {success.pin && !success.recovered && (
             <div className="flex items-center justify-between pt-2">
               <span className="text-xs font-medium text-slate-500">Temporary PIN</span>
               <div className="flex items-center gap-2">
@@ -203,7 +205,7 @@ export const CreateParent: React.FC<CreateParentProps> = ({
           )}
         </div>
 
-        {!success.is_existing && (
+        {success.pin && !success.recovered && (
           <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700 flex items-start gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
             <span>Share this PIN with the parent. They will be prompted to change it on first login.</span>
