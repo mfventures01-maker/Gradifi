@@ -121,7 +121,7 @@ function validatePayload(payload: PersistenceServerRequestPayload): void {
   }
 }
 
-function safeReceipt(value: unknown): SafeReceipt {
+function safeReceipt(value: unknown, requestedCorrectionParentId: string | null): SafeReceipt {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new PersistenceRequestError(500, 'The persistence authority returned an invalid receipt.');
   }
@@ -137,6 +137,13 @@ function safeReceipt(value: unknown): SafeReceipt {
     throw new PersistenceRequestError(500, 'The persistence authority returned incomplete receipt metadata.');
   }
 
+  const persistedCorrectionParentId = typeof row.correction_of_verification_id === 'string'
+    ? row.correction_of_verification_id
+    : null;
+  if (persistedCorrectionParentId && persistedCorrectionParentId !== requestedCorrectionParentId) {
+    throw new PersistenceRequestError(500, 'The persistence authority returned conflicting correction lineage.');
+  }
+
   return {
     id: row.id as string,
     verification_id: row.verification_id as string,
@@ -146,8 +153,10 @@ function safeReceipt(value: unknown): SafeReceipt {
     policy_version: row.policy_version as string,
     overall_similarity: row.overall_similarity as number,
     total_sources_found: row.total_sources_found as number,
-    correction_of_verification_id: typeof row.correction_of_verification_id === 'string'
-      ? row.correction_of_verification_id : null,
+    // The database RPC validates and stores this parent on verification_runs.
+    // It is not a physical column on public_verification_records, so the RPC
+    // response may omit it. Echo the verified request value for the UI contract.
+    correction_of_verification_id: persistedCorrectionParentId ?? requestedCorrectionParentId,
     verification_run_id: row.verification_run_id as string,
     result_hash: row.result_hash as string,
     manifest_hash: row.manifest_hash as string,
@@ -285,7 +294,7 @@ export async function handlePersistenceServerRequest(
   }
 
   return {
-    record: safeReceipt(response.record),
+    record: safeReceipt(response.record, payload.correctionOfVerificationId ?? null),
     status: response.status,
   };
 }
