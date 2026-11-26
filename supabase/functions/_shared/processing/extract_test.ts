@@ -37,33 +37,3 @@ Deno.test({
     }
   },
 });
-
-Deno.test({
-  name: "inspect scanned PDF embedded image objects for OCR raster source",
-  timeout: 30_000,
-  fn: async () => {
-    const pdfjs: any = await import("npm:pdfjs-dist@4.10.38/legacy/build/pdf.mjs");
-    const bytes = await Deno.readFile("tests/fixtures/ingestion/scanned_page_001.pdf");
-    const pdf = await pdfjs.getDocument({ data: bytes, useWorkerFetch: false, isEvalSupported: false }).promise;
-    const page = await pdf.getPage(1);
-    const ops = await page.getOperatorList();
-    const imageOps = ops.fnArray.map((fn: number, index: number) => ({ fn, args: ops.argsArray[index] }))
-      .filter((entry: any) => entry.fn === pdfjs.OPS.paintImageXObject || entry.fn === pdfjs.OPS.paintInlineImageXObject);
-    console.log("SCANNED_PDF_IMAGE_OPS", JSON.stringify(imageOps.slice(0, 5)));
-    for (const op of imageOps.slice(0, 3)) {
-      const imageId = op.args?.[0];
-      if (typeof imageId !== "string") continue;
-      const image: any = await new Promise(resolve => page.objs.get(imageId, resolve));
-      console.log("SCANNED_PDF_IMAGE_OBJECT", JSON.stringify({
-        keys: Object.keys(image ?? {}),
-        width: image?.width,
-        height: image?.height,
-        kind: image?.kind,
-        dataLength: image?.data?.length,
-        dataType: image?.data?.constructor?.name,
-        bitmapWidth: image?.bitmap?.width,
-        bitmapHeight: image?.bitmap?.height,
-      }));
-    }
-  },
-});
