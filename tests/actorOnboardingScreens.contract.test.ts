@@ -32,6 +32,7 @@ describe("actor onboarding screen result contract", () => {
     expect(source).toContain("latestAccount.provisioning.recovered");
     expect(source).toContain("getHigherEducationReceiptState(latestAccount)");
     expect(source).toContain("receiptState?.showPin");
+    expect(source).toContain("receiptState?.showCopyPin");
     expect(source).toContain("receiptState?.showLoginId");
     expect(source).toContain("!receiptState?.valid");
     expect(source).toContain("copyValue(\"pin\", latestAccount.pin!)");
