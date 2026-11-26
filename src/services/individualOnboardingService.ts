@@ -11,6 +11,9 @@ export interface BootstrapPublicIndividualResult {
   user_id: string;
   profile_id: string;
   actor_id: string;
+  workspace_id: string;
+  membership_id: string;
+  individual_account_id: string;
   role: "individual";
   account_type: PublicIndividualAccountType;
   institution_id: null;
@@ -24,10 +27,10 @@ export interface CompletePublicIndividualInput {
 }
 
 /**
- * The database is the authority for identity creation.
- * The browser sends only the two arguments accepted by
- * public.bootstrap_public_individual(text, text). Auth UID, role,
- * institution scope and actor type are derived/enforced by Postgres.
+ * The database is the authority for identity and workspace creation.
+ * The browser sends only the two supported arguments. Auth UID, role,
+ * actor type, institution scope, workspace ownership and membership are
+ * derived and enforced by Postgres.
  */
 export const individualOnboardingService = {
   async completePublicIndividualRegistration(
@@ -55,6 +58,9 @@ export const individualOnboardingService = {
       result.user_id !== input.authUserId ||
       !result.profile_id ||
       !result.actor_id ||
+      !result.workspace_id ||
+      !result.membership_id ||
+      !result.individual_account_id ||
       result.role !== "individual" ||
       result.account_type !== input.accountType ||
       result.institution_id !== null ||
