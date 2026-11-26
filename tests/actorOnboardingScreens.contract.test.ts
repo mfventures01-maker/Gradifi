@@ -30,7 +30,10 @@ describe("actor onboarding screen result contract", () => {
   it("Higher Education screen shows PIN only for newly provisioned identities", () => {
     const source = read("../src/pages/onboarding/HigherEducationOnboarding.tsx");
     expect(source).toContain("latestAccount.provisioning.recovered");
-    expect(source).toContain("latestAccount.pin && !latestAccount.provisioning.recovered");
+    expect(source).toContain("getHigherEducationReceiptState(latestAccount)");
+    expect(source).toContain("receiptState?.showPin");
+    expect(source).toContain("receiptState?.showLoginId");
+    expect(source).toContain("!receiptState?.valid");
     expect(source).toContain("copyValue(\"pin\", latestAccount.pin!)");
     expect(source).toContain("no PIN has been generated or reissued");
     expect(source).toContain("Recovered identities retain their existing PIN, which is never reissued.");
