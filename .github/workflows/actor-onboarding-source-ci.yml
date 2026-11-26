@@ -14,7 +14,6 @@ on:
       - "tests/actorOnboardingService.contract.test.ts"
       - "tests/actorOnboardingScreens.contract.test.ts"
       - "tests/higherEducationReceipt.acceptance.test.ts"
-      - "tests/higherEducationReceipt.acceptance.test.ts"
       - "src/services/actorOnboardingService.ts"
       - "src/pages/onboarding/CreateBursar.tsx"
       - "src/pages/onboarding/CreateParent.tsx"
