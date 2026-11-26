@@ -385,7 +385,7 @@ export const HigherEducationOnboarding: React.FC = () => {
           <aside className="space-y-6">
             {latestAccount && (
               <section className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
-                <div className="flex items-center gap-2 text-emerald-700"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold">✓</span><h2 className="font-bold">Account created</h2></div>
+                <div className="flex items-center gap-2 text-emerald-700"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold">✓</span><h2 className="font-bold">{latestAccount.provisioning.recovered ? "Account recovered" : "Account created"}</h2></div>
                 <p className="mt-2 text-sm text-slate-600">{latestAccount.provisioning.recovered ? `The existing identity for ${latestAccount.full_name} was recovered. Its PIN was not reissued.` : `Share these temporary credentials securely with ${latestAccount.full_name}. The PIN is shown only in this session.`}</p>
                 <div className="mt-4 space-y-3 rounded-xl bg-slate-50 p-4">
                   <div>
