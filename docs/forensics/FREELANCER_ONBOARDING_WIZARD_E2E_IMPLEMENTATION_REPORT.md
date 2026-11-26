@@ -1,103 +1,113 @@
 # FREELANCER_ONBOARDING_WIZARD_E2E_IMPLEMENTATION_REPORT
 
-**HOEOS work package:** FREELANCER-01A / UI implementation  
-**Repository:** `mfventures01-maker/Gradifi`  
-**Target Supabase project:** `ehkmfnaqkdgkjmdxxbwj`  
-**Implementation branch:** `feat/freelancer-onboarding-wizard-e2e-2026-11-22`  
-**PR:** [#38](https://github.com/mfventures01-maker/Gradifi/pull/38)  
-**Base integration commit:** `e360587c96a3df4f70638e7ab962750596675caf`  
-**Current implementation commit at report creation:** `6e113204050f7a8760f197b8ab130e9769e4883c`  
-**Verdict:** `IMPLEMENTED_PENDING_RUNTIME`
+**HOEOS work package:** FREELANCER-01A / UI + trusted provisioning  \
+**Repository:** `mfventures01-maker/Gradifi`  \
+**Target Supabase project:** `ehkmfnaqkdgkjmdxxbwj`  \
+**Implementation branch:** `feat/freelancer-onboarding-wizard-e2e-2026-11-22`  \
+**PR:** [#38](https://github.com/mfventures01-maker/Gradifi/pull/38)  \
+**Base integration commit:** `e360587c96a3df4f70638e7ab962750596675caf`  \
+**Production migration:** `20261126062517_individual_bootstrap_workspace_and_truncate_privilege_fix`  \
+**Verdict:** `DATABASE_REPAIR_APPLIED_FRONTEND_CI_AND_LIVE_SIGNUP_PENDING`
 
 ---
 
 ## 1. Scope
 
-Build the independent/freelancer registration experience inside Gradifi's existing onboarding entrypoint. Preserve the institutional onboarding routes and use the currently deployed Supabase identity contract. No payment functionality is introduced.
+Build the independent/freelancer registration experience inside Gradifi's existing onboarding entrypoint. Preserve institutional onboarding routes. Provision a complete individual identity and personal workspace through one trusted database RPC transaction. Remove authenticated TRUNCATE access from the profiles and verification evidence tables.
 
-## 2. Live Supabase contract inspected
+## 2. Live Supabase contract and repair
 
-Read-only inspection of the live project established:
-
-### `public.profiles`
-- `user_id` references `auth.users(id)` and is unique.
-- `role` permits `individual`.
-- `account_type` exists and permits `freelancer`, `independent_student`, `independent_professional`, and `other_individual` for individual profiles.
-- `institution_id` and `school_id` are nullable.
-- Authenticated profile reads and updates are self-scoped; the profile authority guard protects role, account category and authority fields.
-
-### `public.identity_actors`
-- `auth_user_id` is required, unique and references `auth.users(id)`.
-- `actor_type` permits `individual`.
-- `institution_id`, `school_id`, and `authority_user_id` are nullable.
-- Individual scope requires no institution, school or authority and `auth_method='email'`.
-- Authenticated users can select their own actor row. Actor creation is performed by trusted database code.
+Target project: `ehkmfnaqkdgkjmdxxbwj` (ACTIVE_HEALTHY).
 
 ### `public.bootstrap_public_individual(text,text)`
-- Arguments are exactly `p_full_name` and `p_account_type`.
-- The function derives identity from `auth.uid()`; it accepts no client-supplied Auth UID, role, actor type, institution or school ID.
-- It requires an email-confirmed Auth user and validates the four supported account categories.
-- It creates the individual profile and identity actor and returns `success`, `user_id`, `profile_id`, `actor_id`, `role`, `account_type`, `institution_id` and `school_id`.
-- It is executable by authenticated users, not anon.
 
-### Workspace boundary
-The live project also contains `workspaces`, `workspace_members`, and `individual_accounts`. Authenticated clients have SELECT privileges only on these workspace/account tables. The deployed `bootstrap_public_individual` function does not create a workspace or workspace membership. This implementation deliberately does not attempt direct browser INSERTs or claim that a workspace is provisioned.
+The production function now:
 
-If the freelancer MVP requires a workspace at registration time, a trusted server-side provisioning contract and migration are still required.
+- Derives the user identity exclusively from `auth.uid()`.
+- Locks the confirmed `auth.users` row to serialize concurrent confirmation callbacks for the same user.
+- Requires a confirmed email and validates the four supported individual account categories.
+- Creates or validates the individual profile and identity actor.
+- Calls the existing trusted `public.ensure_personal_workspace()` function.
+- Verifies an active personal workspace owner membership with role `owner` and source `workspace_owner`.
+- Ensures the matching active `individual_accounts` row exists.
+- Returns `workspace_id`, `membership_id` and `individual_account_id` alongside the existing identity fields.
+- Remains idempotent for the same existing individual identity and rejects partial or conflicting identities.
+- Runs all of the above in the single Postgres RPC transaction. Any exception rolls back the identity and workspace writes together.
 
-## 3. Implemented frontend changes
+The browser still sends only `p_full_name` and `p_account_type`. It cannot submit an Auth UID, workspace owner, membership role, institution or school scope.
 
-- `src/pages/onboarding/OnboardingWizard.tsx`: added the public `?view=individual` branch to the existing shared onboarding wizard; the institutional and higher-education paths remain separate and unchanged.
-- `src/pages/onboarding/IndividualRegistration.tsx`: replaced the single-screen form with a three-step wizard:
-  1. Account category, defaulting to Freelancer.
-  2. Full name and email.
-  3. Password confirmation and registration review.
-- Email confirmation is required before the database bootstrap call is made.
-- Pending recovery metadata contains only full name, email and account category. The password is never persisted in local storage.
-- Confirmation return can recover the registration details from the Auth user's metadata when local browser storage is unavailable.
-- An in-flight/completed user guard prevents duplicate bootstrap calls from the page's session hydration and auth-state listener.
-- Successful provisioning is accepted only when the RPC response matches the authenticated user, selected account type, individual role and null institution/school scope.
-- `src/services/individualOnboardingService.ts`: centralizes the exact RPC contract.
-- `src/pages/onboarding/OnboardingStart.tsx`: routes the freelancer/independent-user card into `/onboarding?view=individual`.
-- `src/types/database.types.ts`: aligns the relevant profile and actor types and declares the bootstrap RPC contract.
-- `.github/workflows/gradifi-primary-g0-g12.yml`: adds the new freelancer browser spec to G11.
+### TRUNCATE privilege correction
 
-## 4. E2E coverage added
+Migration `20261126062517_individual_bootstrap_workspace_and_truncate_privilege_fix` revokes only the `TRUNCATE` privilege from `authenticated` on:
+
+- `public.profiles`
+- `public.verification_runs`
+
+The migration asserts both privileges are absent before commit. Existing `service_role` and owner privileges are preserved.
+
+Post-migration live query results:
+
+| Check | Result |
+|---|---|
+| authenticated TRUNCATE on profiles | `false` |
+| authenticated TRUNCATE on verification_runs | `false` |
+| service_role TRUNCATE on profiles | `true` |
+| service_role TRUNCATE on verification_runs | `true` |
+| anon EXECUTE on bootstrap RPC | `false` |
+| authenticated EXECUTE on bootstrap RPC | `true` |
+| service_role EXECUTE on bootstrap RPC | `true` |
+
+No destructive TRUNCATE statement was executed.
+
+## 3. Existing workspace foundation reused
+
+The repair reuses the already-deployed `ensure_personal_workspace()` function and the existing workspace INSERT trigger that creates `individual_accounts`. It does not add a parallel workspace model, direct browser writes, or duplicate account tables.
+
+The workspace function creates or returns the caller's individual workspace and ensures the active owner membership. The bootstrap RPC verifies the membership and account projections before returning success.
+
+## 4. Frontend contract changes
+
+- `src/services/individualOnboardingService.ts` now requires and validates `workspace_id`, `membership_id` and `individual_account_id` in addition to profile and actor IDs.
+- The service continues to send only the two supported RPC arguments.
+- The onboarding success path is accepted only when the complete database provisioning response matches the authenticated user and selected account category.
+- Institutional onboarding paths remain unchanged.
+
+## 5. Browser contract coverage
 
 File: `e2e/freelancer-onboarding.spec.ts`
 
-1. Verify the onboarding-start freelancer card routes into the shared wizard.
-2. Complete the three-step freelancer wizard, verify the exact RPC payload, then verify the individual dashboard renders.
-3. Verify that an email-confirmation-required signup does not call the identity bootstrap RPC prematurely.
-4. Verify mismatched passwords are rejected before calling Supabase Auth.
+The successful mocked onboarding response now includes the workspace, membership and individual account identifiers. The existing tests continue to cover:
+1. Freelancer entry routing.
+2. Three-step signup and the exact two-argument RPC request.
+3. No provisioning before email confirmation.
+4. Password mismatch rejection before Supabase Auth.
 
-These tests use deterministic HTTP stubs at the Supabase Auth and PostgREST boundaries. They are browser-level frontend/contract E2E tests, not a live production database execution.
+These Playwright tests use deterministic HTTP stubs. They are not a live Supabase signup test.
 
-## 5. HOEOS evidence classification
+## 6. HOEOS evidence classification
 
 | Class | Status | Evidence |
 |---|---|---|
-| A. STATIC | PASS | Live schema metadata, constraints, grants, RLS policies, trigger definitions and deployed RPC definition inspected. |
-| B. STRUCTURAL | PASS | Frontend sends only the two supported RPC arguments and validates the returned identity/scope contract. |
-| C. RUNTIME | PENDING | PR CI browser, typecheck and production build results have not yet been observed. |
-| D. CERTIFICATION | BLOCKED / PENDING | Requires successful CI plus a separate live staging Supabase signup-confirmation-bootstrap-dashboard run. |
+| A. STATIC | PASS | Live schema, function definitions, workspace trigger, grants and migration history inspected. |
+| B. STRUCTURAL | PASS | Production migration applied; post-migration ACL/function execution query confirms the intended security boundary and bootstrap contract. |
+| C. RUNTIME | PENDING | Real confirmed signup, RPC transaction and individual dashboard journey not yet executed. PR CI results for this update are pending. |
+| D. CERTIFICATION | BLOCKED / PENDING | Requires successful PR CI and a real staging signup-confirmation-bootstrap-dashboard run. |
 
-## 6. Explicit exclusions
+## 7. Explicit boundaries
 
-- No production DDL, DML, migration application or policy changes.
 - No Edge Function deployment.
-- No payment, pricing, order or credit gate.
+- No payment, pricing, order or credit gate changes.
 - No browser-side inserts into identity, workspace, account or membership tables.
-- No claim that the freelancer workspace is provisioned.
-- No claim of live Supabase E2E certification.
+- No production test user was created by this migration.
+- No claim of live signup or verification runtime certification.
+- Existing institutional onboarding logic and workspace membership projection were not rewritten.
 
-## 7. Acceptance conditions
+## 8. Acceptance conditions still outstanding
 
-The UI work package may be accepted when:
-- TypeScript typecheck passes.
-- Production build passes.
-- All three new Playwright browser contract tests pass.
+- PR typecheck and production build pass.
+- Updated freelancer Playwright contract tests pass.
 - Existing school and higher-education onboarding entrypoint tests remain green.
-- A separate staging run confirms email confirmation, live bootstrap RPC, profile/actor persistence and dashboard identity resolution.
+- A real confirmed individual signup returns profile, actor, workspace, active owner membership and individual account IDs.
+- Dashboard session resolution succeeds for that real user.
 
-The commercial onboarding work package must additionally close the trusted workspace provisioning gap before it claims that a freelancer workspace is ready for billing or credit-backed verification.
+The database privilege correction is applied and verified. The database bootstrap contract is deployed and statically verified. Runtime onboarding certification remains pending.
