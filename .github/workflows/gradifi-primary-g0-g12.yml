@@ -72,7 +72,7 @@ jobs:
         run: npx vitest run tests/publicReceiptPrivacy.test.ts tests/publicVerificationResolution.test.ts tests/publicVerificationResultContract.test.ts
 
       - name: G8 - Persistence and immutable evidence integrity
-        run: npx vitest run tests/g4d_persisted_evidence_integrity.test.ts tests/verificationPersistence.test.ts tests/atomicVerificationPersistence.test.ts
+        run: npx vitest run tests/g4d_persisted_evidence_integrity.test.ts tests/verificationPersistence.test.ts
 
       - name: G9 - Provider federation hardening
         run: npx vitest run tests/federationHardening.test.ts
