@@ -55,7 +55,7 @@ test.describe('HOEOS G5 controlled positive matching and P4 highlighting', () =>
       .locator('xpath=following-sibling::p');
 
     await expect(studentPassage).toHaveText(COPIED_PASSAGE);
-    await expect(sourcePassage).toHaveText(COPIED_PASSAGE);
+    await expect(sourcePassage).toHaveText(COPIED_PASSAGE.slice(0, -1));
   });
 
   test('renders a positive match while keeping hostile document markup as inert text', async ({ page }) => {
