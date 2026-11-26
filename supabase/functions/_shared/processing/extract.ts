@@ -1,4 +1,4 @@
-import { unzipSync, strFromU8 } from "npm:fflate@0.8.2";
+import { unzipSync, strFromU8, zlibSync, crc32 } from "npm:fflate@0.8.2";
 
 export type ExtractionResult = {
   text: string;
@@ -16,6 +16,79 @@ const decodeXml = (value: string) => value.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt
   try { return Number.isFinite(n) && n >= 0 && n <= 0x10ffff ? String.fromCodePoint(n) : entity; }
   catch { return entity; }
 });
+
+
+function writeU32(target: Uint8Array, offset: number, value: number) {
+  target[offset] = (value >>> 24) & 0xff;
+  target[offset + 1] = (value >>> 16) & 0xff;
+  target[offset + 2] = (value >>> 8) & 0xff;
+  target[offset + 3] = value & 0xff;
+}
+function joinBytes(parts: Uint8Array[]): Uint8Array {
+  const size = parts.reduce((sum, part) => sum + part.length, 0);
+  const output = new Uint8Array(size);
+  let offset = 0;
+  for (const part of parts) { output.set(part, offset); offset += part.length; }
+  return output;
+}
+function pngChunk(type: string, data: Uint8Array): Uint8Array {
+  const typeBytes = new TextEncoder().encode(type);
+  const output = new Uint8Array(12 + data.length);
+  writeU32(output, 0, data.length);
+  output.set(typeBytes, 4);
+  output.set(data, 8);
+  const crcInput = new Uint8Array(typeBytes.length + data.length);
+  crcInput.set(typeBytes);
+  crcInput.set(data, typeBytes.length);
+  writeU32(output, 8 + data.length, crc32(crcInput));
+  return output;
+}
+function pdfImageToPng(image: any): Uint8Array | null {
+  const width = Number(image?.width);
+  const height = Number(image?.height);
+  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 ||
+      width * height > 30_000_000 || !(image.data instanceof Uint8Array)) return null;
+  let pixels = image.data as Uint8Array;
+  let channels = image.kind === 2 ? 3 : image.kind === 3 ? 4 : image.kind === 1 ? 1 : 0;
+  if (!channels) return null;
+  if (image.kind === 1 && pixels.length === Math.ceil(width * height / 8)) {
+    const unpacked = new Uint8Array(width * height);
+    for (let i = 0; i < unpacked.length; i++) {
+      const bit = (pixels[i >> 3] >> (7 - (i & 7))) & 1;
+      unpacked[i] = bit ? 255 : 0;
+    }
+    pixels = unpacked;
+  }
+  if (pixels.length !== width * height * channels) return null;
+
+  const rowBytes = width * channels;
+  const scanlines = new Uint8Array(height * (rowBytes + 1));
+  for (let y = 0; y < height; y++) {
+    const rowOffset = y * (rowBytes + 1);
+    scanlines[rowOffset] = 0;
+    scanlines.set(pixels.subarray(y * rowBytes, (y + 1) * rowBytes), rowOffset + 1);
+  }
+  const ihdr = new Uint8Array(13);
+  writeU32(ihdr, 0, width);
+  writeU32(ihdr, 4, height);
+  ihdr[8] = 8;
+  ihdr[9] = channels === 1 ? 0 : channels === 3 ? 2 : 6;
+  const signature = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+  return joinBytes([
+    signature,
+    pngChunk("IHDR", ihdr),
+    pngChunk("IDAT", zlibSync(scanlines, { level: 6 })),
+    pngChunk("IEND", new Uint8Array()),
+  ]);
+}
+async function resolvePdfImage(page: any, imageId: string): Promise<any> {
+  return await new Promise((resolve, reject) => {
+    try {
+      const value = page.objs.get(imageId, resolve);
+      if (value) resolve(value);
+    } catch (error) { reject(error); }
+  });
+}
 
 export function normalizeExtractedText(value: string): string {
   return value.replace(/\u0000/g, "").replace(/\r\n?/g, "\n")
@@ -63,7 +136,7 @@ export async function recognizeImage(bytes: Uint8Array): Promise<{ text: string;
 }
 
 async function extractPdf(bytes: Uint8Array): Promise<ExtractionResult> {
-  const pdfjs = await import("npm:pdfjs-dist@4.10.38/legacy/build/pdf.mjs");
+  const pdfjs: any = await import("npm:pdfjs-dist@4.10.38/legacy/build/pdf.mjs");
   const task = pdfjs.getDocument({ data: bytes, useWorkerFetch: false, isEvalSupported: false });
   const pdf = await task.promise;
   const pages: string[] = [];
@@ -78,30 +151,53 @@ async function extractPdf(bytes: Uint8Array): Promise<ExtractionResult> {
     return { text: textLayer, method: "pdf_text_layer", ocrUsed: false, ocrConfidence: null, pageCount: pdf.numPages };
   }
 
-  if (typeof OffscreenCanvas === "undefined") throw new Error("PDF_OCR_CANVAS_UNAVAILABLE");
-  const ocrPages: string[] = [];
-  const confidences: number[] = [];
   const mod = await import("npm:tesseract.js@7.0.0");
   const worker = await mod.createWorker("eng");
+  const ocrPages: string[] = [];
+  const confidences: number[] = [];
+  let processedImages = 0;
+  let totalPixels = 0;
+  const seenImages = new Set<string>();
   try {
     for (let pageNumber = 1; pageNumber <= Math.min(pdf.numPages, 40); pageNumber++) {
       const page = await pdf.getPage(pageNumber);
-      const viewport = page.getViewport({ scale: 1.5 });
-      const canvas = new OffscreenCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
-      const context = canvas.getContext("2d");
-      if (!context) throw new Error("PDF_OCR_CANVAS_CONTEXT_UNAVAILABLE");
-      await page.render({ canvasContext: context, viewport } as any).promise;
-      const blob = await canvas.convertToBlob({ type: "image/png" });
-      const result = await worker.recognize(new Uint8Array(await blob.arrayBuffer()));
-      const pageText = typeof result.data?.text === "string" ? result.data.text.trim() : "";
-      if (pageText) ocrPages.push(pageText);
-      if (Number.isFinite(result.data?.confidence)) confidences.push(result.data.confidence);
+      const ops = await page.getOperatorList();
+      for (let index = 0; index < ops.fnArray.length; index++) {
+        const fn = ops.fnArray[index];
+        if (fn !== pdfjs.OPS.paintImageXObject && fn !== pdfjs.OPS.paintInlineImageXObject) continue;
+        const args = ops.argsArray[index] ?? [];
+        const imageId = args[0];
+        let image: any = null;
+        if (typeof imageId === "string") {
+          if (seenImages.has(imageId)) continue;
+          seenImages.add(imageId);
+          image = await resolvePdfImage(page, imageId);
+        } else if (imageId && typeof imageId === "object") {
+          image = imageId;
+        }
+        if (!image) continue;
+        const width = Number(image.width);
+        const height = Number(image.height);
+        if (!Number.isFinite(width) || !Number.isFinite(height)) continue;
+        totalPixels += width * height;
+        if (totalPixels > 60_000_000) throw new Error("PDF_OCR_PIXEL_BUDGET_EXCEEDED");
+        const png = pdfImageToPng(image);
+        if (!png) continue;
+        const result = await worker.recognize(png);
+        const pageText = typeof result.data?.text === "string" ? result.data.text.trim() : "";
+        if (pageText) ocrPages.push(pageText);
+        if (Number.isFinite(result.data?.confidence)) confidences.push(result.data.confidence);
+        processedImages++;
+        if (processedImages >= 20) break;
+      }
+      if (processedImages >= 20) break;
     }
   } finally {
     await worker.terminate();
   }
+
   const ocrText = normalizeExtractedText(ocrPages.join("\n\n"));
-  if (ocrText.length < 10) throw new Error("OCR_NO_READABLE_TEXT");
+  if (processedImages === 0 || ocrText.length < 10) throw new Error("OCR_NO_READABLE_TEXT");
   const confidence = confidences.length ? confidences.reduce((sum, n) => sum + n, 0) / confidences.length : 0;
   return { text: ocrText, method: "pdf_ocr", ocrUsed: true, ocrConfidence: confidence, pageCount: pdf.numPages };
 }
