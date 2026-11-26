@@ -90,7 +90,7 @@ async function extractPdf(bytes: Uint8Array): Promise<ExtractionResult> {
       const canvas = new OffscreenCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
       const context = canvas.getContext("2d");
       if (!context) throw new Error("PDF_OCR_CANVAS_CONTEXT_UNAVAILABLE");
-      await page.render({ canvas, canvasContext: context, viewport }).promise;
+      await page.render({ canvasContext: context, viewport } as any).promise;
       const blob = await canvas.convertToBlob({ type: "image/png" });
       const result = await worker.recognize(new Uint8Array(await blob.arrayBuffer()));
       const pageText = typeof result.data?.text === "string" ? result.data.text.trim() : "";
@@ -132,6 +132,6 @@ export async function extractUploadedDocument(
 }
 
 export async function sha256Hex(bytes: Uint8Array): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  const copy = new Uint8Array(bytes.byteLength);\n  copy.set(bytes);\n  const digest = await crypto.subtle.digest("SHA-256", copy.buffer as ArrayBuffer);
   return [...new Uint8Array(digest)].map(value => value.toString(16).padStart(2, "0")).join("");
 }
