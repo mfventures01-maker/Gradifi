@@ -4,6 +4,7 @@ export interface HigherEducationReceiptState {
   valid: boolean;
   showLoginId: boolean;
   showPin: boolean;
+  showCopyPin: boolean;
   showRecoveredNotice: boolean;
 }
 
@@ -19,7 +20,7 @@ export const getHigherEducationReceiptState = (
   const isNew = account.provisioning?.recovered === false;
 
   if (!hasLoginId || (!recovered && !isNew)) {
-    return { valid: false, showLoginId: false, showPin: false, showRecoveredNotice: false };
+    return { valid: false, showLoginId: false, showPin: false, showCopyPin: false, showRecoveredNotice: false };
   }
 
   if (recovered) {
@@ -28,6 +29,7 @@ export const getHigherEducationReceiptState = (
       valid,
       showLoginId: valid,
       showPin: false,
+      showCopyPin: false,
       showRecoveredNotice: valid,
     };
   }
@@ -40,6 +42,7 @@ export const getHigherEducationReceiptState = (
     valid,
     showLoginId: valid,
     showPin: valid,
+    showCopyPin: valid,
     showRecoveredNotice: false,
   };
 };
