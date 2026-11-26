@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { authService } from "../../services/authService";
 import { actorOnboardingService, ActorType, CreateActorResult } from "../../services/actorOnboardingService";
+import { getHigherEducationReceiptState } from "../../services/higherEducationReceipt";
 
 type AcademicRole = Extract<ActorType, "student" | "hod" | "adviser" | "lecturer">;
 type Option = { id: string; name: string; code?: string };
@@ -217,6 +218,7 @@ export const HigherEducationOnboarding: React.FC = () => {
   };
 
   const roleCount = (selectedRole: AcademicRole) => accounts.filter(account => account.actor_type === selectedRole).length;
+  const receiptState = latestAccount ? getHigherEducationReceiptState(latestAccount) : null;
 
   if (!ready && !error) {
     return <main className="min-h-screen bg-slate-50 p-6"><div className="mx-auto max-w-5xl rounded-2xl border bg-white p-8 text-sm text-slate-600">Loading your institution, bootstrap campus and academic structure…</div></main>;
@@ -385,28 +387,28 @@ export const HigherEducationOnboarding: React.FC = () => {
           <aside className="space-y-6">
             {latestAccount && (
               <section className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
-                <div className="flex items-center gap-2 text-emerald-700"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold">✓</span><h2 className="font-bold">{latestAccount.provisioning.recovered ? "Account recovered" : "Account created"}</h2></div>
-                <p className="mt-2 text-sm text-slate-600">{latestAccount.provisioning.recovered ? `The existing identity for ${latestAccount.full_name} was recovered. Its PIN was not reissued.` : `Share these temporary credentials securely with ${latestAccount.full_name}. The PIN is shown only in this session.`}</p>
+                <div className="flex items-center gap-2 text-emerald-700"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold">✓</span><h2 className="font-bold">{!receiptState?.valid ? "Account receipt unavailable" : latestAccount.provisioning.recovered ? "Account recovered" : "Account created"}</h2></div>
+                <p className="mt-2 text-sm text-slate-600">{!receiptState?.valid ? "The provisioning response did not satisfy the credential safety contract. No credentials can be displayed." : latestAccount.provisioning.recovered ? `The existing identity for ${latestAccount.full_name} was recovered. Its PIN was not reissued.` : `Share these temporary credentials securely with ${latestAccount.full_name}. The PIN is shown only in this session.`}</p>
                 <div className="mt-4 space-y-3 rounded-xl bg-slate-50 p-4">
                   <div>
                     <p className="text-xs text-slate-500">Account holder</p>
                     <p className="font-semibold text-slate-900">{latestAccount.full_name}</p>
                     <p className="text-xs text-slate-500">{roleLabels[latestAccount.actor_type as AcademicRole] || latestAccount.actor_type}</p>
                   </div>
-                  <div className="flex items-center justify-between gap-3">
+                  {receiptState?.showLoginId && <div className="flex items-center justify-between gap-3">
                     <div><p className="text-xs text-slate-500">Generated Login ID</p><p className="font-mono text-lg font-bold text-slate-950">{latestAccount.login_id}</p></div>
                     <button type="button" onClick={() => copyValue("login", latestAccount.login_id)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700">{copiedField === "login" ? "Copied" : "Copy ID"}</button>
-                  </div>
-                  {latestAccount.pin && !latestAccount.provisioning.recovered && (
+                  </div>}
+                  {receiptState?.showPin && (
                     <div className="flex items-center justify-between gap-3">
                       <div><p className="text-xs text-slate-500">Temporary {latestAccount.actor_type === "student" ? "4" : "6"}-digit PIN</p><p className="font-mono text-2xl font-bold tracking-widest text-slate-950">{latestAccount.pin}</p></div>
                       <button type="button" onClick={() => copyValue("pin", latestAccount.pin!)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700">{copiedField === "pin" ? "Copied" : "Copy PIN"}</button>
                     </div>
                   )}
-                  {latestAccount.provisioning.recovered && <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-800">This identity was recovered. For security, no PIN has been generated or reissued. The account holder must use their existing sign-in credentials.</p>}
+                  {receiptState?.showRecoveredNotice && <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-800">This identity was recovered. For security, no PIN has been generated or reissued. The account holder must use their existing sign-in credentials.</p>}
                   {latestAccount.student_number && <div><p className="text-xs text-slate-500">Matriculation number</p><p className="font-mono font-semibold text-slate-900">{latestAccount.student_number}</p></div>}
                 </div>
-                {!latestAccount.provisioning.recovered && latestAccount.pin && <p className="mt-3 text-xs text-amber-700">Security note: deliver the Login ID and PIN privately. Do not post credentials in a group chat.</p>}
+                {receiptState?.showPin && <p className="mt-3 text-xs text-amber-700">Security note: deliver the Login ID and PIN privately. Do not post credentials in a group chat.</p>}
                 <button type="button" onClick={() => setLatestAccount(null)} className="mt-4 text-sm font-semibold text-indigo-700 hover:text-indigo-900">Dismiss credentials</button>
               </section>
             )}
