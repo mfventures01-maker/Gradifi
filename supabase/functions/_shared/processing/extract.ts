@@ -1,4 +1,4 @@
-import { unzipSync, strFromU8, zlibSync, crc32 } from "npm:fflate@0.8.2";
+import { unzipSync, strFromU8, zlibSync } from "npm:fflate@0.8.2";
 
 export type ExtractionResult = {
   text: string;
@@ -17,6 +17,19 @@ const decodeXml = (value: string) => value.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt
   catch { return entity; }
 });
 
+
+
+const PNG_CRC_TABLE = new Uint32Array(256);
+for (let n = 0; n < 256; n++) {
+  let value = n;
+  for (let k = 0; k < 8; k++) value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+  PNG_CRC_TABLE[n] = value >>> 0;
+}
+function pngCrc32(bytes: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (const byte of bytes) crc = (crc >>> 8) ^ PNG_CRC_TABLE[(crc ^ byte) & 0xff];
+  return (crc ^ 0xffffffff) >>> 0;
+}
 
 function writeU32(target: Uint8Array, offset: number, value: number) {
   target[offset] = (value >>> 24) & 0xff;
@@ -40,7 +53,7 @@ function pngChunk(type: string, data: Uint8Array): Uint8Array {
   const crcInput = new Uint8Array(typeBytes.length + data.length);
   crcInput.set(typeBytes);
   crcInput.set(data, typeBytes.length);
-  writeU32(output, 8 + data.length, crc32(crcInput));
+  writeU32(output, 8 + data.length, pngCrc32(crcInput));
   return output;
 }
 function pdfImageToPng(image: any): Uint8Array | null {
