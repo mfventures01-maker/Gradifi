@@ -46,7 +46,7 @@ export function extractDocxText(bytes: Uint8Array): string {
   return normalizeExtractedText(paragraphs.join("\n"));
 }
 
-async function recognizeImage(bytes: Uint8Array): Promise<{ text: string; confidence: number }> {
+export async function recognizeImage(bytes: Uint8Array): Promise<{ text: string; confidence: number }> {
   const mod = await import("npm:tesseract.js@7.0.0");
   const worker = await mod.createWorker("eng");
   try {
