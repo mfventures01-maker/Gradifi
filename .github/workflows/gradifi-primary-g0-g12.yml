@@ -63,7 +63,7 @@ jobs:
         run: npx vitest run tests/g4b_canonical_source_alignment.test.ts tests/g4c_production_finding_coordinate_integrity.test.ts tests/matchedTextHighlighting.test.ts
 
       - name: G5 - Student correction and deterministic re-verification
-        run: npx vitest run tests/studentCorrectionLifecycle.test.ts
+        run: npx vitest run tests/g5BrowserEdgeContractParity.test.ts tests/studentCorrectionLifecycle.test.ts
 
       - name: G6 - Trusted before/after correction report
         run: npx vitest run tests/trustedCorrectionComparison.test.ts tests/verifyPersistenceAuthorization.test.ts
@@ -81,7 +81,7 @@ jobs:
         run: npx vitest run tests/aiOutputFirewall.test.ts tests/actorProvisioningRecoveryEngine.test.ts tests/actorProvisioningRecoverySchema.test.ts tests/higherEdAuthorityContract.test.ts tests/verifyPersistenceAuthorization.test.ts
 
       - name: G11 - Onboarding and public verification UX
-        run: npx playwright test e2e/onboarding-entrypoints.spec.ts e2e/public-verification-route.spec.ts
+        run: npx playwright test e2e/onboarding-entrypoints.spec.ts e2e/public-verification-route.spec.ts e2e/matched-text-highlighting.spec.ts
 
       - name: G12 - Unified commercial MVP release contract
         run: |
