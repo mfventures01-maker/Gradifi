@@ -139,7 +139,7 @@ export class VerificationPersistenceService {
     correctionOfVerificationId?: string | null,
     sourceUploadId?: string | null
   ): Promise<{ record: PublicVerificationRecord; status: 'CREATED' | 'IDEMPOTENT_EXISTS' }> {
-    const recordPayload = VerificationPersistenceService.buildPersistenceRecord(result, envelope, correctionOfVerificationId);
+    VerificationPersistenceService.buildPersistenceRecord(result, envelope, correctionOfVerificationId);
 
     // Browser context: Delegate to trusted server endpoint /api/verify/persist
     if (typeof window !== 'undefined') {
