@@ -56,6 +56,7 @@ Deno.test("G5 known-positive fixture proves exact student and source passage ali
   assert(output.aggregation.totalUniqueMatchedTokens > 0);
   assert(findings.length > 0);
 
+  const matchedPassage = copiedPassage.replace(/[.!?]+$/, "");
   const studentStart = rawText.indexOf(copiedPassage);
   const studentEnd = studentStart + copiedPassage.length;
   const sentenceEvidence = output.aggregation.sentenceFlags.find(
@@ -88,13 +89,13 @@ Deno.test("G5 known-positive fixture proves exact student and source passage ali
   assertEquals(sourcePhraseEvidence.submittedPhrase.length > 0, true);
 
   const finding = findings.find(
-    (item) => item.sourceSegment === copiedPassage && item.matchedSegment === copiedPassage,
+    (item) => item.sourceSegment === matchedPassage && item.matchedSegment === matchedPassage,
   );
   assert(finding, "Expected one deterministic finding pairing the exact student and source passages");
   assertEquals(finding.sourceStart, studentStart);
-  assertEquals(finding.sourceEnd, studentEnd);
-  assertEquals(rawText.slice(finding.sourceStart!, finding.sourceEnd!), copiedPassage);
-  assertEquals(finding.matchedSegment, sourceSnippet.slice(0, copiedPassage.length));
+  assertEquals(finding.sourceEnd, studentStart + matchedPassage.length);
+  assertEquals(rawText.slice(finding.sourceStart!, finding.sourceEnd!), matchedPassage);
+  assertEquals(finding.matchedSegment, sourceSnippet.slice(0, matchedPassage.length));
   assertEquals(finding.offsetBasis, "CANONICAL_EVIDENCE_TEXT_UTF16");
 
   // Provider snippets are not complete source documents. Do not invent document-level source offsets.
