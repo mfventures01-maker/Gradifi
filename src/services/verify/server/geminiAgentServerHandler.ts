@@ -113,7 +113,7 @@ export function extractDeterministicPayload(record: ReceiptRecord): {
           }))
         : []
     } : null,
-    similarity: Number(record.overall_similarity),
+    similarity: typeof record.overall_similarity === 'number' ? record.overall_similarity : Number.NaN,
     documentHash: safeString(record.document_hash, 160),
     evidenceHash: safeString(record.evidence_hash, 160),
     engineVersion: safeString(record.engine_version, 100),
