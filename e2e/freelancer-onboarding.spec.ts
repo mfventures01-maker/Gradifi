@@ -21,12 +21,12 @@ const authUser = (metadata: Record<string, unknown> = {}) => ({
 
 const mockAuthenticatedSupabase = async (
   page: import("@playwright/test").Page,
-  options: { withSession?: boolean } = {},
+  options: { withSession?: boolean; accountType?: "freelancer" | "independent_student" } = {},
 ) => {
   let bootstrapPayload: Record<string, unknown> | null = null;
   const user = authUser({
     full_name: "Amina Okafor",
-    requested_account_type: "freelancer",
+    requested_account_type: options.accountType || "freelancer",
     account_path: "public_individual",
   });
 
@@ -69,7 +69,7 @@ const mockAuthenticatedSupabase = async (
         membership_id: MEMBERSHIP_ID,
         individual_account_id: INDIVIDUAL_ACCOUNT_ID,
         role: "individual",
-        account_type: "freelancer",
+        account_type: options.accountType || "freelancer",
         institution_id: null,
         school_id: null,
       }),
@@ -151,6 +151,26 @@ test.describe("Freelancer and independent-user onboarding wizard", () => {
     expect(supabase.getBootstrapPayload()).toEqual({
       p_full_name: "Amina Okafor",
       p_account_type: "freelancer",
+    });
+  });
+
+  test("completes independent-student registration through the same trusted bootstrap contract", async ({ page }) => {
+    const supabase = await mockAuthenticatedSupabase(page, { accountType: "independent_student" });
+    await page.goto("/onboarding?view=individual");
+
+    await page.getByLabel("I am joining as").selectOption("independent_student");
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByLabel("Full name").fill("Amina Okafor");
+    await page.getByLabel("Email address").fill(EMAIL);
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.locator("#individual-password").fill("a-secure-test-password");
+    await page.getByLabel("Confirm password").fill("a-secure-test-password");
+    await page.getByRole("button", { name: "Create independent account" }).click();
+
+    await expect(page.getByRole("heading", { name: "Welcome, Amina Okafor" })).toBeVisible();
+    expect(supabase.getBootstrapPayload()).toEqual({
+      p_full_name: "Amina Okafor",
+      p_account_type: "independent_student",
     });
   });
 
