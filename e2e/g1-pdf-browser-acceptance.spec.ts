@@ -27,10 +27,10 @@ test.describe('HOEOS G1 Real PDF Browser Runtime Acceptance Suite', () => {
     expect(fs.existsSync(fixturePath)).toBe(true);
 
     const fileBytes = fs.readFileSync(fixturePath);
-    expect(fileBytes.length).toBe(652);
+    expect(fileBytes.length).toBe(913);
 
     const computedHash = crypto.createHash('sha256').update(fileBytes).digest('hex');
-    expect(computedHash.toLowerCase()).toBe('0c5860b9d729860dcf3a7480d9ec26d7e5354ade7353b1d7e8fcd66895c9f4ff');
+    expect(computedHash.toLowerCase()).toBe('da1d7323b749d7f80b430fd36aa536844ba1fab3e1946cdd64630574fa68f4e9');
 
     // 2. Navigate to real commercial verification workbench
     console.log('Navigating to /verify...');
