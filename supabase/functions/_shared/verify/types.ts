@@ -189,7 +189,7 @@ export interface VerificationMatrixEntry {
   schemaStatus: 'VERIFIED' | 'FAILED';
   provenanceStatus: 'VERIFIED' | 'FAILED';
   federationStatus: 'VERIFIED' | 'FAILED';
-  aiInterpretationStatus: 'VERIFIED_INFERENCE' | 'AUTHENTICATION_FAILED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED' | 'N/A';
+  aiInterpretationStatus: 'VERIFIED_INFERENCE' | 'AUTHENTICATION_FAILED' | 'RATE_LIMITED' | 'RUNTIME_UNAVAILABLE' | 'INFERENCE_FAILED' | 'N/A';
   overallStatus: FineGrainedProviderStatus;
   query?: string;
 }
