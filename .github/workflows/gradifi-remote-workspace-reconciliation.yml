@@ -1,0 +1,140 @@
+name: Gradifi Remote Workspace Reconciliation
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - reconcile/github-actions-workspace-audit-2026-11-27
+    paths:
+      - .github/workflows/gradifi-remote-workspace-reconciliation.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gradifi-remote-workspace-reconciliation
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    name: Read-only branch and repository reconciliation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout complete repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Build remote reconciliation evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reconciliation-output
+
+          INTEGRATION="origin/integration/gradifi-primary-2026-11-20"
+          LOCAL_BASELINE="d03c6fc8e11483274fb2e2d8dcbfff9720f1fcd3"
+
+          if ! git show-ref --verify --quiet "refs/remotes/$INTEGRATION"; then
+            echo "Required integration ref missing: $INTEGRATION" >&2
+            exit 1
+          fi
+
+          {
+            echo "# Gradifi Remote Workspace Reconciliation"
+            echo
+            echo "- Generated (UTC): $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "- Workflow commit: $(git rev-parse HEAD)"
+            echo "- Integration baseline: $(git rev-parse "$INTEGRATION")"
+            echo "- Local workstation HEAD supplied from prior evidence: $LOCAL_BASELINE"
+            if git cat-file -e "$LOCAL_BASELINE^{commit}" 2>/dev/null; then
+              echo "- Local HEAD object in fetched Git history: PRESENT"
+              if git merge-base --is-ancestor "$LOCAL_BASELINE" "$INTEGRATION"; then
+                echo "- Local HEAD ancestry relative to integration: ANCESTOR"
+              else
+                echo "- Local HEAD ancestry relative to integration: NOT AN ANCESTOR"
+              fi
+            else
+              echo "- Local HEAD object in fetched Git history: NOT FOUND"
+            fi
+            echo
+            echo "## Branch divergence"
+            echo
+            echo "Ahead/behind counts are relative to integration. This job does not merge, reset, push source changes, deploy, or write to Supabase."
+          } > reconciliation-output/branch-reconciliation.md
+
+          printf 'branch,head_sha,commit_date,ahead_of_integration,behind_integration,merge_base,status\n' > reconciliation-output/branch-divergence.csv
+          printf 'branch,status,additions,deletions,path\n' > reconciliation-output/branch-file-delta.csv
+
+          while IFS= read -r ref; do
+            branch="${ref#refs/remotes/origin/}"
+            case "$branch" in
+              HEAD) continue ;;
+            esac
+            sha="$(git rev-parse "$ref")"
+            date_value="$(git show -s --format=%cI "$ref")"
+            if base="$(git merge-base "$INTEGRATION" "$ref" 2>/dev/null)"; then
+              counts="$(git rev-list --left-right --count "$INTEGRATION...$ref")"
+              behind="$(awk '{print $1}' <<< "$counts")"
+              ahead="$(awk '{print $2}' <<< "$counts")"
+              if [[ "$ahead" == "0" && "$behind" == "0" ]]; then
+                status="identical"
+              elif [[ "$ahead" == "0" ]]; then
+                status="behind"
+              elif [[ "$behind" == "0" ]]; then
+                status="ahead"
+              else
+                status="diverged"
+              fi
+              printf '"%s",%s,"%s",%s,%s,%s,%s\n' "$branch" "$sha" "$date_value" "$ahead" "$behind" "$base" "$status" >> reconciliation-output/branch-divergence.csv
+              echo "- `$branch`: $status; ahead $ahead, behind $behind; HEAD `$sha`" >> reconciliation-output/branch-reconciliation.md
+              git diff --name-status "$base" "$ref" | while IFS=$'\t' read -r state path rest; do
+                [[ -z "${path:-}" ]] && continue
+                additions="$(git diff --numstat "$base" "$ref" -- "$path" | awk 'NR==1 {print $1}')"
+                deletions="$(git diff --numstat "$base" "$ref" -- "$path" | awk 'NR==1 {print $2}')"
+                printf '"%s","%s",%s,%s,"%s"\n' "$branch" "$state" "${additions:-0}" "${deletions:-0}" "$path" >> reconciliation-output/branch-file-delta.csv
+              done
+            else
+              printf '"%s",%s,"%s",NA,NA,NA,unrelated-history\n' "$branch" "$sha" "$date_value" >> reconciliation-output/branch-divergence.csv
+              echo "- `$branch`: unrelated history; HEAD `$sha`" >> reconciliation-output/branch-reconciliation.md
+            fi
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/origin | sort)
+
+          {
+            echo
+            echo "## Repository inventory at integration"
+            echo
+            echo "Tracked files: $(git ls-tree -r --name-only "$INTEGRATION" | wc -l | tr -d ' ')"
+            echo "Workflow files: $(git ls-tree -r --name-only "$INTEGRATION" -- .github/workflows | wc -l | tr -d ' ')"
+            echo "Supabase migration files: $(git ls-tree -r --name-only "$INTEGRATION" -- supabase/migrations | wc -l | tr -d ' ')"
+            echo
+            echo "## Reconciliation boundaries"
+            echo
+            echo "- Remote Git refs and committed trees only."
+            echo "- Local uncommitted/untracked workstation files are not available to GitHub Actions unless previously committed or uploaded."
+            echo "- No test suite was run as part of this inventory."
+            echo "- No production secrets were read."
+            echo "- No Supabase queries, migrations, writes, or deployments were performed."
+          } >> reconciliation-output/branch-reconciliation.md
+
+          git ls-tree -r --name-only "$INTEGRATION" > reconciliation-output/integration-tracked-files.txt
+          git ls-tree -r --name-only "$INTEGRATION" -- .github/workflows > reconciliation-output/integration-workflows.txt
+          git ls-tree -r --name-only "$INTEGRATION" -- supabase/migrations > reconciliation-output/integration-migrations.txt
+
+          {
+            echo "# Integration workflow inventory"
+            while IFS= read -r path; do
+              echo
+              echo "## $path"
+              git show "$INTEGRATION:$path" | sed -n '1,180p'
+            done < reconciliation-output/integration-workflows.txt
+          } > reconciliation-output/integration-workflow-content-review.md
+
+      - name: Upload reconciliation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradifi-remote-workspace-reconciliation
+          path: reconciliation-output/
+          if-no-files-found: error
+          retention-days: 30
