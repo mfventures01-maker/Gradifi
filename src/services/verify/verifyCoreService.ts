@@ -325,9 +325,11 @@ export class VerifyCoreService {
           ? 'VERIFIED_INFERENCE'
           : (aiResult.geminiStatus === 'AUTHENTICATION_FAILED'
             ? 'AUTHENTICATION_FAILED'
-            : (aiResult.geminiStatus === 'INFERENCE_FAILED'
-              ? 'INFERENCE_FAILED'
-              : 'RUNTIME_UNAVAILABLE')),
+            : (aiResult.geminiStatus === 'RATE_LIMITED'
+              ? 'RATE_LIMITED'
+              : (aiResult.geminiStatus === 'INFERENCE_FAILED'
+                ? 'INFERENCE_FAILED'
+                : 'RUNTIME_UNAVAILABLE'))),
         overallStatus: aiResult.geminiStatus as FineGrainedProviderStatus
       },
       {
