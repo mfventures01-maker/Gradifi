@@ -153,8 +153,6 @@ Deno.serve(async (req: Request) => {
       error_code: errorCode,
       updated_at: new Date().toISOString(),
     }).eq("id", uploadId).eq("owner_user_id", authData.user.id);
-    const status = errorCode === "PDF_OCR_CANVAS_UNAVAILABLE" ||
-      errorCode === "PDF_OCR_CANVAS_CONTEXT_UNAVAILABLE" ? 422 : 422;
-    return reply(status, { error: errorCode, retryable: false });
+    return reply(422, { error: errorCode, retryable: false });
   }
 });
