@@ -37,7 +37,8 @@ jobs:
           deno check --config supabase/functions/deno.json \
             supabase/functions/upload-document/index.ts \
             supabase/functions/ocr-processor/index.ts \
-            supabase/functions/verify/index.ts
+            supabase/functions/verify/index.ts \
+            supabase/functions/trial/index.ts
       - name: Run extraction and G5 deterministic contract tests
         run: |
           deno test --config supabase/functions/deno.json --allow-read --allow-net \
