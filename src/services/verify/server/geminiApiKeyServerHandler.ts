@@ -231,30 +231,34 @@ INSTRUCTIONS:
         msg.includes('ECONNREFUSED') ||
         msg.includes('network') ||
         msg.includes('NetworkError');
-      const isUnavailable = msg.includes('503') || msg.includes('502') || msg.includes('429');
+      const isRateLimited = msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED');
+      const isUnavailable = msg.includes('503') || msg.includes('502');
 
-      if (isTimeout) return buildFailure('TIMEOUT', `Gemini API timed out: ${msg}`);
-      if (isNetwork) return buildFailure('NETWORK_ERROR', `Gemini API network error: ${msg}`);
-      if (isUnavailable) return buildFailure('RUNTIME_UNAVAILABLE', `Gemini API unavailable: ${msg}`);
+      if (isTimeout) return buildFailure('TIMEOUT', 'Gemini API request timed out');
+      if (isNetwork) return buildFailure('NETWORK_ERROR', 'Gemini API network request failed');
+      if (isRateLimited) return buildFailure('RATE_LIMITED', 'Gemini API rate limit reached');
+      if (isUnavailable) return buildFailure('RUNTIME_UNAVAILABLE', 'Gemini API is temporarily unavailable');
 
       return buildFailure('INFERENCE_FAILED', `Gemini API unreachable after ${MAX_ATTEMPTS} attempts: ${msg}`);
     }
 
     if (!response.ok) {
-      const isAuthError = response.status === 401 || response.status === 403;
-      const isUnavailable = response.status === 429 || response.status === 503 || response.status === 502;
-      const isTimeout = response.status === 504;
-
+      const errorBody = await response.clone().text().catch(() => '');
+      const isAuthError = response.status === 401 || response.status === 403 ||
+        /API_KEY_INVALID|API key not valid|API_KEY_EXPIRED|UNAUTHENTICATED/i.test(errorBody);
       if (isAuthError) {
-        return buildFailure('AUTHENTICATION_FAILED', `Gemini API returned HTTP ${response.status}: ${response.statusText}`);
+        return buildFailure('AUTHENTICATION_FAILED', 'Gemini rejected the configured server credential');
       }
-      if (isUnavailable) {
-        return buildFailure('RUNTIME_UNAVAILABLE', `Gemini API returned HTTP ${response.status}: ${response.statusText}`);
+      if (response.status === 429 || /RESOURCE_EXHAUSTED|RATE_LIMIT/i.test(errorBody)) {
+        return buildFailure('RATE_LIMITED', 'Gemini API rate limit reached');
       }
-      if (isTimeout) {
-        return buildFailure('TIMEOUT', `Gemini API returned HTTP ${response.status}: ${response.statusText}`);
+      if (response.status === 504) {
+        return buildFailure('TIMEOUT', 'Gemini API request timed out');
       }
-      return buildFailure('INFERENCE_FAILED', `Gemini API returned HTTP ${response.status}: ${response.statusText}`);
+      if (response.status === 502 || response.status === 503) {
+        return buildFailure('RUNTIME_UNAVAILABLE', 'Gemini API is temporarily unavailable');
+      }
+      return buildFailure('INFERENCE_FAILED', `Gemini API returned HTTP ${response.status}`);
     }
 
     let data: any;
