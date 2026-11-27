@@ -210,7 +210,7 @@ function compareReceiptContext(original: ReceiptRecord, corrected: ReceiptRecord
   };
 }
 
-export export function classifyProviderFailure(status: number, body = ''): AgentStatus {
+export function classifyProviderFailure(status: number, body = ''): AgentStatus {
   if (status === 401 || status === 403 || /API_KEY_INVALID|API key not valid|API_KEY_EXPIRED|UNAUTHENTICATED/i.test(body)) {
     return 'AUTHENTICATION_FAILED';
   }
