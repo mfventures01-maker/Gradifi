@@ -5,7 +5,6 @@
  * HOEOS Standard: Server-Only Credentials, Strict Input Boundary, Zero Secret Leakage, Provider Truth States.
  */
 
-import { createHash } from 'node:crypto';
 import { AIFinding, EvidenceMatch, ProviderTruthStatus } from '../types.js';
 import {
   validateAIFindingSchema,
@@ -27,9 +26,13 @@ const geminiApiKeyResponseCache = new Map<string, { body: GeminiServerResponse; 
 const CACHE_TTL_MS = 60_000;
 const CACHE_MAX_ENTRIES = 20;
 
-function buildCacheKey(documentText: string, matches: EvidenceMatch[]): string {
+async function buildCacheKey(documentText: string, matches: EvidenceMatch[]): Promise<string> {
   const canonicalInput = JSON.stringify({ model: REQUESTED_MODEL, documentText, matches });
-  return createHash('sha256').update(canonicalInput).digest('hex');
+  const digest = await globalThis.crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(canonicalInput)
+  );
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 export function getGeminiApiKeyCache(key: string): GeminiServerResponse | null {
@@ -154,7 +157,7 @@ export async function handleGeminiApiKeyServerReasoning(
   const validSourceIds = new Set(matches.map(m => m.sourceId).filter(Boolean));
   const allowFallback = Boolean(payload?.allowFallback);
 
-  const cacheKey = buildCacheKey(documentText, matches);
+  const cacheKey = await buildCacheKey(documentText, matches);
   const cached = getGeminiApiKeyCache(cacheKey);
   if (cached) return cached;
 
