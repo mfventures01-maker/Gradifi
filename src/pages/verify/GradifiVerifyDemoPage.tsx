@@ -256,7 +256,15 @@ Distributed machine learning frameworks require mathematical determinism to guar
       });
 
       setDocumentText(res.text);
-      setUplo  // Execute verification through the authenticated path or server-enforced public trial path.
+      setUploadProgress(100);
+      setUploadStatus('EXTRACTED');
+      parseNormalizedMetadata(res.text);
+    } catch (err: any) {
+      setUploadStatus('FAILED');
+      setUploadError(err?.message || 'Failed to parse uploaded document file.');
+    }
+  };
+
   const handleExecuteVerification = async () => {
     if (!documentText.trim()) {
       setUploadError('Please select or enter document text to verify.');
