@@ -50,6 +50,7 @@ import { generateVerificationReportPDF } from '../../utils/pdfReportGenerator';
 import { jsPDF } from 'jspdf';
 import { buildCanonicalAnalysisDocument } from '../../services/verify/documentNormalizer';
 import { requestCorrectionComparison, CorrectionComparison } from '../../services/verify/correctionComparisonClient';
+import { GeminiEvidenceAgentPanel } from '../../components/verify/GeminiEvidenceAgentPanel';
 
 const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
   core: 'CORE',
@@ -1318,6 +1319,13 @@ Distributed machine learning frameworks require mathematical determinism to guar
                     // optional: wire to existing scroll behaviour
                   }}
                 />
+
+                {verificationId && (
+                  <GeminiEvidenceAgentPanel
+                    verificationId={verificationId}
+                    comparison={correctionComparison}
+                  />
+                )}
 
                 <section className="rounded-2xl border border-cyan-800/50 bg-slate-900/90 p-6 space-y-4">
                   <div>
