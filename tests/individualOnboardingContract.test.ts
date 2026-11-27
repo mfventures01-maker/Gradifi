@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 const registration = read("../src/pages/onboarding/IndividualRegistration.tsx");
+const wizard = read("../src/pages/onboarding/OnboardingWizard.tsx");
 const service = read("../src/services/individualOnboardingService.ts");
 const login = read("../src/pages/auth/LoginPage.tsx");
 const dashboard = read("../src/pages/individual/IndividualDashboard.tsx");
@@ -14,7 +15,7 @@ describe("Individual onboarding authority and recovery contract", () => {
   it("supports freelancer and independent-student categories through the shared wizard", () => {
     expect(registration).toContain('value: "freelancer"');
     expect(registration).toContain('value: "independent_student"');
-    expect(registration).toContain("view === 'individual'");
+    expect(wizard).toContain("view === 'individual'");
     expect(service).toContain('"freelancer"');
     expect(service).toContain('"independent_student"');
   });
