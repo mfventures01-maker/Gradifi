@@ -57,7 +57,7 @@ function safeString(value: unknown, max = 500): string {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
 }
 
-function extractDeterministicPayload(record: ReceiptRecord): {
+export function extractDeterministicPayload(record: ReceiptRecord): {
   findings: any[];
   sources: any[];
   aggregation: any;
@@ -210,7 +210,7 @@ function compareReceiptContext(original: ReceiptRecord, corrected: ReceiptRecord
   };
 }
 
-export function classifyProviderFailure(status: number, body = ''): AgentStatus {
+export export function classifyProviderFailure(status: number, body = ''): AgentStatus {
   if (status === 401 || status === 403 || /API_KEY_INVALID|API key not valid|API_KEY_EXPIRED|UNAUTHENTICATED/i.test(body)) {
     return 'AUTHENTICATION_FAILED';
   }
