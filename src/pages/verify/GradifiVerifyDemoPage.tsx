@@ -300,16 +300,6 @@ Distributed machine learning frameworks require mathematical determinism to guar
     }
   };
 
-ssage ||
-        'Verification completed locally but could not be committed to authoritative storage. Receipt cannot be issued.'
-      );
-      setVerificationId('');
-      setResult(null);
-    } finally {
-      setVerifying(false);
-    }
-  };
-
   const handleSubmitCorrection = async () => {
     if (!verificationId || !result) {
       setCorrectionError('An original persisted receipt is required before submitting a correction.');
@@ -394,7 +384,7 @@ ssage ||
 e from provider federation and receipt persistence.
   // The canonical engine treats the first argument as the submitted/student document and the
   // second argument as the comparison/source document.
-  const handleRunG5Comparison = () => {
+  const handleRunG5Comparison = async () => {
     if (!canonicalDoc?.rawText.trim()) {
       setG5Error('Upload or enter the student submission first.');
       return;
@@ -407,9 +397,23 @@ e from provider federation and receipt persistence.
     setG5Comparing(true);
     setG5Error(null);
     try {
-      const comparison = verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
-      setG5Result(comparison);
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error('Unable to determine the current authentication state.');
+
+      if (session?.access_token) {
+        const comparison = await verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
+        setG5Result(comparison);
+      } else {
+        const { result: comparison, checksRemaining } = await executePublicTrialVerification<GranularSimilarityResult>({
+          mode: 'compare',
+          studentText: canonicalDoc.rawText,
+          sourceText: g5SourceDoc.rawText,
+        });
+        setTrialChecksRemaining(checksRemaining);
+        setG5Result(comparison);
+      }
     } catch (err: any) {
+      if (typeof err?.checksRemaining === 'number') setTrialChecksRemaining(err.checksRemaining);
       setG5Result(null);
       setG5Error(err?.message || 'The canonical G5 comparison failed.');
     } finally {
