@@ -1,9 +1,64 @@
 import { test, expect, type Page } from '@playwright/test';
+import { verifyCoreService } from '../src/services/verify/verifyCoreService';
 
 const COPIED_PASSAGE =
-  'The rapid advancement of distributed artificial intelligence has transformed academic research and scientific collaboration.';
+  'The rapid advancement of distributed artificial inasync function runControlledG5Comparison(page: Page, studentText: string, sourceText: string) {
+  const trialActions: string[] = [];
+  const trialToken = 'T'.repeat(64);
 
-async function runControlledG5Comparison(page: Page, studentText: string, sourceText: string) {
+  await page.route('**/functions/v1/trial', async route => {
+    if (route.request().method() === 'OPTIONS') {
+      return route.fulfill({
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'authorization, apikey, x-client-info, content-type',
+        },
+        body: '',
+      });
+    }
+
+    const body = route.request().postDataJSON() as { action?: string };
+    trialActions.push(body.action || '');
+    if (body.action === 'start') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          trialToken,
+          checksRemaining: 3,
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        }),
+      });
+    }
+    if (body.action === 'consume') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, checksRemaining: 2 }),
+      });
+    }
+    return route.fulfill({
+      status: 400,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: false, code: 'UNKNOWN_ACTION' }),
+    });
+  });
+
+  await page.route('**/api/verify/run', async route => {
+    const request = route.request().postDataJSON() as { mode?: string; trialToken?: string };
+    expect(request.mode).toBe('compare');
+    expect(request.trialToken).toBe(trialToken);
+    const result = verifyCoreService.executeGranularSimilarityAnalysis(studentText, sourceText);
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, result, checksRemaining: 2 }),
+    });
+  });
+
   await page.goto('/verify');
   await page.waitForLoadState('domcontentloaded');
 
@@ -25,6 +80,12 @@ async function runControlledG5Comparison(page: Page, studentText: string, source
   await compareButton.click();
 
   const result = page.getByTestId('g5-direct-comparison-result');
+  await expect(result).toBeVisible();
+  await expect(page.getByText(/Public trial checks remaining:/)).toContainText('2');
+  expect(trialActions).toEqual(['start', 'consume']);
+  return result;
+}
+comparison-result');
   await expect(result).toBeVisible();
   return result;
 }
