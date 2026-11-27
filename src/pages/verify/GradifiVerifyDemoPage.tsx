@@ -1351,44 +1351,46 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   />
                 )}
 
-                <section className="rounded-2xl border border-cyan-800/50 bg-slate-900/90 p-6 space-y-4">
+                                {verificationId && (
+                  <section className="rounded-2xl border border-cyan-800/50 bg-slate-900/90 p-6 space-y-4">
                   <div>
-                    <h3 className="text-base font-bold text-white">Submit a corrected version</h3>
-                    <p className="mt-1 text-xs text-slate-400">
-                      Re-runs the existing G5 pipeline. The corrected run is stored as a new immutable receipt.
-                      Comparison is performed by the authenticated server and returns metadata only.
-                    </p>
+                  <h3 className="text-base font-bold text-white">Submit a corrected version</h3>
+                  <p className="mt-1 text-xs text-slate-400">
+                  Re-runs the existing G5 pipeline. The corrected run is stored as a new immutable receipt.
+                  Comparison is performed by the authenticated server and returns metadata only.
+                  </p>
                   </div>
                   <textarea
-                    value={correctionText}
-                    onChange={event => setCorrectionText(event.target.value)}
-                    rows={8}
-                    placeholder="Paste the complete corrected document text..."
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-100 outline-none focus:border-cyan-500"
-                    disabled={correcting}
+                  value={correctionText}
+                  onChange={event => setCorrectionText(event.target.value)}
+                  rows={8}
+                  placeholder="Paste the complete corrected document text..."
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-100 outline-none focus:border-cyan-500"
+                  disabled={correcting}
                   />
                   {correctionError && <p role="alert" className="text-sm text-rose-400">{correctionError}</p>}
                   <button type="button" onClick={handleSubmitCorrection}
-                    disabled={correcting || !correctionText.trim()}
-                    className="rounded-xl bg-cyan-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">
-                    {correcting ? 'Re-verifying and comparing...' : 'Re-verify corrected document'}
+                  disabled={correcting || !correctionText.trim()}
+                  className="rounded-xl bg-cyan-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">
+                  {correcting ? 'Re-verifying and comparing...' : 'Re-verify corrected document'}
                   </button>
                   {correctionComparison && (
-                    <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/20 p-4 space-y-3">
-                      <h4 className="font-bold text-emerald-300">Trusted before / after comparison</h4>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div><span className="text-slate-400">Original similarity</span><p className="font-bold text-white">{correctionComparison.originalSimilarity.toFixed(1)}%</p></div>
-                        <div><span className="text-slate-400">Corrected similarity</span><p className="font-bold text-white">{correctionComparison.correctedSimilarity.toFixed(1)}%</p></div>
-                        <div><span className="text-slate-400">Resolved findings</span><p className="font-bold text-white">{correctionComparison.resolvedFindingCount}</p></div>
-                        <div><span className="text-slate-400">Remaining findings</span><p className="font-bold text-white">{correctionComparison.remainingFindingCount}</p></div>
-                        <div><span className="text-slate-400">New findings</span><p className="font-bold text-white">{correctionComparison.newFindingCount}</p></div>
-                        <div><span className="text-slate-400">Similarity change</span><p className="font-bold text-white">{correctionComparison.similarityDelta > 0 ? '+' : ''}{correctionComparison.similarityDelta.toFixed(1)} pp</p></div>
-                      </div>
-                      <p className="break-all text-xs text-slate-400">Original receipt: {correctionComparison.originalVerificationId}</p>
-                      <p className="break-all text-xs text-slate-400">Corrected receipt: {correctionComparison.correctedVerificationId}</p>
-                    </div>
+                  <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/20 p-4 space-y-3">
+                  <h4 className="font-bold text-emerald-300">Trusted before / after comparison</h4>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div><span className="text-slate-400">Original similarity</span><p className="font-bold text-white">{correctionComparison.originalSimilarity.toFixed(1)}%</p></div>
+                  <div><span className="text-slate-400">Corrected similarity</span><p className="font-bold text-white">{correctionComparison.correctedSimilarity.toFixed(1)}%</p></div>
+                  <div><span className="text-slate-400">Resolved findings</span><p className="font-bold text-white">{correctionComparison.resolvedFindingCount}</p></div>
+                  <div><span className="text-slate-400">Remaining findings</span><p className="font-bold text-white">{correctionComparison.remainingFindingCount}</p></div>
+                  <div><span className="text-slate-400">New findings</span><p className="font-bold text-white">{correctionComparison.newFindingCount}</p></div>
+                  <div><span className="text-slate-400">Similarity change</span><p className="font-bold text-white">{correctionComparison.similarityDelta > 0 ? '+' : ''}{correctionComparison.similarityDelta.toFixed(1)} pp</p></div>
+                  </div>
+                  <p className="break-all text-xs text-slate-400">Original receipt: {correctionComparison.originalVerificationId}</p>
+                  <p className="break-all text-xs text-slate-400">Corrected receipt: {correctionComparison.correctedVerificationId}</p>
+                  </div>
                   )}
-                </section>
+                  </section>
+                )}
 
                 {/* Source Attribution & Citation Hub (P5) */}
                 {publicResult && (
@@ -1645,6 +1647,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   </div>
                 </div>
 
+                {verificationId ? (
                 {/* 8 & 9: Scannable QR Verification Receipt & Download PDF Report */}
                 <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
                   
@@ -1677,6 +1680,14 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   </div>
 
                 </div>
+                ) : (
+                  <div className="rounded-2xl border border-cyan-800/50 bg-cyan-950/20 p-6 space-y-2">
+                    <div className="text-sm font-bold text-cyan-200">Public trial verification completed</div>
+                    <p className="text-xs text-slate-300">This result was executed through the server-enforced anonymous trial. It is not a persisted verification receipt and has no public verification URL.</p>
+                    {trialChecksRemaining !== null && <p className="text-xs text-cyan-300">Checks remaining in this trial session: {trialChecksRemaining}</p>}
+                    <button type="button" onClick={handleDownloadPDF} className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-bold">Download analysis report</button>
+                  </div>
+                )}
 
               </>
             )}
