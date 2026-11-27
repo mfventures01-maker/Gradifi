@@ -343,7 +343,33 @@ Distributed machine learning frameworks require mathematical determinism to guar
     try {
       const res = await ingestDocument(file);
       if (!res.success || !res.text?.trim()) {
-        throw new Error(r  // G5 direct comparison is charged against the anonymous trial when no authenticated session exists.
+        throw new Error(res.error?.message || 'The source document produced no extractable text.');
+      }
+
+      const sourceDoc = buildCanonicalAnalysisDocument({
+        rawText: res.text,
+        filename: res.filename || file.name,
+        fileSizeBytes: file.size,
+        mimeType: file.type || undefined,
+        extractionMethod: res.extractionMethod as any
+      });
+      if (sourceDoc.extractionStatus !== 'SUCCESS' || !sourceDoc.normalizedText) {
+        throw new Error('The source document could not be normalized into a canonical document.');
+      }
+
+      setG5SourceDoc(sourceDoc);
+      setG5SourceFilename(file.name);
+    } catch (err: any) {
+      setG5SourceDoc(null);
+      setG5SourceFilename('');
+      setG5Error(err?.message || 'Failed to ingest the comparison source document.');
+    } finally {
+      setG5SourceLoading(false);
+      e.target.value = '';
+    }
+  };
+
+  // G5 direct comparison is charged against the anonymous trial when no authenticated session exists.
   const handleRunG5Comparison = async () => {
     if (!canonicalDoc?.rawText.trim()) {
       setG5Error('Upload or enter the student submission first.');
