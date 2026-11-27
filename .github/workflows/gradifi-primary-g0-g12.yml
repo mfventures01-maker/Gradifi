@@ -81,7 +81,10 @@ jobs:
         run: npx vitest run tests/aiOutputFirewall.test.ts tests/actorProvisioningRecoveryEngine.test.ts tests/actorProvisioningRecoverySchema.test.ts tests/higherEdAuthorityContract.test.ts tests/verifyPersistenceAuthorization.test.ts
 
       - name: G11 - Onboarding and public verification UX
-        run: npx playwright test e2e/onboarding-entrypoints.spec.ts e2e/public-verification-route.spec.ts e2e/matched-text-highlighting.spec.ts
+        run: npx playwright test e2e/onboarding-entrypoints.spec.ts e2e/freelancer-onboarding.spec.ts e2e/public-verification-route.spec.ts e2e/matched-text-highlighting.spec.ts
+
+      - name: Public trial token enforcement
+        run: npx vitest run tests/publicTrialService.test.ts tests/publicTrialRunApi.test.ts
 
       - name: G12 - Unified commercial MVP release contract
         run: |
