@@ -20,6 +20,7 @@ export type ProviderTruthStatus =
   | 'VERIFIED'
   | 'EMPTY_RESULT'
   | 'AUTHENTICATION_FAILED'
+  | 'RATE_LIMITED'
   | 'TIMEOUT'
   | 'NETWORK_ERROR'
   | 'RUNTIME_UNAVAILABLE'
