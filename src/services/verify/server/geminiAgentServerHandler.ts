@@ -85,6 +85,7 @@ function extractDeterministicPayload(record: ReceiptRecord): {
       similarityScore: Number.isFinite(Number(finding.similarityScore)) ? Number(finding.similarityScore) : undefined,
       studentPassage: safeString(finding.sourceSegment ?? finding.matchedSegment ?? finding.studentPassage ?? finding.matchedText, 700),
       sourcePassage: safeString(finding.matchedSegment ?? finding.sourcePassage ?? finding.originalSnippet, 700),
+      matchedSegment: safeString(finding.matchedSegment ?? finding.sourcePassage ?? finding.originalSnippet, 700),
       sourceDocumentId: safeString(finding.sourceDocumentId, 120),
       matchedDocumentId: safeString(finding.matchedDocumentId, 120),
       sourceId: safeString(finding.sourceId, 120)
@@ -209,7 +210,7 @@ function compareReceiptContext(original: ReceiptRecord, corrected: ReceiptRecord
   };
 }
 
-function classifyProviderFailure(status: number, body = ''): AgentStatus {
+export function classifyProviderFailure(status: number, body = ''): AgentStatus {
   if (status === 401 || status === 403 || /API_KEY_INVALID|API key not valid|API_KEY_EXPIRED|UNAUTHENTICATED/i.test(body)) {
     return 'AUTHENTICATION_FAILED';
   }
