@@ -1648,7 +1648,6 @@ Distributed machine learning frameworks require mathematical determinism to guar
                 </div>
 
                 {verificationId ? (
-                {/* 8 & 9: Scannable QR Verification Receipt & Download PDF Report */}
                 <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
                   
                   {/* Left: QR Code & Receipt Info */}
