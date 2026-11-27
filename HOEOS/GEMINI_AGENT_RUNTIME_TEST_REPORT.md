@@ -3,7 +3,7 @@
 **Disposition: NOT RUN / RUNTIME CERTIFICATION OPEN**
 
 **Branch:** \`integration/gradifi-primary-2026-11-20\`  
-**Implementation commit:** \`c26a4d85d2493ce40ca2ea27da32e3d9d3dc89ea\`
+**Implementation commit:** \`22327bc6ef3be6039723e981bae10209a2252961\`
 
 | Test | Expected result | Evidence status |
 |---|---|---|
