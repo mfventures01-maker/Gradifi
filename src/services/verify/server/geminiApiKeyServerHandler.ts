@@ -179,7 +179,7 @@ export async function handleGeminiApiKeyServerReasoning(
   };
 
   const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey || apiKey.includes('YOUR_') || apiKey.length < 10) {
+  if (!apiKey || apiKey.includes('YOUR_') || apiKey.includes('MY_GEMINI') || apiKey.length < 10) {
     return buildFailure('AUTHENTICATION_FAILED', 'GEMINI_API_KEY server configuration is missing or invalid');
   }
 
