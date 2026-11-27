@@ -250,7 +250,7 @@ export async function handleGeminiEvidenceAgentChat(
   if (!accessToken) throw new GeminiAgentRequestError(401, 'Authentication required.');
 
   const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey || apiKey.includes('YOUR_') || apiKey.length < 10) {
+  if (!apiKey || apiKey.includes('YOUR_') || apiKey.includes('MY_GEMINI') || apiKey.length < 10) {
     return failure('AUTHENTICATION_FAILED', 'Gemini server credentials are not configured.', startedAt);
   }
 
