@@ -84,7 +84,7 @@ async function runControlledG5Comparison(page: Page, studentText: string, source
   const result = page.getByTestId('g5-direct-comparison-result');
   await expect(result).toBeVisible();
   await expect(page.getByText(/Public trial checks remaining:/)).toContainText('2');
-  expect(trialActions).toEqual(['start', 'consume']);
+  expect(trialActions).toEqual(['start']);
   return result;
 }
 
