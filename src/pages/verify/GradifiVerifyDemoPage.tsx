@@ -33,6 +33,8 @@ import {
   FileCheck
 } from 'lucide-react';
 import { verifyCoreService } from '../../services/verify/verifyCoreService';
+import { executePublicTrialVerification } from '../../services/verify/publicTrialService';
+import { supabase } from '../../lib/supabase';
 import { verificationPersistenceService } from '../../services/verify/verificationPersistenceService';
 import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument, GranularSimilarityResult } from '../../services/verify/types';
 import { applyHighlights, methodToClass } from '../../components/verify/highlightUtils';
@@ -127,9 +129,10 @@ export const GradifiVerifyDemoPage: React.FC = () => {
   const [correcting, setCorrecting] = useState(false);
   const [correctionError, setCorrectionError] = useState<string | null>(null);
   const [correctionComparison, setCorrectionComparison] = useState<CorrectionComparison | null>(null);
+  const [trialChecksRemaining, setTrialChecksRemaining] = useState<number | null>(null);
 
   // Canonical Public Result Boundary (Presentation Firewall)
-  const publicResult: PublicVerificationResult | null = result
+  const publicResult: PublicVerificationResult | null = result && verificationId
     ? toPublicVerificationResult(result, verificationId)
     : null;
 
@@ -253,16 +256,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
       });
 
       setDocumentText(res.text);
-      setUploadProgress(100);
-      setUploadStatus('EXTRACTED');
-      parseNormalizedMetadata(res.text);
-    } catch (err: any) {
-      setUploadStatus('FAILED');
-      setUploadError(err?.message || 'Failed to parse uploaded document file.');
-    }
-  };
-
-  // Execute federated evidence run
+      setUplo  // Execute verification through the authenticated path or server-enforced public trial path.
   const handleExecuteVerification = async () => {
     if (!documentText.trim()) {
       setUploadError('Please select or enter document text to verify.');
@@ -273,26 +267,40 @@ Distributed machine learning frameworks require mathematical determinism to guar
     setCurrentStep('federation');
 
     try {
-      const res = await verifyCoreService.executeVerifyRun(documentText);
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error('Unable to determine the current authentication state.');
 
-      const { result: persistResult, envelope: persistEnvelope } = buildG4DPersistencePayload(res);
-
-      const { record } = await verificationPersistenceService.persistVerificationRecord(
-        persistResult,
-        persistEnvelope
-      );
-
-      if (!record?.verification_id) {
-        throw new Error('Persistence returned no verification_id');
+      if (session?.access_token) {
+        const res = await verifyCoreService.executeVerifyRun(documentText);
+        const { result: persistResult, envelope: persistEnvelope } = buildG4DPersistencePayload(res);
+        const { record } = await verificationPersistenceService.persistVerificationRecord(persistResult, persistEnvelope);
+        if (!record?.verification_id) throw new Error('Persistence returned no verification_id');
+        setVerificationId(record.verification_id);
+        setTrialChecksRemaining(null);
+        setResult(res);
+      } else {
+        const { result: res, checksRemaining } = await executePublicTrialVerification<EvidenceEngineResult>({
+          mode: 'verify',
+          documentText,
+        });
+        setTrialChecksRemaining(checksRemaining);
+        setVerificationId('');
+        setResult(res);
       }
 
-      setVerificationId(record.verification_id);
-      setResult(res);
       setCurrentStep('result');
     } catch (err: any) {
+      if (typeof err?.checksRemaining === 'number') setTrialChecksRemaining(err.checksRemaining);
       console.error('Verification execution error:', err);
-      setUploadError(
-        err?.message ||
+      setUploadError(err?.message || 'Verification could not be completed. No authoritative receipt was issued.');
+      setVerificationId('');
+      setResult(null);
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+ssage ||
         'Verification completed locally but could not be committed to authoritative storage. Receipt cannot be issued.'
       );
       setVerificationId('');
@@ -345,33 +353,45 @@ Distributed machine learning frameworks require mathematical determinism to guar
     try {
       const res = await ingestDocument(file);
       if (!res.success || !res.text?.trim()) {
-        throw new Error(res.error?.message || 'The source document produced no extractable text.');
-      }
+        throw new Error(r  // G5 direct comparison is charged against the anonymous trial when no authenticated session exists.
+  const handleRunG5Comparison = async () => {
+    if (!canonicalDoc?.rawText.trim()) {
+      setG5Error('Upload or enter the student submission first.');
+      return;
+    }
+    if (!g5SourceDoc?.rawText.trim()) {
+      setG5Error('Upload the source document to compare against.');
+      return;
+    }
 
-      const sourceDoc = buildCanonicalAnalysisDocument({
-        rawText: res.text,
-        filename: res.filename || file.name,
-        fileSizeBytes: file.size,
-        mimeType: file.type || undefined,
-        extractionMethod: res.extractionMethod as any
-      });
-      if (sourceDoc.extractionStatus !== 'SUCCESS' || !sourceDoc.normalizedText) {
-        throw new Error('The source document could not be normalized into a canonical document.');
-      }
+    setG5Comparing(true);
+    setG5Error(null);
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error('Unable to determine the current authentication state.');
 
-      setG5SourceDoc(sourceDoc);
-      setG5SourceFilename(file.name);
+      if (session?.access_token) {
+        const comparison = await verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
+        setG5Result(comparison);
+      } else {
+        const { result: comparison, checksRemaining } = await executePublicTrialVerification<GranularSimilarityResult>({
+          mode: 'compare',
+          studentText: canonicalDoc.rawText,
+          sourceText: g5SourceDoc.rawText,
+        });
+        setTrialChecksRemaining(checksRemaining);
+        setG5Result(comparison);
+      }
     } catch (err: any) {
-      setG5SourceDoc(null);
-      setG5SourceFilename('');
-      setG5Error(err?.message || 'Failed to ingest the comparison source document.');
+      if (typeof err?.checksRemaining === 'number') setTrialChecksRemaining(err.checksRemaining);
+      setG5Result(null);
+      setG5Error(err?.message || 'The canonical G5 comparison failed.');
     } finally {
-      setG5SourceLoading(false);
-      e.target.value = '';
+      setG5Comparing(false);
     }
   };
 
-  // G5 direct comparison is deliberately separate from provider federation and receipt persistence.
+e from provider federation and receipt persistence.
   // The canonical engine treats the first argument as the submitted/student document and the
   // second argument as the comparison/source document.
   const handleRunG5Comparison = () => {
@@ -426,7 +446,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
     doc.text('GRADIFI VERIFICATION REPORT', 14, 20);
 
     doc.setFontSize(11);
-    doc.text(`Verification ID: ${verificationId}`, 14, 30);
+    doc.text(verificationId ? `Verification ID: ${verificationId}` : 'Verification ID: NOT ISSUED - PUBLIC TRIAL RESULT', 14, 30);
     doc.text(`Timestamp: ${result.timestamp || new Date().toISOString()}`, 14, 36);
     doc.text(`Hash: ${result.evidenceHash || result.documentHash}`, 14, 42);
     doc.text(`Overall Similarity: ${result.overallSimilarity}%`, 14, 48);
@@ -939,6 +959,12 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500/80 resize-y"
                 />
               </div>
+
+              {trialChecksRemaining !== null && (
+                <p className="text-xs text-slate-400" role="status">
+                  Public trial checks remaining: <strong className="text-cyan-300">{trialChecksRemaining}</strong>. Trial results are not issued as persistent public receipts.
+                </p>
+              )}
 
               {/* Verify Action Button */}
               <button
