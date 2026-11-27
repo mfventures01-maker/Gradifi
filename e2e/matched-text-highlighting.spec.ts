@@ -2,7 +2,9 @@ import { test, expect, type Page } from '@playwright/test';
 import { verifyCoreService } from '../src/services/verify/verifyCoreService';
 
 const COPIED_PASSAGE =
-  'The rapid advancement of distributed artificial inasync function runControlledG5Comparison(page: Page, studentText: string, sourceText: string) {
+  'The rapid advancement of distributed artificial intelligence has transformed academic research and scientific collaboration.';
+
+async function runControlledG5Comparison(page: Page, studentText: string, sourceText: string) {
   const trialActions: string[] = [];
   const trialToken = 'T'.repeat(64);
 
@@ -83,10 +85,6 @@ const COPIED_PASSAGE =
   await expect(result).toBeVisible();
   await expect(page.getByText(/Public trial checks remaining:/)).toContainText('2');
   expect(trialActions).toEqual(['start', 'consume']);
-  return result;
-}
-comparison-result');
-  await expect(result).toBeVisible();
   return result;
 }
 
