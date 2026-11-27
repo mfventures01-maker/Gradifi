@@ -78,7 +78,7 @@ jobs:
         run: npx vitest run tests/federationHardening.test.ts
 
       - name: G10 - Auth, tenant and AI authority security
-        run: npx vitest run tests/aiOutputFirewall.test.ts tests/actorProvisioningRecoveryEngine.test.ts tests/actorProvisioningRecoverySchema.test.ts tests/higherEdAuthorityContract.test.ts tests/verifyPersistenceAuthorization.test.ts tests/edgeFunctionSourceParity.test.ts
+        run: npx vitest run tests/aiOutputFirewall.test.ts tests/actorProvisioningRecoveryEngine.test.ts tests/actorProvisioningRecoverySchema.test.ts tests/higherEdAuthorityContract.test.ts tests/verifyPersistenceAuthorization.test.ts tests/edgeFunctionSourceParity.test.ts tests/individualOnboardingContract.test.ts
 
       - name: G11 - Onboarding and public verification UX
         run: npx playwright test e2e/onboarding-entrypoints.spec.ts e2e/freelancer-onboarding.spec.ts e2e/public-verification-route.spec.ts e2e/matched-text-highlighting.spec.ts
