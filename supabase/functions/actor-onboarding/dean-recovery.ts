@@ -44,7 +44,7 @@ const resolveRoot = async (admin: any, rootUser: User, request: any) => {
   ) throw new Error("ROOT_AUTHORITY_IDENTITY_CONFLICT");
 
   const { data: institution, error: iError } = await admin.from("institutions")
-    .select("id,name,type,registration_number,country,address,phone,website_url")
+    .select("id,name,type,registration_number,country,address,phone,website_url,slug,status")
     .eq("id", profile.institution_id).single();
   if (iError || !institution) throw new Error("ROOT_INSTITUTION_NOT_FOUND");
   const sameRequest =
@@ -61,12 +61,19 @@ const resolveRoot = async (admin: any, rootUser: User, request: any) => {
     .select("id,url_slug,slug").eq("id", profile.school_id)
     .eq("institution_id", profile.institution_id).maybeSingle();
   if (cError || !campus) throw new Error("ROOT_INSTITUTION_CAMPUS_NOT_FOUND");
+  if (!["pending", "active"].includes(institution.status)) {
+    throw new Error("ROOT_INSTITUTION_STATUS_BLOCKED");
+  }
+  if (!institution.slug || campus.url_slug !== institution.slug || campus.slug !== institution.slug) {
+    throw new Error("ROOT_INSTITUTION_SLUG_MISMATCH");
+  }
   return {
     institution_id: profile.institution_id,
     school_id: campus.id,
     institution_name: institution.name,
-    url_slug: campus.url_slug || campus.slug || "",
-    institution_path: campus.url_slug || campus.slug || "",
+    url_slug: institution.slug,
+    institution_path: "/institution/" + institution.slug,
+    institution_status: institution.status,
     authority_role: role,
     authority_title: role === "vice_chancellor" ? "Vice-Chancellor" : "Rector",
   };

@@ -1,77 +1,142 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import { verifyCoreService } from '../src/services/verify/verifyCoreService';
 
-test.describe('HOEOS P4 Matched-Text Highlighting Visual Evidence Boundary', () => {
-  test('renders document evidence viewer with visual highlighting and exact canonical text preservation', async ({ page }) => {
-    test.setTimeout(90000);
+const COPIED_PASSAGE =
+  'The rapid advancement of distributed artificial intelligence has transformed academic research and scientific collaboration.';
 
-    // Navigate to verify page
-    await page.goto('/verify');
-    await page.waitForLoadState('networkidle');
+async function runControlledG5Comparison(page: Page, studentText: string, sourceText: string) {
+  const trialActions: string[] = [];
+  const trialToken = 'T'.repeat(64);
 
-    // Click "Pre-load Demo Document" button
-    const preloadBtn = page.locator('button:has-text("Pre-load Demo Document")');
-    await expect(preloadBtn).toBeVisible();
-    await preloadBtn.click();
+  await page.route('**/functions/v1/trial', async route => {
+    if (route.request().method() === 'OPTIONS') {
+      return route.fulfill({
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'authorization, apikey, x-client-info, content-type',
+        },
+        body: '',
+      });
+    }
 
-    // Verify textarea is populated
-    const textarea = page.locator('textarea[placeholder*="Paste academic paper"]');
-    await expect(textarea).toBeVisible();
-    const loadedText = await textarea.inputValue();
-    expect(loadedText.length).toBeGreaterThan(50);
-
-    // Click "Run Academic Evidence Verification" button
-    const checkBtn = page.locator('button:has-text("Run Academic Evidence Verification")');
-    await expect(checkBtn).toBeEnabled();
-    await checkBtn.click();
-
-    // Wait for analysis result and Document Evidence Viewer to appear (up to 60s for federated run)
-    await page.waitForSelector('text=Visual Evidence Boundary', { timeout: 60000 });
-
-    // Verify the Visual Evidence Boundary disclaimer is present
-    await expect(page.locator('text=Highlighted passages indicate deterministic text matching')).toBeVisible();
-
-    // Verify "Matched text" terminology is used (never PLAGIARIZED)
-    const viewerText = await page.locator('text=Visual Evidence Boundary').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]').innerHTML();
-    expect(viewerText).not.toContain('PLAGIARIZED');
-    expect(viewerText).not.toContain('GUILTY');
-    expect(viewerText).not.toContain('PROVEN PLAGIARISM');
-
-    // Verify highlighted text contains exact matched mark elements or rendered text
-    const markElement = page.locator('mark[data-evidence-span]');
-    const markCount = await markElement.count();
-    expect(markCount).toBeGreaterThanOrEqual(0);
-
-    // Verify rendered document text is preserved
-    const renderedContainer = page.locator('text=Visual Evidence Boundary').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]');
-    const containerText = await renderedContainer.textContent();
-    expect(containerText).toContain('Quantum Entanglement');
+    const body = route.request().postDataJSON() as { action?: string };
+    trialActions.push(body.action || '');
+    if (body.action === 'start') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          trialToken,
+          checksRemaining: 3,
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        }),
+      });
+    }
+    if (body.action === 'consume') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, checksRemaining: 2 }),
+      });
+    }
+    return route.fulfill({
+      status: 400,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: false, code: 'UNKNOWN_ACTION' }),
+    });
   });
 
-  test('safely renders malicious XSS text inside document evidence viewer', async ({ page }) => {
+  await page.route('**/api/verify/run', async route => {
+    const request = route.request().postDataJSON() as { mode?: string; trialToken?: string };
+    expect(request.mode).toBe('compare');
+    expect(request.trialToken).toBe(trialToken);
+    const result = verifyCoreService.executeGranularSimilarityAnalysis(studentText, sourceText);
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, result, checksRemaining: 2 }),
+    });
+  });
+
+  await page.goto('/verify');
+  await page.waitForLoadState('domcontentloaded');
+
+  const studentInput = page.locator('textarea[placeholder*="Paste academic paper"]');
+  await expect(studentInput).toBeVisible();
+  await studentInput.fill(studentText);
+
+  const fileInputs = page.locator('input[type="file"]');
+  await expect(fileInputs).toHaveCount(2);
+  await fileInputs.nth(1).setInputFiles({
+    name: 'known-positive-source.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from(sourceText, 'utf8'),
+  });
+
+  await expect(page.getByText('known-positive-source.txt', { exact: true })).toBeVisible();
+  const compareButton = page.getByRole('button', { name: /Compare Student Against Source/ });
+  await expect(compareButton).toBeEnabled();
+  await compareButton.click();
+
+  const result = page.getByTestId('g5-direct-comparison-result');
+  await expect(result).toBeVisible();
+  await expect(page.getByText(/Public trial checks remaining:/)).toContainText('2');
+  expect(trialActions).toEqual(['start']);
+  return result;
+}
+
+test.describe('HOEOS G5 controlled positive matching and P4 highlighting', () => {
+  test('renders an exact known-positive finding and highlights the student passage', async ({ page }) => {
     test.setTimeout(90000);
 
-    await page.goto('/verify');
-    await page.waitForLoadState('networkidle');
+    const studentText =
+      'This introduction is original student writing. ' +
+      COPIED_PASSAGE +
+      ' The conclusion is independently written by the student.';
+    const sourceText =
+      COPIED_PASSAGE +
+      ' The source contains additional context that is not included in the student submission.';
 
-    // XSS payload text
-    const xssPayload = `<script>alert("XSS")</script> <img src=x onerror=alert(1)> Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Systems.`;
+    const result = await runControlledG5Comparison(page, studentText, sourceText);
+    const marks = result.locator('mark');
 
-    const textarea = page.locator('textarea[placeholder*="Paste academic paper"]');
-    await expect(textarea).toBeVisible();
-    await textarea.fill(xssPayload);
+    expect(await marks.count()).toBeGreaterThan(0);
+    await expect(marks.first()).toHaveText(COPIED_PASSAGE);
 
-    const checkBtn = page.locator('button:has-text("Run Academic Evidence Verification")');
-    await expect(checkBtn).toBeEnabled();
-    await checkBtn.click();
+    const studentPassage = result
+      .getByText('Student passage', { exact: true })
+      .locator('xpath=following-sibling::p');
+    const sourcePassage = result
+      .getByText('Source passage', { exact: true })
+      .locator('xpath=following-sibling::p');
 
-    await page.waitForSelector('text=Visual Evidence Boundary', { timeout: 60000 });
+    await expect(studentPassage).toHaveText(COPIED_PASSAGE);
+    await expect(sourcePassage).toHaveText(COPIED_PASSAGE.slice(0, -1));
+  });
 
-    // Ensure script tag was escaped into text nodes and did NOT execute as an HTML script element
-    const scriptsInViewer = await page.locator('div:has-text("Visual Evidence Boundary") script').count();
-    expect(scriptsInViewer).toBe(0);
+  test('renders a positive match while keeping hostile document markup as inert text', async ({ page }) => {
+    test.setTimeout(90000);
 
-    // Verify text contains escaped literal content in text node
-    const viewerText = await page.locator('text=Visual Evidence Boundary').locator('xpath=ancestor::div[contains(@class, "bg-slate-900")]').textContent();
-    expect(viewerText).toContain('<script>alert("XSS")</script>');
+    const studentText =
+      '<script>alert("XSS")</script> <img src=x onerror=alert(1)>.\n' +
+      COPIED_PASSAGE;
+    const sourceText =
+      COPIED_PASSAGE +
+      ' The source includes a separate sentence for context.';
+
+    const result = await runControlledG5Comparison(page, studentText, sourceText);
+    const marks = result.locator('mark');
+
+    expect(await marks.count()).toBeGreaterThan(0);
+    await expect(marks.first()).toHaveText(COPIED_PASSAGE);
+    await expect(result.locator('script')).toHaveCount(0);
+    await expect(result.locator('img')).toHaveCount(0);
+
+    const renderedText = await result.textContent();
+    expect(renderedText).toContain('<script>alert("XSS")</script>');
+    expect(renderedText).toContain('<img src=x onerror=alert(1)>');
   });
 });

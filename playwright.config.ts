@@ -2,29 +2,20 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  outputDir: './test-results/.playwright-temp',
+  testMatch: '**/*.spec.ts',
   fullyParallel: false,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: 1,
-  reporter: 'html',
+  forbidOnly: Boolean(process.env.CI),
+  retries: process.env.CI ? 1 : 0,
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: 'http://localhost:5173',
-    trace: 'on-first-retry',
+    baseURL: 'http://127.0.0.1:5173',
+    trace: 'retain-on-failure',
+    ...devices['Desktop Chrome'],
   },
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
   webServer: {
-    command: 'npm run dev -- --port 5173 --host 127.0.0.1',
+    command: 'npm run dev -- --host 127.0.0.1 --port 5173 --strictPort',
     url: 'http://127.0.0.1:5173',
-    reuseExistingServer: false,
-    timeout: 60000,
-    env: {
-      DISABLE_HMR: 'true',
-    },
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
   },
 });

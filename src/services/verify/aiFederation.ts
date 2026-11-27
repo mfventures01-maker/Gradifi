@@ -181,12 +181,15 @@ export class AIFederationService {
           title: m.title,
           authors: m.authors,
           doi: m.doi,
-          originalSnippet: (m.originalSnippet || '').slice(0, 500)
+          matchedText: (m.matchedText || '').slice(0, 500),
+          originalSnippet: (m.originalSnippet || '').slice(0, 500),
+          matchType: m.matchType,
+          matchPercentage: m.matchPercentage
         }));
 
         const response = await fetch('/api/verify/gemini', {
           method: 'POST',
-          signal: AbortSignal.timeout(5000),
+          signal: AbortSignal.timeout(29_000),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -201,7 +204,13 @@ export class AIFederationService {
         if (!response.ok) {
           const status: ProviderTruthStatus = response.status === 401 || response.status === 403
             ? 'AUTHENTICATION_FAILED'
-            : (response.status === 504 ? 'TIMEOUT' : 'INFERENCE_FAILED');
+            : response.status === 429
+              ? 'RATE_LIMITED'
+              : response.status === 504
+                ? 'TIMEOUT'
+                : response.status === 502 || response.status === 503
+                  ? 'RUNTIME_UNAVAILABLE'
+                  : 'INFERENCE_FAILED';
           return {
             status,
             findings: allowFallback ? generateDeterministicFallbackFindings(documentText, matches) : [],

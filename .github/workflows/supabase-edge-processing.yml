@@ -1,0 +1,46 @@
+name: Supabase Edge Processing Contract
+
+on:
+  pull_request:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+    paths:
+      - "supabase/functions/**"
+      - "supabase/migrations/**"
+      - ".github/workflows/supabase-edge-processing.yml"
+      - "tests/hoeos/g2/golden_test_001.docx"
+  push:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+    paths:
+      - "supabase/functions/**"
+      - "supabase/migrations/**"
+      - ".github/workflows/supabase-edge-processing.yml"
+      - "tests/hoeos/g2/golden_test_001.docx"
+
+permissions:
+  contents: read
+
+jobs:
+  edge-processing:
+    name: Edge runtime typecheck and deterministic tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Typecheck deployed function entrypoints
+        run: |
+          deno check --config supabase/functions/deno.json \
+            supabase/functions/upload-document/index.ts \
+            supabase/functions/ocr-processor/index.ts \
+            supabase/functions/verify/index.ts \
+            supabase/functions/trial/index.ts
+      - name: Run extraction and G5 deterministic contract tests
+        run: |
+          deno test --config supabase/functions/deno.json --allow-read --allow-net \
+            supabase/functions/_shared/processing/extract_test.ts \
+            supabase/functions/_shared/verify/deterministicEngine_test.ts

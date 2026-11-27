@@ -1,0 +1,97 @@
+name: Gradifi Primary Onboarding + HOEOS G0-G12
+
+'on':
+  push:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+  pull_request:
+    branches:
+      - integration/gradifi-primary-2026-11-20
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gradifi-primary-g0-g12-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VITE_SUPABASE_URL: https://placeholder.supabase.co
+  VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+
+jobs:
+  primary-g0-g12:
+    name: Primary worktree - onboarding + G0-G12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: G0 - Freeze commit and install
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            test "$GITHUB_REF_NAME" = "integration/gradifi-primary-2026-11-20"
+          fi
+          git rev-parse HEAD
+          git status --short
+          npm ci
+
+      - name: G0 - Typecheck and production build
+        run: |
+          npm run typecheck
+          npm run build
+
+      - name: Onboarding - School wizard and higher-education registration
+        run: |
+          npx playwright install chromium --only-shell
+          npx playwright test e2e/onboarding-entrypoints.spec.ts
+
+      - name: G1 - Document ingestion
+        run: npx vitest run tests/g1_all_17_formats_contract.test.ts tests/g1_format_matrix.test.ts
+
+      - name: G2 - Canonical document authority
+        run: npx vitest run tests/canonicalTextOffsetModel.test.ts tests/g2_canonical_evidence_regression.test.ts tests/deterministicSimilarityEvidence.test.ts
+
+      - name: G3 - Deterministic forensic evidence
+        run: npx vitest run tests/g3_deterministic_forensic_e2e.test.ts
+
+      - name: G4 - Source alignment, offsets and highlighting
+        run: npx vitest run tests/g4b_canonical_source_alignment.test.ts tests/g4c_production_finding_coordinate_integrity.test.ts tests/matchedTextHighlighting.test.ts
+
+      - name: G5 - Student correction and deterministic re-verification
+        run: npx vitest run tests/g5BrowserEdgeContractParity.test.ts tests/studentCorrectionLifecycle.test.ts
+
+      - name: G6 - Trusted before/after correction report
+        run: npx vitest run tests/trustedCorrectionComparison.test.ts tests/verifyPersistenceAuthorization.test.ts
+
+      - name: G7 - Public receipt and privacy boundary
+        run: npx vitest run tests/publicReceiptPrivacy.test.ts tests/publicVerificationResolution.test.ts tests/publicVerificationResultContract.test.ts
+
+      - name: G8 - Persistence and immutable evidence integrity
+        run: npx vitest run tests/g4d_persisted_evidence_integrity.test.ts tests/verificationPersistence.test.ts tests/verificationRunPersistenceServer.test.ts
+
+      - name: G9 - Provider federation hardening
+        run: npx vitest run tests/federationHardening.test.ts
+
+      - name: G10 - Auth, tenant and AI authority security
+        run: npx vitest run tests/aiOutputFirewall.test.ts tests/actorProvisioningRecoveryEngine.test.ts tests/actorProvisioningRecoverySchema.test.ts tests/higherEdAuthorityContract.test.ts tests/verifyPersistenceAuthorization.test.ts tests/edgeFunctionSourceParity.test.ts tests/individualOnboardingContract.test.ts
+
+      - name: G11 - Onboarding and public verification UX
+        run: npx playwright test e2e/onboarding-entrypoints.spec.ts e2e/freelancer-onboarding.spec.ts e2e/public-verification-route.spec.ts e2e/matched-text-highlighting.spec.ts
+
+      - name: Public trial token enforcement
+        run: npx vitest run tests/publicTrialService.test.ts tests/publicTrialRunApi.test.ts
+
+      - name: G12 - Unified commercial MVP release contract
+        run: |
+          npm run typecheck
+          npm run build
+          npx vitest run tests/hoeosPrimaryGateMap.test.ts
+
+      - name: Production-write boundary
+        run: |
+          echo "RUNTIME_PRODUCTION_E2E_NOT_RUN: full G12 persistence/public-receipt runtime needs explicit production-write approval; CI uses placeholder Supabase credentials and performs no production writes."

@@ -26,8 +26,13 @@ const geminiApiKeyResponseCache = new Map<string, { body: GeminiServerResponse; 
 const CACHE_TTL_MS = 60_000;
 const CACHE_MAX_ENTRIES = 20;
 
-function buildCacheKey(documentText: string, matches: EvidenceMatch[]): string {
-  return `${REQUESTED_MODEL}::${documentText.slice(0, 100)}::${matches.length}`;
+async function buildCacheKey(documentText: string, matches: EvidenceMatch[]): Promise<string> {
+  const canonicalInput = JSON.stringify({ model: REQUESTED_MODEL, documentText, matches });
+  const digest = await globalThis.crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(canonicalInput)
+  );
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 export function getGeminiApiKeyCache(key: string): GeminiServerResponse | null {
@@ -152,7 +157,7 @@ export async function handleGeminiApiKeyServerReasoning(
   const validSourceIds = new Set(matches.map(m => m.sourceId).filter(Boolean));
   const allowFallback = Boolean(payload?.allowFallback);
 
-  const cacheKey = buildCacheKey(documentText, matches);
+  const cacheKey = await buildCacheKey(documentText, matches);
   const cached = getGeminiApiKeyCache(cacheKey);
   if (cached) return cached;
 
@@ -177,7 +182,7 @@ export async function handleGeminiApiKeyServerReasoning(
   };
 
   const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey || apiKey.includes('YOUR_') || apiKey.length < 10) {
+  if (!apiKey || apiKey.includes('YOUR_') || apiKey.includes('MY_GEMINI') || apiKey.length < 10) {
     return buildFailure('AUTHENTICATION_FAILED', 'GEMINI_API_KEY server configuration is missing or invalid');
   }
 
@@ -231,30 +236,34 @@ INSTRUCTIONS:
         msg.includes('ECONNREFUSED') ||
         msg.includes('network') ||
         msg.includes('NetworkError');
-      const isUnavailable = msg.includes('503') || msg.includes('502') || msg.includes('429');
+      const isRateLimited = msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED');
+      const isUnavailable = msg.includes('503') || msg.includes('502');
 
-      if (isTimeout) return buildFailure('TIMEOUT', `Gemini API timed out: ${msg}`);
-      if (isNetwork) return buildFailure('NETWORK_ERROR', `Gemini API network error: ${msg}`);
-      if (isUnavailable) return buildFailure('RUNTIME_UNAVAILABLE', `Gemini API unavailable: ${msg}`);
+      if (isTimeout) return buildFailure('TIMEOUT', 'Gemini API request timed out');
+      if (isNetwork) return buildFailure('NETWORK_ERROR', 'Gemini API network request failed');
+      if (isRateLimited) return buildFailure('RATE_LIMITED', 'Gemini API rate limit reached');
+      if (isUnavailable) return buildFailure('RUNTIME_UNAVAILABLE', 'Gemini API is temporarily unavailable');
 
       return buildFailure('INFERENCE_FAILED', `Gemini API unreachable after ${MAX_ATTEMPTS} attempts: ${msg}`);
     }
 
     if (!response.ok) {
-      const isAuthError = response.status === 401 || response.status === 403;
-      const isUnavailable = response.status === 429 || response.status === 503 || response.status === 502;
-      const isTimeout = response.status === 504;
-
+      const errorBody = await response.clone().text().catch(() => '');
+      const isAuthError = response.status === 401 || response.status === 403 ||
+        /API_KEY_INVALID|API key not valid|API_KEY_EXPIRED|UNAUTHENTICATED/i.test(errorBody);
       if (isAuthError) {
-        return buildFailure('AUTHENTICATION_FAILED', `Gemini API returned HTTP ${response.status}: ${response.statusText}`);
+        return buildFailure('AUTHENTICATION_FAILED', 'Gemini rejected the configured server credential');
       }
-      if (isUnavailable) {
-        return buildFailure('RUNTIME_UNAVAILABLE', `Gemini API returned HTTP ${response.status}: ${response.statusText}`);
+      if (response.status === 429 || /RESOURCE_EXHAUSTED|RATE_LIMIT/i.test(errorBody)) {
+        return buildFailure('RATE_LIMITED', 'Gemini API rate limit reached');
       }
-      if (isTimeout) {
-        return buildFailure('TIMEOUT', `Gemini API returned HTTP ${response.status}: ${response.statusText}`);
+      if (response.status === 504) {
+        return buildFailure('TIMEOUT', 'Gemini API request timed out');
       }
-      return buildFailure('INFERENCE_FAILED', `Gemini API returned HTTP ${response.status}: ${response.statusText}`);
+      if (response.status === 502 || response.status === 503) {
+        return buildFailure('RUNTIME_UNAVAILABLE', 'Gemini API is temporarily unavailable');
+      }
+      return buildFailure('INFERENCE_FAILED', `Gemini API returned HTTP ${response.status}`);
     }
 
     let data: any;

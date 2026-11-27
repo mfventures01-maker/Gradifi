@@ -7,10 +7,15 @@
 import { supabase } from '../lib/supabase';
 import { Profile, IdentityActor } from '../contracts/schema';
 
+type SafeAuthProfile = Pick<Profile,
+  'id' | 'user_id' | 'institution_id' | 'school_id' | 'full_name' |
+  'role' | 'email' | 'phone' | 'account_type' | 'authority_user_id' | 'created_at'
+>;
+
 export interface AuthSessionState {
   isAuthenticated: boolean;
   userId: string | null;
-  profile: Profile | null;
+  profile: SafeAuthProfile | null;
   actor: IdentityActor | null;
   institutionId: string | null;
   schoolId: string | null;
@@ -66,11 +71,14 @@ export const authService = {
       };
     }
 
-    const { data: profile } = await supabase
+    const { data: profileData, error: profileError } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id,user_id,institution_id,school_id,full_name,role,email,phone,account_type,authority_user_id,created_at')
       .eq('user_id', user.id)
       .maybeSingle();
+
+    if (profileError) throw profileError;
+    const profile = profileData as SafeAuthProfile | null;
 
     const { data: actorData, error: actorError } = await supabase
       .from('identity_actors')
