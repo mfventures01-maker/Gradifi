@@ -13,8 +13,8 @@
 | Deployed `ocr-processor` source reconciliation | BLOCKED / PARTIAL | Active deployment version 9, bundle hash `b38eceb35ac478bbeea51ea8994924cbb40766ff5eab272bfa12c2e25a3a460e`. Branch entrypoint is `supabase/functions/ocr-processor/index.ts`; extraction implementation is shared at `supabase/functions/_shared/processing/extract.ts`. A successful bundle retrieval exposed a deployed-local import `./extract.ts`, whereas the branch entrypoint imports the shared implementation. Exact deployed bundle comparison could not be completed because subsequent bundle retrievals failed intermittently. Do not claim exact parity. |
 | Missing migration source | FORMALLY DOCUMENTED, ORIGINAL NOT RECOVERED | Supabase migration ledger records `20261126062517_individual_bootstrap_workspace_and_truncate_privilege_fix`; corresponding SQL file is absent from the checked integration branch. Existing recovery record: `HOEOS/MIGRATION_SOURCE_RECOVERY_2026-11-26.md`. Live catalog observations are not the original migration SQL. |
 | `supabase_admin` default privileges | UNRESOLVED / AUTHORITY BLOCKED | Live catalog still shows default `TRUNCATE` grants to `anon` and `authenticated` under grantor `supabase_admin`. Current session is `postgres`; `pg_has_role(current_user, 'supabase_admin', 'member') = false`. Do not attempt a role switch or privileged DDL from this connection. |
-| Verification-run-to-receipt chain | NOT CERTIFIED | Production read-only counts show zero runs, zero uploads, 68 historical receipt rows, zero linked uploads/receipts, and zero fully integrity-populated receipts. No production runtime test was run. |
-| Isolated end-to-end validation | PENDING COST APPROVAL | Supabase branch creation returned a requirement for cost confirmation. Current quoted branch compute cost: USD 0.01344 per hour. A branch must not be created until the user explicitly agrees to this recurring cost and the confirmation workflow is completed. |
+| Verification-run-to-receipt chain | SQL CHAIN RUNTIME PASS (ROLLBACK-ONLY); UPLOAD/EDGE E2E OPEN | A controlled production transaction exercised persistence → `VALID` receipt publication → public lookup using synthetic text, then rolled back the entire test subtransaction. Post-test counts remained 0 runs / 68 legacy receipts; the canary lookup returned NULL after rollback. Upload/OCR/Edge invocation was not exercised. |
+| Isolated branch validation | PENDING COST APPROVAL | Supabase branch creation returned a requirement for cost confirmation. Current quoted branch compute cost: USD 0.01344 per hour. No branch was created; this is separate from the rollback-only production SQL test documented below. |
 
 ## 1. Deployed Edge source reconciliation
 
@@ -112,6 +112,30 @@ The catalog definitions previously retrieved show the expected chain:
 
 This is structural evidence from function definitions, not runtime proof. No live successful chain exists in the observed data.
 
+## 4A. Controlled production transaction test (2026-11-27)
+
+Following explicit user authorization, a narrowly scoped synthetic test was executed against the production database. The test exercised the actual deployed database functions, not a mocked implementation:
+
+1. Called `public.persist_verification_run_and_receipt(...)` with synthetic raw text and a synthetic G5 result payload.
+2. Used the existing active institutional workspace membership solely to satisfy the function's current workspace-scope checks. No real document text or customer data was used.
+3. Verified that the function returned `CREATED` and produced a verification ID.
+4. Called `public.lookup_public_verification(verification_id)` inside the same transaction and asserted that it returned the expected verification ID, schema version, result hash and manifest hash.
+5. Deliberately raised a rollback sentinel inside a PL/pgSQL exception subtransaction after the assertions passed. PostgreSQL rolled back the run and receipt inserts.
+
+### Post-rollback verification
+
+| Check | Result |
+|---|---:|
+| `verification_runs` after rollback | 0 |
+| `public_verification_records` after rollback | 68 (unchanged) |
+| Synthetic canary ID | `VRF-F545ADC52A42` |
+| Public lookup for canary after rollback | NULL |
+| Persistent synthetic upload/run/receipt artifacts | 0 |
+
+The same production SQL path also rejected a null/invalid persistence request without creating records.
+
+**Disposition:** PASS for the database persistence → receipt publication → public lookup path under a rollback-only production transaction. This is meaningful runtime evidence for the SQL chain, but it is **not** a full upload-to-receipt end-to-end certification. The test deliberately passed `p_source_upload_id = NULL`; it did not upload a Storage object, invoke `ocr-processor`, invoke the `verify` Edge Function, or exercise a JWT-authenticated client request. No durable production test rows were left behind.
+
 ## 5. Isolation validation plan
 
 A full isolated test must exercise, using synthetic identities and documents only:
@@ -135,9 +159,9 @@ Supabase quoted the development branch at **USD 0.01344 per hour**. User approva
 - Work target remains `integration/gradifi-primary-2026-11-20`.
 - PR #35 remains open and draft.
 - No merge or deployment.
-- No production writes, migrations, backfills or test records.
+- No durable production writes, migrations, backfills, deployments or test records. One explicitly authorized rollback-only production SQL transaction was executed; its synthetic run/receipt inserts were verified absent after rollback.
 - No changes to correction handling, receipt generation, integrity validation or public lookup architecture.
-- The isolated chain test remains pending branch cost approval.
+- The isolated branch-based upload/OCR/verify E2E test remains pending branch cost approval.
 - Production runtime E2E remains separately gated and requires explicit authorization after isolated certification.
 
 ## 7. Remediation exit criteria
@@ -146,7 +170,7 @@ This P0 phase is not complete until:
 - Both deployed Edge bundles have complete per-file parity evidence.
 - The missing migration is either recovered from authoritative history or formally retained as unrecovered with a clearly labelled live-catalog reconstruction.
 - An authorized `supabase_admin` action removes the default TRUNCATE grant and catalog verification passes.
-- The isolated end-to-end chain, idempotency and tamper tests pass.
+- The upload/OCR/verify Edge path, source-upload linkage, idempotency and tamper tests pass in isolation. The SQL persistence-to-receipt-to-public-lookup path has now passed a rollback-only production transaction test.
 - Evidence is committed to the integration branch and CI is green.
 - A separate production-runtime authorization request is presented only after all prior technical gates pass.
 
