@@ -109,6 +109,9 @@ describe('G1 Universal Ingestion Deterministic Format Matrix', () => {
     const r2 = await ingestDocument({ name: 'quantum_federated_learning_paper.pdf', buffer });
 
     expect(r1.success).toBe(true);
+    expect(r1.extractionMethod).toBe('pdf_stream_extractor');
+    expect(r1.text).toContain('Quantum Entanglement and Decoupled Neural Architecture in Federated Learning Networks');
+    expect(r1.text).toContain('Federated learning across edge networks faces latency challenges');
     expect(r1.text.length).toBeGreaterThan(50);
     expect(r1.canonicalDocument).toBeDefined();
     expect(r1.canonicalDocument?.documentId).toBe(r2.canonicalDocument?.documentId);

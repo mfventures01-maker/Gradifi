@@ -33,6 +33,8 @@ import {
   FileCheck
 } from 'lucide-react';
 import { verifyCoreService } from '../../services/verify/verifyCoreService';
+import { executePublicTrialVerification } from '../../services/verify/publicTrialService';
+import { supabase } from '../../lib/supabase';
 import { verificationPersistenceService } from '../../services/verify/verificationPersistenceService';
 import { EvidenceEngineResult, ProviderProvenance, EvidenceMatch, CanonicalAnalysisDocument, GranularSimilarityResult } from '../../services/verify/types';
 import { applyHighlights, methodToClass } from '../../components/verify/highlightUtils';
@@ -127,9 +129,10 @@ export const GradifiVerifyDemoPage: React.FC = () => {
   const [correcting, setCorrecting] = useState(false);
   const [correctionError, setCorrectionError] = useState<string | null>(null);
   const [correctionComparison, setCorrectionComparison] = useState<CorrectionComparison | null>(null);
+  const [trialChecksRemaining, setTrialChecksRemaining] = useState<number | null>(null);
 
   // Canonical Public Result Boundary (Presentation Firewall)
-  const publicResult: PublicVerificationResult | null = result
+  const publicResult: PublicVerificationResult | null = result && verificationId
     ? toPublicVerificationResult(result, verificationId)
     : null;
 
@@ -262,7 +265,6 @@ Distributed machine learning frameworks require mathematical determinism to guar
     }
   };
 
-  // Execute federated evidence run
   const handleExecuteVerification = async () => {
     if (!documentText.trim()) {
       setUploadError('Please select or enter document text to verify.');
@@ -273,28 +275,32 @@ Distributed machine learning frameworks require mathematical determinism to guar
     setCurrentStep('federation');
 
     try {
-      const res = await verifyCoreService.executeVerifyRun(documentText);
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error('Unable to determine the current authentication state.');
 
-      const { result: persistResult, envelope: persistEnvelope } = buildG4DPersistencePayload(res);
-
-      const { record } = await verificationPersistenceService.persistVerificationRecord(
-        persistResult,
-        persistEnvelope
-      );
-
-      if (!record?.verification_id) {
-        throw new Error('Persistence returned no verification_id');
+      if (session?.access_token) {
+        const res = await verifyCoreService.executeVerifyRun(documentText);
+        const { result: persistResult, envelope: persistEnvelope } = buildG4DPersistencePayload(res);
+        const { record } = await verificationPersistenceService.persistVerificationRecord(persistResult, persistEnvelope);
+        if (!record?.verification_id) throw new Error('Persistence returned no verification_id');
+        setVerificationId(record.verification_id);
+        setTrialChecksRemaining(null);
+        setResult(res);
+      } else {
+        const { result: res, checksRemaining } = await executePublicTrialVerification<EvidenceEngineResult>({
+          mode: 'verify',
+          documentText,
+        });
+        setTrialChecksRemaining(checksRemaining);
+        setVerificationId('');
+        setResult(res);
       }
 
-      setVerificationId(record.verification_id);
-      setResult(res);
       setCurrentStep('result');
     } catch (err: any) {
+      if (typeof err?.checksRemaining === 'number') setTrialChecksRemaining(err.checksRemaining);
       console.error('Verification execution error:', err);
-      setUploadError(
-        err?.message ||
-        'Verification completed locally but could not be committed to authoritative storage. Receipt cannot be issued.'
-      );
+      setUploadError(err?.message || 'Verification could not be completed. No authoritative receipt was issued.');
       setVerificationId('');
       setResult(null);
     } finally {
@@ -371,10 +377,8 @@ Distributed machine learning frameworks require mathematical determinism to guar
     }
   };
 
-  // G5 direct comparison is deliberately separate from provider federation and receipt persistence.
-  // The canonical engine treats the first argument as the submitted/student document and the
-  // second argument as the comparison/source document.
-  const handleRunG5Comparison = () => {
+  // G5 direct comparison is charged against the anonymous trial when no authenticated session exists.
+  const handleRunG5Comparison = async () => {
     if (!canonicalDoc?.rawText.trim()) {
       setG5Error('Upload or enter the student submission first.');
       return;
@@ -387,9 +391,23 @@ Distributed machine learning frameworks require mathematical determinism to guar
     setG5Comparing(true);
     setG5Error(null);
     try {
-      const comparison = verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
-      setG5Result(comparison);
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error('Unable to determine the current authentication state.');
+
+      if (session?.access_token) {
+        const comparison = await verifyCoreService.executeGranularSimilarityAnalysis(canonicalDoc, g5SourceDoc);
+        setG5Result(comparison);
+      } else {
+        const { result: comparison, checksRemaining } = await executePublicTrialVerification<GranularSimilarityResult>({
+          mode: 'compare',
+          studentText: canonicalDoc.rawText,
+          sourceText: g5SourceDoc.rawText,
+        });
+        setTrialChecksRemaining(checksRemaining);
+        setG5Result(comparison);
+      }
     } catch (err: any) {
+      if (typeof err?.checksRemaining === 'number') setTrialChecksRemaining(err.checksRemaining);
       setG5Result(null);
       setG5Error(err?.message || 'The canonical G5 comparison failed.');
     } finally {
@@ -426,7 +444,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
     doc.text('GRADIFI VERIFICATION REPORT', 14, 20);
 
     doc.setFontSize(11);
-    doc.text(`Verification ID: ${verificationId}`, 14, 30);
+    doc.text(verificationId ? `Verification ID: ${verificationId}` : 'Verification ID: NOT ISSUED - PUBLIC TRIAL RESULT', 14, 30);
     doc.text(`Timestamp: ${result.timestamp || new Date().toISOString()}`, 14, 36);
     doc.text(`Hash: ${result.evidenceHash || result.documentHash}`, 14, 42);
     doc.text(`Overall Similarity: ${result.overallSimilarity}%`, 14, 48);
@@ -940,6 +958,12 @@ Distributed machine learning frameworks require mathematical determinism to guar
                 />
               </div>
 
+              {trialChecksRemaining !== null && (
+                <p className="text-xs text-slate-400" role="status">
+                  Public trial checks remaining: <strong className="text-cyan-300">{trialChecksRemaining}</strong>. Trial results are not issued as persistent public receipts.
+                </p>
+              )}
+
               {/* Verify Action Button */}
               <button
                 type="button"
@@ -1327,44 +1351,46 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   />
                 )}
 
-                <section className="rounded-2xl border border-cyan-800/50 bg-slate-900/90 p-6 space-y-4">
+                                {verificationId && (
+                  <section className="rounded-2xl border border-cyan-800/50 bg-slate-900/90 p-6 space-y-4">
                   <div>
-                    <h3 className="text-base font-bold text-white">Submit a corrected version</h3>
-                    <p className="mt-1 text-xs text-slate-400">
-                      Re-runs the existing G5 pipeline. The corrected run is stored as a new immutable receipt.
-                      Comparison is performed by the authenticated server and returns metadata only.
-                    </p>
+                  <h3 className="text-base font-bold text-white">Submit a corrected version</h3>
+                  <p className="mt-1 text-xs text-slate-400">
+                  Re-runs the existing G5 pipeline. The corrected run is stored as a new immutable receipt.
+                  Comparison is performed by the authenticated server and returns metadata only.
+                  </p>
                   </div>
                   <textarea
-                    value={correctionText}
-                    onChange={event => setCorrectionText(event.target.value)}
-                    rows={8}
-                    placeholder="Paste the complete corrected document text..."
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-100 outline-none focus:border-cyan-500"
-                    disabled={correcting}
+                  value={correctionText}
+                  onChange={event => setCorrectionText(event.target.value)}
+                  rows={8}
+                  placeholder="Paste the complete corrected document text..."
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-100 outline-none focus:border-cyan-500"
+                  disabled={correcting}
                   />
                   {correctionError && <p role="alert" className="text-sm text-rose-400">{correctionError}</p>}
                   <button type="button" onClick={handleSubmitCorrection}
-                    disabled={correcting || !correctionText.trim()}
-                    className="rounded-xl bg-cyan-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">
-                    {correcting ? 'Re-verifying and comparing...' : 'Re-verify corrected document'}
+                  disabled={correcting || !correctionText.trim()}
+                  className="rounded-xl bg-cyan-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">
+                  {correcting ? 'Re-verifying and comparing...' : 'Re-verify corrected document'}
                   </button>
                   {correctionComparison && (
-                    <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/20 p-4 space-y-3">
-                      <h4 className="font-bold text-emerald-300">Trusted before / after comparison</h4>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div><span className="text-slate-400">Original similarity</span><p className="font-bold text-white">{correctionComparison.originalSimilarity.toFixed(1)}%</p></div>
-                        <div><span className="text-slate-400">Corrected similarity</span><p className="font-bold text-white">{correctionComparison.correctedSimilarity.toFixed(1)}%</p></div>
-                        <div><span className="text-slate-400">Resolved findings</span><p className="font-bold text-white">{correctionComparison.resolvedFindingCount}</p></div>
-                        <div><span className="text-slate-400">Remaining findings</span><p className="font-bold text-white">{correctionComparison.remainingFindingCount}</p></div>
-                        <div><span className="text-slate-400">New findings</span><p className="font-bold text-white">{correctionComparison.newFindingCount}</p></div>
-                        <div><span className="text-slate-400">Similarity change</span><p className="font-bold text-white">{correctionComparison.similarityDelta > 0 ? '+' : ''}{correctionComparison.similarityDelta.toFixed(1)} pp</p></div>
-                      </div>
-                      <p className="break-all text-xs text-slate-400">Original receipt: {correctionComparison.originalVerificationId}</p>
-                      <p className="break-all text-xs text-slate-400">Corrected receipt: {correctionComparison.correctedVerificationId}</p>
-                    </div>
+                  <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/20 p-4 space-y-3">
+                  <h4 className="font-bold text-emerald-300">Trusted before / after comparison</h4>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div><span className="text-slate-400">Original similarity</span><p className="font-bold text-white">{correctionComparison.originalSimilarity.toFixed(1)}%</p></div>
+                  <div><span className="text-slate-400">Corrected similarity</span><p className="font-bold text-white">{correctionComparison.correctedSimilarity.toFixed(1)}%</p></div>
+                  <div><span className="text-slate-400">Resolved findings</span><p className="font-bold text-white">{correctionComparison.resolvedFindingCount}</p></div>
+                  <div><span className="text-slate-400">Remaining findings</span><p className="font-bold text-white">{correctionComparison.remainingFindingCount}</p></div>
+                  <div><span className="text-slate-400">New findings</span><p className="font-bold text-white">{correctionComparison.newFindingCount}</p></div>
+                  <div><span className="text-slate-400">Similarity change</span><p className="font-bold text-white">{correctionComparison.similarityDelta > 0 ? '+' : ''}{correctionComparison.similarityDelta.toFixed(1)} pp</p></div>
+                  </div>
+                  <p className="break-all text-xs text-slate-400">Original receipt: {correctionComparison.originalVerificationId}</p>
+                  <p className="break-all text-xs text-slate-400">Corrected receipt: {correctionComparison.correctedVerificationId}</p>
+                  </div>
                   )}
-                </section>
+                  </section>
+                )}
 
                 {/* Source Attribution & Citation Hub (P5) */}
                 {publicResult && (
@@ -1621,7 +1647,7 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   </div>
                 </div>
 
-                {/* 8 & 9: Scannable QR Verification Receipt & Download PDF Report */}
+                {verificationId ? (
                 <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
                   
                   {/* Left: QR Code & Receipt Info */}
@@ -1653,6 +1679,14 @@ Distributed machine learning frameworks require mathematical determinism to guar
                   </div>
 
                 </div>
+                ) : (
+                  <div className="rounded-2xl border border-cyan-800/50 bg-cyan-950/20 p-6 space-y-2">
+                    <div className="text-sm font-bold text-cyan-200">Public trial verification completed</div>
+                    <p className="text-xs text-slate-300">This result was executed through the server-enforced anonymous trial. It is not a persisted verification receipt and has no public verification URL.</p>
+                    {trialChecksRemaining !== null && <p className="text-xs text-cyan-300">Checks remaining in this trial session: {trialChecksRemaining}</p>}
+                    <button type="button" onClick={handleDownloadPDF} className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-bold">Download analysis report</button>
+                  </div>
+                )}
 
               </>
             )}
