@@ -14,6 +14,8 @@ import { computeHash } from '../src/services/verify/documentNormalizer.js';
 const USER_ID = 'b512de9b-3bcb-4260-8ff9-7f59bd0efa5d';
 const WORKSPACE_ID = '3e55888b-3232-416e-900e-fdfe93ef1614';
 const SERVICE_VERSION_ID = 'd7e91ded-b31f-4669-8e92-20630f289d60';
+const INSTITUTION_ID = '4f405a7a-2a93-4890-8848-41b95b9dfdc2';
+const SCHOOL_ID = '0178b8de-1df6-4de6-babf-7657743f8cd5';
 const ENGINE = 'G5-DETERMINISTIC-v1';
 const POLICY = 'G3-POLICY-v1';
 const ACCESS_TOKEN = 'verified-user-access-token';
@@ -133,6 +135,71 @@ describe('HOEOS G8 authoritative verification-run persistence server boundary', 
     expect(response.record.result_hash).toBe(receipt.result_hash);
     expect(response.record.manifest_hash).toBe(receipt.manifest_hash);
     expect(response.record.status).toBe('VALID');
+  });
+
+
+  it('resolves an institutional workspace and carries the actor school scope into the atomic RPC', async () => {
+    actorQuery = query({
+      id: 'institution-actor-1',
+      institution_id: INSTITUTION_ID,
+      school_id: SCHOOL_ID,
+      actor_type: 'principal_admin',
+    });
+    workspaceQuery = query({
+      id: WORKSPACE_ID,
+      institution_id: INSTITUTION_ID,
+      workspace_type: 'institution',
+      owner_user_id: null,
+      status: 'active',
+    });
+
+    const response = await handlePersistenceServerRequest(buildPayload(), ACCESS_TOKEN);
+
+    expect(workspaceQuery.eq).toHaveBeenCalledWith('workspace_type', 'institution');
+    expect(workspaceQuery.eq).toHaveBeenCalledWith('institution_id', INSTITUTION_ID);
+    expect(serverClient.rpc).toHaveBeenCalledWith('persist_verification_run_and_receipt', expect.objectContaining({
+      p_workspace_id: WORKSPACE_ID,
+      p_created_by_user_id: USER_ID,
+      p_school_id: SCHOOL_ID,
+    }));
+    expect(response.status).toBe('CREATED');
+  });
+
+  it.each(['CREATED', 'IDEMPOTENT_EXISTS'] as const)(
+    'returns the verified correction parent on the %s receipt response',
+    async (status) => {
+      const parentId = 'VRF-0123456789AB';
+      serverClient.rpc.mockResolvedValue({
+        data: { status, record: { ...receipt, correction_of_verification_id: null } },
+        error: null,
+      });
+      const payload = buildPayload();
+      payload.correctionOfVerificationId = parentId;
+
+      const response = await handlePersistenceServerRequest(payload, ACCESS_TOKEN);
+
+      expect(serverClient.rpc).toHaveBeenCalledWith('persist_verification_run_and_receipt', expect.objectContaining({
+        p_correction_of_verification_id: parentId,
+      }));
+      expect(response.record.correction_of_verification_id).toBe(parentId);
+    }
+  );
+
+  it('rejects correction metadata that conflicts with the requested parent', async () => {
+    serverClient.rpc.mockResolvedValue({
+      data: {
+        status: 'CREATED',
+        record: { ...receipt, correction_of_verification_id: 'VRF-AAAAAAAAAAAA' },
+      },
+      error: null,
+    });
+    const payload = buildPayload();
+    payload.correctionOfVerificationId = 'VRF-0123456789AB';
+
+    await expect(handlePersistenceServerRequest(payload, ACCESS_TOKEN)).rejects.toMatchObject({
+      statusCode: 500,
+      message: 'The persistence authority returned conflicting correction lineage.',
+    });
   });
 
   it('rejects a tampered evidence hash before constructing any Supabase client', async () => {
