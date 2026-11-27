@@ -10,7 +10,7 @@
 | Workstream | Status | Evidence / blocker |
 |---|---|---|
 | Deployed `verify` source reconciliation | PARTIAL | Active deployment version 9, bundle hash `dbacfa16e6518daea56af0029c92558e7e2b92aeeccb0651d6a5a17236aa76cf`. Integration-branch entrypoint exists at `supabase/functions/verify/index.ts` (15,178 characters). Earlier forensic comparison established entrypoint parity after import-path normalization. Current bundle retrieval repeatedly failed, so dependency-by-dependency deployed parity cannot be re-certified in this pass. |
-| Deployed `ocr-processor` source reconciliation | BLOCKED / PARTIAL | Active deployment version 9, bundle hash `b38eceb35ac478bbeea51ea8994924cbb40766ff5eab272bfa12c2e25a3a460e`. Branch entrypoint is `supabase/functions/ocr-processor/index.ts`; extraction implementation is shared at `supabase/functions/_shared/processing/extract.ts`. A successful bundle retrieval exposed a deployed-local import `./extract.ts`, whereas the branch entrypoint imports the shared implementation. Exact deployed bundle comparison could not be completed because subsequent bundle retrievals failed intermittently. Do not claim exact parity. |
+| Deployed `ocr-processor` source reconciliation | ENTRYPOINT + EXTRACTION SOURCE MATCH; CONFIG OPEN | A stable version-9 bundle retrieval returned hash `b38eceb35ac478bbeea51ea8994924cbb40766ff5eab272bfa12c2e25a3a460e`. Deployed `index.ts` matches the branch entrypoint exactly after normalizing only the deployed-local `./extract.ts` import to the branch shared path `../_shared/processing/extract.ts`. Deployed `extract.ts` matches `supabase/functions/_shared/processing/extract.ts` byte-for-byte (10,614 characters). The branch-side `supabase/functions/ocr-processor/deno.json` path was not found, so runtime configuration parity remains open. |
 | Missing migration source | FORMALLY DOCUMENTED, ORIGINAL NOT RECOVERED | Supabase migration ledger records `20261126062517_individual_bootstrap_workspace_and_truncate_privilege_fix`; corresponding SQL file is absent from the checked integration branch. Existing recovery record: `HOEOS/MIGRATION_SOURCE_RECOVERY_2026-11-26.md`. Live catalog observations are not the original migration SQL. |
 | `supabase_admin` default privileges | UNRESOLVED / AUTHORITY BLOCKED | Live catalog still shows default `TRUNCATE` grants to `anon` and `authenticated` under grantor `supabase_admin`. Current session is `postgres`; `pg_has_role(current_user, 'supabase_admin', 'member') = false`. Do not attempt a role switch or privileged DDL from this connection. |
 | Verification-run-to-receipt chain | SQL CHAIN RUNTIME PASS (ROLLBACK-ONLY); UPLOAD/EDGE E2E OPEN | A controlled production transaction exercised persistence → `VALID` receipt publication → public lookup using synthetic text, then rolled back the entire test subtransaction. Post-test counts remained 0 runs / 68 legacy receipts; the canary lookup returned NULL after rollback. Upload/OCR/Edge invocation was not exercised. |
@@ -37,8 +37,9 @@
 ### Required close-out
 1. Retrieve complete deployed bundles for both functions from a stable Supabase bundle endpoint or dashboard export.
 2. Compare every deployed file against the exact integration-branch source after narrowly normalizing only import suffixes/paths.
-3. Record per-file SHA-256, byte/character counts, deployment version and result.
-4. If any dependency differs, classify the difference and propose a branch-only correction. Do not deploy as part of this gate.
+3. For `ocr-processor`, record the verified entrypoint and extraction source parity above; locate the canonical branch Deno configuration and compare it with deployed `deno.json`.
+4. For `verify`, retrieve the complete deployed bundle and compare every dependency against the integration branch.
+5. If any dependency differs, classify the difference and propose a branch-only correction. Do not deploy as part of this gate.
 
 ## 2. Missing migration: formal recovery disposition
 
