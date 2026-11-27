@@ -5,6 +5,7 @@
  * HOEOS Standard: Server-Only Credentials, Strict Input Boundary, Zero Secret Leakage, Provider Truth States.
  */
 
+import { createHash } from 'node:crypto';
 import { AIFinding, EvidenceMatch, ProviderTruthStatus } from '../types.js';
 import {
   validateAIFindingSchema,
@@ -27,7 +28,8 @@ const CACHE_TTL_MS = 60_000;
 const CACHE_MAX_ENTRIES = 20;
 
 function buildCacheKey(documentText: string, matches: EvidenceMatch[]): string {
-  return `${REQUESTED_MODEL}::${documentText.slice(0, 100)}::${matches.length}`;
+  const canonicalInput = JSON.stringify({ model: REQUESTED_MODEL, documentText, matches });
+  return createHash('sha256').update(canonicalInput).digest('hex');
 }
 
 export function getGeminiApiKeyCache(key: string): GeminiServerResponse | null {
