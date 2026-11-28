@@ -152,3 +152,28 @@ Next safe action: map the G6 comparison endpoint, BFF dispatcher, receipt schema
 ---
 
 **Evidence boundary:** This report is based on GitHub branch comparisons and fetched source blobs. It does not certify local-only working-tree changes, live database state as of the report date, successful workflow execution, browser behavior, or production runtime.
+
+
+## 10. Nine-commit shared-lineage file manifest
+
+The user-supplied remote inventory identifies the following nine commit SHAs as present on the same 13 branches listed in the CSV manifest. GitHub commit diffs were fetched for each SHA and mapped to their changed file and change intent.
+
+| Commit | File | Reconciliation classification |
+|---|---|---|
+| `b4b6cc5b1b3312f2b649f6a1190111b4b07ebd2e` | `tests/g4d_persisted_evidence_integrity.test.ts` | Deterministic fixture repair |
+| `cdc4d4eedb9b6fb6464ee8de15a44701b5132847` | `src/services/verify/types.ts` | Persistence DTO contract change |
+| `34cc1ad2453476f1f1edad197bc457aca3069076` | `tests/verifyPersistenceAuthorization.test.ts` | Authorization test strengthening |
+| `69a37e4215828803a26d7224d2b9d3dddb02d4d0` | `tests/g4d_persisted_evidence_integrity.test.ts` | Authenticated handler test alignment |
+| `216bcb5ccdda31702cafcae59c23eb6747371558` | `src/services/verify/server/persistenceServerHandler.ts` | Validate payload before Supabase client construction |
+| `8b79aefa512053d6a15cfe3c67143bbf7ba0a1b2` | `src/services/verify/verificationPersistenceService.ts` | Public receipt type adjustment |
+| `08f0d7c39fd2d80491fb6ad05b9528ed957d770d` | `tests/g4d_persisted_evidence_integrity.test.ts` | Privacy projection assertions |
+| `501e92efdde824559d237851c38504b09c79f8fe` | `src/services/verify/verificationPersistenceService.ts` | Redacts canonical text and verbatim excerpts from public evidence projection |
+| `593a2c0c566e6e780a0ce8c13525e16fd7381467` | `.github/workflows/verify-persistence-auth.yml` | Adds CI workflow for typecheck, auth/tamper tests, persistence tests and build |
+
+**Interpretation:** this shared lineage records a coherent historical hardening sequence around deterministic evidence reproducibility, authenticated persistence, privacy-safe public receipt projection, and CI enforcement. It is not nine independent implementations, and the BranchCount of 13 is not a measure of 13 separate repairs.
+
+The commit-level manifest is stored at `docs/forensics/G0_REMOTE_SHARED_COMMIT_FILE_MANIFEST_2026-11-28.csv`. The branch membership values are preserved exactly as supplied in the remote inventory; the fetched commit diffs establish changed paths and patch intent.
+
+### Important verification boundary
+
+The commit diffs prove what was committed, not that the associated workflow passed or that the code remains present in integration. Before carrying any change forward, compare the exact file/blob against the frozen integration tree and inspect the later atomic persistence RPC contract. In particular, do not restore the historical direct-table-write handler merely because its validation-order change is useful. That invariant should be preserved in the current RPC-based architecture and tested there.
